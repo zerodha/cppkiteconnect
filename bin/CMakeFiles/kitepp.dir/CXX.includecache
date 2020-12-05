@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/bhumit/coding/cpp/kitepp/src/main.cpp
+map
+-
+string
+-
+cpprest/http_client.h
+-
+cpprest/filestream.h
+-
+
