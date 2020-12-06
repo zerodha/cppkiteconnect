@@ -92,13 +92,22 @@ int main(int argc, char* argv[])
 int main(int argc, char const *argv[])
 {
 
-    kite Kite("a9gg2394xe9sqmjc", "0HW0h8CsizDNmjSFjQ3F2bXhq6yVW56F");
+    kite Kite("a9gg2394xe9sqmjc", "w0cx403CwKLv3VOEAFro8z2x8XSD1put");
 
-    njson margins;
+    njson margins, profile, misOrd, bracketOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades;
 
     try{
         
-        margins = Kite.margins();
+        //profile = Kite.profile();
+        //margins = Kite.margins("equity");
+        //FIXME misOrd = Kite.placeOrder("regular", "NSE", "ACC", "BUY", "1", "MIS", "MARKET", "", "DAY");
+        //FIXME bracketOrd = Kite.placeOrder("bo", "NSE", "ACC", "BUY", "1", "MIS", "LIMIT", "1665.95", "DAY", "", "2", "2", "");
+        //FIXME modOrd = Kite.modifyOrder("regular", "151220000000000", "", "2", "", "MARKET", "", "DAY");
+        //FIXME cancelOrd = Kite.cancelOrder("regular", "151220000000000", "123");
+        //FIXME orders = Kite.orders();
+        //FIXME ordHistory = Kite.orderHistory("151220000000000");
+        trades = Kite.trades();
+        ordTrades = Kite.orderTrades("123456789");
 
     }catch(kiteppException& e){
 
@@ -106,7 +115,26 @@ int main(int argc, char const *argv[])
 
     };
 
-    std::cout<<"availible cash is "<<margins["data"]["commodity"]["available"]["cash"]<<std::endl;
+    bool d = (margins.empty())? true:false;
+    
+
+    //?std::cout<<"availible cash is "<<margins["data"]["commodity"]["available"]["cash"]<<std::endl; //margins()
+    std::cout<<"availible cash is "<<margins["data"]["available"]["cash"]<<std::endl; //margins(segment)
+    //FIXME std::cout<<misOrd.dump(4)<<std::endl;
+    //FIXME std::cout<<bracketOrd.dump(4)<<std::endl;
+    //FIXME std::cout<<modOrd.dump(4)<<std::endl;
+    //FIXME std::cout<<cancelOrd.dump(4)<<std::endl;
+    //FIXME std::cout<<orders.dump(4)<<std::endl;
+    //FIXME std::cout<<ordHistory.dump(4)<<std::endl;
+    std::cout<<trades.dump(4)<<std::endl;
+    std::cout<<ordTrades.dump(4)<<std::endl;
+
+
+
+
+    
+
+
 
 
 
