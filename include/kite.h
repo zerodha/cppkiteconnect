@@ -328,6 +328,15 @@ njson ltp(const std::vector<string>& symbols){
 };
 
 
+//historical
+
+njson historicalData(const string& instrumentTok, const string& from, const string& to, const string& interval, bool continuous=false, bool oi=false){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("market.historical"), "instrument_token"_a=instrumentTok, "interval"_a=interval, "from"_a=from, "to"_a=to,
+        "continuous"_a= (int)continuous, "oi"_a= (int)oi));
+
+};
+
 
 
 
@@ -392,7 +401,7 @@ const std::unordered_map<string, string> _endpoints={
     {"market.instruments.all", "/instruments"},
     {"market.instruments", "/instruments/{exchange}"},
     {"market.margins", "/margins/{segment}"},
-    {"market.historical", "/instruments/historical/{instrument_token}/{interval}"},
+    {"market.historical", "/instruments/historical/{instrument_token}/{interval}?from={from}&to={to}&continuous={continuous}&oi={oi}"},
     {"market.trigger_range", "/instruments/trigger_range/{transaction_type}"},
 
     //x{"market.quote", "/quote"},

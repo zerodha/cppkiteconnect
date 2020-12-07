@@ -16,6 +16,7 @@ const string inputExcpStr = "InputException";
 const string networkExcpStr = "NetworkException";
 const string dataExcpStr = "DataException";
 const string generalExcpStr = "GeneralException";
+const string permissionExcpStr = "PermissionException";
 
 
 //exceptions
@@ -166,6 +167,26 @@ const char* what() const noexcept{
 
 };
 
+class permissionException: public kiteppException{
+
+
+public:
+
+//constructors and destructor
+
+permissionException(int c, string msg): kiteppException(c, msg){};
+
+//methods
+
+const char* what() const noexcept{
+
+    return "PermissionException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/";
+
+};
+
+
+};
+
 
 class libException: public std::exception{
 
@@ -224,6 +245,10 @@ void throwException(const string& excpStr, int code, const string& msg){
     }else if(excpStr == generalExcpStr){
 
         throw generalException(code, msg);
+        
+    }else if(excpStr == permissionExcpStr){
+
+        throw permissionException(code, msg);
         
     }else{
 

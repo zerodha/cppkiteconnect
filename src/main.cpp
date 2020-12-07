@@ -149,9 +149,10 @@ int main(int argc, char const *argv[])
         //std::cout<<Kite.holdings().dump(4)<<std::endl;
         //std::cout<<Kite.positions().dump(4)<<std::endl;
         //std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
-        std::cout<<Kite.quote({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
-        std::cout<<Kite.ohlc({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
-        std::cout<<Kite.ltp({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
+        //std::cout<<Kite.quote({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
+        //std::cout<<Kite.ohlc({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
+        //std::cout<<Kite.ltp({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
+        std::cout<<Kite.historicalData("5633", "2020-11-01+09:30:00", "2020-12-01+10:30:00", "minute").dump(4)<<std::endl;
         
 
     }catch(kiteppException& e){
