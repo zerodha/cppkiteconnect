@@ -92,22 +92,60 @@ int main(int argc, char* argv[])
 int main(int argc, char const *argv[])
 {
 
-    kite Kite("a9gg2394xe9sqmjc", "w0cx403CwKLv3VOEAFro8z2x8XSD1put");
+    kite Kite("a9gg2394xe9sqmjc", "8xeCSOjdAFEEc5kjTpC2F5H2rlfg8G7f");
 
-    njson margins, profile, misOrd, bracketOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades;
+    njson margins, profile, misOrd, bracketOrd, coverOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades, exitOrd, placegtt, getGtts, getGtt, gttMod,
+            delGtt;
 
     try{
         
         //profile = Kite.profile();
         //margins = Kite.margins("equity");
-        //FIXME misOrd = Kite.placeOrder("regular", "NSE", "ACC", "BUY", "1", "MIS", "MARKET", "", "DAY");
-        //FIXME bracketOrd = Kite.placeOrder("bo", "NSE", "ACC", "BUY", "1", "MIS", "LIMIT", "1665.95", "DAY", "", "2", "2", "");
-        //FIXME modOrd = Kite.modifyOrder("regular", "151220000000000", "", "2", "", "MARKET", "", "DAY");
-        //FIXME cancelOrd = Kite.cancelOrder("regular", "151220000000000", "123");
-        //FIXME orders = Kite.orders();
-        //FIXME ordHistory = Kite.orderHistory("151220000000000");
-        trades = Kite.trades();
-        ordTrades = Kite.orderTrades("123456789");
+        //misOrd = Kite.placeOrder("regular", "NSE", "BHEL", "SELL", "1", "MIS", "MARKET", "34.90", "DAY");
+        //bracketOrd = Kite.placeOrder("bo", "NSE", "ACC", "BUY", "1", "MIS", "LIMIT", "1665.95", "DAY", "", "2", "2", "");
+        //coverOrd = Kite.placeOrder("co", "NSE", "BHEL", "BUY", "1", "MIS", "LIMIT", "33", "DAY", "32", "", "", "");
+        //modOrd = Kite.modifyOrder("regular", "151220000000000", "", "2", "", "MARKET", "", "DAY");
+        //modOrd = Kite.modifyOrder("co", "201207001896036", "", "", "34.8", "LIMIT", "33", "DAY");
+        //cancelOrd = Kite.cancelOrder("regular", "151220000000000", "123");
+        //exitOrd = Kite.exitOrder("co", "201207001972149");
+        //orders = Kite.orders();
+        //ordHistory = Kite.orderHistory("201207001459491");
+        //trades = Kite.trades();
+        //ordTrades = Kite.orderTrades("201207001459491");
+
+        /*
+        auto gttOrds = njson::array();
+        gttOrds.push_back({
+
+        {"transaction_type", "BUY"},
+        {"quantity", 1},
+        {"order_type", "LIMIT"},
+        {"product", "CNC"},
+        {"price", 19100},
+
+        });
+        placegtt = Kite.placeGTT("single", "NESTLEIND", "NSE", {19000}, "17596.95", gttOrds);
+        */
+
+        /*
+        auto gttOrds = njson::array();
+        gttOrds.push_back({
+
+        {"transaction_type", "BUY"},
+        {"quantity", 1},
+        {"order_type", "LIMIT"},
+        {"product", "CNC"},
+        {"price", 19100},
+
+        });
+        gttMod = Kite.modifyGTT("21105917", "single", "NESTLEIND", "NSE", {20000}, "17596.95", gttOrds);
+        */
+
+        //getGtts = Kite.getGTTs();
+        //getGtt = Kite.getGTT("21105917");
+        delGtt = Kite.deleteGTT("21105917");
+
+
 
     }catch(kiteppException& e){
 
@@ -115,19 +153,22 @@ int main(int argc, char const *argv[])
 
     };
 
-    bool d = (margins.empty())? true:false;
-    
-
     //?std::cout<<"availible cash is "<<margins["data"]["commodity"]["available"]["cash"]<<std::endl; //margins()
-    std::cout<<"availible cash is "<<margins["data"]["available"]["cash"]<<std::endl; //margins(segment)
-    //FIXME std::cout<<misOrd.dump(4)<<std::endl;
-    //FIXME std::cout<<bracketOrd.dump(4)<<std::endl;
-    //FIXME std::cout<<modOrd.dump(4)<<std::endl;
-    //FIXME std::cout<<cancelOrd.dump(4)<<std::endl;
-    //FIXME std::cout<<orders.dump(4)<<std::endl;
-    //FIXME std::cout<<ordHistory.dump(4)<<std::endl;
-    std::cout<<trades.dump(4)<<std::endl;
-    std::cout<<ordTrades.dump(4)<<std::endl;
+    //std::cout<<"availible cash is "<<margins["data"]["available"]["cash"]<<std::endl; //margins(segment)
+    //std::cout<<misOrd.dump(4)<<std::endl;
+    //std::cout<<bracketOrd.dump(4)<<std::endl;
+    //std::cout<<modOrd.dump(4)<<std::endl;
+    //std::cout<<cancelOrd.dump(4)<<std::endl;
+    //std::cout<<exitOrd.dump(4)<<std::endl;
+    //std::cout<<orders.dump(4)<<std::endl;
+    //std::cout<<ordHistory.dump(4)<<std::endl;
+    //std::cout<<trades.dump(4)<<std::endl;
+    //std::cout<<ordTrades.dump(4)<<std::endl;
+    //std::cout<<placegtt.dump(4)<<std::endl;
+    //std::cout<<getGtts.dump(4)<<std::endl;
+    //std::cout<<getGtt.dump(4)<<std::endl;
+    //std::cout<<gttMod.dump(4)<<std::endl;
+    std::cout<<delGtt.dump(4)<<std::endl;
 
 
 

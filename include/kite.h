@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
 #include <utility> //pair<>
 #include <algorithm> //for_each
 #include <cmath> //isnan()
@@ -139,7 +140,7 @@ njson orderHistory(const string& ordID){
     return _sendReq(http::methods::GET, FMT(_endpoints.at("order.info"), "order_id"_a=ordID));
 
 };
-
+ 
 njson trades(){
 
     return _sendReq(http::methods::GET, _endpoints.at("trades"));
@@ -153,6 +154,119 @@ njson orderTrades(const string& ordID){
 };
 
 
+//gtt
+
+njson placeGTT(const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues, const string& lastPrice, njson& orders){
+
+
+    /*
+    
+    Function expects a njson array `orders` with following params: `transaction_type`, `quantity`, `order_type`, `product`, `price`. Users can form the array like
+
+    auto gttOrds = njson::array();
+    gttOrds.push_back({
+
+        {"transaction_type", "BUY"},
+        {"quantity", 10},
+        {"order_type", "LIMIT"},
+        {"product", "CNC"},
+        {"price", 199.10},
+
+    })
+    
+    and pass gttOrds to the function.
+    */
+
+    njson condition = {
+
+        {"exchange", exchange},
+        {"tradingsymbol", symbol},
+        {"trigger_values", trigValues},
+        {"last_price", std::stod(lastPrice)}
+
+    };
+
+    for(auto& order: orders){
+
+        order["exchange"] = exchange;
+        order["tradingsymbol"] = symbol;
+
+    };
+
+    return _sendReq(http::methods::POST, _endpoints.at("gtt.place"), {
+
+        {"type", trigType},
+        {"condition", condition.dump()},
+        {"orders", orders.dump()}
+
+    });
+
+};
+
+njson getGTTs(){
+
+    return _sendReq(http::methods::GET, _endpoints.at("gtt"));
+
+}
+
+njson getGTT(string const& trigID){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a=trigID));
+
+}
+
+njson modifyGTT(const string& trigID, const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues, const string& lastPrice, njson& orders){
+
+
+    /*
+    
+    Function expects a njson array `orders` with following params: `transaction_type`, `quantity`, `order_type`, `product`, `price`. Users can form the array like
+
+    auto gttOrds = njson::array();
+    gttOrds.push_back({
+
+        {"transaction_type", "BUY"},
+        {"quantity", 10},
+        {"order_type", "LIMIT"},
+        {"product", "CNC"},
+        {"price", 199.10},
+
+    })
+    
+    and pass gttOrds to the function.
+    */
+
+    njson condition = {
+
+        {"exchange", exchange},
+        {"tradingsymbol", symbol},
+        {"trigger_values", trigValues},
+        {"last_price", std::stod(lastPrice)}
+
+    };
+
+    for(auto& order: orders){
+
+        order["exchange"] = exchange;
+        order["tradingsymbol"] = symbol;
+
+    };
+
+    return _sendReq(http::methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a=trigID), {
+
+        {"type", trigType},
+        {"condition", condition.dump()},
+        {"orders", orders.dump()}
+
+    });
+
+};
+
+njson deleteGTT(const string& trigID){
+
+    return _sendReq(http::methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a=trigID));
+
+}
 
 private:
 
