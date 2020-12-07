@@ -148,7 +148,10 @@ int main(int argc, char const *argv[])
 
         //std::cout<<Kite.holdings().dump(4)<<std::endl;
         //std::cout<<Kite.positions().dump(4)<<std::endl;
-        std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
+        //std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
+        std::cout<<Kite.quote({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
+        std::cout<<Kite.ohlc({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
+        std::cout<<Kite.ltp({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
         
 
     }catch(kiteppException& e){
@@ -172,9 +175,7 @@ int main(int argc, char const *argv[])
     //std::cout<<getGtt.dump(4)<<std::endl;
     //std::cout<<gttMod.dump(4)<<std::endl;
     //std::cout<<delGtt.dump(4)<<std::endl;
-    //std::cout<<Kite.holdings().dump(4)<<std::endl;
-    //std::cout<<Kite.positions().dump(4)<<std::endl;
-    //std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
+
 
 
 

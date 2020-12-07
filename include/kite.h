@@ -304,6 +304,31 @@ njson convertPosition(const string& exchange, const string& symbol, const string
 };
 
 
+//quotes and instruments
+
+//TODO implement instruments function
+
+//! if there are spaces in symbol name, they should be replaced `+`
+njson quote(const std::vector<string>& symbols){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a=_encodeSymbolsList(symbols)));
+
+};
+
+njson ohlc(const std::vector<string>& symbols){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a=_encodeSymbolsList(symbols)));
+
+};
+
+njson ltp(const std::vector<string>& symbols){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a=_encodeSymbolsList(symbols)));
+
+};
+
+
+
 
 
 
@@ -317,13 +342,19 @@ private:
 const string _kiteVersion = "3";
 const std::unordered_map<string, string> _endpoints={
 
+    //api
+
     {"api.token", "/session/token"},
     {"api.token.invalidate", "/session/token"},
     {"api.token.renew", "/session/refresh_token"},
 
+    //user
+
     {"user.profile", "/user/profile"},
     {"user.margins", "/user/margins"},
     {"user.margins.segment", "/user/margins/{segment}"},
+
+    //orders
 
     {"orders", "/orders"},
     {"trades", "/trades"},
@@ -334,6 +365,8 @@ const std::unordered_map<string, string> _endpoints={
     {"order.cancel", "/orders/{variety}/{order_id}"},
     {"order.cancel.bo", "/orders/{variety}/{order_id}?parent_order_id={parent_order_id}"},
     {"order.trades", "/orders/{order_id}/trades"},
+
+    //portfolio
 
     {"portfolio.positions", "/portfolio/positions"},
     {"portfolio.holdings", "/portfolio/holdings"},
@@ -362,9 +395,13 @@ const std::unordered_map<string, string> _endpoints={
     {"market.historical", "/instruments/historical/{instrument_token}/{interval}"},
     {"market.trigger_range", "/instruments/trigger_range/{transaction_type}"},
 
-    {"market.quote", "/quote"},
-    {"market.quote.ohlc", "/quote/ohlc"},
-    {"market.quote.ltp", "/quote/ltp"},
+    //x{"market.quote", "/quote"},
+    //x{"market.quote.ohlc", "/quote/ohlc"},
+    //x{"market.quote.ltp", "/quote/ltp"},
+
+    {"market.quote", "/quote?{symbols_list}"},
+    {"market.quote.ohlc", "/quote/ohlc?{symbols_list}"},
+    {"market.quote.ltp", "/quote/ltp?{symbols_list}"},
 
     //GTT endpoints
     {"gtt", "/gtt/triggers"},
@@ -388,6 +425,21 @@ string _getAuthStr() const{
     return FMT("token {0}:{1}", apiKey, accessToken);
 
 };
+
+string _encodeSymbolsList(const std::vector<string>& symbols){
+
+    string str = "";
+
+    for(auto& symbol: symbols){
+
+        //! could cause problems because there will that `&` after last query. can be solved by scraping the last char of string after the for loop
+        str.append(FMT("i={0}&", symbol));
+
+    };
+
+    return str;
+
+}
 
 string _makeBody(const std::vector<std::pair<string, string>>& params) {
 
