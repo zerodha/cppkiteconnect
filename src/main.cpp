@@ -95,7 +95,7 @@ int main(int argc, char const *argv[])
     kite Kite("a9gg2394xe9sqmjc", "8xeCSOjdAFEEc5kjTpC2F5H2rlfg8G7f");
 
     njson margins, profile, misOrd, bracketOrd, coverOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades, exitOrd, placegtt, getGtts, getGtt, gttMod,
-            delGtt;
+            delGtt, holdings, positions;
 
     try{
         
@@ -143,9 +143,13 @@ int main(int argc, char const *argv[])
 
         //getGtts = Kite.getGTTs();
         //getGtt = Kite.getGTT("21105917");
-        delGtt = Kite.deleteGTT("21105917");
+        //delGtt = Kite.deleteGTT("21105917");
 
 
+        //std::cout<<Kite.holdings().dump(4)<<std::endl;
+        //std::cout<<Kite.positions().dump(4)<<std::endl;
+        std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
+        
 
     }catch(kiteppException& e){
 
@@ -156,7 +160,6 @@ int main(int argc, char const *argv[])
     //?std::cout<<"availible cash is "<<margins["data"]["commodity"]["available"]["cash"]<<std::endl; //margins()
     //std::cout<<"availible cash is "<<margins["data"]["available"]["cash"]<<std::endl; //margins(segment)
     //std::cout<<misOrd.dump(4)<<std::endl;
-    //std::cout<<bracketOrd.dump(4)<<std::endl;
     //std::cout<<modOrd.dump(4)<<std::endl;
     //std::cout<<cancelOrd.dump(4)<<std::endl;
     //std::cout<<exitOrd.dump(4)<<std::endl;
@@ -168,7 +171,10 @@ int main(int argc, char const *argv[])
     //std::cout<<getGtts.dump(4)<<std::endl;
     //std::cout<<getGtt.dump(4)<<std::endl;
     //std::cout<<gttMod.dump(4)<<std::endl;
-    std::cout<<delGtt.dump(4)<<std::endl;
+    //std::cout<<delGtt.dump(4)<<std::endl;
+    //std::cout<<Kite.holdings().dump(4)<<std::endl;
+    //std::cout<<Kite.positions().dump(4)<<std::endl;
+    //std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
 
 
 

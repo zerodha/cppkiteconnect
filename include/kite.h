@@ -268,6 +268,48 @@ njson deleteGTT(const string& trigID){
 
 }
 
+
+//portfolio
+
+njson holdings(){
+
+    return _sendReq(http::methods::GET, _endpoints.at("portfolio.holdings"));
+
+};
+
+njson positions(){
+
+    return _sendReq(http::methods::GET, _endpoints.at("portfolio.positions"));
+
+};
+
+njson convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType, const string& quantity, const string& oldProduct,
+                        const string& newProduct){
+
+                            
+                        std::vector<std::pair<string, string>> bodyParams = {
+
+                            {"exchange", exchange},
+                            {"tradingsymbol", symbol},
+                            {"transaction_type", txnType},
+                            {"position_type", posType},
+                            {"quantity", quantity},
+                            {"old_product", oldProduct},
+                            {"new_product", newProduct},
+
+                        };
+
+                        return _sendReq(http::methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
+
+};
+
+
+
+
+
+
+
+
 private:
 
 //member variables
