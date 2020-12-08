@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 int main(int argc, char const *argv[])
 {
 
-    kite Kite("a9gg2394xe9sqmjc", "8xeCSOjdAFEEc5kjTpC2F5H2rlfg8G7f");
+    kite Kite("a9gg2394xe9sqmjc", "m361W81d6EifjQ6Ah1dtkH9dJI9NppDa");
 
     njson margins, profile, misOrd, bracketOrd, coverOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades, exitOrd, placegtt, getGtts, getGtt, gttMod,
             delGtt, holdings, positions;
@@ -145,23 +145,37 @@ int main(int argc, char const *argv[])
         //getGtt = Kite.getGTT("21105917");
         //delGtt = Kite.deleteGTT("21105917");
 
-
         //std::cout<<Kite.holdings().dump(4)<<std::endl;
         //std::cout<<Kite.positions().dump(4)<<std::endl;
         //std::cout<<Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)<<std::endl;
         //std::cout<<Kite.quote({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
         //std::cout<<Kite.ohlc({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
         //std::cout<<Kite.ltp({"NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE"}).dump(4)<<std::endl;
-        std::cout<<Kite.historicalData("5633", "2020-11-01+09:30:00", "2020-12-01+10:30:00", "minute").dump(4)<<std::endl;
+        //std::cout<<Kite.historicalData("5633", "2020-11-01+09:30:00", "2020-12-01+10:30:00", "minute").dump(4)<<std::endl;
+        //std::cout<<Kite.placeMFOrder("INF174K01LS2", "BUY", "", "10000").dump(4)<<std::endl;
+        //std::cout<<Kite.MFOrder("724c8a20-5bad-45f6-bb42-c8fbc532695a").dump(4)<<std::endl;
+        //std::cout<<Kite.MFOrders().dump(4)<<std::endl;
+        //std::cout<<Kite.cancelMFOrder("724c8a20-5bad-45f6-bb42-c8fbc532695a").dump(4)<<std::endl;
+        //std::cout<<Kite.placeMFSIP("INF174K01LS2", "10000", "-1", "monthly", "50000", "1").dump(4)<<std::endl;
+        //std::cout<<Kite.modifyMFSIP("665078328772975", "5000", "paused", "10", "monthly", "5").dump(4)<<std::endl;
+        //std::cout<<Kite.SIP("665078328772975").dump(4)<<std::endl;
+        //std::cout<<Kite.cancelMFSIP("665078328772975").dump(4)<<std::endl;
+        //std::cout<<Kite.SIPs().dump(4)<<std::endl;
+        //std::cout<<Kite.MFHoldings().dump(4)<<std::endl;
+
         
 
     }catch(kiteppException& e){
 
         std::cerr<<FMT("{0},{1},{2}\n", e.what(), e.code(), e.message());
 
+    }catch(libException& e){
+
+        std::cerr<<FMT("{0}\n", e.what());
+
     };
 
-    //?std::cout<<"availible cash is "<<margins["data"]["commodity"]["available"]["cash"]<<std::endl; //margins()
+    //std::cout<<"availible cash is "<<margins["data"]["commodity"]["available"]["cash"]<<std::endl; //margins()
     //std::cout<<"availible cash is "<<margins["data"]["available"]["cash"]<<std::endl; //margins(segment)
     //std::cout<<misOrd.dump(4)<<std::endl;
     //std::cout<<modOrd.dump(4)<<std::endl;

@@ -330,6 +330,7 @@ njson ltp(const std::vector<string>& symbols){
 
 //historical
 
+//! if there are spaces in symbol name, they should be replaced `+`
 njson historicalData(const string& instrumentTok, const string& from, const string& to, const string& interval, bool continuous=false, bool oi=false){
 
     return _sendReq(http::methods::GET, FMT(_endpoints.at("market.historical"), "instrument_token"_a=instrumentTok, "interval"_a=interval, "from"_a=from, "to"_a=to,
@@ -338,9 +339,108 @@ njson historicalData(const string& instrumentTok, const string& from, const stri
 };
 
 
+//MF
+
+njson placeMFOrder(const string& symbol, const string& txnType, const string& quantity = "", const string& amount = "", const string& tag = ""){
+
+    std::vector<std::pair<string, string>> bodyParams = {
+
+        {"tradingsymbol", symbol},
+        {"transaction_type", txnType},
+
+    };
+
+    if(!quantity.empty()) bodyParams.push_back({"quantity", quantity});
+    if(!amount.empty()) bodyParams.push_back({"amount", amount});
+    if(!tag.empty()) bodyParams.push_back({"tag", tag});
+
+    return _sendReq(http::methods::POST, _endpoints.at("mf.order.place"), bodyParams);
+
+};
+
+njson cancelMFOrder(const string& ordID){
+
+    return _sendReq(http::methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a=ordID));
+
+};
+
+njson MFOrders(){
+
+    return _sendReq(http::methods::GET, _endpoints.at("mf.orders"));
+
+};
+
+njson MFOrder(const string& ordID){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a=ordID));
+
+};
+
+njson MFHoldings(){
+
+    return _sendReq(http::methods::GET, _endpoints.at("portfolio.holdings"));
+
+};
+
+//SIP
+
+njson placeMFSIP(const string& symbol, const string& amount, const string& installments, const string& freq, const string& initAmount = "", const string& installDay = "",
+                    const string& tag = ""){
+
+                        std::vector<std::pair<string, string>> bodyParams ={
+
+                            {"tradingsymbol", symbol},
+                            {"amount", amount},
+                            {"instalments", installments},
+                            {"frequency", freq}
+
+                        };
+
+                        if(!initAmount.empty()) bodyParams.push_back({"initial_amount", initAmount});
+                        if(!installDay.empty()) bodyParams.push_back({"instalment_day", installDay});
+                        if(!tag.empty()) bodyParams.push_back({"tag", tag});
+
+                        return _sendReq(http::methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
+
+                    };
+
+njson modifyMFSIP(const string& SIPID, const string& amount = "", const string& status = "", const string& installments = "", const string& freq = "", 
+                    const string& installDay = ""){
+
+                        std::vector<std::pair<string, string>> bodyParams = {};
+
+                        if(!amount.empty()) bodyParams.push_back({"amount", amount});
+                        if(!status.empty()) bodyParams.push_back({"status", status});
+                        if(!installments.empty()) bodyParams.push_back({"instalments", installments});
+                        if(!freq.empty()) bodyParams.push_back({"frequency", freq});
+                        if(!installDay.empty()) bodyParams.push_back({"instalment_day", installDay});
+
+                        return _sendReq(http::methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a=SIPID), bodyParams);
+
+                    };
+
+
+njson cancelMFSIP(const string& SIPID){
+
+    return _sendReq(http::methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a=SIPID));
+
+};
+
+njson SIPs(){
+
+    return _sendReq(http::methods::GET, _endpoints.at("mf.sips"));
+
+};
+
+njson SIP(const string& SIPID){
+
+    return _sendReq(http::methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a=SIPID));
+
+};
 
 
 
+//TODO implement instruments function
 
 
 
@@ -518,12 +618,12 @@ njson _sendReq(http::method mtd, const string& endpoint, const std::vector<std::
             try{
 
                 code = res.status_code();
-                excpStr = data["error_type"];
+                excpStr = (data.contains("error_type"))? data["error_type"] : "NoException";
                 message = data["message"];
 
             }catch(const std::exception& e){
 
-                throw libException(FMT("{0} was thrown while extracting code, excpStr and message (_sendReq)", e.what()).c_str());
+                throw libException(FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message).c_str());
 
             };
 

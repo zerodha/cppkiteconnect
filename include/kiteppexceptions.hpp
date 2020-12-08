@@ -17,6 +17,8 @@ const string networkExcpStr = "NetworkException";
 const string dataExcpStr = "DataException";
 const string generalExcpStr = "GeneralException";
 const string permissionExcpStr = "PermissionException";
+const string noExcpStr = "NoException"; //when REST API doesn't return any exception
+
 
 
 //exceptions
@@ -167,6 +169,7 @@ const char* what() const noexcept{
 
 };
 
+
 class permissionException: public kiteppException{
 
 
@@ -181,6 +184,27 @@ permissionException(int c, string msg): kiteppException(c, msg){};
 const char* what() const noexcept{
 
     return "PermissionException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/";
+
+};
+
+
+};
+
+
+class noException: public kiteppException{
+
+
+public:
+
+//constructors and destructor
+
+noException(int c, string msg): kiteppException(c, msg){};
+
+//methods
+
+const char* what() const noexcept{
+
+    return "No exception was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/";
 
 };
 
@@ -212,6 +236,7 @@ string _message="";
 
 
 };
+
 
 
 //throw exception wrt string passed. Throws libException if string doesn't match with anything.
@@ -249,6 +274,10 @@ void throwException(const string& excpStr, int code, const string& msg){
     }else if(excpStr == permissionExcpStr){
 
         throw permissionException(code, msg);
+        
+    }else if(excpStr == noExcpStr){
+
+        throw noException(code, msg);
         
     }else{
 
