@@ -438,9 +438,41 @@ njson SIP(const string& SIPID){
 
 };
 
-
-
 //TODO implement instruments function
+
+
+//others
+
+njson orderMargins(const njson& orders){
+
+    /*
+    Function expects a njson array of orders. The array can be formed like
+
+    auto ords = njson::array();
+    ords.push_back({
+
+    {"exchange", "NSE"},
+    {"tradingsymbol", "INFY"},
+    {"transaction_type", "BUY"},
+    {"variety", "regular"},
+    {"product", "CNC"},
+    {"order_type", "MARKET"},
+    {"quantity", 1},
+    {"price", 0},
+    {"trigger_price", 0}
+
+    });
+
+    and passed to the function like 
+
+    std::cout<<Kite.orderMargins(ords).dump(4)<<std::endl;
+
+    Alternatively, users can create the array inPlace.
+    */
+
+    return _sendReq(http::methods::POST, _endpoints.at("order.margins"), {{"", orders.dump()}}, true);    
+
+};
 
 
 
@@ -550,7 +582,9 @@ string _encodeSymbolsList(const std::vector<string>& symbols){
 
 }
 
-string _makeBody(const std::vector<std::pair<string, string>>& params) {
+string _encodeBody(const std::vector<std::pair<string, string>>& params) {
+    
+    //encodes body in `urlencoded` form
 
     string str = "";
 
@@ -565,20 +599,25 @@ string _makeBody(const std::vector<std::pair<string, string>>& params) {
 
 };
 
-njson _sendReq(http::method mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {}){
+njson _sendReq(http::method mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson=false){
+
+    /*
+    If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of bodyParam's first pair with first element being empty string.
+    see orderMargins() function
+    */
 
     //create request
 
     http::http_request req(mtd);
     req.set_request_uri(U(endpoint));
 
-    req.headers().set_content_type(U("application/x-www-form-urlencoded"));
+    req.headers().set_content_type(U((isJson)? "application/json" : "application/x-www-form-urlencoded"));
     req.headers().add(U("Authorization"), U(_getAuthStr()));
     req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
     
     if ((mtd!=http::methods::GET && mtd!=http::methods::HEAD) && !bodyParams.empty()){
 
-        req.set_body(U(_makeBody(bodyParams)));
+        req.set_body(U( (isJson)? bodyParams[0].second : _encodeBody(bodyParams) ));
 
     };
 

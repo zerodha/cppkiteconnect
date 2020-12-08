@@ -163,6 +163,24 @@ int main(int argc, char const *argv[])
         //std::cout<<Kite.SIPs().dump(4)<<std::endl;
         //std::cout<<Kite.MFHoldings().dump(4)<<std::endl;
 
+        auto ords = njson::array();
+        ords.push_back({
+
+        {"exchange", "NSE"},
+        {"tradingsymbol", "INFY"},
+        {"transaction_type", "BUY"},
+        {"variety", "regular"},
+        {"product", "CNC"},
+        {"order_type", "MARKET"},
+        {"quantity", 1},
+        {"price", 0},
+        {"trigger_price", 0}
+
+        });
+
+        std::cout<<Kite.orderMargins(ords).dump(4)<<std::endl;
+
+
         
 
     }catch(kiteppException& e){
