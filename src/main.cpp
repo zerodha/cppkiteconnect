@@ -162,7 +162,10 @@ int main(int argc, char const *argv[])
         //std::cout<<Kite.cancelMFSIP("665078328772975").dump(4)<<std::endl;
         //std::cout<<Kite.SIPs().dump(4)<<std::endl;
         //std::cout<<Kite.MFHoldings().dump(4)<<std::endl;
+        //std::cout<<Kite.generateSession("5HQbkFLlVvrFtZUtOXcwDxG4UmJhhu1G", "wqk7riwa1gunamv89zx111qaen0iwe2i").dump(4)<<std::endl;
+        std::cout<<Kite.invalidateSession().dump(4)<<std::endl;
 
+        /*
         auto ords = njson::array();
         ords.push_back({
 
@@ -177,9 +180,9 @@ int main(int argc, char const *argv[])
         {"trigger_price", 0}
 
         });
-
+        
         std::cout<<Kite.orderMargins(ords).dump(4)<<std::endl;
-
+        */
 
         
 

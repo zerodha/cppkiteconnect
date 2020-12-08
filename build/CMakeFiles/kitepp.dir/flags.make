@@ -6,5 +6,5 @@ CXX_FLAGS =  -pthread -g   -std=gnu++14
 
 CXX_DEFINES = -DCPPREST_FORCE_HTTP_CLIENT_ASIO -DCPPREST_FORCE_HTTP_LISTENER_ASIO -DCPPREST_NO_SSL_LEAK_SUPPRESS
 
-CXX_INCLUDES = -I/opt/cpplibs/boost_1_71_0 -I/opt/cpplibs/nlohmann -I/home/bhumit/coding/cpp/kitepp/include 
+CXX_INCLUDES = -I/opt/cpplibs/boost_1_71_0 -I/opt/cpplibs/nlohmann -I/opt/cpplibs/PicoSHA2 -I/home/bhumit/coding/cpp/kitepp/include 
 

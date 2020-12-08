@@ -8,22 +8,24 @@
 #include <algorithm> //for_each
 #include <cmath> //isnan()
 #include <limits> //nan
+#include <array>
 #include <iostream> //debug
 
 #include "config.hpp"
 
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
-
 #include <nlohmann/json.hpp>
+
+#include <PicoSHA2/picosha2.h>
 
 #include "kiteppexceptions.hpp"
 
 namespace http = web::http;
 using std::string;
 using njson = nlohmann::json;
-using NL_int = std::numeric_limits<int>;
-using NL_double = std::numeric_limits<double>;
+//xusing NL_int = std::numeric_limits<int>;
+//xusing NL_double = std::numeric_limits<double>;
 
 
 class kite{
@@ -42,6 +44,37 @@ kite(const string& apikey, const string& accesstoken): apiKey(apikey), accessTok
 
 //methods
 
+//api
+
+string loginURL() const{
+
+    return FMT(_loginURLFmt, "api_key"_a=apiKey);
+};
+
+njson generateSession(const string& requestToken, const string& apiSecret){
+
+    return _sendReq(http::methods::POST, _endpoints.at("api.token"), {
+
+        {"api_key", apiKey},
+        {"request_token", requestToken},
+        {"checksum", picosha2::hash256_hex_string(apiKey+requestToken+apiSecret)}
+
+
+    });
+
+};
+
+njson invalidateSession(){
+
+    return _sendReq(http::methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a=apiKey, "access_token"_a=accessToken));
+};
+
+void setAccessToken(const string& arg){
+
+    accessToken = arg;
+
+}
+
 //user
 
 njson profile(){
@@ -52,11 +85,7 @@ njson profile(){
 
 njson margins(const string& segment=""){
 
-    //FIXME check this shit later on
     return (segment.empty()) ? _sendReq(http::methods::GET, _endpoints.at("user.margins")) : _sendReq(http::methods::GET, FMT(_endpoints.at("user.margins.segment"), "segment"_a=segment));
-
-    //?return _sendReq(http::methods::GET, _routes.at("user.margins"));
-
 
 };
 
@@ -308,8 +337,8 @@ njson convertPosition(const string& exchange, const string& symbol, const string
 
 //TODO implement instruments function
 
-//! if there are spaces in symbol name, they should be replaced `+`
 njson quote(const std::vector<string>& symbols){
+//! if there are spaces in symbol name, they should be replaced `+`
 
     return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a=_encodeSymbolsList(symbols)));
 
@@ -330,8 +359,8 @@ njson ltp(const std::vector<string>& symbols){
 
 //historical
 
-//! if there are spaces in symbol name, they should be replaced `+`
 njson historicalData(const string& instrumentTok, const string& from, const string& to, const string& interval, bool continuous=false, bool oi=false){
+//! if there are spaces in symbol name, they should be replaced `+`
 
     return _sendReq(http::methods::GET, FMT(_endpoints.at("market.historical"), "instrument_token"_a=instrumentTok, "interval"_a=interval, "from"_a=from, "to"_a=to,
         "continuous"_a= (int)continuous, "oi"_a= (int)oi));
@@ -481,13 +510,15 @@ private:
 //member variables
 
 const string _kiteVersion = "3";
+const string _rootURL = "";
+const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
 const std::unordered_map<string, string> _endpoints={
 
     //api
 
     {"api.token", "/session/token"},
-    {"api.token.invalidate", "/session/token"},
-    {"api.token.renew", "/session/refresh_token"},
+    {"api.token.invalidate", "/session/token?api_key={api_key}&access_token={access_token}"},
+    //x{"api.token.renew", "/session/refresh_token"},
 
     //user
 

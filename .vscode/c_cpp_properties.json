@@ -5,7 +5,9 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/opt/cpplibs/boost_1_71_0",
-                "/opt/cpplibs/nlohmann"
+                "/opt/cpplibs/nlohmann",
+                "/opt/cpplibs/PicoSHA2"
+
 
             ],
             "defines": [],

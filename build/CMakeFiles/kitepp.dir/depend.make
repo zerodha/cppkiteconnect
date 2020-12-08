@@ -8,6 +8,7 @@ CMakeFiles/kitepp.dir/src/main.cpp.o: ../include/kite.h
 CMakeFiles/kitepp.dir/src/main.cpp.o: ../include/kiteppexception.hpp
 CMakeFiles/kitepp.dir/src/main.cpp.o: ../include/kiteppexceptions.hpp
 CMakeFiles/kitepp.dir/src/main.cpp.o: ../src/main.cpp
+CMakeFiles/kitepp.dir/src/main.cpp.o: /opt/cpplibs/PicoSHA2/PicoSHA2/picosha2.h
 CMakeFiles/kitepp.dir/src/main.cpp.o: /opt/cpplibs/nlohmann/nlohmann/adl_serializer.hpp
 CMakeFiles/kitepp.dir/src/main.cpp.o: /opt/cpplibs/nlohmann/nlohmann/byte_container_with_subtype.hpp
 CMakeFiles/kitepp.dir/src/main.cpp.o: /opt/cpplibs/nlohmann/nlohmann/detail/conversions/from_json.hpp

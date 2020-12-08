@@ -16,7 +16,7 @@ find_package(Boost REQUIRED filesystem chrono)
 
 file(GLOB_RECURSE source_list "${CMAKE_SOURCE_DIR}/src/*.cpp" "{CMAKE_SOURCE_DIR}/src/*.hpp" "{CMAKE_SOURCE_DIR}/src/*.c")
 
-include_directories(${BOOST_INCLUDE_DIRS} "${LIBSDIR}/nlohmann" "${CMAKE_SOURCE_DIR}/include")
+include_directories(${BOOST_INCLUDE_DIRS} "${LIBSDIR}/nlohmann" "${LIBSDIR}/PicoSHA2" "${CMAKE_SOURCE_DIR}/include" )
 
 find_package(cpprestsdk REQUIRED)
 

@@ -20,6 +20,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/opt/cpplibs/boost_1_71_0"
   "/opt/cpplibs/nlohmann"
+  "/opt/cpplibs/PicoSHA2"
   "../include"
   )
 

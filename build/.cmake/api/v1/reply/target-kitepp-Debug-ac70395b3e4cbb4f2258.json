@@ -82,6 +82,10 @@
 				},
 				{
 					"backtrace" : 3,
+					"path" : "/opt/cpplibs/PicoSHA2"
+				},
+				{
+					"backtrace" : 3,
 					"path" : "/home/bhumit/coding/cpp/kitepp/include"
 				}
 			],

@@ -29,6 +29,8 @@ cmath
 -
 limits
 -
+array
+-
 iostream
 -
 config.hpp
@@ -38,6 +40,8 @@ cpprest/http_client.h
 cpprest/filestream.h
 -
 nlohmann/json.hpp
+-
+PicoSHA2/picosha2.h
 -
 kiteppexceptions.hpp
 ../include/kiteppexceptions.hpp
@@ -72,6 +76,20 @@ cpprest/http_client.h
 cpprest/filestream.h
 -
 nlohmann/json.hpp
+-
+
+/opt/cpplibs/PicoSHA2/PicoSHA2/picosha2.h
+algorithm
+-
+cassert
+-
+iterator
+-
+sstream
+-
+vector
+-
+fstream
 -
 
 /opt/cpplibs/nlohmann/nlohmann/adl_serializer.hpp
