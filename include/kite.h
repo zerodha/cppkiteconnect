@@ -35,12 +35,12 @@ public:
 
 //member variables
 
-string apiKey = "";
-string accessToken = "";
+
 
 //constructors and destructor
 
-kite(const string& apikey, const string& accesstoken): apiKey(apikey), accessToken(accesstoken), _httpClient(U("https://api.kite.trade/")){};
+kite(const string& apikey, const string& accesstoken): _apiKey(apikey), _accessToken(accesstoken), _httpClient(U(_rootURL)){};
+
 
 //methods
 
@@ -48,16 +48,16 @@ kite(const string& apikey, const string& accesstoken): apiKey(apikey), accessTok
 
 string loginURL() const{
 
-    return FMT(_loginURLFmt, "api_key"_a=apiKey);
+    return FMT(_loginURLFmt, "api_key"_a=_apiKey);
 };
 
 njson generateSession(const string& requestToken, const string& apiSecret){
 
     return _sendReq(http::methods::POST, _endpoints.at("api.token"), {
 
-        {"api_key", apiKey},
+        {"api_key", _apiKey},
         {"request_token", requestToken},
-        {"checksum", picosha2::hash256_hex_string(apiKey+requestToken+apiSecret)}
+        {"checksum", picosha2::hash256_hex_string(_apiKey+requestToken+apiSecret)}
 
 
     });
@@ -66,14 +66,15 @@ njson generateSession(const string& requestToken, const string& apiSecret){
 
 njson invalidateSession(){
 
-    return _sendReq(http::methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a=apiKey, "access_token"_a=accessToken));
+    return _sendReq(http::methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a=_apiKey, "access_token"_a=_accessToken));
+
 };
 
 void setAccessToken(const string& arg){
 
-    accessToken = arg;
+    _accessToken = arg;
 
-}
+};
 
 //user
 
@@ -335,7 +336,11 @@ njson convertPosition(const string& exchange, const string& symbol, const string
 
 //quotes and instruments
 
-//TODO implement instruments function
+string instruments(const string& exchange = ""){
+
+    return (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) : _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a=exchange));
+
+};
 
 njson quote(const std::vector<string>& symbols){
 //! if there are spaces in symbol name, they should be replaced `+`
@@ -467,7 +472,11 @@ njson SIP(const string& SIPID){
 
 };
 
-//TODO implement instruments function
+string MFInstruments(const string& exchange = ""){
+
+    return _sendInstrumentsReq(_endpoints.at("mf.instruments"));
+
+};
 
 
 //others
@@ -509,8 +518,11 @@ private:
 
 //member variables
 
+string _apiKey = "";
+string _accessToken = "";
+
 const string _kiteVersion = "3";
-const string _rootURL = "";
+const string _rootURL = "https://api.kite.trade/";
 const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
 const std::unordered_map<string, string> _endpoints={
 
@@ -594,7 +606,7 @@ http::client::http_client _httpClient;
 
 string _getAuthStr() const{
 
-    return FMT("token {0}:{1}", apiKey, accessToken);
+    return FMT("token {0}:{1}", _apiKey, _accessToken);
 
 };
 
@@ -711,6 +723,49 @@ njson _sendReq(http::method mtd, const string& endpoint, const std::vector<std::
     return njson();
     
 };
+
+string _sendInstrumentsReq(const string& endpoint){
+
+    //create request
+
+    http::http_request req(http::methods::GET);
+    req.set_request_uri(U(endpoint));
+
+    req.headers().set_content_type(U("application/x-www-form-urlencoded"));
+    req.headers().add(U("Authorization"), U(_getAuthStr()));
+    req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
+
+    //send request, get data
+
+    http::http_response res = _httpClient.request(req).get();
+    string dataRcvd = res.extract_string().get();
+
+    if(!dataRcvd.empty()){
+
+        if(res.status_code() == http::status_codes::OK){
+        
+            return dataRcvd;
+
+        }else{
+
+            int code = res.status_code();
+            string excpStr= "NoException";
+
+            throwException(excpStr, code, "");
+
+        };
+
+
+    }else{
+
+        return "";
+
+    };
+
+    return "";
+
+};
+
 
 
 };

@@ -92,7 +92,8 @@ int main(int argc, char* argv[])
 int main(int argc, char const *argv[])
 {
 
-    kite Kite("a9gg2394xe9sqmjc", "m361W81d6EifjQ6Ah1dtkH9dJI9NppDa");
+    kite Kite("a9gg2394xe9sqmjc");
+    Kite.setAccessToken("YI8oUa4Y8dN7Q7tAd4GLEKsvJIaitgCp");
 
     njson margins, profile, misOrd, bracketOrd, coverOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades, exitOrd, placegtt, getGtts, getGtt, gttMod,
             delGtt, holdings, positions;
@@ -163,7 +164,10 @@ int main(int argc, char const *argv[])
         //std::cout<<Kite.SIPs().dump(4)<<std::endl;
         //std::cout<<Kite.MFHoldings().dump(4)<<std::endl;
         //std::cout<<Kite.generateSession("5HQbkFLlVvrFtZUtOXcwDxG4UmJhhu1G", "wqk7riwa1gunamv89zx111qaen0iwe2i").dump(4)<<std::endl;
-        std::cout<<Kite.invalidateSession().dump(4)<<std::endl;
+        //std::cout<<Kite.invalidateSession().dump(4)<<std::endl;
+        //std::cout<<Kite.instruments("NSE")<<std::endl;
+        std::cout<<Kite.MFInstruments()<<std::endl;
+
 
         /*
         auto ords = njson::array();
