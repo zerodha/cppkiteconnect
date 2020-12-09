@@ -11,21 +11,17 @@
 #include <array>
 #include <iostream> //debug
 
-#include "config.hpp"
-
 #include <cpprest/http_client.h>
 #include <cpprest/filestream.h>
 #include <nlohmann/json.hpp>
-
 #include <PicoSHA2/picosha2.h>
 
+#include "config.hpp"
 #include "kiteppexceptions.hpp"
 
 namespace http = web::http;
 using std::string;
 using njson = nlohmann::json;
-//xusing NL_int = std::numeric_limits<int>;
-//xusing NL_double = std::numeric_limits<double>;
 
 
 class kite{
@@ -33,18 +29,18 @@ class kite{
 
 public:
 
-//member variables
+
+//member variables:
 
 
+//constructors and destructor:
 
-//constructors and destructor
-
-kite(const string& apikey, const string& accesstoken): _apiKey(apikey), _accessToken(accesstoken), _httpClient(U(_rootURL)){};
+kite(const string& apikey): _apiKey(apikey), _httpClient(U(_rootURL)){};
 
 
-//methods
+//methods:
 
-//api
+//api:
 
 string loginURL() const{
 
@@ -76,7 +72,7 @@ void setAccessToken(const string& arg){
 
 };
 
-//user
+//user:
 
 njson profile(){
 
@@ -90,7 +86,7 @@ njson margins(const string& segment=""){
 
 };
 
-//orders
+//orders:
 
 njson placeOrder(const string& variety, const string& exchange, const string& symbol, const string& txnType, const string& quantity, const string& product, const string& orderType,
                     const string& price="", const string& validity = "", const string& trigPrice = "", const string& sqOff= "", const string& SL = "", const string& trailSL = "",
@@ -184,7 +180,7 @@ njson orderTrades(const string& ordID){
 };
 
 
-//gtt
+//gtt:
 
 njson placeGTT(const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues, const string& lastPrice, njson& orders){
 
@@ -299,7 +295,7 @@ njson deleteGTT(const string& trigID){
 }
 
 
-//portfolio
+//portfolio:
 
 njson holdings(){
 
@@ -334,7 +330,7 @@ njson convertPosition(const string& exchange, const string& symbol, const string
 };
 
 
-//quotes and instruments
+//quotes and instruments:
 
 string instruments(const string& exchange = ""){
 
@@ -362,7 +358,7 @@ njson ltp(const std::vector<string>& symbols){
 };
 
 
-//historical
+//historical:
 
 njson historicalData(const string& instrumentTok, const string& from, const string& to, const string& interval, bool continuous=false, bool oi=false){
 //! if there are spaces in symbol name, they should be replaced `+`
@@ -373,7 +369,7 @@ njson historicalData(const string& instrumentTok, const string& from, const stri
 };
 
 
-//MF
+//MF:
 
 njson placeMFOrder(const string& symbol, const string& txnType, const string& quantity = "", const string& amount = "", const string& tag = ""){
 
@@ -416,7 +412,8 @@ njson MFHoldings(){
 
 };
 
-//SIP
+
+//SIP:
 
 njson placeMFSIP(const string& symbol, const string& amount, const string& installments, const string& freq, const string& initAmount = "", const string& installDay = "",
                     const string& tag = ""){
@@ -479,7 +476,7 @@ string MFInstruments(const string& exchange = ""){
 };
 
 
-//others
+//others:
 
 njson orderMargins(const njson& orders){
 
@@ -516,7 +513,8 @@ njson orderMargins(const njson& orders){
 
 private:
 
-//member variables
+
+//member variables:
 
 string _apiKey = "";
 string _accessToken = "";
@@ -602,7 +600,7 @@ const std::unordered_map<string, string> _endpoints={
 http::client::http_client _httpClient;
 
 
-//methods
+//methods:
 
 string _getAuthStr() const{
 
