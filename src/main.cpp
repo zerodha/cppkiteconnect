@@ -1,9 +1,9 @@
 #include <iostream>
-#include <kite.h>
 
 #include <thread>
 #include <chrono>
 
+#include "kitepp.hpp"
 
 /*
 
@@ -92,10 +92,10 @@ int main(int argc, char* argv[])
 int main(int argc, char const *argv[])
 {
 
-    kite Kite("a9gg2394xe9sqmjc");
+    kitepp::kite Kite("a9gg2394xe9sqmjc");
     Kite.setAccessToken("YI8oUa4Y8dN7Q7tAd4GLEKsvJIaitgCp");
 
-    njson margins, profile, misOrd, bracketOrd, coverOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades, exitOrd, placegtt, getGtts, getGtt, gttMod,
+    kitepp::njson margins, profile, misOrd, bracketOrd, coverOrd, modOrd, cancelOrd, orders, ordHistory, trades, ordTrades, exitOrd, placegtt, getGtts, getGtt, gttMod,
             delGtt, holdings, positions;
 
     try{
@@ -190,11 +190,11 @@ int main(int argc, char const *argv[])
 
         
 
-    }catch(kiteppException& e){
+    }catch(kitepp::kiteppException& e){
 
         std::cerr<<FMT("{0},{1},{2}\n", e.what(), e.code(), e.message());
 
-    }catch(libException& e){
+    }catch(kitepp::libException& e){
 
         std::cerr<<FMT("{0}\n", e.what());
 

@@ -4,18 +4,14 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/cpplibs/boost_1_71_0",
-                "/opt/cpplibs/nlohmann",
-                "/opt/cpplibs/PicoSHA2"
-
+                "${workspaceFolder}/include"
 
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "gcc-x64",
-            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+            "intelliSenseMode": "gcc-x64"
         }
     ],
     "version": 4
