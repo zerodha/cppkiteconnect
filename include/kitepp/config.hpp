@@ -3,7 +3,6 @@
 #include <string>
 
 //! These defines will dilute the global namespace
-
 #define FMT_HEADER_ONLY 1
 #include "fmt/format.h"
 
