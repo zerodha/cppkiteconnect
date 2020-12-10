@@ -11,9 +11,15 @@ using fmt::literals::operator""_a;
 
 #define FMT fmt::format
 
-namespace kitepp::config{
+namespace kitepp {
 
-//constants and other things that are needed in more than one file
+namespace config {
+
+
+// constants and other things thatare needed in more than one file
 
 
 }
+
+
+} // namespace kitepp

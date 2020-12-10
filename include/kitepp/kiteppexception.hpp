@@ -1,48 +1,36 @@
 #pragma once
 
-#include <string>
 #include <exception>
+#include <string>
 
 
-namespace kitepp{
+namespace kitepp {
 
 
 using std::string;
 
 
-class kiteppException: public std::exception{
+class kiteppException : public std::exception {
 
 
-public:
+  public:
+    // constructors and destructor
 
-//constructors and destructor
+    kiteppException(int c, string msg): _code(c), _message(msg) {};
 
-kiteppException(int c, string msg): _code(c), _message(msg){};
+    // methods
 
-//methods
+    virtual const char* what() const noexcept = 0;
 
-virtual const char* what() const noexcept = 0;
+    int code() const noexcept { return _code; };
 
-int code() const noexcept{
+    const char* message() const noexcept { return _message.c_str(); };
 
-    return _code;
 
-};
-
-const char* message() const noexcept{
-
-    return _message.c_str();
-
+  protected:
+    int _code = 0;
+    string _message = "";
 };
 
 
-protected:
-
-int _code = 0;
-string _message = "";
-
-
-};
-
-
-}
+} // namespace kitepp
