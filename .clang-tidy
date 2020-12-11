@@ -1,0 +1,1 @@
+Checks:          '*, -modernize-use-trailing-return-type, -fuchsia*, -google-runtime-references, -google-readability-todo'

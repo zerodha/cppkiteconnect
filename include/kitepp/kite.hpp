@@ -38,7 +38,7 @@ class kite {
 
     // constructors and destructor:
 
-    kite(const string& apikey): _apiKey(apikey), _httpClient(U(_rootURL)) {};
+    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(U(_rootURL)) {};
 
 
     // methods:
@@ -94,14 +94,14 @@ class kite {
 
         };
 
-        if (!price.empty()) bodyParams.push_back({ "price", price });
-        if (!validity.empty()) bodyParams.push_back({ "validity", validity });
-        if (!discQuantity.empty()) bodyParams.push_back({ "disclosed_quantity", discQuantity });
-        if (!trigPrice.empty()) bodyParams.push_back({ "trigger_price", trigPrice });
-        if (!sqOff.empty()) bodyParams.push_back({ "squareoff", sqOff });
-        if (!SL.empty()) bodyParams.push_back({ "stoploss", SL });
-        if (!trailSL.empty()) bodyParams.push_back({ "trailing_stoploss", trailSL });
-        if (!tag.empty()) bodyParams.push_back({ "tag", tag });
+        if (!price.empty()) { bodyParams.emplace_back("price", price); }
+        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
+        if (!discQuantity.empty()) { bodyParams.emplace_back("disclosed_quantity", discQuantity); }
+        if (!trigPrice.empty()) { bodyParams.emplace_back("trigger_price", trigPrice); }
+        if (!sqOff.empty()) { bodyParams.emplace_back("squareoff", sqOff); }
+        if (!SL.empty()) { bodyParams.emplace_back("stoploss", SL); }
+        if (!trailSL.empty()) { bodyParams.emplace_back("trailing_stoploss", trailSL); }
+        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         return _sendReq(http::methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = variety), bodyParams);
     };
@@ -113,13 +113,13 @@ class kite {
 
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!parentOrdID.empty()) bodyParams.push_back({ "parent_order_id", parentOrdID });
-        if (!quantity.empty()) bodyParams.push_back({ "quantity", quantity });
-        if (!price.empty()) bodyParams.push_back({ "price", price });
-        if (!ordType.empty()) bodyParams.push_back({ "order_type", ordType });
-        if (!trigPrice.empty()) bodyParams.push_back({ "trigger_price", trigPrice });
-        if (!validity.empty()) bodyParams.push_back({ "validity", validity });
-        if (!discQuantity.empty()) bodyParams.push_back({ "disclosed_quantity", discQuantity });
+        if (!parentOrdID.empty()) { bodyParams.emplace_back("parent_order_id", parentOrdID); }
+        if (!quantity.empty()) { bodyParams.emplace_back("quantity", quantity); }
+        if (!price.empty()) { bodyParams.emplace_back("price", price); }
+        if (!ordType.empty()) { bodyParams.emplace_back("order_type", ordType); }
+        if (!trigPrice.empty()) { bodyParams.emplace_back("trigger_price", trigPrice); }
+        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
+        if (!discQuantity.empty()) { bodyParams.emplace_back("disclosed_quantity", discQuantity); }
 
         return _sendReq(http::methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID), bodyParams);
     };
@@ -301,8 +301,9 @@ class kite {
         const string& instrumentTok, const string& from, const string& to, const string& interval, bool continuous = false, bool oi = false) {
         //! if there are spaces in symbol name, they should be replaced `+`
 
-        return _sendReq(http::methods::GET, FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval,
-                                                "from"_a = from, "to"_a = to, "continuous"_a = (int) continuous, "oi"_a = (int) oi));
+        return _sendReq(
+            http::methods::GET, FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval,
+                                    "from"_a = from, "to"_a = to, "continuous"_a = static_cast<int>(continuous), "oi"_a = static_cast<int>(oi)));
     };
 
 
@@ -317,9 +318,9 @@ class kite {
 
         };
 
-        if (!quantity.empty()) bodyParams.push_back({ "quantity", quantity });
-        if (!amount.empty()) bodyParams.push_back({ "amount", amount });
-        if (!tag.empty()) bodyParams.push_back({ "tag", tag });
+        if (!quantity.empty()) { bodyParams.emplace_back("quantity", quantity); }
+        if (!amount.empty()) { bodyParams.emplace_back("amount", amount); }
+        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         return _sendReq(http::methods::POST, _endpoints.at("mf.order.place"), bodyParams);
     };
@@ -347,9 +348,9 @@ class kite {
 
         };
 
-        if (!initAmount.empty()) bodyParams.push_back({ "initial_amount", initAmount });
-        if (!installDay.empty()) bodyParams.push_back({ "instalment_day", installDay });
-        if (!tag.empty()) bodyParams.push_back({ "tag", tag });
+        if (!initAmount.empty()) { bodyParams.emplace_back("initial_amount", initAmount); }
+        if (!installDay.empty()) { bodyParams.emplace_back("instalment_day", installDay); }
+        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         return _sendReq(http::methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
     };
@@ -359,11 +360,11 @@ class kite {
 
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!amount.empty()) bodyParams.push_back({ "amount", amount });
-        if (!status.empty()) bodyParams.push_back({ "status", status });
-        if (!installments.empty()) bodyParams.push_back({ "instalments", installments });
-        if (!freq.empty()) bodyParams.push_back({ "frequency", freq });
-        if (!installDay.empty()) bodyParams.push_back({ "instalment_day", installDay });
+        if (!amount.empty()) { bodyParams.emplace_back("amount", amount); }
+        if (!status.empty()) { bodyParams.emplace_back("status", status); }
+        if (!installments.empty()) { bodyParams.emplace_back("instalments", installments); }
+        if (!freq.empty()) { bodyParams.emplace_back("frequency", freq); }
+        if (!installDay.empty()) { bodyParams.emplace_back("instalment_day", installDay); }
 
         return _sendReq(http::methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
     };
@@ -375,7 +376,7 @@ class kite {
 
     njson SIP(const string& SIPID) { return _sendReq(http::methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID)); };
 
-    string MFInstruments(const string& exchange = "") { return _sendInstrumentsReq(_endpoints.at("mf.instruments")); };
+    string MFInstruments() { return _sendInstrumentsReq(_endpoints.at("mf.instruments")); };
 
 
     // others:
@@ -502,11 +503,11 @@ class kite {
 
     string _getAuthStr() const { return FMT("token {0}:{1}", _apiKey, _accessToken); };
 
-    string _encodeSymbolsList(const std::vector<string>& symbols) {
+    static string _encodeSymbolsList(const std::vector<string>& symbols) {
 
-        string str = "";
+        string str;
 
-        for (auto& symbol : symbols) {
+        for (const auto& symbol : symbols) {
 
             //! could cause problems because there will that `&` after last query. can be solved by scraping the last char of string after the for
             //! loop
@@ -516,13 +517,13 @@ class kite {
         return str;
     }
 
-    string _encodeBody(const std::vector<std::pair<string, string>>& params) {
+    static string _encodeBody(const std::vector<std::pair<string, string>>& params) {
 
         // encodes body in `urlencoded` form
 
-        string str = "";
+        string str;
 
-        for (auto& param : params) {
+        for (const auto& param : params) {
 
             //! could cause problems because there will that `&` after last query. can be solved by scraping the last char of string after the for
             //! loop
@@ -532,7 +533,8 @@ class kite {
         return str;
     };
 
-    njson _sendReq(http::method mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
+    njson _sendReq(
+        const http::method& mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
 
         /*
         If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of bodyParam's first pair with first
@@ -567,36 +569,31 @@ class kite {
 
                 data = njson::parse(dataRcvd);
 
-            } catch (const std::exception& e) {
-
-                throw libException(FMT("{0} was thrown while parsing json (_sendReq-njson::parse)", e.what()).c_str());
-            };
+            } catch (const std::exception& e) { throw libException(FMT("{0} was thrown while parsing json (_sendReq-njson::parse)", e.what())); };
 
             if (res.status_code() == http::status_codes::OK) {
 
                 // TODO can return njson["data"] & save users a step if it is established that every ok request has `data` field. It seems it is
                 return data;
+            }
 
-            } else {
+            int code = 0;
+            string excpStr;
+            string message;
 
-                int code = 0;
-                string excpStr = "", message = "";
+            try {
 
-                try {
+                code = res.status_code();
+                excpStr = (data.contains("error_type")) ? data["error_type"] : "NoException";
+                message = data["message"];
 
-                    code = res.status_code();
-                    excpStr = (data.contains("error_type")) ? data["error_type"] : "NoException";
-                    message = data["message"];
+            } catch (const std::exception& e) {
 
-                } catch (const std::exception& e) {
-
-                    throw libException(
-                        FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message)
-                            .c_str());
-                };
-
-                throwException(excpStr, code, message);
+                throw libException(
+                    FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message));
             };
+
+            throwException(excpStr, code, message);
 
 
         } else {
@@ -625,17 +622,12 @@ class kite {
 
         if (!dataRcvd.empty()) {
 
-            if (res.status_code() == http::status_codes::OK) {
+            if (res.status_code() == http::status_codes::OK) { return dataRcvd; }
 
-                return dataRcvd;
+            int code = res.status_code();
+            string excpStr = "NoException";
 
-            } else {
-
-                int code = res.status_code();
-                string excpStr = "NoException";
-
-                throwException(excpStr, code, "");
-            };
+            throwException(excpStr, code, "");
 
 
         } else {
