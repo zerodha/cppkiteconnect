@@ -163,7 +163,7 @@ class libException : public std::exception {
 
 // throw exception wrt string passed. Throws libException if string doesn't match with anything.
 
-inline void throwException(const string& excpStr, int code, const string& msg) {
+inline void _throwException(const string& excpStr, int code, const string& msg) {
 
 
     // exception strings sent by API

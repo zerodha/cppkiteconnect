@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 */
 
 
-int main(int argc, char const* argv[]) {
+int main() {
 
     kitepp::kite Kite("a9gg2394xe9sqmjc");
     Kite.setAccessToken("YI8oUa4Y8dN7Q7tAd4GLEKsvJIaitgCp");
