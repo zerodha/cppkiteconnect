@@ -4,15 +4,6 @@
 
 kitepp is a header only library that wraps around Zerodha's REST API, Websockets saving you the hassle of directly communicating with API and provides an easy to use, modern, fast C++ interface.
 
-## Table of Contents
-
-- [What is covered](#"What is covered")
-- [Dependancies](#Dependancies)
-- [Installation](#Installation)
-- [Usage and example](#"Usage and example")
-- [Documentation](#Documentation)
-- [Notes and YSKs](#"Notes and YSKs")
-
 ## What is covered
 
 kitepp provides wrapping around almost every API endpoint documented [here](https://kite.trade/docs/connect/v3/).
@@ -89,6 +80,7 @@ You should have a request token now.
 We will now store the request token you obtained and API secret in (separate) variables. We will need both of them for getting access token.
 
 ```cpp
+
 	    std::string apiSecret;
         std::string reqToken;
 
