@@ -1,4 +1,22 @@
+/*
+ *   Copyright (c) 2020 Bhumit Attarde
+
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma once
+
 
 #include <string>
 #include <utility>
@@ -15,6 +33,10 @@ using std::string;
 
 // exceptions
 
+/**
+ * @brief Represents all token and authentication related errors.
+ *
+ */
 class tokenException : public kiteppException {
 
 
@@ -28,7 +50,10 @@ class tokenException : public kiteppException {
     const char* what() const noexcept override { return "TokenException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief Represents user account related errors
+ *
+ */
 class userException : public kiteppException {
 
 
@@ -42,7 +67,10 @@ class userException : public kiteppException {
     const char* what() const noexcept override { return "UserException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief Represents all order placement and manipulation errors.
+ *
+ */
 class orderException : public kiteppException {
 
 
@@ -56,7 +84,10 @@ class orderException : public kiteppException {
     const char* what() const noexcept override { return "OrderException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief Represents user input errors such as missing and invalid parameters.
+ *
+ */
 class inputException : public kiteppException {
 
 
@@ -70,7 +101,10 @@ class inputException : public kiteppException {
     const char* what() const noexcept override { return "InputException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief Represents a network issue between Kite and the backend Order Management System (OMS).
+ *
+ */
 class networkException : public kiteppException {
 
 
@@ -84,7 +118,10 @@ class networkException : public kiteppException {
     const char* what() const noexcept override { return "NetworkException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief Represents a bad response from the backend Order Management System
+ *
+ */
 class dataException : public kiteppException {
 
 
@@ -98,7 +135,10 @@ class dataException : public kiteppException {
     const char* what() const noexcept override { return "DataException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief An unclassified, general error.
+ *
+ */
 class generalException : public kiteppException {
 
 
@@ -112,7 +152,10 @@ class generalException : public kiteppException {
     const char* what() const noexcept override { return "GeneralException was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief Represents permission denied exceptions for certain calls.
+ *
+ */
 class permissionException : public kiteppException {
 
 
@@ -128,7 +171,10 @@ class permissionException : public kiteppException {
     };
 };
 
-
+/**
+ * @brief This exception is thrown when REST API doesn't return a `HTTP OK 200` code and any exception string.
+ *
+ */
 class noException : public kiteppException {
 
 
@@ -142,7 +188,11 @@ class noException : public kiteppException {
     const char* what() const noexcept override { return "No exception was thrown by REST API. https://kite.trade/docs/connect/v3/exceptions/"; };
 };
 
-
+/**
+ * @brief This exception is thrown when some error occures while processing data on library level. Serves as the placeholder exception for all library
+ * related errors.
+ *
+ */
 class libException : public std::exception {
 
 

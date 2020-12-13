@@ -11,10 +11,12 @@ int main() {
 
     std::cout << "RUNNING\n";
 
+    //! Content is commented out on purpose so you can enable the parts you want
+
     try {
 
         //! [initializing kite]
-        kitepp::kite Kite("a9gg2394xe9sqmjc");
+        kitepp::kite Kite("---apikey---");
         //! [initializing kite]
 
         //! [obtaining login url]
@@ -38,7 +40,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("p21mTu38rZlNpzV8KLqXlpTJH3Rgimzb"); // FIXME comment this later on
+        // Kite.setAccessToken("---accesstoken---");
         //! [settting access token]
 
         //! [invalidate session]
@@ -156,15 +158,15 @@ int main() {
         //! [convert position]
 
         //! [get quote]
-        // std::cout << "get quote response: " << Kite.quote({ "NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE" }).dump(4) << std::endl;
+        // std::cout << "get quote response: " << Kite.quote({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" }).dump(4) << std::endl;
         //! [get quote]
 
         //! [get ohlc]
-        // std::cout << "get ohlc response: " << Kite.ohlc({ "NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE" }).dump(4) << std::endl;
+        // std::cout << "get ohlc response: " << Kite.ohlc({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" }).dump(4) << std::endl;
         //! [get ohlc]
 
         //! [get ltp]
-        // std::cout << "get ltp response: " << Kite.ltp({ "NSE:INFY", "NSE:NIFTY+50", "BSE:RELIANCE" }).dump(4) << std::endl;
+        // std::cout << "get ltp response: " << Kite.ltp({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" }).dump(4) << std::endl;
         //! [get ltp]
 
         //! [get historical data]
@@ -215,7 +217,7 @@ int main() {
         //! [get sips]
 
         //! [get mf holdings]
-        // std::cout << "get mf holdings response: " << Kite.MFHoldings().dump(4) << std::endl;
+        std::cout << "get mf holdings response: " << Kite.MFHoldings().dump(4) << std::endl;
         //! [get mf holdings]
 
         //! [get instruments]

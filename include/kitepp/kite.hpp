@@ -1,3 +1,19 @@
+/*
+ *   Copyright (c) 2020 Bhumit Attarde
+
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 #pragma once
 
 #include <algorithm> //for_each
@@ -155,7 +171,7 @@ class kite {
      * @param sqOff square off
      * @param SL stoploss
      * @param trailSL trailing stoploss
-     * @param discQuantity discloed quantity
+     * @param discQuantity disclosed quantity
      * @param tag
      * @return njson
      *
@@ -579,8 +595,8 @@ class kite {
      * @brief Retrieve historical data (candles) for an instrument
      *
      * @param instrumentTok instrument token (NOT trading symbol)
-     * @param from from date in following format: yyyy-mm-dd HH:MM:SS
-     * @param to to date in following format: yyyy-mm-dd HH:MM:SS
+     * @param from from date in following format: yyyy-mm-dd+HH:MM:SS
+     * @param to to date in following format: yyyy-mm-dd+HH:MM:SS
      * @param interval candle interval
      * @param continuous boolean flag to get continuous data for futures and options instruments
      * @param oi boolean flag to get open interest data
@@ -613,7 +629,7 @@ class kite {
      * @return njson
      *
      * @paragraph ex1 example
-     * @snippet example2.cpp place a mf order
+     * @snippet example2.cpp place mf order
      */
     njson placeMFOrder(const string& symbol, const string& txnType, const string& quantity = "", const string& amount = "", const string& tag = "") {
 
