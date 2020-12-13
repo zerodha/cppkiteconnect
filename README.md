@@ -6,12 +6,12 @@ kitepp is a header only library that wraps around Zerodha's REST API, Websockets
 
 ## Table of Contents
 
+- [What is covered](#"What is covered")
 - [Dependancies](#Dependancies)
-- [What is covered](#What is covered)
 - [Installation](#Installation)
-- [Usage and example](#Usage and example)
+- [Usage and example](#"Usage and example")
 - [Documentation](#Documentation)
-- [Notes and YSKs](#Notes and YSKs)
+- [Notes and YSKs](#"Notes and YSKs")
 
 ## What is covered
 
@@ -89,7 +89,7 @@ You should have a request token now.
 We will now store the request token you obtained and API secret in (separate) variables. We will need both of them for getting access token.
 
 ```cpp
-		std::string apiSecret;
+	    std::string apiSecret;
         std::string reqToken;
 
         std::cout << "Enter obtained request token: ";
@@ -196,6 +196,7 @@ make docs
 ## Other fields..
 are under work
 
-##License
+## License
+
 GPLv3
 
