@@ -1,8 +1,10 @@
 #include <iostream>
 #include <string>
+#include <vector>
 
 //! [adding kitepp header]
 #include "kitepp.hpp"
+#include "kitepp/responses.hpp"
 //! [adding kitepp header]
 
 
@@ -16,7 +18,9 @@ int main() {
     try {
 
         //! [initializing kite]
-        kitepp::kite Kite("---apikey---");
+        // kitepp::kite Kite("---apikey---");
+        kitepp::kite Kite("a9gg2394xe9sqmjc");
+
         //! [initializing kite]
 
         //! [obtaining login url]
@@ -33,14 +37,17 @@ int main() {
         std::cout << "Enter API secret: ";
         std::cin >> apiSecret;
 
-        std::string accessToken = Kite.generateSession(reqToken, apiSecret)["data"]["access_token"];
+        // std::string accessToken = Kite.generateSession(reqToken, apiSecret)["data"]["access_token"];
+        std::string accessToken = Kite.generateSession(reqToken, apiSecret).tokens.accessToken;
+
         std::cout << "access token is " << accessToken << "\n";
+
         */
         //! [obtaining access token]
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        // Kite.setAccessToken("---accesstoken---");
+        Kite.setAccessToken("sqJKk1rvhjJX0rmdALichM91TQuMAhbF");
         //! [settting access token]
 
         //! [invalidate session]
@@ -48,49 +55,92 @@ int main() {
         //! [invalidate session]
 
         //! [get user profile]
-        // std::cout << "Profile: " << Kite.profile().dump(4) << "\n";
+        /*kitepp::userProfile profile = Kite.profile();
+        std::cout << "email is :" << profile.email << "\n";
+        std::cout << "Order types are: \n";
+        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };*/
         //! [get user profile]
 
         //! [get margins]
-        // std::cout << "Margins: " << Kite.margins().dump(4) << "\n";
-        // std::cout << "Margins: " << Kite.margins("equity").dump(4) << "\n";
+        /*kitepp::allMargins Margins = Kite.getMargins();
+        std::cout << "Available cash for equity segment is " << Margins.equity.available.cash << "\n";
+
+        kitepp::margins eqMargins = Kite.getMargins("equity");
+        std::cout << "adhoc margin for equity segment is " << eqMargins.available.adHocMargin << "\n";*/
         //! [get margins]
 
         //! [placing an order]
-        /*
-        std::cout << "Place order response: " << Kite.placeOrder("regular", "NSE", "BHEL", "SELL", "1", "MIS", "MARKET", "34.90", "DAY").dump(4)
-                  << "\n";
-        std::cout << "Place order response: "
-                  << Kite.placeOrder("co", "NSE", "BHEL", "BUY", "1", "MIS", "LIMIT", "33", "DAY", "32", "", "", "").dump(4) << "\n";
-        */
+        /*std::string ordID = Kite.placeOrder("co", "NSE", "BHEL", "BUY", 1, "MIS", "LIMIT", 33.5, "DAY", 32, kitepp::kite::DEFAULTDOUBLE,
+        std::string ordID2 = Kite.placeOrder("regular", "NSE", "BHEL", "SELL", 1, "MIS", "MARKET", 33.60, "DAY");
+            kitepp::kite::DEFAULTDOUBLE, kitepp::kite::DEFAULTDOUBLE);
+        if (!ordID.empty()) {
+
+            std::cout << "order ID: " << ordID << "\n";
+        } else {
+
+            std::cout << "failed to place order"
+                      << "\n";
+        };*/
         //! [placing an order]
 
         //! [modifying an order]
         // std::cout << "modify order response: " << Kite.modifyOrder("regular", "151220000000000", "", "2", "", "MARKET", "", "DAY").dump(4) << "\n";
+
+        /*std::string modOrdID = Kite.modifyOrder("regular", "201223002459577", "", 2, Kite.DEFAULTDOUBLE, "MARKET", Kite.DEFAULTDOUBLE, "DAY");
+        if (!modOrdID.empty()) {
+
+            std::cout << "order ID: " << modOrdID << "\n";
+        } else {
+
+            std::cout << "failed to modify order"
+                      << "\n";
+        };*/
         //! [modifying an order]
 
         //! [cancelling an order]
-        // std::cout << "cancel order response: " << Kite.cancelOrder("regular", "151220000000000", "123").dump(4) << "\n";
+        /*std::string canOrdID = Kite.cancelOrder("regular", "201223002513052");
+
+        if (!canOrdID.empty()) {
+
+            std::cout << "order ID: " << canOrdID << "\n";
+        } else {
+
+            std::cout << "failed to cancel order"
+                      << "\n";
+        };*/
         //! [cancelling an order]
 
         //! [exiting an order]
-        // std::cout << "exit order response: " << Kite.exitOrder("co", "201207001972149").dump(4) << "\n";
+        /*std::string exitOrdID = Kite.exitOrder("regular", "201223002546330", "201223002546328");
+
+        if (!exitOrdID.empty()) {
+
+            std::cout << "order ID: " << exitOrdID << "\n";
+        } else {
+
+            std::cout << "failed to exit order"
+                      << "\n";
+        };*/
         //! [exiting an order]
 
         //! [get orders]
-        // std::cout << "orders response: " << Kite.orders().dump(4) << "\n";
+        /*std::vector<kitepp::order> orderVec = Kite.orders();
+        for (const auto& i : orderVec) { std::cout << "Order ID: " << i.orderID << " & status: " << i.status << "\n"; }*/
         //! [get orders]
 
         //! [get order history]
-        // std::cout << "order history response: " << Kite.orderHistory("201207001459491").dump(4) << "\n";
+        /*std::vector<kitepp::order> orderHistoryVec = Kite.orderHistory("201223002380513");
+        for (const auto& i : orderHistoryVec) { std::cout << "status: " << i.status << " & filled quantity: " << i.filledQuantity << "\n"; };*/
         //! [get order history]
 
         //! [get trades]
-        // std::cout << "trades response: " << Kite.trades().dump(4) << "\n";
+        /*std::vector<kitepp::trade> tradesVec = Kite.trades();
+        for (const auto& i : tradesVec) { std::cout << "trade ID: " << i.tradeID << " & filled at: " << i.fillTimestamp << "\n"; };*/
         //! [get trades]
 
         //! [get order trades]
-        // std::cout << "order trades response: " << Kite.orderTrades("201207001459491").dump(4) << "\n";
+        /*std::vector<kitepp::trade> tradesVec = Kite.orderTrades("201223002511160");
+        for (const auto& i : tradesVec) { std::cout << "trade ID: " << i.tradeID << " & filled at: " << i.fillTimestamp << "\n"; };*/
         //! [get order trades]
 
         //! [placing a gtt]
@@ -217,7 +267,7 @@ int main() {
         //! [get sips]
 
         //! [get mf holdings]
-        std::cout << "get mf holdings response: " << Kite.MFHoldings().dump(4) << std::endl;
+        // std::cout << "get mf holdings response: " << Kite.MFHoldings().dump(4) << std::endl;
         //! [get mf holdings]
 
         //! [get instruments]
