@@ -6,6 +6,8 @@
 #include "config.hpp"
 #include "kitepp/kiteppexceptions.hpp"
 #include "rapidjson/document.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 namespace kitepp {
 
@@ -123,6 +125,34 @@ inline bool getIfExists(const rj::Value::Object& val, std::vector<string>& out, 
     return false;
 };
 
+inline bool getIfExists(const rj::Value::Object& val, std::vector<double>& out, const char* name) {
+
+    auto it = val.FindMember(name);
+    if (it != val.MemberEnd()) {
+
+        if (it->value.IsArray()) {
+
+            for (const auto& v : it->value.GetArray()) {
+
+                if (v.IsDouble()) {
+
+                    out.emplace_back(v.GetDouble());
+                    return true;
+                };
+                if (v.IsInt()) {
+
+                    out.emplace_back(v.GetInt());
+                    return true;
+                };
+                throw libException(FMT("Expected value({0})'s type wasn't the one expected (expected an array of doubles)", name));
+            };
+        };
+        throw libException(FMT("Expected value({0})'s type wasn't the one expected (expected an array of double)", name));
+    };
+
+    return false;
+};
+
 inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char* name) {
 
     auto it = val.FindMember(name);
@@ -138,6 +168,15 @@ inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char
     return false;
 };
 
+inline string dump(rj::Document& dom) {
+
+    rj::StringBuffer buffer;
+    rj::Writer<rj::StringBuffer> writer(buffer);
+    dom.Accept(writer);
+
+    return buffer.GetString();
+    ;
+}
 
 } // namespace RJHelper
 

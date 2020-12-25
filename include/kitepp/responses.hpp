@@ -180,10 +180,10 @@ struct allMargins {
 
         rj::Value eqVal(rj::kObjectType);
         rjh::getIfExists(val, eqVal, "equity");
+        equity.parse(eqVal.GetObject());
+
         rj::Value cmVal(rj::kObjectType);
         rjh::getIfExists(val, cmVal, "commodity");
-
-        equity.parse(eqVal.GetObject());
         commodity.parse(cmVal.GetObject());
     };
 
@@ -272,7 +272,7 @@ struct trade {
 
     trade() = default;
 
-    trade(const rj::Value::Object& val) { parse(val); };
+    explicit trade(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
 
@@ -303,5 +303,81 @@ struct trade {
     string exchange;
     int InstrumentToken;
 };
+
+// GTTParams is the struct user needs to pass to placeGTT() to place a GTT
+struct GTTParams {
+
+    GTTParams() = default;
+
+    GTTParams(string txntype, int quant, string ordtype, string prod, double pr)
+        : transactionType(txntype), quantity(quant), orderType(ordtype), product(prod), price(pr) {};
+
+    string transactionType;
+    int quantity = 0;
+    string orderType;
+    string product;
+    double price = 0.0;
+};
+
+// GTTCondition represents the condition inside a GTT order.
+struct GTTCondition {
+
+    GTTCondition() = default;
+
+    explicit GTTCondition(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, exchange, "exchange");
+        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::getIfExists(val, triggerValues, "trigger_values");
+    };
+
+    string exchange;
+    string tradingsymbol;
+    double lastPrice = 0.0;
+    std::vector<double> triggerValues;
+};
+
+// GTT represents a single GTT order.
+struct GTT {
+
+    GTT() = default;
+
+    explicit GTT(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, ID, "id");
+        rjh::getIfExists(val, userID, "user_id");
+        rjh::getIfExists(val, type, "type");
+        rjh::getIfExists(val, createdAt, "created_at");
+        rjh::getIfExists(val, updatedAt, "updated_at");
+        rjh::getIfExists(val, expiresAt, "expires_at");
+        rjh::getIfExists(val, status, "status");
+
+        rj::Value condnVal(rj::kObjectType);
+        rjh::getIfExists(val, condnVal, "condition");
+        condition.parse(condnVal.GetObject());
+
+        auto it = val.FindMember("orders");
+        if (it == val.MemberEnd()) { throw libException("Expected value wasn't found (GTT)"); };
+        if (!it->value.IsArray()) { throw libException("Expected value's type wasn't the one expected. Expected Array"); };
+
+        for (auto& v : it->value.GetArray()) { orders.emplace_back(v.GetObject()); };
+    };
+
+    int ID = 0;
+    string userID;
+    string type;
+    string createdAt;
+    string updatedAt;
+    string expiresAt;
+    string status;
+    GTTCondition condition;
+    std::vector<order> orders;
+}; // namespace kitepp
+
 
 } // namespace kitepp

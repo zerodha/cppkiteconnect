@@ -414,6 +414,8 @@ class kite {
         _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("order.info"), "order_id"_a = ordID));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orderHistory())"); };
+
+        //! performing double lookup. Can be optimized using iterators
         if (!res["data"].IsArray()) { throw libException("Array was expected (orderHistory())"); };
 
         std::vector<order> orderVec;
@@ -501,30 +503,74 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp placing a gtt
      */
-    njson placeGTT(const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues,
-        const string& lastPrice, njson& orders) {
+    int placeGTT(const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues, double lastPrice,
+        const std::vector<GTTParams>& gttParams) {
 
-        njson condition = {
+        // make condition json
+        rj::Document condition;
+        condition.SetObject();
+        auto& condnAlloc = condition.GetAllocator();
+        rj::Value val;
+        rj::Value trigValArr(rj::kArrayType);
 
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "trigger_values", trigValues },
-            { "last_price", std::stod(lastPrice) },
+        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
+        condition.AddMember("exchange", val, condnAlloc);
 
+        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
+        condition.AddMember("tradingsymbol", val, condnAlloc);
+
+        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
+        condition.AddMember("trigger_values", trigValArr, condnAlloc);
+
+        condition.AddMember("last_price", lastPrice, condnAlloc);
+
+        // make orders json
+        rj::Document params;
+        params.SetArray();
+        auto& paramsAlloc = params.GetAllocator();
+
+        for (const GTTParams& param : gttParams) {
+
+            rj::Value strVal;
+            rj::Value tmpVal(rj::kObjectType);
+
+            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), paramsAlloc);
+            tmpVal.AddMember("transaction_type", strVal, paramsAlloc);
+
+            tmpVal.AddMember("quantity", param.quantity, paramsAlloc);
+
+            strVal.SetString(param.orderType.c_str(), param.orderType.size(), paramsAlloc);
+            tmpVal.AddMember("order_type", strVal, paramsAlloc);
+
+            strVal.SetString(param.product.c_str(), param.product.size(), paramsAlloc);
+            tmpVal.AddMember("product", strVal, paramsAlloc);
+
+            tmpVal.AddMember("price", param.price, paramsAlloc);
+
+            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
+            tmpVal.AddMember("exchange", strVal, paramsAlloc);
+
+            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
+            tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
+
+            params.PushBack(tmpVal, paramsAlloc);
         };
 
-        for (auto& order : orders) {
-
-            order["exchange"] = exchange;
-            order["tradingsymbol"] = symbol;
-        };
-
-        return _sendReq(http::methods::POST, _endpoints.at("gtt.place"),
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::POST, _endpoints.at("gtt.place"),
             {
 
-                { "type", trigType }, { "condition", condition.dump() }, { "orders", orders.dump() }
+                { "type", trigType }, { "condition", rjh::dump(condition) }, { "orders", rjh::dump(params) }
 
             });
+
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeGTT)"); };
+
+        int rcvdTrigID = DEFAULTINT;
+        rjh::getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
+
+        return rcvdTrigID;
     };
 
     /**
@@ -535,7 +581,18 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get gtts
      */
-    njson getGTTs() { return _sendReq(http::methods::GET, _endpoints.at("gtt")); }
+    std::vector<GTT> getGTTs() {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, _endpoints.at("gtt"));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTTs)"); };
+        if (!res["data"].IsArray()) { throw libException("Array was expected (getGTTs())"); };
+
+        std::vector<GTT> gttVec;
+        for (auto& i : res["data"].GetArray()) { gttVec.emplace_back(i.GetObject()); }
+
+        return gttVec;
+    };
 
     /**
      * @brief get details of a GTT
@@ -546,7 +603,14 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get gtt info
      */
-    njson getGTT(string const& trigID) { return _sendReq(http::methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID)); }
+    GTT getGTT(int trigID) {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTT)"); };
+
+        return GTT(res["data"].GetObject());
+    };
 
     /**
      * @brief modify a GTT
@@ -581,30 +645,73 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp modifying a gtt
      */
-    njson modifyGTT(const string& trigID, const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues,
-        const string& lastPrice, njson& orders) {
+    int modifyGTT(int trigID, const string& trigType, const string& symbol, const string& exchange, const std::vector<double>& trigValues,
+        double lastPrice, const std::vector<GTTParams>& gttParams) {
 
-        njson condition = {
+        // make condition json
+        rj::Document condition;
+        condition.SetObject();
+        auto& condnAlloc = condition.GetAllocator();
+        rj::Value val;
+        rj::Value trigValArr(rj::kArrayType);
 
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "trigger_values", trigValues },
-            { "last_price", std::stod(lastPrice) },
+        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
+        condition.AddMember("exchange", val, condnAlloc);
 
+        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
+        condition.AddMember("tradingsymbol", val, condnAlloc);
+
+        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
+        condition.AddMember("trigger_values", trigValArr, condnAlloc);
+
+        condition.AddMember("last_price", lastPrice, condnAlloc);
+
+        // make orders json
+        rj::Document params;
+        params.SetArray();
+        auto& paramsAlloc = params.GetAllocator();
+
+        for (const GTTParams& param : gttParams) {
+
+            rj::Value strVal;
+            rj::Value tmpVal(rj::kObjectType);
+
+            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), paramsAlloc);
+            tmpVal.AddMember("transaction_type", strVal, paramsAlloc);
+
+            tmpVal.AddMember("quantity", param.quantity, paramsAlloc);
+
+            strVal.SetString(param.orderType.c_str(), param.orderType.size(), paramsAlloc);
+            tmpVal.AddMember("order_type", strVal, paramsAlloc);
+
+            strVal.SetString(param.product.c_str(), param.product.size(), paramsAlloc);
+            tmpVal.AddMember("product", strVal, paramsAlloc);
+
+            tmpVal.AddMember("price", param.price, paramsAlloc);
+
+            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
+            tmpVal.AddMember("exchange", strVal, paramsAlloc);
+
+            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
+            tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
+
+            params.PushBack(tmpVal, paramsAlloc);
         };
 
-        for (auto& order : orders) {
-
-            order["exchange"] = exchange;
-            order["tradingsymbol"] = symbol;
-        };
-
-        return _sendReq(http::methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
             {
 
-                { "type", trigType }, { "condition", condition.dump() }, { "orders", orders.dump() }
+                { "type", trigType }, { "condition", rjh::dump(condition) }, { "orders", rjh::dump(params) }
 
             });
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyGTT)"); };
+
+        int rcvdTrigID = DEFAULTINT;
+        rjh::getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
+
+        return rcvdTrigID;
     };
 
     /**
@@ -616,7 +723,18 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp delete a gtt
      */
-    njson deleteGTT(const string& trigID) { return _sendReq(http::methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID)); }
+    int deleteGTT(int trigID) {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (deleteGTT)"); };
+
+        int rcvdTrigID = DEFAULTINT;
+        rjh::getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
+
+        return rcvdTrigID;
+    };
 
 
     // portfolio:

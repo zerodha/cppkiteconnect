@@ -47,7 +47,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("sqJKk1rvhjJX0rmdALichM91TQuMAhbF");
+        Kite.setAccessToken("7w6tHZ7KI253rM13Q3itfHgEGuXnGId4");
         //! [settting access token]
 
         //! [invalidate session]
@@ -144,52 +144,60 @@ int main() {
         //! [get order trades]
 
         //! [placing a gtt]
-        /*
-        auto gttOrds = kitepp::njson::array();
+        /*kitepp::GTTParams gttparam("BUY", 1, "LIMIT", "CNC", 21100);
+        std::vector<kitepp::GTTParams> gttparams = { gttparam };
+        // gttparams.emplace_back("BUY", 10, "LIMIT", "CNC", 21105);
+        // int trigID = Kite.placeGTT("two-leg", "NESTLEIND", "NSE", { 15000, 20007 }, 18580.0, gttparams);
 
-        gttOrds.push_back({
+        int trigID = Kite.placeGTT("single", "NESTLEIND", "NSE", { 20000 }, 18580.0, gttparams);
 
-            { "transaction_type", "BUY" },
-            { "quantity", 1 },
-            { "order_type", "LIMIT" },
-            { "product", "CNC" },
-            { "price", 21100 },
+        if (!Kite.isValid(trigID)) {
 
-        });
+            std::cout << "trigger ID: " << trigID << "\n";
+        } else {
 
-        std::cout << "place gtt response: " << Kite.placeGTT("single", "NESTLEIND", "NSE", { 20000 }, "17596.95", gttOrds).dump(4) << "\n";
-        */
+            std::cout << "failed to place gtt"
+                      << "\n";
+        };*/
         //! [placing a gtt]
 
         //! [modifying a gtt]
-        /*
-        auto gttOrds = kitepp::njson::array();
+        /*kitepp::GTTParams gttparam("BUY", 1, "LIMIT", "CNC", 21100);
+        std::vector<kitepp::GTTParams> gttparams = { gttparam };
 
-        gttOrds.push_back({
+        int modTrigID = Kite.modifyGTT(23246584, "single", "NESTLEIND", "NSE", { 23500 }, 18580.0, gttparams);
 
-            { "transaction_type", "BUY" },
-            { "quantity", 1 },
-            { "order_type", "LIMIT" },
-            { "product", "CNC" },
-            { "price", 22100 },
+        if (!Kite.isValid(modTrigID)) {
 
-        });
+            std::cout << "trigger ID: " << modTrigID << "\n";
+        } else {
 
-        std::cout << "modify gtt response: " << Kite.modifyGTT("21764342", "single", "NESTLEIND", "NSE", { 22000 }, "17596.95", gttOrds).dump(4)
-                  << "\n";
-        */
+            std::cout << "failed to modify gtt"
+                      << "\n";
+        };*/
         //! [modifying a gtt]
 
         //! [get gtts]
-        // std::cout << "get gtts response: " << Kite.getGTTs().dump(4) << "\n";
+        /*std::vector<kitepp::GTT> gttVec = Kite.getGTTs();
+        for (const auto& gtt : gttVec) { std::cout << "ID: " << gtt.ID << " & created at: " << gtt.createdAt << "\n"; };*/
         //! [get gtts]
 
         //! [get gtt info]
-        // std::cout << "get gtt response: " << Kite.getGTT("21764342").dump(4) << "\n";
+        /*kitepp::GTT gtt = Kite.getGTT(23271899);
+        std::cout << "Created at: " << gtt.createdAt << " & first trigger value: " << gtt.condition.triggerValues[0] << "\n";*/
         //! [get gtt info]
 
         //! [delete a gtt]
-        // std::cout << "delete gtt response: " << Kite.deleteGTT("21764342").dump(4) << "\n";
+        /*int trigID = Kite.deleteGTT(23271889);
+
+        if (!Kite.isValid(trigID)) {
+
+            std::cout << "trigger ID: " << trigID << "\n";
+        } else {
+
+            std::cout << "failed to delete gtt"
+                      << "\n";
+        };*/
         //! [delete a gtt]
 
         //! [get holdings]
