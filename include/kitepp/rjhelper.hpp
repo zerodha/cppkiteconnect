@@ -16,6 +16,8 @@ namespace RJHelper {
 using std::string;
 namespace rj = rapidjson;
 
+enum class RJValueType : int { Object, Array };
+
 inline bool parse(rj::Document& dom, const string& str) {
 
     rj::ParseResult parseOK = dom.Parse(str.c_str());
@@ -153,18 +155,39 @@ inline bool getIfExists(const rj::Value::Object& val, std::vector<double>& out, 
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char* name) {
+inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char* name, RJValueType type) {
 
     auto it = val.FindMember(name);
-    if (it != val.MemberEnd()) {
 
-        if (it->value.IsObject()) {
-            out = it->value.GetObject();
-            return true;
+    if (type == RJValueType::Object) {
+
+        if (it != val.MemberEnd()) {
+
+            if (it->value.IsObject()) {
+                out = it->value.GetObject();
+                return true;
+            };
+
+            throw libException(FMT("Expected value({0})'s type wasn't the one expected (expected an Object)", name));
         };
 
-        throw libException(FMT("Expected value({0}) not found or it's type wasn't the one expected (expected an Object)", name));
+        return false;
+
+    } else if (type == RJValueType::Array) {
+
+        if (it != val.MemberEnd()) {
+
+            if (it->value.IsArray()) {
+                out = it->value.GetArray();
+                return true;
+            };
+
+            throw libException(FMT("Expected value({0})'s type wasn't the one expected (expected an Array)", name));
+        };
+
+        return false;
     };
+
     return false;
 };
 

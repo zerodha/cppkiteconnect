@@ -747,7 +747,19 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get holdings
      */
-    njson holdings() { return _sendReq(http::methods::GET, _endpoints.at("portfolio.holdings")); };
+    std::vector<holding> holdings() {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.holdings"));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (holdings)"); };
+        if (!res["data"].IsArray()) { throw libException("Array was expected (holdinga)"); };
+
+        std::vector<holding> holdingsVec;
+        for (auto& i : res["data"].GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
+
+        return holdingsVec;
+    };
 
     /**
      * @brief get positions
@@ -757,7 +769,15 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get positions
      */
-    njson positions() { return _sendReq(http::methods::GET, _endpoints.at("portfolio.positions")); };
+    positions getPositions() {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.positions"));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getPositions)"); };
+
+        return positions(res["data"].GetObject());
+    };
 
     /**
      * @brief Modify an open position's product type.
@@ -774,7 +794,7 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp convert position
      */
-    njson convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType, const string& quantity,
+    bool convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType, int quantity,
         const string& oldProduct, const string& newProduct) {
 
 
@@ -784,13 +804,18 @@ class kite {
             { "tradingsymbol", symbol },
             { "transaction_type", txnType },
             { "position_type", posType },
-            { "quantity", quantity },
+            { "quantity", std::to_string(quantity) },
             { "old_product", oldProduct },
             { "new_product", newProduct },
 
         };
 
-        return _sendReq(http::methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (convertPosition)"); };
+        if (!res["data"].IsBool()) { throw libException("data type wasn't the one expected. Expected bool (convertPosition)"); };
+
+        return res["data"].GetBool();
     };
 
 

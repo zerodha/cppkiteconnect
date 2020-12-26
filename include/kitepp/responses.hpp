@@ -154,9 +154,9 @@ struct margins {
         rjh::getIfExists(val, net, "net");
 
         rj::Value avlVal(rj::kObjectType);
-        rjh::getIfExists(val, avlVal, "available");
+        rjh::getIfExists(val, avlVal, "available", rjh::RJValueType::Object);
         rj::Value usedVal(rj::kObjectType);
-        rjh::getIfExists(val, usedVal, "utilised");
+        rjh::getIfExists(val, usedVal, "utilised", rjh::RJValueType::Object);
 
         available.parse(avlVal.GetObject());
         used.parse(usedVal.GetObject());
@@ -179,17 +179,18 @@ struct allMargins {
     void parse(const rj::Value::Object& val) {
 
         rj::Value eqVal(rj::kObjectType);
-        rjh::getIfExists(val, eqVal, "equity");
+        rjh::getIfExists(val, eqVal, "equity", rjh::RJValueType::Object);
         equity.parse(eqVal.GetObject());
 
         rj::Value cmVal(rj::kObjectType);
-        rjh::getIfExists(val, cmVal, "commodity");
+        rjh::getIfExists(val, cmVal, "commodity", rjh::RJValueType::Object);
         commodity.parse(cmVal.GetObject());
     };
 
     margins equity;
     margins commodity;
 };
+
 
 // Order represents a individual order response.
 struct order {
@@ -358,7 +359,7 @@ struct GTT {
         rjh::getIfExists(val, status, "status");
 
         rj::Value condnVal(rj::kObjectType);
-        rjh::getIfExists(val, condnVal, "condition");
+        rjh::getIfExists(val, condnVal, "condition", rjh::RJValueType::Object);
         condition.parse(condnVal.GetObject());
 
         auto it = val.FindMember("orders");
@@ -379,5 +380,164 @@ struct GTT {
     std::vector<order> orders;
 }; // namespace kitepp
 
+// Holding is an individual holdings response.
+struct holding {
+
+    holding() = default;
+
+    explicit holding(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::getIfExists(val, exchange, "exchange");
+        rjh::getIfExists(val, instrumentToken, "instrument_token");
+        rjh::getIfExists(val, ISIN, "isin");
+        rjh::getIfExists(val, product, "product");
+
+        rjh::getIfExists(val, price, "price");
+        rjh::getIfExists(val, quantity, "quantity");
+        rjh::getIfExists(val, t1Quantity, "t1_quantity");
+        rjh::getIfExists(val, realisedQuantity, "realised_quantity");
+        rjh::getIfExists(val, collateralQuantity, "collateral_quantity");
+        rjh::getIfExists(val, collateralType, "collateral_type");
+
+        rjh::getIfExists(val, averagePrice, "average_price");
+        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::getIfExists(val, closePrice, "close_price");
+        rjh::getIfExists(val, PnL, "pnl");
+        rjh::getIfExists(val, dayChange, "day_change");
+        rjh::getIfExists(val, dayChangePercentage, "day_change_percentage");
+    };
+
+
+    string tradingsymbol;
+    string exchange;
+    int instrumentToken;
+    string ISIN;
+    string product;
+
+    double price;
+    int quantity;
+    int t1Quantity;
+    int realisedQuantity;
+    int collateralQuantity;
+    string collateralType;
+
+    double averagePrice;
+    double lastPrice;
+    double closePrice;
+    double PnL;
+    double dayChange;
+    double dayChangePercentage;
+};
+
+
+// Position represents an individual position response.
+struct position {
+
+
+    position() = default;
+
+    explicit position(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::getIfExists(val, exchange, "exchange");
+        rjh::getIfExists(val, instrumentToken, "instrument_token");
+        rjh::getIfExists(val, product, "product");
+
+        rjh::getIfExists(val, quantity, "quantity");
+        rjh::getIfExists(val, overnightQuantity, "overnight_quantity");
+        rjh::getIfExists(val, multiplier, "multiplier");
+
+        rjh::getIfExists(val, averagePrice, "average_price");
+        rjh::getIfExists(val, closePrice, "close_price");
+        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::getIfExists(val, value, "value");
+        rjh::getIfExists(val, PnL, "pnl");
+        rjh::getIfExists(val, M2M, "m2m");
+        rjh::getIfExists(val, unrealised, "unrealised");
+        rjh::getIfExists(val, realised, "realised");
+
+        rjh::getIfExists(val, buyQuantity, "buy_quantity");
+        rjh::getIfExists(val, buyPrice, "buy_price");
+        rjh::getIfExists(val, buyValue, "buy_value");
+        rjh::getIfExists(val, buyM2MValue, "buy_m2m");
+
+        rjh::getIfExists(val, sellQuantity, "sell_quantity");
+        rjh::getIfExists(val, sellPrice, "sell_price");
+        rjh::getIfExists(val, sellValue, "sell_value");
+        rjh::getIfExists(val, sellM2MValue, "sell_m2m");
+
+        rjh::getIfExists(val, dayBuyQuantity, "day_buy_quantity");
+        rjh::getIfExists(val, dayBuyPrice, "day_buy_price");
+        rjh::getIfExists(val, dayBuyValue, "day_buy_value");
+
+        rjh::getIfExists(val, daySellQuantity, "day_sell_quantity");
+        rjh::getIfExists(val, daySellPrice, "day_sell_price");
+        rjh::getIfExists(val, daySellValue, "averaday_sell_valuege_price");
+    };
+
+
+    string tradingsymbol;
+    string exchange;
+    int instrumentToken;
+    string product;
+
+    int quantity;
+    int overnightQuantity;
+    double multiplier;
+
+    double averagePrice;
+    double closePrice;
+    double lastPrice;
+    double value;
+    double PnL;
+    double M2M;
+    double unrealised;
+    double realised;
+
+    int buyQuantity;
+    double buyPrice;
+    double buyValue;
+    double buyM2MValue;
+
+    int sellQuantity;
+    double sellPrice;
+    double sellValue;
+    double sellM2MValue;
+
+    int dayBuyQuantity;
+    double dayBuyPrice;
+    double dayBuyValue;
+
+    int daySellQuantity;
+    double daySellPrice;
+    double daySellValue;
+};
+
+struct positions {
+
+    positions() = default;
+
+    explicit positions(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rj::Value netVal(rj::kArrayType);
+        rjh::getIfExists(val, netVal, "net", rjh::RJValueType::Array);
+        for (auto& i : netVal.GetArray()) { net.emplace_back(i.GetObject()); };
+
+        rj::Value dayVal(rj::kArrayType);
+        rjh::getIfExists(val, dayVal, "day", rjh::RJValueType::Array);
+        for (auto& i : netVal.GetArray()) { day.emplace_back(i.GetObject()); };
+    };
+
+
+    std::vector<position> net;
+    std::vector<position> day;
+};
 
 } // namespace kitepp

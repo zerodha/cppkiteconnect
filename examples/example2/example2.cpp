@@ -47,7 +47,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("7w6tHZ7KI253rM13Q3itfHgEGuXnGId4");
+        Kite.setAccessToken("zg9yIIBQnQa7COd74ncNX4LzfMAefrWL");
         //! [settting access token]
 
         //! [invalidate session]
@@ -201,18 +201,23 @@ int main() {
         //! [delete a gtt]
 
         //! [get holdings]
-        // std::cout << "get holdings response: " << Kite.holdings().dump(4) << "\n";
+        /*std::vector<kitepp::holding> holdings = Kite.holdings();
+        for (const auto& i : holdings) { std::cout << "trading symbol: " << i.tradingsymbol << " & average price: " << i.averagePrice << "\n"; };*/
         //! [get holdings]
 
         //! [get positions]
-        // std::cout << "get positions response: " << Kite.positions().dump(4) << std::endl;
+        /*kitepp::positions pos = Kite.getPositions();
+        if (!pos.day.empty()) { std::cout << "tradingsymbol: " << pos.day[0].tradingsymbol << " & quantity: " << pos.day[0].quantity << "\n"; };*/
         //! [get positions]
 
         //! [convert position]
-        /*
-        std::cout << "convert position response: " << Kite.convertPosition("NSE", "INFY", "BUY", "overnight", "3", "NRML", "MIS").dump(4)
-                  << std::endl;
-        */
+        if (Kite.convertPosition("NSE", "INFY", "BUY", "overnight", 3, "NRML", "MIS")) {
+
+            std::cout << "Successfully converted the position\n";
+        } else {
+
+            std::cout << "Failed to convert the position\n";
+        };
         //! [convert position]
 
         //! [get quote]
