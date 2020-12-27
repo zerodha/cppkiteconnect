@@ -773,7 +773,6 @@ class kite {
 
         rj::Document res;
         _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.positions"));
-
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getPositions)"); };
 
         return positions(res["data"].GetObject());
@@ -833,6 +832,7 @@ class kite {
      * @snippet example2.cpp get instruments
      */
     string instruments(const string& exchange = "") {
+        // FIXME change
 
         return (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
                                     _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
@@ -849,13 +849,20 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get quote
      */
-    njson quote(const std::vector<string>& symbols) {
+    std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols) {
 
-        return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getQuote)"); };
+
+        std::unordered_map<string, quote> quoteMap;
+        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
+
+        return quoteMap;
     };
 
     /**
-     * @brief Retrieve OHLC and market depth for list of instruments
+     * @brief Retrieve OHLC for list of instruments
      *
      * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
      * @return njson
@@ -865,9 +872,16 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get ohlc
      */
-    njson ohlc(const std::vector<string>& symbols) {
+    std::unordered_map<string, OHLCQuote> getOHLC(const std::vector<string>& symbols) {
 
-        return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOHLC)"); };
+
+        std::unordered_map<string, OHLCQuote> quoteMap;
+        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
+
+        return quoteMap;
     };
 
     /**
@@ -881,9 +895,16 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get ltp
      */
-    njson ltp(const std::vector<string>& symbols) {
+    std::unordered_map<string, LTPQuote> getLTP(const std::vector<string>& symbols) {
 
-        return _sendReq(http::methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getLTP)"); };
+
+        std::unordered_map<string, LTPQuote> quoteMap;
+        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
+
+        return quoteMap;
     };
 
 
@@ -905,12 +926,20 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get historical data
      */
-    njson historicalData(
-        const string& instrumentTok, const string& from, const string& to, const string& interval, bool continuous = false, bool oi = false) {
+    std::vector<historicalData> getHistoricalData(
+        int instrumentTok, const string& from, const string& to, const string& interval, bool continuous = false, bool oi = false) {
 
-        return _sendReq(
-            http::methods::GET, FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval,
-                                    "from"_a = from, "to"_a = to, "continuous"_a = static_cast<int>(continuous), "oi"_a = static_cast<int>(oi)));
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET,
+            FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval, "from"_a = from, "to"_a = to,
+                "continuous"_a = static_cast<int>(continuous), "oi"_a = static_cast<int>(oi)));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getHistoricalData)"); };
+        if (!res["data"]["candles"].IsArray()) { throw libException("Array was expected (trades())"); };
+
+        std::vector<historicalData> dataVec;
+        for (auto& i : res["data"]["candles"].GetArray()) { dataVec.emplace_back(i.GetArray()); };
+
+        return dataVec;
     };
 
 

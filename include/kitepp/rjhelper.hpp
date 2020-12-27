@@ -62,6 +62,7 @@ inline bool getIfExists(const rj::Value::Object& val, double& out, const char* n
             return true;
         };
 
+        // in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number doesn't have decimal
         if (it->value.IsInt()) {
 
             out = it->value.GetInt(); //! may lead to precision loss

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 //! [adding kitepp header]
@@ -47,7 +48,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("zg9yIIBQnQa7COd74ncNX4LzfMAefrWL");
+        Kite.setAccessToken("hczmaLUcCNsR9igK2j7Vbu2QkpOkTdGa");
         //! [settting access token]
 
         //! [invalidate session]
@@ -211,32 +212,40 @@ int main() {
         //! [get positions]
 
         //! [convert position]
-        if (Kite.convertPosition("NSE", "INFY", "BUY", "overnight", 3, "NRML", "MIS")) {
+        /*if (Kite.convertPosition("NSE", "INFY", "BUY", "overnight", 3, "NRML", "MIS")) {
 
             std::cout << "Successfully converted the position\n";
         } else {
 
             std::cout << "Failed to convert the position\n";
-        };
+        };*/
         //! [convert position]
 
         //! [get quote]
-        // std::cout << "get quote response: " << Kite.quote({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" }).dump(4) << std::endl;
+        /*std::unordered_map<std::string, kitepp::quote> quotes = Kite.getQuote({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" });
+        std::cout << "nifty50 close: " << quotes["NSE:NIFTY 50"].OHLC.close << "\n";
+        f (quotes.find("NSE:INFY") != quotes.end()) {
+
+            std::cout << "INFY open: " << quotes["NSE:INFY"].OHLC.open << "\n";
+        } else {
+
+            std::cout << "INFY quote not found\n";
+        };*/
         //! [get quote]
 
         //! [get ohlc]
-        // std::cout << "get ohlc response: " << Kite.ohlc({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" }).dump(4) << std::endl;
+        /*std::unordered_map<std::string, kitepp::OHLCQuote> ohlcQuotes = Kite.getOHLC({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" });
+        std::cout << "nifty50 close: " << ohlcQuotes["NSE:NIFTY 50"].OHLC.close << "\n";*/
         //! [get ohlc]
 
         //! [get ltp]
-        // std::cout << "get ltp response: " << Kite.ltp({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" }).dump(4) << std::endl;
+        /*std::unordered_map<std::string, kitepp::LTPQuote> ltpQuotes = Kite.getLTP({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" });
+        std::cout << "RELIANCE LTP: " << ltpQuotes["NSE:RELIANCE"].lastPrice << "\n";*/
         //! [get ltp]
 
         //! [get historical data]
-        /*
-        std::cout << "get historical data response: " << Kite.historicalData("5633", "2020-11-01+09:30:00", "2020-12-01+10:30:00", "minute").dump(4)
-                  << std::endl;
-        */
+        /*std::vector<kitepp::historicalData> histData = Kite.getHistoricalData(5633, "2020-11-01+09:30:00", "2020-12-01+10:30:00", "minute");
+        for (const auto& i : histData) { std::cout << "datetime: " << i.datetime << " close: " << i.close << "\n"; };*/
         //! [get historical data]
 
         //! [place mf order]

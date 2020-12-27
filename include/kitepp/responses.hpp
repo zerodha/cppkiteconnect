@@ -88,6 +88,7 @@ struct userSession {
     };
 };
 
+// TODO move these structs inside margins
 // AvailableMargins represents the available margins from the margins response for a single segment.
 struct availableMargins {
 
@@ -413,23 +414,23 @@ struct holding {
 
     string tradingsymbol;
     string exchange;
-    int instrumentToken;
+    int instrumentToken = 0;
     string ISIN;
     string product;
 
-    double price;
-    int quantity;
-    int t1Quantity;
-    int realisedQuantity;
-    int collateralQuantity;
+    double price = 0.0;
+    int quantity = 0;
+    int t1Quantity = 0;
+    int realisedQuantity = 0;
+    int collateralQuantity = 0;
     string collateralType;
 
-    double averagePrice;
-    double lastPrice;
-    double closePrice;
-    double PnL;
-    double dayChange;
-    double dayChangePercentage;
+    double averagePrice = 0.0;
+    double lastPrice = 0.0;
+    double closePrice = 0.0;
+    double PnL = 0.0;
+    double dayChange = 0.0;
+    double dayChangePercentage = 0.0;
 };
 
 
@@ -483,39 +484,39 @@ struct position {
 
     string tradingsymbol;
     string exchange;
-    int instrumentToken;
+    int instrumentToken = 0;
     string product;
 
-    int quantity;
-    int overnightQuantity;
-    double multiplier;
+    int quantity = 0;
+    int overnightQuantity = 0;
+    double multiplier = 0.0;
 
-    double averagePrice;
-    double closePrice;
-    double lastPrice;
-    double value;
-    double PnL;
-    double M2M;
-    double unrealised;
-    double realised;
+    double averagePrice = 0.0;
+    double closePrice = 0.0;
+    double lastPrice = 0.0;
+    double value = 0.0;
+    double PnL = 0.0;
+    double M2M = 0.0;
+    double unrealised = 0.0;
+    double realised = 0.0;
 
-    int buyQuantity;
-    double buyPrice;
-    double buyValue;
-    double buyM2MValue;
+    int buyQuantity = 0;
+    double buyPrice = 0.0;
+    double buyValue = 0.0;
+    double buyM2MValue = 0.0;
 
-    int sellQuantity;
-    double sellPrice;
-    double sellValue;
-    double sellM2MValue;
+    int sellQuantity = 0;
+    double sellPrice = 0.0;
+    double sellValue = 0.0;
+    double sellM2MValue = 0.0;
 
-    int dayBuyQuantity;
-    double dayBuyPrice;
-    double dayBuyValue;
+    int dayBuyQuantity = 0;
+    double dayBuyPrice = 0.0;
+    double dayBuyValue = 0.0;
 
-    int daySellQuantity;
-    double daySellPrice;
-    double daySellValue;
+    int daySellQuantity = 0;
+    double daySellPrice = 0.0;
+    double daySellValue = 0.0;
 };
 
 struct positions {
@@ -539,5 +540,184 @@ struct positions {
     std::vector<position> net;
     std::vector<position> day;
 };
+
+struct ohlc {
+
+    ohlc() = default;
+
+    explicit ohlc(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, open, "open");
+        rjh::getIfExists(val, high, "high");
+        rjh::getIfExists(val, low, "low");
+        rjh::getIfExists(val, close, "close");
+    };
+
+    double open = 0.0;
+    double high = 0.0;
+    double low = 0.0;
+    double close = 0.0;
+};
+
+struct depth {
+
+    depth() = default;
+
+    explicit depth(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, price, "price");
+        rjh::getIfExists(val, quantity, "quantity");
+        rjh::getIfExists(val, orders, "orders");
+    };
+
+    double price = 0.0;
+    int quantity = 0;
+    int orders = 0;
+};
+
+struct quote {
+
+    quote() = default;
+
+    explicit quote(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, instrumentToken, "instrument_token");
+        rjh::getIfExists(val, timestamp, "timestamp");
+        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::getIfExists(val, lastQuantity, "last_quantity");
+        rjh::getIfExists(val, lastTradeTime, "last_trade_time");
+        rjh::getIfExists(val, averagePrice, "average_price");
+        rjh::getIfExists(val, volume, "volume");
+        rjh::getIfExists(val, buyQuantity, "buy_quantity");
+        rjh::getIfExists(val, sellQuantity, "sell_quantity");
+
+        rj::Value ohlcVal(rj::kObjectType);
+        rjh::getIfExists(val, ohlcVal, "ohlc", rjh::RJValueType::Object);
+        OHLC.parse(ohlcVal.GetObject());
+
+        rjh::getIfExists(val, netChange, "net_change");
+        rjh::getIfExists(val, OI, "oi");
+        rjh::getIfExists(val, OIDayHigh, "oi_day_high");
+        rjh::getIfExists(val, OIDayLow, "oi_day_low");
+        rjh::getIfExists(val, lowerCircuitLimit, "lower_circuit_limit");
+        rjh::getIfExists(val, upperCircuitLimit, "upper_circuit_limit");
+
+        rj::Value tmpVal(rj::kObjectType);
+        rjh::getIfExists(val, tmpVal, "ohlc", rjh::RJValueType::Object);
+        auto depthVal = tmpVal.GetObject();
+
+        rj::Value buyDepthVal(rj::kArrayType);
+        rjh::getIfExists(depthVal, buyDepthVal, "buy", rjh::RJValueType::Array);
+        for (auto& i : buyDepthVal.GetArray()) { marketDepth.buy.emplace_back(i.GetObject()); };
+
+        rj::Value sellDepthVal(rj::kArrayType);
+        rjh::getIfExists(depthVal, sellDepthVal, "sell", rjh::RJValueType::Array);
+        for (auto& i : sellDepthVal.GetArray()) { marketDepth.sell.emplace_back(i.GetObject()); };
+    };
+
+
+    int instrumentToken = 0;
+    string timestamp;
+    double lastPrice = 0.0;
+    int lastQuantity = 0;
+    string lastTradeTime;
+    double averagePrice = 0.0;
+    int volume = 0;
+    int buyQuantity = 0;
+    int sellQuantity = 0;
+    ohlc OHLC;
+
+    double netChange = 0.0;
+    double OI = 0.0;
+    double OIDayHigh = 0.0;
+    double OIDayLow = 0.0;
+    double lowerCircuitLimit = 0.0;
+    double upperCircuitLimit = 0.0;
+
+    struct mDepth {
+
+        std::vector<depth> buy;
+        std::vector<depth> sell;
+
+    } marketDepth;
+};
+
+struct OHLCQuote {
+
+    OHLCQuote() = default;
+
+    explicit OHLCQuote(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, instrumentToken, "instrument_token");
+        rjh::getIfExists(val, lastPrice, "last_price");
+
+        rj::Value ohlcVal(rj::kObjectType);
+        rjh::getIfExists(val, ohlcVal, "ohlc", rjh::RJValueType::Object);
+        OHLC.parse(ohlcVal.GetObject());
+    };
+
+    int instrumentToken = 0;
+    double lastPrice = 0.0;
+    ohlc OHLC;
+};
+
+struct LTPQuote {
+
+    LTPQuote() = default;
+
+    explicit LTPQuote(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, instrumentToken, "instrument_token");
+        rjh::getIfExists(val, lastPrice, "last_price");
+    };
+
+    int instrumentToken = 0;
+    double lastPrice = 0.0;
+};
+
+struct historicalData {
+
+    historicalData() = default;
+
+    explicit historicalData(const rj::Value::Array& val) { parse(val); };
+
+    void parse(const rj::Value::Array& val) {
+
+        // in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number doesn't have decimal
+        static auto getDouble = [](rj::Value& val) -> double {
+            if (val.IsDouble()) { return val.GetDouble(); };
+            if (val.IsInt()) { return val.GetInt(); }; //! may lead to data loss
+
+            throw libException("type wasn't the one expected (expected double) (historicalData)");
+        };
+
+        datetime = val[0].GetString();
+        open = getDouble(val[1]);
+        high = getDouble(val[2]);
+        low = getDouble(val[3]);
+        close = getDouble(val[4]);
+        volume = val[5].GetInt();
+        if (val.Size() > 6) { OI = val[6].GetInt(); };
+    };
+
+    string datetime;
+    double open = 0.0;
+    double high = 0.0;
+    double low = 0.0;
+    double close = 0.0;
+    int volume = 0;
+    int OI = 0;
+};
+
 
 } // namespace kitepp
