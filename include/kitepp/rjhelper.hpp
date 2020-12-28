@@ -199,7 +199,6 @@ inline string dump(rj::Document& dom) {
     dom.Accept(writer);
 
     return buffer.GetString();
-    ;
 }
 
 } // namespace RJHelper

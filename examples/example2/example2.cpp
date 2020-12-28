@@ -48,7 +48,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("hczmaLUcCNsR9igK2j7Vbu2QkpOkTdGa");
+        Kite.setAccessToken("t71HDwFhcmM3c1pkEMqIj8ebtw89zgPK");
         //! [settting access token]
 
         //! [invalidate session]
@@ -212,7 +212,7 @@ int main() {
         //! [get positions]
 
         //! [convert position]
-        /*if (Kite.convertPosition("NSE", "INFY", "BUY", "overnight", 3, "NRML", "MIS")) {
+        /*if (Kite.convertPosition("NSE", "BHEL", "BUY", "day", 1, "MIS", "CNC")) {
 
             std::cout << "Successfully converted the position\n";
         } else {
@@ -224,9 +224,10 @@ int main() {
         //! [get quote]
         /*std::unordered_map<std::string, kitepp::quote> quotes = Kite.getQuote({ "NSE:INFY", "NSE:NIFTY+50", "NSE:RELIANCE" });
         std::cout << "nifty50 close: " << quotes["NSE:NIFTY 50"].OHLC.close << "\n";
-        f (quotes.find("NSE:INFY") != quotes.end()) {
+        if (quotes.find("NSE:INFY") != quotes.end()) {
 
             std::cout << "INFY open: " << quotes["NSE:INFY"].OHLC.open << "\n";
+
         } else {
 
             std::cout << "INFY quote not found\n";
@@ -249,19 +250,37 @@ int main() {
         //! [get historical data]
 
         //! [place mf order]
-        // std::cout << "place mf response: " << Kite.placeMFOrder("INF174K01LS2", "BUY", "", "10000").dump(4) << std::endl;
+        /*std::string MFOrdID = Kite.placeMFOrder("INF174K01LS2", "BUY", kitepp::kite::DEFAULTINT, 10000);
+        if (!MFOrdID.empty()) {
+
+            std::cout << "order ID: " << MFOrdID << "\n";
+        } else {
+
+            std::cout << "failed to place order"
+                      << "\n";
+        };*/
         //! [place mf order]
 
         //! [get mf order info]
-        // std::cout << "get mf order response: " << Kite.MFOrder("e05f2303-1717-4c54-834b-01003df8dc8a").dump(4) << std::endl;
+        /*kitepp::MFOrder mforder = Kite.getMFOrder("64f5db2e-2c09-407c-a920-934f132bb382");
+        std::cout << "status: " << mforder.status << "\n";*/
         //! [get mf order info]
 
         //! [get mf orders]
-        // std::cout << "get mf orders response: " << Kite.MFOrders().dump(4) << std::endl;
+        /*std::vector<kitepp::MFOrder> mforders = Kite.getMFOrders();
+        for (const auto& i : mforders) { std::cout << "order ID: " << i.orderID << " status: " << i.status << "\n"; };*/
         //! [get mf orders]
 
         //! [cancel a mf order]
-        // std::cout << "cancel mf order response: " << Kite.cancelMFOrder("e05f2303-1717-4c54-834b-01003df8dc8a").dump(4) << std::endl;
+        /*std::string canMforder = Kite.cancelMFOrder("64f5db2e-2c09-407c-a920-934f132bb382");
+        if (!canMforder.empty()) {
+
+            std::cout << "order ID: " << canMforder << "\n";
+        } else {
+
+            std::cout << "failed to cancel order"
+                      << "\n";
+        };*/
         //! [cancel a mf order]
 
         //! [place mf sip order]

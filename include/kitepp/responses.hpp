@@ -609,7 +609,7 @@ struct quote {
         rjh::getIfExists(val, upperCircuitLimit, "upper_circuit_limit");
 
         rj::Value tmpVal(rj::kObjectType);
-        rjh::getIfExists(val, tmpVal, "ohlc", rjh::RJValueType::Object);
+        rjh::getIfExists(val, tmpVal, "depth", rjh::RJValueType::Object);
         auto depthVal = tmpVal.GetObject();
 
         rj::Value buyDepthVal(rj::kArrayType);
@@ -717,6 +717,60 @@ struct historicalData {
     double close = 0.0;
     int volume = 0;
     int OI = 0;
+};
+
+// MFOrder represents a individual mutualfund order response.
+struct MFOrder {
+
+    MFOrder() = default;
+
+    explicit MFOrder(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, orderID, "order_id");
+        rjh::getIfExists(val, exchangeOrderID, "exchange_order_id");
+        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::getIfExists(val, status, "status");
+        rjh::getIfExists(val, statusMessage, "status_message");
+        rjh::getIfExists(val, folio, "folio");
+        rjh::getIfExists(val, fund, "fund");
+        rjh::getIfExists(val, orderTimestamp, "order_timestamp");
+        rjh::getIfExists(val, exchangeTimestamp, "exchange_timestamp");
+        rjh::getIfExists(val, settlementID, "settlement_id");
+
+        rjh::getIfExists(val, transactionType, "transaction_type");
+        rjh::getIfExists(val, variety, "variety");
+        rjh::getIfExists(val, purchaseType, "purchase_type");
+        rjh::getIfExists(val, quantity, "quantity");
+        rjh::getIfExists(val, amount, "amount");
+        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::getIfExists(val, averagePrice, "average_price");
+        rjh::getIfExists(val, placedBy, "placed_by");
+        rjh::getIfExists(val, tag, "tag");
+    };
+
+
+    string orderID;
+    string exchangeOrderID;
+    string tradingsymbol;
+    string status;
+    string statusMessage;
+    string folio;
+    string fund;
+    string orderTimestamp;
+    string exchangeTimestamp;
+    string settlementID;
+
+    string transactionType;
+    string variety;
+    string purchaseType;
+    int quantity = 0;
+    double amount = 0.0;
+    double lastPrice = 0.0;
+    double averagePrice = 0.0;
+    string placedBy;
+    string tag;
 };
 
 

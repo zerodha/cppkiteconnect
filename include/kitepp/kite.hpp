@@ -56,6 +56,8 @@ namespace http = web::http;
 using std::string;
 using njson = nlohmann::json;
 using kitepp::_throwException; // TODO remove this
+// TODO catch exceptions wherever you use to_string/stoi/stod
+// TODO rectify double lookup in functions
 
 
 //! - - - DEV - - -
@@ -958,7 +960,8 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp place mf order
      */
-    njson placeMFOrder(const string& symbol, const string& txnType, const string& quantity = "", const string& amount = "", const string& tag = "") {
+    string placeMFOrder(
+        const string& symbol, const string& txnType, int quantity = DEFAULTINT, double amount = DEFAULTDOUBLE, const string& tag = "") {
 
         std::vector<std::pair<string, string>> bodyParams = {
 
@@ -967,11 +970,18 @@ class kite {
 
         };
 
-        if (!quantity.empty()) { bodyParams.emplace_back("quantity", quantity); }
-        if (!amount.empty()) { bodyParams.emplace_back("amount", amount); }
+        if (!std::isnan(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
+        if (!std::isnan(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
-        return _sendReq(http::methods::POST, _endpoints.at("mf.order.place"), bodyParams);
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::POST, _endpoints.at("mf.order.place"), bodyParams);
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFOrder)"); };
+
+        string rcvdOrdID;
+        rjh::getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+
+        return rcvdOrdID;
     };
 
     /**
@@ -983,7 +993,17 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp cancel a mf order
      */
-    njson cancelMFOrder(const string& ordID) { return _sendReq(http::methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID)); };
+    string cancelMFOrder(const string& ordID) {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelMFOrder)"); };
+
+        string rcvdOrdID;
+        rjh::getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+
+        return rcvdOrdID;
+    };
 
     /**
      * @brief get all mutual fund orders
@@ -993,7 +1013,19 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get mf orders
      */
-    njson MFOrders() { return _sendReq(http::methods::GET, _endpoints.at("mf.orders")); };
+    std::vector<MFOrder> getMFOrders() {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, _endpoints.at("mf.orders"));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFOrders)"); };
+        auto it = res.FindMember("data");
+        if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
+
+        std::vector<MFOrder> ordersVec;
+        for (auto& i : it->value.GetArray()) { ordersVec.emplace_back(i.GetObject()); }
+
+        return ordersVec;
+    };
 
     /**
      * @brief get details of a mutual fund order
@@ -1004,7 +1036,15 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get mf order info
      */
-    njson MFOrder(const string& ordID) { return _sendReq(http::methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID)); };
+    MFOrder getMFOrder(const string& ordID) {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelMFOrder)"); };
+
+        return MFOrder(res["data"].GetObject());
+    };
 
     /**
      * @brief get mutual fund holdings
