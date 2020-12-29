@@ -55,7 +55,6 @@ namespace kitepp {
 namespace http = web::http;
 using std::string;
 using njson = nlohmann::json;
-using kitepp::_throwException; // TODO remove this
 // TODO catch exceptions wherever you use to_string/stoi/stod
 // TODO rectify double lookup in functions
 
@@ -118,9 +117,10 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp obtaining access token
      */
-    kitepp::userSession generateSession(const string& requestToken, const string& apiSecret) {
+    userSession generateSession(const string& requestToken, const string& apiSecret) {
 
-        /*rj::Value::Object res = _sendReq_RJ(http::methods::POST, _endpoints.at("api.token"),
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::POST, _endpoints.at("api.token"),
             {
 
                 { "api_key", _apiKey },
@@ -128,32 +128,11 @@ class kite {
                 { "checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret) },
 
 
-            });*/
+            });
 
-        // rj::Value ress = res;
-        /*rj::StringBuffer buffer;
-        rj::PrettyWriter<rj::StringBuffer> writer(buffer);
-        res.Accept(writer);
-        std::cout << buffer.GetString() << std::endl;*/
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (generateSession())"); };
 
-
-        /*rj::StringBuffer buffer;
-        rj::PrettyWriter<rj::StringBuffer> writer(buffer);
-        res.Accept(writer);
-        std::cout << buffer.GetString() << std::endl;*/
-
-        // string debugstr = res["api_key"].GetString();
-        // string debugstr = res["email"].GetString();
-        // rjh::getIfExists(res, debugstr, "api_key");
-
-        // auto it = res.FindMember("api_key");
-        // if (it != res.MemberEnd() && it->value.IsString()) { debugstr = it->value.GetString(); };
-
-        /*userSession session;
-        session.parse(res);
-
-
-        return session;*/
+        return userSession(res["data"].GetObject());
     };
 
     /**
@@ -175,9 +154,10 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp invalidate session
      */
-    njson invalidateSession() {
+    void invalidateSession() {
 
-        return _sendReq(http::methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a = _apiKey, "access_token"_a = _accessToken));
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a = _apiKey, "access_token"_a = _accessToken));
     };
 
     // user:
@@ -197,8 +177,6 @@ class kite {
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (profile())"); };
 
-        //?profile.parse(data);
-        //?profile.parse(data);
         return userProfile(res["data"].GetObject());
     };
 
@@ -1459,7 +1437,7 @@ class kite {
                     FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message));
             };
 
-            _throwException(excpStr, code, message);
+            kitepp::_throwException(excpStr, code, message);
 
 
         } else {
@@ -1493,7 +1471,7 @@ class kite {
             int code = res.status_code();
             string excpStr = "NoException";
 
-            _throwException(excpStr, code, "");
+            kitepp::_throwException(excpStr, code, "");
 
 
         } else {
@@ -1563,13 +1541,13 @@ class kite {
                         FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message));
                 };
 
-                _throwException(excpStr, code, message);
+                kitepp::_throwException(excpStr, code, message);
             };
 
 
         } else {
 
-            data.Parse("[]"); // FIXME set an error value ffs
+            data.Parse("[]");
         };
     };
 };

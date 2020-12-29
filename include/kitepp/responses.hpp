@@ -29,17 +29,6 @@ struct userProfile {
 
     explicit userProfile(const rj::Value::Object& val) { parse(val); };
 
-    string userName;
-    string userShortName;
-    string avatarURL;
-    string userType;
-    string email;
-    string phone;
-    string broker;
-    std::vector<string> products;
-    std::vector<string> orderTypes;
-    std::vector<string> exchanges;
-
     void parse(const rj::Value::Object& val) {
 
         rjh::getIfExists(val, userName, "user_name");
@@ -53,13 +42,24 @@ struct userProfile {
         rjh::getIfExists(val, orderTypes, "order_types");
         rjh::getIfExists(val, exchanges, "exchanges");
     };
+
+    string userName;
+    string userShortName;
+    string avatarURL;
+    string userType;
+    string email;
+    string phone;
+    string broker;
+    std::vector<string> products;
+    std::vector<string> orderTypes;
+    std::vector<string> exchanges;
 };
 
 struct userTokens {
 
-    string userID;
-    string accessToken;
-    string refreshToken;
+    userTokens() = default;
+
+    explicit userTokens(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
 
@@ -67,16 +67,17 @@ struct userTokens {
         rjh::getIfExists(val, accessToken, "access_token");
         rjh::getIfExists(val, refreshToken, "refresh_token");
     };
+
+    string userID;
+    string accessToken;
+    string refreshToken;
 };
 
 struct userSession {
 
-    userProfile profile;
-    userTokens tokens;
+    userSession() = default;
 
-    string apiKey;
-    string publicToken;
-    string loginTime;
+    explicit userSession(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
 
@@ -86,6 +87,13 @@ struct userSession {
         rjh::getIfExists(val, publicToken, "public_token");
         rjh::getIfExists(val, loginTime, "login_time");
     };
+
+    userProfile profile;
+    userTokens tokens;
+
+    string apiKey;
+    string publicToken;
+    string loginTime;
 };
 
 // AvailableMargins represents the available margins from the margins response for a single segment.

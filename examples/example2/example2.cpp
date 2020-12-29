@@ -6,7 +6,6 @@
 
 //! [adding kitepp header]
 #include "kitepp.hpp"
-#include "kitepp/responses.hpp"
 //! [adding kitepp header]
 
 
@@ -20,18 +19,15 @@ int main() {
     try {
 
         //! [initializing kite]
-        // kitepp::kite Kite("---apikey---");
         kitepp::kite Kite("a9gg2394xe9sqmjc");
-
         //! [initializing kite]
 
         //! [obtaining login url]
-        // std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
+        std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
         //! [obtaining login url]
 
         //! [obtaining access token]
-        /*
-        std::string apiSecret;
+        /*std::string apiSecret;
         std::string reqToken;
 
         std::cout << "Enter obtained request token: ";
@@ -39,12 +35,8 @@ int main() {
         std::cout << "Enter API secret: ";
         std::cin >> apiSecret;
 
-        // std::string accessToken = Kite.generateSession(reqToken, apiSecret)["data"]["access_token"];
         std::string accessToken = Kite.generateSession(reqToken, apiSecret).tokens.accessToken;
-
-        std::cout << "access token is " << accessToken << "\n";
-
-        */
+        std::cout << "access token is " << accessToken << "\n";*/
         //! [obtaining access token]
 
         //! [settting access token]
@@ -53,7 +45,7 @@ int main() {
         //! [settting access token]
 
         //! [invalidate session]
-        // std::cout << "Session invalidate response: " << Kite.invalidateSession().dump(4) << "\n";
+        // Kite.invalidateSession();
         //! [invalidate session]
 
         //! [get user profile]
