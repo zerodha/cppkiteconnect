@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 //! [adding kitepp header]
@@ -48,7 +49,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("t71HDwFhcmM3c1pkEMqIj8ebtw89zgPK");
+        Kite.setAccessToken("ztCDaIyc6eOGs5TfCMmASbupimk841mU");
         //! [settting access token]
 
         //! [invalidate session]
@@ -284,31 +285,44 @@ int main() {
         //! [cancel a mf order]
 
         //! [place mf sip order]
-        // std::cout << "place mf sip order response: " << Kite.placeMFSIP("INF174K01LS2", "10000", "-1", "monthly", "50000", "1").dump(4) <<
-        // std::endl;
+        /*std::pair<std::string, std::string> sipRes = Kite.placeMFSIP("INF174K01LS2", 10000, -1, "monthly", 50000, 1);
+        if (!sipRes.first.empty() && !sipRes.second.empty()) {
+
+            std::cout << "order ID: " << sipRes.first << " SIP ID: " << sipRes.second << "\n";
+        } else {
+
+            std::cout << "failed to place SIP order\n";
+        };*/
         //! [place mf sip order]
 
         //! [modify mf sip order]
-        /*
-        std::cout << "modify mf sip order response: " << Kite.modifyMFSIP("825802497812153", "5000", "paused", "10", "monthly", "5").dump(4)
-                  << std::endl;
-        */
+        // Kite.modifyMFSIP("555299391983723", 5000, "paused", 10, "monthly", 5);
         //! [modify mf sip order]
 
         //! [get sip info]
-        // std::cout << "get sip resposne: " << Kite.SIP("825802497812153").dump(4) << std::endl;
+        /*kitepp::MFSIP sip = Kite.getSIP("555299391983723");
+        std::cout << "SIP ID: " << sip.ID << " status:" << sip.status << "\n";*/
         //! [get sip info]
 
         //! [cancel mf sip]
-        // std::cout << "cancel mf sip response" << Kite.cancelMFSIP("825802497812153").dump(4) << std::endl;
+        /*std::string canSipID = Kite.cancelMFSIP("709483207319013");
+        if (!canSipID.empty()) {
+
+            std::cout << "cancelled SIP\n";
+        } else {
+
+            std::cout << "failed to cancel SIP\n";
+        };*/
         //! [cancel mf sip]
 
         //! [get sips]
-        // std::cout << "get sips response: " << Kite.SIPs().dump(4) << std::endl;
+        /*std::vector<kitepp::MFSIP> sips = Kite.getSIPs();
+        for (const auto& sip : sips) { std::cout << "ID: " << sip.ID << " status: " << sip.status << "\n"; };*/
         //! [get sips]
 
         //! [get mf holdings]
-        // std::cout << "get mf holdings response: " << Kite.MFHoldings().dump(4) << std::endl;
+        /*std::vector<kitepp::MFHolding> mfholdings = Kite.getMFHoldings();
+        for (const auto& i : mfholdings) { std::cout << "fund: " << i.fund << " last price: " << i.lastPrice << "\n"; };*/
         //! [get mf holdings]
 
         //! [get instruments]

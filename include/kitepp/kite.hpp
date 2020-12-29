@@ -78,7 +78,6 @@ class kite {
     static constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
     static constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
 
-
     // constructors and destructor:
 
     /**
@@ -91,13 +90,11 @@ class kite {
      */
     explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(U(_rootURL)) {};
 
-
     // methods:
 
     // FIXME move these to config or something
     static bool isValid(int num) { return isnan(num); };
     static bool isValid(double num) { return isnan(num); };
-
 
     // api:
 
@@ -200,8 +197,7 @@ class kite {
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (profile())"); };
 
-        //?rj::Value::Object data = res["data"].GetObject();
-        //?userProfile profile(data);
+        //?profile.parse(data);
         //?profile.parse(data);
         return userProfile(res["data"].GetObject());
     };
@@ -1054,7 +1050,20 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get mf holdings
      */
-    njson MFHoldings() { return _sendReq(http::methods::GET, _endpoints.at("portfolio.holdings")); };
+    std::vector<MFHolding> getMFHoldings() {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.holdings"));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFHoldings)"); };
+        auto it = res.FindMember("data");
+        if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
+
+        std::vector<MFHolding> holdingssVec;
+        for (auto& i : it->value.GetArray()) { holdingssVec.emplace_back(i.GetObject()); }
+
+        return holdingssVec;
+    };
 
 
     // SIP:
@@ -1074,23 +1083,31 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp place mf sip order
      */
-    njson placeMFSIP(const string& symbol, const string& amount, const string& installments, const string& freq, const string& initAmount = "",
-        const string& installDay = "", const string& tag = "") {
+    std::pair<string, string> placeMFSIP(const string& symbol, double amount, int installments, const string& freq, double initAmount = DEFAULTDOUBLE,
+        int installDay = DEFAULTINT, const string& tag = "") {
 
         std::vector<std::pair<string, string>> bodyParams = {
 
             { "tradingsymbol", symbol },
-            { "amount", amount },
-            { "instalments", installments },
+            { "amount", std::to_string(amount) },
+            { "instalments", std::to_string(installments) },
             { "frequency", freq },
 
         };
 
-        if (!initAmount.empty()) { bodyParams.emplace_back("initial_amount", initAmount); }
-        if (!installDay.empty()) { bodyParams.emplace_back("instalment_day", installDay); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
+        if (!std::isnan(initAmount)) { bodyParams.emplace_back("initial_amount", std::to_string(initAmount)); };
+        if (!std::isnan(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); };
+        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); };
 
-        return _sendReq(http::methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
+
+        string rcvdOrdID, rcvdSipID;
+        rjh::getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rjh::getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
+
+        return { rcvdOrdID, rcvdSipID };
     };
 
     /**
@@ -1107,18 +1124,19 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp modify mf sip order
      */
-    njson modifyMFSIP(const string& SIPID, const string& amount = "", const string& status = "", const string& installments = "",
-        const string& freq = "", const string& installDay = "") {
+    void modifyMFSIP(const string& SIPID, double amount = DEFAULTDOUBLE, const string& status = "", int installments = DEFAULTINT,
+        const string& freq = "", int installDay = DEFAULTINT) {
 
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!amount.empty()) { bodyParams.emplace_back("amount", amount); }
+        if (!std::isnan(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
         if (!status.empty()) { bodyParams.emplace_back("status", status); }
-        if (!installments.empty()) { bodyParams.emplace_back("instalments", installments); }
+        if (!std::isnan(installments)) { bodyParams.emplace_back("instalments", std::to_string(installments)); }
         if (!freq.empty()) { bodyParams.emplace_back("frequency", freq); }
-        if (!installDay.empty()) { bodyParams.emplace_back("instalment_day", installDay); }
+        if (!std::isnan(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
 
-        return _sendReq(http::methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
     };
 
     /**
@@ -1130,7 +1148,17 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp cancel mf sip
      */
-    njson cancelMFSIP(const string& SIPID) { return _sendReq(http::methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID)); };
+    string cancelMFSIP(const string& SIPID) {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
+
+        string rcvdSipID;
+        rjh::getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
+
+        return rcvdSipID;
+    };
 
     /**
      * @brief get list of SIPs
@@ -1140,7 +1168,20 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get sips
      */
-    njson SIPs() { return _sendReq(http::methods::GET, _endpoints.at("mf.sips")); };
+    std::vector<MFSIP> getSIPs() {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, _endpoints.at("mf.sips"));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIPs)"); };
+        auto it = res.FindMember("data");
+        if (!(it->value.IsArray())) { throw libException("Array was expected (getSIPs)"); };
+
+        std::vector<MFSIP> sipVec;
+        for (auto& i : it->value.GetArray()) { sipVec.emplace_back(i.GetObject()); }
+
+        return sipVec;
+    };
 
     /**
      * @brief get details of a SIP
@@ -1151,7 +1192,15 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get sip info
      */
-    njson SIP(const string& SIPID) { return _sendReq(http::methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID)); };
+    MFSIP getSIP(const string& SIPID) {
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIP)"); };
+
+        return MFSIP(res["data"].GetObject());
+    };
 
     /**
      * @brief Get list of mutual fund instruments
@@ -1458,7 +1507,6 @@ class kite {
 
     //! - - - DEV - - -
 
-    // TODO rename to json after removing cpprest and njson
     void _sendReq_RJ(rj::Document& data, const http::method& mtd, const string& endpoint,
         const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
 
@@ -1495,7 +1543,7 @@ class kite {
 
             if (res.status_code() != http::status_codes::OK) {
 
-                // TODO add checks for checking if these fields exist
+                // TODO use getifexists here
                 int code = 0;
                 string excpStr;
                 string message;

@@ -88,7 +88,6 @@ struct userSession {
     };
 };
 
-// TODO move these structs inside margins
 // AvailableMargins represents the available margins from the margins response for a single segment.
 struct availableMargins {
 
@@ -773,5 +772,85 @@ struct MFOrder {
     string tag;
 };
 
+// MFHolding represents a individual mutualfund holding.
+struct MFHolding {
+
+    MFHolding() = default;
+
+    explicit MFHolding(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, folio, "folio");
+        rjh::getIfExists(val, fund, "fund");
+        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::getIfExists(val, averagePrice, "average_price");
+        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::getIfExists(val, lastPriceDate, "last_price_date");
+        rjh::getIfExists(val, Pnl, "pnl");
+        rjh::getIfExists(val, quantity, "quantity");
+    };
+
+    string folio;
+    string fund;
+    string tradingsymbol;
+    double averagePrice = 0.0;
+    double lastPrice = 0.0;
+    string lastPriceDate;
+    double Pnl = 0.0;
+    int quantity = 0;
+};
+
+// MFSIP represents a individual mutualfund SIP response.
+struct MFSIP {
+
+
+    MFSIP() = default;
+
+    explicit MFSIP(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, ID, "sip_id");
+        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::getIfExists(val, fundName, "fund");
+        rjh::getIfExists(val, dividendType, "dividend_type");
+        rjh::getIfExists(val, transactionType, "transaction_type");
+
+        rjh::getIfExists(val, status, "status");
+        rjh::getIfExists(val, SIPType, "sip_type");
+        rjh::getIfExists(val, created, "created");
+        rjh::getIfExists(val, frequency, "frequency");
+        rjh::getIfExists(val, instalmentAmount, "instalment_amount");
+        rjh::getIfExists(val, instalments, "instalments");
+        rjh::getIfExists(val, lastInstalment, "last_instalment");
+        rjh::getIfExists(val, pendingInstalments, "pending_instalments");
+        rjh::getIfExists(val, instalmentDay, "instalment_day");
+        rjh::getIfExists(val, completedInstalments, "completed_instalments");
+        rjh::getIfExists(val, nextInstalment, "next_instalment");
+        rjh::getIfExists(val, triggerPrice, "trigger_price");
+        rjh::getIfExists(val, tag, "tag");
+    };
+
+    string ID;
+    string tradingsymbol;
+    string fundName;
+    string dividendType;
+    string transactionType;
+
+    string status;
+    string SIPType;
+    string created;
+    string frequency;
+    double instalmentAmount = 0.0;
+    int instalments = 0;
+    string lastInstalment;
+    int pendingInstalments = 0;
+    int instalmentDay = 0;
+    int completedInstalments = 0;
+    string nextInstalment;
+    double triggerPrice = 0.0;
+    string tag;
+};
 
 } // namespace kitepp
