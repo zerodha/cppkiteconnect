@@ -6,6 +6,7 @@
 
 //! [adding kitepp header]
 #include "kitepp.hpp"
+#include "kitepp/responses.hpp"
 //! [adding kitepp header]
 
 
@@ -23,7 +24,7 @@ int main() {
         //! [initializing kite]
 
         //! [obtaining login url]
-        std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
+        // std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
         //! [obtaining login url]
 
         //! [obtaining access token]
@@ -41,7 +42,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("ztCDaIyc6eOGs5TfCMmASbupimk841mU");
+        Kite.setAccessToken("7o72Y7jWPt3kHaZiSc9JzyoCpqGsr47o");
         //! [settting access token]
 
         //! [invalidate session]
@@ -291,7 +292,7 @@ int main() {
         // Kite.modifyMFSIP("555299391983723", 5000, "paused", 10, "monthly", 5);
         //! [modify mf sip order]
 
-        //! [get sip info]
+        //! [get sip info]*
         /*kitepp::MFSIP sip = Kite.getSIP("555299391983723");
         std::cout << "SIP ID: " << sip.ID << " status:" << sip.status << "\n";*/
         //! [get sip info]
@@ -318,12 +319,33 @@ int main() {
         //! [get mf holdings]
 
         //! [get instruments]
-        // std::cout << "get instruments response: " << Kite.instruments("NSE") << std::endl;
+        /*std::vector<kitepp::instrument> inst = Kite.getInstruments();
+        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " token: " << i.instrumentToken << "\n"; };*/
         //! [get instruments]
 
         //! [get mf instruments]
-        // std::cout << "get mf instruments response: " << Kite.MFInstruments() << std::endl;
+        std::vector<kitepp::MFInstrument> inst = Kite.getMFInstruments();
+        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " last price: " << i.lastPrice << "\n"; };
+
         //! [get mf instruments]
+
+        //! [get order margins]
+        /*kitepp::orderMarginsParams params;
+        params.exchange = "NSE";
+        params.tradingsymbol = "INFY";
+        params.orderType = "MARKET";
+        params.transactionType = "BUY";
+        params.variety = "regular";
+        params.product = "CNC";
+        params.quantity = 1;
+        params.price = 0;
+        params.triggerPrice = 0;
+
+        std::vector<kitepp::orderMargins> ordMargins = Kite.getOrderMargins({ params });
+
+        std::cout << "trading symbol: " << ordMargins[0].tradingSymbol << " total: " << ordMargins[0].total << "\n";*/
+        //! [get order margins]
+
 
         //! [dealing with kitepp exceptions]
     } catch (kitepp::kiteppException& e) {

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "boost/tokenizer.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rjhelper.hpp"
@@ -22,7 +23,7 @@ namespace rj = rapidjson;
 namespace rjh = kitepp::RJHelper;
 
 
-// UserProfile represents a user's personal and financial profile.
+// userProfile represents a user's personal and financial profile.
 struct userProfile {
 
     userProfile() = default;
@@ -55,6 +56,7 @@ struct userProfile {
     std::vector<string> exchanges;
 };
 
+// tokens received after successfull authentication
 struct userTokens {
 
     userTokens() = default;
@@ -73,6 +75,7 @@ struct userTokens {
     string refreshToken;
 };
 
+// userSession represents the response after a successful authentication.
 struct userSession {
 
     userSession() = default;
@@ -96,7 +99,7 @@ struct userSession {
     string loginTime;
 };
 
-// AvailableMargins represents the available margins from the margins response for a single segment.
+// availableMargins represents the available margins from the margins response for a single segment.
 struct availableMargins {
 
     availableMargins() = default;
@@ -119,7 +122,7 @@ struct availableMargins {
     double intradayPayin = 0.0;
 };
 
-// UsedMargins represents the used margins from the margins response for a single segment.
+// usedMargins represents the used margins from the margins response for a single segment.
 struct usedMargins {
 
     usedMargins() = default;
@@ -149,7 +152,7 @@ struct usedMargins {
     double turnover = 0.0;
 };
 
-// Margins represents the user margins for a segment.
+// margins represents the user margins for a segment.
 struct margins {
 
     margins() = default;
@@ -177,7 +180,7 @@ struct margins {
     usedMargins used;
 };
 
-// AllMargins contains both equity and commodity margins.
+// allMargins contains both equity and commodity margins.
 struct allMargins {
 
     allMargins() = default;
@@ -200,7 +203,7 @@ struct allMargins {
 };
 
 
-// Order represents a individual order response.
+// order represents a individual order response.
 struct order {
 
     order() = default;
@@ -277,6 +280,7 @@ struct order {
     int cancelledQuantity = 0;
 };
 
+// trade represents a individual order response.
 struct trade {
 
     trade() = default;
@@ -388,7 +392,7 @@ struct GTT {
     std::vector<order> orders;
 }; // namespace kitepp
 
-// Holding is an individual holdings response.
+// holding is an individual holdings response.
 struct holding {
 
     holding() = default;
@@ -441,7 +445,7 @@ struct holding {
 };
 
 
-// Position represents an individual position response.
+// position represents an individual position response.
 struct position {
 
 
@@ -526,6 +530,7 @@ struct position {
     double daySellValue = 0.0;
 };
 
+// positions represents all positions response.
 struct positions {
 
     positions() = default;
@@ -548,6 +553,7 @@ struct positions {
     std::vector<position> day;
 };
 
+// ohlc strcut
 struct ohlc {
 
     ohlc() = default;
@@ -568,6 +574,7 @@ struct ohlc {
     double close = 0.0;
 };
 
+// represents market depth
 struct depth {
 
     depth() = default;
@@ -586,6 +593,7 @@ struct depth {
     int orders = 0;
 };
 
+// represents full quote respone
 struct quote {
 
     quote() = default;
@@ -655,6 +663,7 @@ struct quote {
     } marketDepth;
 };
 
+// represents ohlc quote respone
 struct OHLCQuote {
 
     OHLCQuote() = default;
@@ -676,6 +685,7 @@ struct OHLCQuote {
     ohlc OHLC;
 };
 
+// represents ltp quote respone
 struct LTPQuote {
 
     LTPQuote() = default;
@@ -692,6 +702,7 @@ struct LTPQuote {
     double lastPrice = 0.0;
 };
 
+// represents historical data call reponse
 struct historicalData {
 
     historicalData() = default;
@@ -859,6 +870,171 @@ struct MFSIP {
     string nextInstalment;
     double triggerPrice = 0.0;
     string tag;
+};
+
+// orderMarginsParams represents a position in the Margin Calculator API
+struct orderMarginsParams {
+
+    orderMarginsParams() = default;
+
+    string exchange;
+    string tradingsymbol;
+    string transactionType;
+    string variety;
+    string product;
+    string orderType;
+    double quantity = 0.0;
+    double price = 0.0;
+    double triggerPrice = 0.0;
+};
+
+// ordersMargins represents response from the Margin Calculator API.
+struct orderMargins {
+
+
+    orderMargins() = default;
+
+    explicit orderMargins(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::getIfExists(val, type, "type");
+        rjh::getIfExists(val, tradingSymbol, "tradingsymbol");
+        rjh::getIfExists(val, exchange, "exchange");
+        rjh::getIfExists(val, SPAN, "span");
+        rjh::getIfExists(val, exposure, "exposure");
+        rjh::getIfExists(val, optionPremium, "option_premium");
+        rjh::getIfExists(val, additional, "additional");
+        rjh::getIfExists(val, BO, "bo");
+        rjh::getIfExists(val, cash, "cash");
+        rjh::getIfExists(val, VAR, "var");
+
+        rj::Value pnlVal(rj::kObjectType);
+        rjh::getIfExists(val, pnlVal, "pnl", rjh::RJValueType::Object);
+        pnl.parse(pnlVal.GetObject());
+
+        rjh::getIfExists(val, total, "total");
+    };
+
+    string type;
+    string tradingSymbol;
+    string exchange;
+
+    double SPAN = 0.0;
+    double exposure = 0.0;
+    double optionPremium = 0.0;
+    double additional = 0.0;
+    double BO = 0.0;
+    double cash = 0.0;
+    double VAR = 0.0;
+    struct PNL {
+
+        PNL() = default;
+
+        explicit PNL(const rj::Value::Object& val) { parse(val); };
+
+        void parse(const rj::Value::Object& val) {
+
+            rjh::getIfExists(val, realised, "realised");
+            rjh::getIfExists(val, unrealised, "unrealised");
+        };
+
+        double realised = 0.0;
+        double unrealised = 0.0;
+    } pnl;
+    double total = 0.0;
+};
+
+// instrument represents individual instrument response.
+struct instrument {
+
+    instrument() = default;
+
+    explicit instrument(const string& val) { parse(val); };
+
+    void parse(const string& val) {
+
+        const boost::tokenizer<boost::char_separator<char>> tokStr(val, boost::char_separator<char>(",", "", boost::keep_empty_tokens));
+        std::vector<std::string> tokens(tokStr.begin(), tokStr.end());
+
+        static const auto toInt = [](const string& str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
+        static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
+
+        instrumentToken = toInt(tokens[0]);
+        exchangeToken = toInt(tokens[1]);
+        tradingsymbol = tokens[2];
+        name = tokens[3];
+        lastPrice = toDouble(tokens[4]);
+        expiry = tokens[5];
+        strikePrice = toDouble(tokens[6]);
+        tickSize = toDouble(tokens[7]);
+        lotSize = toDouble(tokens[8]);
+        instrumentType = tokens[9];
+        segment = tokens[10];
+        exchange = tokens[11];
+    };
+
+    int instrumentToken = 0;
+    int exchangeToken = 0;
+    string tradingsymbol;
+    string name;
+    double lastPrice = 0.0;
+    string expiry;
+    double strikePrice = 0.0;
+    double tickSize = 0.0;
+    double lotSize = 0.0;
+    string instrumentType;
+    string segment;
+    string exchange;
+};
+
+struct MFInstrument {
+
+    MFInstrument() = default;
+
+    explicit MFInstrument(const string& val) { parse(val); };
+
+    void parse(const string& val) {
+
+        const boost::tokenizer<boost::char_separator<char>> tokStr(val, boost::char_separator<char>(",", "", boost::keep_empty_tokens));
+        std::vector<std::string> tokens(tokStr.begin(), tokStr.end());
+
+        static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
+
+        tradingsymbol = tokens[0];
+        AMC = tokens[1];
+        name = tokens[2];
+        purchaseAllowed = static_cast<bool>(std::stoi(tokens[3]));
+        redemtpionAllowed = static_cast<bool>(std::stoi(tokens[4]));
+        minimumPurchaseAmount = toDouble(tokens[5]);
+        purchaseAmountMultiplier = toDouble(tokens[6]);
+        minimumAdditionalPurchaseAmount = toDouble(tokens[7]);
+        minimumRedemptionQuantity = toDouble(tokens[8]);
+        redemptionQuantityMultiplier = toDouble(tokens[9]);
+        dividendType = tokens[10];
+        schemeType = tokens[11];
+        plan = tokens[12];
+        settlementType = tokens[13];
+        lastPrice = toDouble(tokens[14]);
+        lastPriceDate = tokens[15];
+    };
+
+    string tradingsymbol;
+    string AMC;
+    string name;
+    bool purchaseAllowed;
+    bool redemtpionAllowed;
+    double minimumPurchaseAmount = 0.0;
+    double purchaseAmountMultiplier = 0.0;
+    double minimumAdditionalPurchaseAmount = 0.0;
+    double minimumRedemptionQuantity = 0.0;
+    double redemptionQuantityMultiplier = 0.0;
+    string dividendType;
+    string schemeType;
+    string plan;
+    string settlementType;
+    double lastPrice = 0.0;
+    string lastPriceDate;
 };
 
 } // namespace kitepp

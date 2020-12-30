@@ -18,6 +18,7 @@
 
 #include <algorithm> //for_each
 #include <array>
+#include <boost/token_functions.hpp>
 #include <cmath>    //isnan()
 #include <iostream> //debug
 #include <limits>   //nan
@@ -28,6 +29,7 @@
 #include <vector>
 
 #include "PicoSHA2/picosha2.h"
+#include "boost/tokenizer.hpp"
 #include "nlohmann/json.hpp"
 #include <cpprest/filestream.h>
 #include <cpprest/http_client.h>
@@ -56,7 +58,6 @@ namespace http = web::http;
 using std::string;
 using njson = nlohmann::json;
 // TODO catch exceptions wherever you use to_string/stoi/stod
-// TODO rectify double lookup in functions
 
 
 //! - - - DEV - - -
@@ -486,7 +487,8 @@ class kite {
         rj::Document condition;
         condition.SetObject();
         auto& condnAlloc = condition.GetAllocator();
-        rj::Value val;
+
+        rj::Value val; // used for making string values
         rj::Value trigValArr(rj::kArrayType);
 
         val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
@@ -807,11 +809,17 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get instruments
      */
-    string instruments(const string& exchange = "") {
-        // FIXME change
+    std::vector<instrument> getInstruments(const string& exchange = "") {
 
-        return (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
-                                    _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
+        const string rcvdData = (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
+                                                     _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
+
+        boost::tokenizer<boost::char_separator<char>> tokStr(rcvdData, boost::char_separator<char>("\n"));
+
+        std::vector<instrument> insVec;
+        std::for_each(++tokStr.begin(), tokStr.end(), [&](const string& str) { insVec.emplace_back(str); });
+
+        return insVec;
     };
 
     /**
@@ -1188,7 +1196,17 @@ class kite {
      * @paragraph ex1 example
      * @snippet example2.cpp get mf instruments
      */
-    string MFInstruments() { return _sendInstrumentsReq(_endpoints.at("mf.instruments")); };
+    std::vector<MFInstrument> getMFInstruments() {
+
+        const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
+
+        boost::tokenizer<boost::char_separator<char>> tokStr(rcvdData, boost::char_separator<char>("\n"));
+
+        std::vector<MFInstrument> insVec;
+        std::for_each(++tokStr.begin(), tokStr.end(), [&](const string& str) { insVec.emplace_back(str); });
+
+        return insVec;
+    };
 
 
     // others:
@@ -1225,34 +1243,53 @@ class kite {
      *
      *
      */
-    njson orderMargins(const njson& orders) {
+    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params) {
 
-        /*
-        Function expects a njson array of orders. The array can be formed like
+        rj::Document req;
+        req.SetArray();
+        auto& reqAlloc = req.GetAllocator();
 
-        auto ords = njson::array();
-        ords.push_back({
+        for (const auto& param : params) {
 
-        {"exchange", "NSE"},
-        {"tradingsymbol", "INFY"},
-        {"transaction_type", "BUY"},
-        {"variety", "regular"},
-        {"product", "CNC"},
-        {"order_type", "MARKET"},
-        {"quantity", 1},
-        {"price", 0},
-        {"trigger_price", 0}
+            rj::Value paramVal(rj::kObjectType);
+            rj::Value strVal; // used for making string values
 
-        });
+            strVal.SetString(param.exchange.c_str(), param.exchange.size(), reqAlloc);
+            paramVal.AddMember("exchange", strVal, reqAlloc);
 
-        and passed to the function like
+            strVal.SetString(param.tradingsymbol.c_str(), param.tradingsymbol.size(), reqAlloc);
+            paramVal.AddMember("tradingsymbol", strVal, reqAlloc);
 
-        std::cout<<Kite.orderMargins(ords).dump(4)<<std::endl;
+            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), reqAlloc);
+            paramVal.AddMember("transaction_type", strVal, reqAlloc);
 
-        Alternatively, users can create the array in-place.
-        */
+            strVal.SetString(param.variety.c_str(), param.variety.size(), reqAlloc);
+            paramVal.AddMember("variety", strVal, reqAlloc);
 
-        return _sendReq(http::methods::POST, _endpoints.at("order.margins"), { { "", orders.dump() } }, true);
+            strVal.SetString(param.product.c_str(), param.product.size(), reqAlloc);
+            paramVal.AddMember("product", strVal, reqAlloc);
+
+            strVal.SetString(param.orderType.c_str(), param.orderType.size(), reqAlloc);
+            paramVal.AddMember("order_type", strVal, reqAlloc);
+
+            paramVal.AddMember("quantity", param.quantity, reqAlloc);
+            paramVal.AddMember("price", param.price, reqAlloc);
+            paramVal.AddMember("trigger_price", param.triggerPrice, reqAlloc);
+
+            req.PushBack(paramVal, reqAlloc);
+        };
+
+        rj::Document res;
+        _sendReq_RJ(res, http::methods::POST, _endpoints.at("order.margins"), { { "", rjh::dump(req) } }, true);
+
+        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOrderMargis)"); };
+        auto it = res.FindMember("data");
+        if (!(it->value.IsArray())) { throw libException("Array was expected (getOrderMargis)"); };
+
+        std::vector<orderMargins> marginsVec;
+        for (auto& i : it->value.GetArray()) { marginsVec.emplace_back(i.GetObject()); }
+
+        return marginsVec;
     };
 
 
@@ -1554,3 +1591,5 @@ class kite {
 
 
 } // namespace kitepp
+
+// TODO rectify double lookup in functions
