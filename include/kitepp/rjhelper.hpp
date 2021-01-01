@@ -50,6 +50,30 @@ inline bool getIfExists(const rj::Value::Object& val, string& out, const char* n
     return false;
 };
 
+inline bool getIfExists(const rj::Document& val, string& out, const char* name) {
+
+    auto it = val.FindMember(name);
+    if (it != val.MemberEnd()) {
+
+        if (it->value.IsString()) {
+
+            out = it->value.GetString();
+            return true;
+        };
+
+        if (it->value.IsNull()) {
+
+            out = "";
+            return true;
+        };
+
+
+        throw libException(FMT("Expected value({0})'s type wasn't the one expected (expected a string)", name));
+    };
+
+    return false;
+};
+
 inline bool getIfExists(const rj::Value::Object& val, double& out, const char* name) {
 
 

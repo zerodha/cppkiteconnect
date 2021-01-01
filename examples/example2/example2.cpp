@@ -42,7 +42,8 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("lkVIv2FlFLC2k1mLV6L89vcOpOg4YjGt");
+        //?Kite.setAccessToken("lkVIv2FlFLC2k1mLV6L89vcOpOg4YjGt");
+        Kite.setAccessToken("lkVIv2FlFLC2k1mLV6L89vcOpOg4YjG");
         //! [settting access token]
 
         //! [invalidate session]
@@ -50,10 +51,10 @@ int main() {
         //! [invalidate session]
 
         //! [get user profile]
-        /*kitepp::userProfile profile = Kite.profile();
+        kitepp::userProfile profile = Kite.profile();
         std::cout << "email is :" << profile.email << "\n";
         std::cout << "Order types are: \n";
-        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };*/
+        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
         //! [get user profile]
 
         //! [get margins]
@@ -319,8 +320,8 @@ int main() {
         //! [get mf holdings]
 
         //! [get instruments]
-        std::vector<kitepp::instrument> inst = Kite.getInstruments();
-        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " token: " << i.instrumentToken << "\n"; };
+        /*std::vector<kitepp::instrument> inst = Kite.getInstruments();
+        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " token: " << i.instrumentToken << "\n"; };*/
         //! [get instruments]
 
         //! [get mf instruments]

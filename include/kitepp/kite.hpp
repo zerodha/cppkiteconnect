@@ -1567,7 +1567,6 @@ class kite {
 
             if (res.status_code() != http::status_codes::OK) {
 
-                // TODO use getifexists here
                 int code = 0;
                 string excpStr;
                 string message;
@@ -1575,11 +1574,8 @@ class kite {
                 try {
 
                     code = res.status_code();
-
-                    auto it = data.FindMember("error_type");
-                    excpStr = (it != data.MemberEnd()) ? it->value.GetString() : "NoException";
-
-                    message = data["message"].GetString();
+                    if (!rjh::getIfExists(data, excpStr, "error_type")) { excpStr = "NoException"; };
+                    rjh::getIfExists(data, message, "message");
 
                 } catch (const std::exception& e) {
 
@@ -1593,6 +1589,7 @@ class kite {
 
         } else {
 
+            // sets the document to a non-object entity on failure. array was chosen because no kite method returns `data` field with an array
             data.Parse("[]");
         };
     };
