@@ -42,7 +42,7 @@ int main() {
 
         //! [settting access token]
         // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("7o72Y7jWPt3kHaZiSc9JzyoCpqGsr47o");
+        Kite.setAccessToken("lkVIv2FlFLC2k1mLV6L89vcOpOg4YjGt");
         //! [settting access token]
 
         //! [invalidate session]
@@ -319,13 +319,13 @@ int main() {
         //! [get mf holdings]
 
         //! [get instruments]
-        /*std::vector<kitepp::instrument> inst = Kite.getInstruments();
-        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " token: " << i.instrumentToken << "\n"; };*/
+        std::vector<kitepp::instrument> inst = Kite.getInstruments();
+        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " token: " << i.instrumentToken << "\n"; };
         //! [get instruments]
 
         //! [get mf instruments]
-        std::vector<kitepp::MFInstrument> inst = Kite.getMFInstruments();
-        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " last price: " << i.lastPrice << "\n"; };
+        /*std::vector<kitepp::MFInstrument> inst = Kite.getMFInstruments();
+        for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " last price: " << i.lastPrice << "\n"; };*/
 
         //! [get mf instruments]
 

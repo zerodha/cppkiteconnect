@@ -22,6 +22,7 @@
 #include <cmath>    //isnan()
 #include <iostream> //debug
 #include <limits>   //nan
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -29,12 +30,12 @@
 #include <vector>
 
 #include "PicoSHA2/picosha2.h"
-#include "boost/tokenizer.hpp"
 #include "nlohmann/json.hpp"
 #include <cpprest/filestream.h>
 #include <cpprest/http_client.h>
 
 #include "config.hpp"
+#include "helperfunctions.hpp"
 #include "kiteppexceptions.hpp"
 
 
@@ -66,7 +67,6 @@ namespace rj = rapidjson;
 // xusing rj::Document;
 namespace rjh = kitepp::RJHelper;
 //! - - - DEV - - -
-
 
 class kite {
 
@@ -814,12 +814,17 @@ class kite {
         const string rcvdData = (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
                                                      _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
 
-        boost::tokenizer<boost::char_separator<char>> tokStr(rcvdData, boost::char_separator<char>("\n"));
+        if (rcvdData.empty()) { return {}; };
+        std::vector<string> tokens = kitepp::_split(rcvdData, '\n');
+        tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
 
-        std::vector<instrument> insVec;
-        std::for_each(++tokStr.begin(), tokStr.end(), [&](const string& str) { insVec.emplace_back(str); });
+        for (auto& tok : tokens) {
 
-        return insVec;
+            // sent data has \r\n as delimiter and _split only removes \n. pop_back() to remove that \r
+            tok.pop_back();
+        };
+
+        return { ++tokens.begin(), tokens.end() }; //++ to skip first iteration (headers)
     };
 
     /**
@@ -1200,14 +1205,18 @@ class kite {
 
         const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
 
-        boost::tokenizer<boost::char_separator<char>> tokStr(rcvdData, boost::char_separator<char>("\n"));
+        if (rcvdData.empty()) { return {}; };
+        std::vector<string> tokens = kitepp::_split(rcvdData, '\n');
+        tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
 
-        std::vector<MFInstrument> insVec;
-        std::for_each(++tokStr.begin(), tokStr.end(), [&](const string& str) { insVec.emplace_back(str); });
+        for (auto& tok : tokens) {
 
-        return insVec;
+            // sent data has \r\n as delimiter and _split only removes \n. pop_back() to remove that \r
+            tok.pop_back();
+        };
+
+        return { ++tokens.begin(), tokens.end() }; //++ to skip first iteration (headers)
     };
-
 
     // others:
 

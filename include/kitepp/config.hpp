@@ -30,7 +30,7 @@ namespace kitepp {
 namespace config {
 
 
-// constants and other things thatare needed in more than one file
+// constants and other things thatare needed in more than one file should go here
 
 
 } // namespace config

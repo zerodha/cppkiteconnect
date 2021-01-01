@@ -11,7 +11,9 @@
 #include <string>
 #include <vector>
 
+
 #include "boost/tokenizer.hpp"
+#include "helperfunctions.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rjhelper.hpp"
@@ -954,8 +956,7 @@ struct instrument {
 
     void parse(const string& val) {
 
-        const boost::tokenizer<boost::char_separator<char>> tokStr(val, boost::char_separator<char>(",", "", boost::keep_empty_tokens));
-        std::vector<std::string> tokens(tokStr.begin(), tokStr.end());
+        std::vector<string> tokens = kitepp::_split(val, ',');
 
         static const auto toInt = [](const string& str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
         static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
@@ -988,6 +989,7 @@ struct instrument {
     string exchange;
 };
 
+// MFInstrument represents individual mfinstrument response.
 struct MFInstrument {
 
     MFInstrument() = default;
@@ -996,8 +998,7 @@ struct MFInstrument {
 
     void parse(const string& val) {
 
-        const boost::tokenizer<boost::char_separator<char>> tokStr(val, boost::char_separator<char>(",", "", boost::keep_empty_tokens));
-        std::vector<std::string> tokens(tokStr.begin(), tokStr.end());
+        std::vector<string> tokens = kitepp::_split(val, ',');
 
         static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
 
