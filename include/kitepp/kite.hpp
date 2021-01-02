@@ -30,7 +30,6 @@
 #include <vector>
 
 #include "PicoSHA2/picosha2.h"
-#include "nlohmann/json.hpp"
 #include <cpprest/filestream.h>
 #include <cpprest/http_client.h>
 
@@ -38,8 +37,6 @@
 #include "helperfunctions.hpp"
 #include "kiteppexceptions.hpp"
 
-
-//! - - - DEV - - -
 #include "rapidjson/rapidjson.h"
 #include "responses.hpp"
 
@@ -49,24 +46,20 @@
 #include "rapidjson/writer.h"
 #include "rjhelper.hpp"
 
-//! - - - DEV - - -
-
 
 namespace kitepp {
 
 
+using std::string;
+
 namespace http = web::http;
+namespace rj = rapidjson;
+namespace rjh = kitepp::RJHelper;
+
 using kitepp::DEFAULTDOUBLE;
 using kitepp::DEFAULTINT;
 using kitepp::isValid;
-using std::string;
-using njson = nlohmann::json;
 
-
-//! - - - DEV - - -
-namespace rj = rapidjson;
-namespace rjh = kitepp::RJHelper;
-//! - - - DEV - - -
 
 class kite {
 
@@ -384,7 +377,6 @@ class kite {
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orderHistory())"); };
 
-        //! performing double lookup. Can be optimized using iterators
         if (!res["data"].IsArray()) { throw libException("Array was expected (orderHistory())"); };
 
         std::vector<order> orderVec;
@@ -1415,112 +1407,6 @@ class kite {
         return str;
     };
 
-    /*njson _sendReq(
-        const http::method& mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
-
-        //If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of bodyParam's first pair with first
-        //element being empty string. see orderMargins() function
-
-
-        // create request
-
-        http::http_request req(mtd);
-        req.set_request_uri(U(endpoint));
-
-        req.headers().set_content_type(U((isJson) ? "application/json" : "application/x-www-form-urlencoded"));
-        req.headers().add(U("Authorization"), U(_getAuthStr()));
-        req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
-
-        if ((mtd != http::methods::GET && mtd != http::methods::HEAD) && !bodyParams.empty()) {
-
-            req.set_body(U((isJson) ? bodyParams[0].second : _encodeBody(bodyParams)));
-        };
-
-
-        // send request, get response and parse json
-
-        http::http_response res = _httpClient.request(req).get();
-        string dataRcvd = res.extract_string().get();
-
-        if (!dataRcvd.empty()) {
-
-            njson data;
-
-            try {
-
-                data = njson::parse(dataRcvd);
-
-            } catch (const std::exception& e) { throw libException(FMT("{0} was thrown while parsing json (_sendReq-njson::parse)", e.what())); };
-
-            if (res.status_code() == http::status_codes::OK) {
-
-                return data;
-            }
-
-            int code = 0;
-            string excpStr;
-            string message;
-
-            try {
-
-                code = res.status_code();
-                excpStr = (data.contains("error_type")) ? data["error_type"] : "NoException";
-                message = data["message"];
-
-            } catch (const std::exception& e) {
-
-                throw libException(
-                    FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message));
-            };
-
-            kitepp::_throwException(excpStr, code, message);
-
-
-        } else {
-
-            return njson();
-        };
-
-        return njson();
-    };*/
-
-    string _sendInstrumentsReq(const string& endpoint) {
-
-        // create request
-
-        http::http_request req(http::methods::GET);
-        req.set_request_uri(U(endpoint));
-
-        req.headers().set_content_type(U("application/x-www-form-urlencoded"));
-        req.headers().add(U("Authorization"), U(_getAuthStr()));
-        req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
-
-        // send request, get data
-
-        http::http_response res = _httpClient.request(req).get();
-        string dataRcvd = res.extract_string().get();
-
-        if (!dataRcvd.empty()) {
-
-            if (res.status_code() == http::status_codes::OK) { return dataRcvd; }
-
-            int code = res.status_code();
-            string excpStr = "NoException";
-
-            kitepp::_throwException(excpStr, code, "");
-
-
-        } else {
-
-            return "";
-        };
-
-        return "";
-    };
-
-
-    //! - - - DEV - - -
-
     void _sendReq_RJ(rj::Document& data, const http::method& mtd, const string& endpoint,
         const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
 
@@ -1583,6 +1469,40 @@ class kite {
             data.Parse("[]");
         };
     };
+
+    string _sendInstrumentsReq(const string& endpoint) {
+
+        // create request
+
+        http::http_request req(http::methods::GET);
+        req.set_request_uri(U(endpoint));
+
+        req.headers().set_content_type(U("application/x-www-form-urlencoded"));
+        req.headers().add(U("Authorization"), U(_getAuthStr()));
+        req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
+
+        // send request, get data
+
+        http::http_response res = _httpClient.request(req).get();
+        string dataRcvd = res.extract_string().get();
+
+        if (!dataRcvd.empty()) {
+
+            if (res.status_code() == http::status_codes::OK) { return dataRcvd; }
+
+            int code = res.status_code();
+            string excpStr = "NoException";
+
+            kitepp::_throwException(excpStr, code, "");
+
+
+        } else {
+
+            return "";
+        };
+
+        return "";
+    };
 };
 
 
@@ -1590,3 +1510,4 @@ class kite {
 
 // TODO rectify double lookup in functions
 // TODO catch exceptions wherever you use to_string/stoi/stod
+// TODO start rjhelper function names with underscore
