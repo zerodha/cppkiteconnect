@@ -56,15 +56,15 @@ namespace kitepp {
 
 
 namespace http = web::http;
+using kitepp::DEFAULTDOUBLE;
+using kitepp::DEFAULTINT;
+using kitepp::isValid;
 using std::string;
 using njson = nlohmann::json;
-// TODO catch exceptions wherever you use to_string/stoi/stod
 
 
 //! - - - DEV - - -
-
 namespace rj = rapidjson;
-// xusing rj::Document;
 namespace rjh = kitepp::RJHelper;
 //! - - - DEV - - -
 
@@ -73,10 +73,6 @@ class kite {
 
   public:
     // member variables:
-
-    // FIXME move these to cofig or something
-    static constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
-    static constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
 
     // constructors and destructor:
 
@@ -91,10 +87,6 @@ class kite {
     explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(U(_rootURL)) {};
 
     // methods:
-
-    // FIXME move these to config or something
-    static bool isValid(int num) { return isnan(num); };
-    static bool isValid(double num) { return isnan(num); };
 
     // api:
 
@@ -1423,13 +1415,12 @@ class kite {
         return str;
     };
 
-    njson _sendReq(
+    /*njson _sendReq(
         const http::method& mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
 
-        /*
-        If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of bodyParam's first pair with first
-        element being empty string. see orderMargins() function
-        */
+        //If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of bodyParam's first pair with first
+        //element being empty string. see orderMargins() function
+
 
         // create request
 
@@ -1463,7 +1454,6 @@ class kite {
 
             if (res.status_code() == http::status_codes::OK) {
 
-                // TODO can return njson["data"] & save users a step if it is established that every ok request has `data` field. It seems it is
                 return data;
             }
 
@@ -1492,7 +1482,7 @@ class kite {
         };
 
         return njson();
-    };
+    };*/
 
     string _sendInstrumentsReq(const string& endpoint) {
 
@@ -1599,3 +1589,4 @@ class kite {
 } // namespace kitepp
 
 // TODO rectify double lookup in functions
+// TODO catch exceptions wherever you use to_string/stoi/stod

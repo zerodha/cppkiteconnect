@@ -16,7 +16,11 @@
  */
 #pragma once
 
+#include <cmath> //isnan()
 #include <string>
+
+// headers/macros/operators required in more than one file
+//********
 
 //! These defines will dilute the global namespace
 #define FMT_HEADER_ONLY 1
@@ -25,12 +29,21 @@
 using fmt::literals::operator""_a;
 #define FMT fmt::format
 
+//*********
+
 namespace kitepp {
+
+// constatnts required in more than one class
+
+constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
+constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
+bool isValid(int num) { return std::isnan(num); };
+bool isValid(double num) { return std::isnan(num); };
 
 namespace config {
 
 
-// constants and other things thatare needed in more than one file should go here
+// configuration related constants and functions *required in more than one file* should go here (e.g., root url, port num etc.)
 
 
 } // namespace config
