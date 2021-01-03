@@ -96,9 +96,9 @@ class kite {
     /**
      * @brief Generate user session details like `access_token`
      *
-     * @param requestToken request token obtained after from login flow
-     * @param apiSecret API secret string obtained with API key
-     * @return njson
+     * @param requestToken
+     * @param apiSecret
+     * @return userSession
      *
      * @paragraph ex1 example
      * @snippet example2.cpp obtaining access token
@@ -151,10 +151,11 @@ class kite {
     /**
      * @brief returns user profile
      *
-     * @return njson
+     * @return userProfile
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get user profile
+     *
      */
     userProfile profile() {
 
@@ -167,10 +168,9 @@ class kite {
     };
 
     /**
-     * @brief get account balance and cash margin details for a particular segment.
+     * @brief Get margins for all segments
      *
-     * @param segment Returns all segments if none specified.
-     * @return njson
+     * @return allMargins
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get margins
@@ -185,6 +185,15 @@ class kite {
         return allMargins(res["data"].GetObject());
     };
 
+    /**
+     * @brief Get margins for a particular segment
+     *
+     * @param segment
+     * @return margins
+     *
+     * @paragraph ex1 example
+     * @snippet example2.cpp get margins
+     */
     margins getMargins(const string& segment) {
 
         rj::Document res;
@@ -206,7 +215,7 @@ class kite {
      * @param txnType transaction type
      * @param quantity
      * @param product
-     * @param orderType order type
+     * @param orderType
      * @param price
      * @param validity
      * @param trigPrice trigger price
@@ -215,7 +224,8 @@ class kite {
      * @param trailSL trailing stoploss
      * @param discQuantity disclosed quantity
      * @param tag
-     * @return njson
+     *
+     * @return string orderID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp placing an order
@@ -268,7 +278,8 @@ class kite {
      * @param trigPrice trigger price
      * @param validity
      * @param discQuantity disclosed quantity
-     * @return njson
+     *
+     * @return string order ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp modifying an order
@@ -304,7 +315,8 @@ class kite {
      * @param variety
      * @param ordID order ID
      * @param parentOrdID parent order ID
-     * @return njson
+     *
+     * @return string order ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp cancelling an order
@@ -332,7 +344,8 @@ class kite {
      * @param variety
      * @param ordID order ID
      * @param parentOrdID parent order ID
-     * @return njson
+     *
+     * @return string order ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp exiting an order
@@ -342,7 +355,7 @@ class kite {
     /**
      * @brief get list of orders
      *
-     * @return njson
+     * @return std::vector<order>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get orders
@@ -365,7 +378,8 @@ class kite {
      * @brief get history of an order
      *
      * @param ordID order ID
-     * @return njson
+     *
+     *  @return std::vector<order>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get order history
@@ -388,7 +402,7 @@ class kite {
     /**
      * @brief get list of trades
      *
-     * @return njson
+     * @return std::vector<trade>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get trades
@@ -411,7 +425,8 @@ class kite {
      * @brief get the list of trades executed for a particular order.
      *
      * @param ordID order ID
-     * @return njson
+     *
+     *  @return std::vector<trade>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get order trades
@@ -441,25 +456,9 @@ class kite {
      * @param exchange
      * @param trigValues trigger values
      * @param lastPrice last price
-     * @param orders njson array of orders
-     * @return njson
+     * @param gttParams vector of GTTParams
      *
-     * @note
-     * Function expects a njson array `orders` with following params: `transaction_type`, `quantity`, `order_type`, `product`, `price`. Users can
-     * form the array like
-     * @code
-     * auto gttOrds = kitepp::njson::array();
-     * gttOrds.push_back({
-     *
-     *    {"transaction_type", "BUY"},
-     *    {"quantity", 10},
-     *    {"order_type", "LIMIT"},
-     *    {"product", "CNC"},
-     *    {"price", 199.10},
-     *
-     *});
-     * @endcode
-     *and pass gttOrds to the function.
+     * @return int trigger ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp placing a gtt
@@ -538,7 +537,7 @@ class kite {
     /**
      * @brief get list of GTTs
      *
-     * @return njson
+     * @return std::vector<GTT>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get gtts
@@ -560,7 +559,7 @@ class kite {
      * @brief get details of a GTT
      *
      * @param trigID
-     * @return njson
+     * @return GTT
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get gtt info
@@ -575,7 +574,7 @@ class kite {
     };
 
     /**
-     * @brief modify a GTT
+     * @brief
      *
      * @param trigID trigger ID
      * @param trigType trigger type
@@ -583,26 +582,9 @@ class kite {
      * @param exchange
      * @param trigValues trigger values
      * @param lastPrice last traded price of the instrument
-     * @param orders njson array of orders
-     * @return njson
+     * @param gttParams vector of GTTParams
      *
-     * @note
-     * Function expects a njson array `orders` with following params: `transaction_type`, `quantity`, `order_type`, `product`, `price`. Users can
-     * form the array like
-     *
-     * @code
-     * auto gttOrds = kitepp::njson::array();
-     * gttOrds.push_back({
-     *
-     * {"transaction_type", "BUY"},
-     * {"quantity", 10},
-     * {"order_type", "LIMIT"},
-     * {"product", "CNC"},
-     * {"price", 199.10},
-     *
-     * });
-     * @endcode
-     * and pass gttOrds to the function.
+     * @return int trigger ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp modifying a gtt
@@ -680,7 +662,8 @@ class kite {
      * @brief delete a GTT order.
      *
      * @param trigID trigger ID
-     * @return njson
+     *
+     * @return int trigger ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp delete a gtt
@@ -704,7 +687,7 @@ class kite {
     /**
      * @brief get holdings
      *
-     * @return njson
+     * @return std::vector<holding>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get holdings
@@ -726,7 +709,7 @@ class kite {
     /**
      * @brief get positions
      *
-     * @return njson
+     * @return positions
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get positions
@@ -750,7 +733,8 @@ class kite {
      * @param quantity
      * @param oldProduct old product
      * @param newProduct new product
-     * @return njson
+     *
+     * @return bool true if position was successfully modified
      *
      * @paragraph ex1 example
      * @snippet example2.cpp convert position
@@ -786,9 +770,10 @@ class kite {
      * @brief Retrieve the list of market instruments available to trade.
      *
      * @param exchange returns all instruments if none specified
-     * @return string
      *
-     * @attention Note that the results could be large, with tens of thousands of entries in the list.
+     * @return std::vector<instrument>
+     *
+     * @attention Note that the results could be large, with tens of thousands of entries.
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get instruments
@@ -815,9 +800,8 @@ class kite {
      * @brief Retrieve quote for list of instruments
      *
      * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
-     * @return njson
      *
-     * @attention if there are spaces in symbol name, they should be replaced with `+`. Example: `NSE:NIFTY 50` becomes `NSE:NIFTY+50`
+     *  @return std::unordered_map<string, quote>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get quote
@@ -838,9 +822,8 @@ class kite {
      * @brief Retrieve OHLC for list of instruments
      *
      * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
-     * @return njson
      *
-     * @attention if there are spaces in symbol name, they should be replaced with `+`. Example: `NSE:NIFTY 50` becomes `NSE:NIFTY+50`
+     * @return std::unordered_map<string, OHLCQuote>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get ohlc
@@ -861,9 +844,8 @@ class kite {
      * @brief Retrieve last price for list of instruments
      *
      * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
-     * @return njson
      *
-     * @attention if there are spaces in symbol name, they should be replaced with `+`. Example: `NSE:NIFTY 50` becomes `NSE:NIFTY+50`
+     * @return std::unordered_map<string, LTPQuote>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get ltp
@@ -887,14 +869,13 @@ class kite {
      * @brief Retrieve historical data (candles) for an instrument
      *
      * @param instrumentTok instrument token (NOT trading symbol)
-     * @param from from date in following format: yyyy-mm-dd+HH:MM:SS
-     * @param to to date in following format: yyyy-mm-dd+HH:MM:SS
+     * @param from from date in the following format: yyyy-mm-dd HH:MM:SS
+     * @param to to date in the following format: yyyy-mm-dd HH:MM:SS
      * @param interval candle interval
      * @param continuous boolean flag to get continuous data for futures and options instruments
      * @param oi boolean flag to get open interest data
-     * @return njson
      *
-     * @attention if there are spaces in symbol name, they should be replaced with `+`. Example: `NIFTY 50` becomes `NIFTY+50`
+     *  @return std::vector<historicalData>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get historical data
@@ -926,7 +907,8 @@ class kite {
      * @param quantity
      * @param amount
      * @param tag
-     * @return njson
+     *
+     * @return string order ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp place mf order
@@ -959,7 +941,8 @@ class kite {
      * @brief cancel a mutual fund order
      *
      * @param ordID order ID
-     * @return njson
+     *
+     * @return string order ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp cancel a mf order
@@ -979,7 +962,7 @@ class kite {
     /**
      * @brief get all mutual fund orders
      *
-     * @return njson
+     * @return std::vector<MFOrder>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get mf orders
@@ -1002,7 +985,8 @@ class kite {
      * @brief get details of a mutual fund order
      *
      * @param ordID order ID
-     * @return njson
+     *
+     * @return MFOrder
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get mf order info
@@ -1053,7 +1037,8 @@ class kite {
      * @param initAmount initial amount
      * @param installDay installment day
      * @param tag
-     * @return njson
+     *
+     * @return std::pair<string, string>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp place mf sip order
@@ -1094,7 +1079,6 @@ class kite {
      * @param installments
      * @param freq frequency
      * @param installDay installment day
-     * @return njson
      *
      * @paragraph ex1 example
      * @snippet example2.cpp modify mf sip order
@@ -1118,7 +1102,8 @@ class kite {
      * @brief cancel a MF SIP
      *
      * @param SIPID SIP ID
-     * @return njson
+     *
+     * @return SIP ID
      *
      * @paragraph ex1 example
      * @snippet example2.cpp cancel mf sip
@@ -1138,7 +1123,7 @@ class kite {
     /**
      * @brief get list of SIPs
      *
-     * @return njson
+     * @return std::vector<MFSIP>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get sips
@@ -1162,7 +1147,8 @@ class kite {
      * @brief get details of a SIP
      *
      * @param SIPID SIP ID
-     * @return njson
+     *
+     * @return MFSIP
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get sip info
@@ -1180,7 +1166,7 @@ class kite {
     /**
      * @brief Get list of mutual fund instruments
      *
-     * @return string
+     * @return std::vector<MFInstrument>
      *
      * @paragraph ex1 example
      * @snippet example2.cpp get mf instruments
@@ -1207,34 +1193,12 @@ class kite {
     /**
      * @brief get various margins required for orders
      *
-     * @param orders
-     * @return njson
+     * @param params
      *
-     * @attention
-     * Function expects a njson array of orders. The array can be formed like
-     * @code
-     * auto ords = njson::array();
-     * ords.push_back({
-
-     * {"exchange", "NSE"},
-     * {"tradingsymbol", "INFY"},
-     * {"transaction_type", "BUY"},
-     * {"variety", "regular"},
-     * {"product", "CNC"},
-     * {"order_type", "MARKET"},
-     * {"quantity", 1},
-     * {"price", 0},
-     * {"trigger_price", 0}
+     * @return std::vector<orderMargins>
      *
-     * });
-     * @endcode
-     * and passed to the function like
-     *
-     * std::cout<<Kite.orderMargins(ords).dump(4)<<std::endl;
-     *
-     * Alternatively, users can create the array in-place.
-     *
-     *
+     * @paragraph ex1 example
+     * @snippet example2.cpp get order margins
      */
     std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params) {
 
@@ -1418,7 +1382,7 @@ class kite {
 
         // create request
 
-        httplib::Headers headers = {
+        const httplib::Headers headers = {
 
             { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion }
         };

@@ -1,8 +1,23 @@
+/*
+ *   Copyright (c) 2020 Bhumit Attarde
+
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 /**
  * @file responses.hpp
- * @author Bhumit Atatrde
- * @brief This file has all structs returned by kitepp
- *
+ * @brief This file has all the structs returned by kitepp
  */
 
 #pragma once
@@ -25,7 +40,7 @@ namespace rj = rapidjson;
 namespace rjh = kitepp::RJHelper;
 
 
-// userProfile represents a user's personal and financial profile.
+/// userProfile represents a user's personal and financial profile.
 struct userProfile {
 
     userProfile() = default;
@@ -58,7 +73,7 @@ struct userProfile {
     std::vector<string> exchanges;
 };
 
-// tokens received after successfull authentication
+/// tokens received after successfull authentication
 struct userTokens {
 
     userTokens() = default;
@@ -77,7 +92,7 @@ struct userTokens {
     string refreshToken;
 };
 
-// userSession represents the response after a successful authentication.
+/// userSession represents the response after a successful authentication.
 struct userSession {
 
     userSession() = default;
@@ -101,7 +116,7 @@ struct userSession {
     string loginTime;
 };
 
-// availableMargins represents the available margins from the margins response for a single segment.
+/// availableMargins represents the available margins from the margins response for a single segment.
 struct availableMargins {
 
     availableMargins() = default;
@@ -124,7 +139,7 @@ struct availableMargins {
     double intradayPayin = 0.0;
 };
 
-// usedMargins represents the used margins from the margins response for a single segment.
+/// usedMargins represents the used margins from the margins response for a single segment.
 struct usedMargins {
 
     usedMargins() = default;
@@ -154,7 +169,7 @@ struct usedMargins {
     double turnover = 0.0;
 };
 
-// margins represents the user margins for a segment.
+/// margins represents the user margins for a segment.
 struct margins {
 
     margins() = default;
@@ -175,14 +190,13 @@ struct margins {
         used.parse(usedVal.GetObject());
     };
 
-    // string category;
     bool enabled = false;
     double net = 0.0;
     availableMargins available;
     usedMargins used;
 };
 
-// allMargins contains both equity and commodity margins.
+/// allMargins contains both equity and commodity margins.
 struct allMargins {
 
     allMargins() = default;
@@ -205,7 +219,7 @@ struct allMargins {
 };
 
 
-// order represents a individual order response.
+/// order represents a individual order response.
 struct order {
 
     order() = default;
@@ -282,7 +296,7 @@ struct order {
     int cancelledQuantity = 0;
 };
 
-// trade represents a individual order response.
+/// trade represents a individual order response.
 struct trade {
 
     trade() = default;
@@ -319,7 +333,7 @@ struct trade {
     int InstrumentToken;
 };
 
-// GTTParams is the struct user needs to pass to placeGTT() to place a GTT
+/// GTTParams is the struct user needs to pass to placeGTT() to place a GTT
 struct GTTParams {
 
     GTTParams() = default;
@@ -334,7 +348,7 @@ struct GTTParams {
     double price = 0.0;
 };
 
-// GTTCondition represents the condition inside a GTT order.
+/// GTTCondition represents the condition inside a GTT order.
 struct GTTCondition {
 
     GTTCondition() = default;
@@ -355,7 +369,7 @@ struct GTTCondition {
     std::vector<double> triggerValues;
 };
 
-// GTT represents a single GTT order.
+/// GTT represents a single GTT order.
 struct GTT {
 
     GTT() = default;
@@ -394,7 +408,7 @@ struct GTT {
     std::vector<order> orders;
 }; // namespace kitepp
 
-// holding is an individual holdings response.
+/// holding is an individual holdings response.
 struct holding {
 
     holding() = default;
@@ -447,7 +461,7 @@ struct holding {
 };
 
 
-// position represents an individual position response.
+/// position represents an individual position response.
 struct position {
 
 
@@ -532,7 +546,7 @@ struct position {
     double daySellValue = 0.0;
 };
 
-// positions represents all positions response.
+/// positions represents all positions response.
 struct positions {
 
     positions() = default;
@@ -555,7 +569,7 @@ struct positions {
     std::vector<position> day;
 };
 
-// ohlc strcut
+/// ohlc strcut
 struct ohlc {
 
     ohlc() = default;
@@ -576,7 +590,7 @@ struct ohlc {
     double close = 0.0;
 };
 
-// represents market depth
+/// represents market depth
 struct depth {
 
     depth() = default;
@@ -595,7 +609,7 @@ struct depth {
     int orders = 0;
 };
 
-// represents full quote respone
+/// represents full quote respone
 struct quote {
 
     quote() = default;
@@ -665,7 +679,7 @@ struct quote {
     } marketDepth;
 };
 
-// represents ohlc quote respone
+/// represents ohlc quote respone
 struct OHLCQuote {
 
     OHLCQuote() = default;
@@ -704,7 +718,7 @@ struct LTPQuote {
     double lastPrice = 0.0;
 };
 
-// represents historical data call reponse
+/// represents historical data call reponse
 struct historicalData {
 
     historicalData() = default;
@@ -713,7 +727,7 @@ struct historicalData {
 
     void parse(const rj::Value::Array& val) {
 
-        // in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number doesn't have decimal
+        /// in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number doesn't have decimal
         static auto getDouble = [](rj::Value& val) -> double {
             if (val.IsDouble()) { return val.GetDouble(); };
             if (val.IsInt()) { return val.GetInt(); }; //! may lead to data loss
@@ -739,7 +753,7 @@ struct historicalData {
     int OI = 0;
 };
 
-// MFOrder represents a individual mutualfund order response.
+/// MFOrder represents a individual mutualfund order response.
 struct MFOrder {
 
     MFOrder() = default;
@@ -793,7 +807,7 @@ struct MFOrder {
     string tag;
 };
 
-// MFHolding represents a individual mutualfund holding.
+/// MFHolding represents a individual mutualfund holding.
 struct MFHolding {
 
     MFHolding() = default;
@@ -822,7 +836,7 @@ struct MFHolding {
     int quantity = 0;
 };
 
-// MFSIP represents a individual mutualfund SIP response.
+/// MFSIP represents a individual mutualfund SIP response.
 struct MFSIP {
 
 
@@ -874,7 +888,7 @@ struct MFSIP {
     string tag;
 };
 
-// orderMarginsParams represents a position in the Margin Calculator API
+/// orderMarginsParams represents a position in the Margin Calculator API
 struct orderMarginsParams {
 
     orderMarginsParams() = default;
@@ -890,7 +904,7 @@ struct orderMarginsParams {
     double triggerPrice = 0.0;
 };
 
-// ordersMargins represents response from the Margin Calculator API.
+/// ordersMargins represents response from the Margin Calculator API.
 struct orderMargins {
 
 
@@ -947,7 +961,7 @@ struct orderMargins {
     double total = 0.0;
 };
 
-// instrument represents individual instrument response.
+/// instrument represents individual instrument response.
 struct instrument {
 
     instrument() = default;
@@ -989,7 +1003,7 @@ struct instrument {
     string exchange;
 };
 
-// MFInstrument represents individual mfinstrument response.
+/// MFInstrument represents individual mfinstrument response.
 struct MFInstrument {
 
     MFInstrument() = default;
