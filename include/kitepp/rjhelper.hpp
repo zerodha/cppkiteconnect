@@ -35,9 +35,9 @@ namespace RJHelper {
 using std::string;
 namespace rj = rapidjson;
 
-enum class RJValueType : int { Object, Array };
+enum class _RJValueType : int { Object, Array };
 
-inline bool parse(rj::Document& dom, const string& str) {
+inline bool _parse(rj::Document& dom, const string& str) {
 
     rj::ParseResult parseOK = dom.Parse(str.c_str());
     if (parseOK == nullptr) { throw libException(FMT("Failed to parse json string: {0}", str)); };
@@ -45,7 +45,7 @@ inline bool parse(rj::Document& dom, const string& str) {
     return true;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, string& out, const char* name) {
+inline bool _getIfExists(const rj::Value::Object& val, string& out, const char* name) {
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
@@ -69,7 +69,7 @@ inline bool getIfExists(const rj::Value::Object& val, string& out, const char* n
     return false;
 };
 
-inline bool getIfExists(const rj::Document& val, string& out, const char* name) {
+inline bool _getIfExists(const rj::Document& val, string& out, const char* name) {
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
@@ -93,7 +93,7 @@ inline bool getIfExists(const rj::Document& val, string& out, const char* name) 
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, double& out, const char* name) {
+inline bool _getIfExists(const rj::Value::Object& val, double& out, const char* name) {
 
 
     auto it = val.FindMember(name);
@@ -118,7 +118,7 @@ inline bool getIfExists(const rj::Value::Object& val, double& out, const char* n
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, int& out, const char* name) {
+inline bool _getIfExists(const rj::Value::Object& val, int& out, const char* name) {
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
@@ -135,7 +135,7 @@ inline bool getIfExists(const rj::Value::Object& val, int& out, const char* name
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, bool& out, const char* name) {
+inline bool _getIfExists(const rj::Value::Object& val, bool& out, const char* name) {
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
@@ -151,7 +151,7 @@ inline bool getIfExists(const rj::Value::Object& val, bool& out, const char* nam
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, std::vector<string>& out, const char* name) {
+inline bool _getIfExists(const rj::Value::Object& val, std::vector<string>& out, const char* name) {
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
@@ -171,7 +171,7 @@ inline bool getIfExists(const rj::Value::Object& val, std::vector<string>& out, 
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, std::vector<double>& out, const char* name) {
+inline bool _getIfExists(const rj::Value::Object& val, std::vector<double>& out, const char* name) {
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
@@ -199,11 +199,11 @@ inline bool getIfExists(const rj::Value::Object& val, std::vector<double>& out, 
     return false;
 };
 
-inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char* name, RJValueType type) {
+inline bool _getIfExists(const rj::Value::Object& val, rj::Value& out, const char* name, _RJValueType type) {
 
     auto it = val.FindMember(name);
 
-    if (type == RJValueType::Object) {
+    if (type == _RJValueType::Object) {
 
         if (it != val.MemberEnd()) {
 
@@ -217,7 +217,7 @@ inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char
 
         return false;
 
-    } else if (type == RJValueType::Array) {
+    } else if (type == _RJValueType::Array) {
 
         if (it != val.MemberEnd()) {
 
@@ -235,7 +235,7 @@ inline bool getIfExists(const rj::Value::Object& val, rj::Value& out, const char
     return false;
 };
 
-inline string dump(rj::Document& dom) {
+inline string _dump(rj::Document& dom) {
 
     rj::StringBuffer buffer;
     rj::Writer<rj::StringBuffer> writer(buffer);

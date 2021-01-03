@@ -49,16 +49,16 @@ struct userProfile {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, userName, "user_name");
-        rjh::getIfExists(val, userShortName, "user_shortname");
-        rjh::getIfExists(val, avatarURL, "avatar_url");
-        rjh::getIfExists(val, userType, "user_type");
-        rjh::getIfExists(val, email, "email");
-        // x rjh::getIfExists(val, phone, "phone");
-        rjh::getIfExists(val, broker, "broker");
-        rjh::getIfExists(val, products, "products");
-        rjh::getIfExists(val, orderTypes, "order_types");
-        rjh::getIfExists(val, exchanges, "exchanges");
+        rjh::_getIfExists(val, userName, "user_name");
+        rjh::_getIfExists(val, userShortName, "user_shortname");
+        rjh::_getIfExists(val, avatarURL, "avatar_url");
+        rjh::_getIfExists(val, userType, "user_type");
+        rjh::_getIfExists(val, email, "email");
+        // x rjh::_getIfExists(val, phone, "phone");
+        rjh::_getIfExists(val, broker, "broker");
+        rjh::_getIfExists(val, products, "products");
+        rjh::_getIfExists(val, orderTypes, "order_types");
+        rjh::_getIfExists(val, exchanges, "exchanges");
     };
 
     string userName;
@@ -82,9 +82,9 @@ struct userTokens {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, userID, "user_id");
-        rjh::getIfExists(val, accessToken, "access_token");
-        rjh::getIfExists(val, refreshToken, "refresh_token");
+        rjh::_getIfExists(val, userID, "user_id");
+        rjh::_getIfExists(val, accessToken, "access_token");
+        rjh::_getIfExists(val, refreshToken, "refresh_token");
     };
 
     string userID;
@@ -103,9 +103,9 @@ struct userSession {
 
         profile.parse(val);
         tokens.parse(val);
-        rjh::getIfExists(val, apiKey, "api_key");
-        rjh::getIfExists(val, publicToken, "public_token");
-        rjh::getIfExists(val, loginTime, "login_time");
+        rjh::_getIfExists(val, apiKey, "api_key");
+        rjh::_getIfExists(val, publicToken, "public_token");
+        rjh::_getIfExists(val, loginTime, "login_time");
     };
 
     userProfile profile;
@@ -127,10 +127,10 @@ struct availableMargins {
 
         double debugval = val["cash"].GetDouble();
 
-        rjh::getIfExists(val, adHocMargin, "adhoc_margin");
-        rjh::getIfExists(val, cash, "cash");
-        rjh::getIfExists(val, collateral, "collateral");
-        rjh::getIfExists(val, intradayPayin, "intraday_payin");
+        rjh::_getIfExists(val, adHocMargin, "adhoc_margin");
+        rjh::_getIfExists(val, cash, "cash");
+        rjh::_getIfExists(val, collateral, "collateral");
+        rjh::_getIfExists(val, intradayPayin, "intraday_payin");
     };
 
     double adHocMargin = 0.0;
@@ -147,15 +147,15 @@ struct usedMargins {
     explicit usedMargins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        rjh::getIfExists(val, debits, "debits");
-        rjh::getIfExists(val, exposure, "exposure");
-        rjh::getIfExists(val, M2MRealised, "m2m_realised");
-        rjh::getIfExists(val, M2MUnrealised, "m2m_unrealised");
-        rjh::getIfExists(val, optionPremium, "option_premium");
-        rjh::getIfExists(val, payout, "payout");
-        rjh::getIfExists(val, span, "span");
-        rjh::getIfExists(val, holdingSales, "holding_sales");
-        rjh::getIfExists(val, turnover, "turnover");
+        rjh::_getIfExists(val, debits, "debits");
+        rjh::_getIfExists(val, exposure, "exposure");
+        rjh::_getIfExists(val, M2MRealised, "m2m_realised");
+        rjh::_getIfExists(val, M2MUnrealised, "m2m_unrealised");
+        rjh::_getIfExists(val, optionPremium, "option_premium");
+        rjh::_getIfExists(val, payout, "payout");
+        rjh::_getIfExists(val, span, "span");
+        rjh::_getIfExists(val, holdingSales, "holding_sales");
+        rjh::_getIfExists(val, turnover, "turnover");
     };
 
     double debits = 0.0;
@@ -178,13 +178,13 @@ struct margins {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, enabled, "enabled");
-        rjh::getIfExists(val, net, "net");
+        rjh::_getIfExists(val, enabled, "enabled");
+        rjh::_getIfExists(val, net, "net");
 
         rj::Value avlVal(rj::kObjectType);
-        rjh::getIfExists(val, avlVal, "available", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, avlVal, "available", rjh::_RJValueType::Object);
         rj::Value usedVal(rj::kObjectType);
-        rjh::getIfExists(val, usedVal, "utilised", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, usedVal, "utilised", rjh::_RJValueType::Object);
 
         available.parse(avlVal.GetObject());
         used.parse(usedVal.GetObject());
@@ -206,11 +206,11 @@ struct allMargins {
     void parse(const rj::Value::Object& val) {
 
         rj::Value eqVal(rj::kObjectType);
-        rjh::getIfExists(val, eqVal, "equity", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, eqVal, "equity", rjh::_RJValueType::Object);
         equity.parse(eqVal.GetObject());
 
         rj::Value cmVal(rj::kObjectType);
-        rjh::getIfExists(val, cmVal, "commodity", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, cmVal, "commodity", rjh::_RJValueType::Object);
         commodity.parse(cmVal.GetObject());
     };
 
@@ -228,37 +228,37 @@ struct order {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, accountID, "account_id");
-        rjh::getIfExists(val, placedBy, "placed_by");
+        rjh::_getIfExists(val, accountID, "account_id");
+        rjh::_getIfExists(val, placedBy, "placed_by");
 
-        rjh::getIfExists(val, orderID, "order_id");
-        rjh::getIfExists(val, exchangeOrderID, "exchange_order_id");
-        rjh::getIfExists(val, parentOrderID, "parent_order_id");
-        rjh::getIfExists(val, status, "status");
-        rjh::getIfExists(val, statusMessage, "status_message");
-        rjh::getIfExists(val, orderTimestamp, "order_timestamp");
-        rjh::getIfExists(val, exchangeUpdateTimestamp, "exchange_update_timestamp");
-        rjh::getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        rjh::getIfExists(val, rejectedBy, "rejected_by");
-        rjh::getIfExists(val, variety, "variety");
+        rjh::_getIfExists(val, orderID, "order_id");
+        rjh::_getIfExists(val, exchangeOrderID, "exchange_order_id");
+        rjh::_getIfExists(val, parentOrderID, "parent_order_id");
+        rjh::_getIfExists(val, status, "status");
+        rjh::_getIfExists(val, statusMessage, "status_message");
+        rjh::_getIfExists(val, orderTimestamp, "order_timestamp");
+        rjh::_getIfExists(val, exchangeUpdateTimestamp, "exchange_update_timestamp");
+        rjh::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
+        rjh::_getIfExists(val, rejectedBy, "rejected_by");
+        rjh::_getIfExists(val, variety, "variety");
 
-        rjh::getIfExists(val, exchange, "exchange");
-        rjh::getIfExists(val, tradingSymbol, "tradingsymbol");
-        rjh::getIfExists(val, instrumentToken, "instrument_token");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, tradingSymbol, "tradingsymbol");
+        rjh::_getIfExists(val, instrumentToken, "instrument_token");
 
-        rjh::getIfExists(val, orderType, "order_type");
-        rjh::getIfExists(val, transactionType, "transaction_type");
-        rjh::getIfExists(val, validity, "validity");
-        rjh::getIfExists(val, product, "product");
-        rjh::getIfExists(val, quantity, "quantity");
-        rjh::getIfExists(val, disclosedQuantity, "disclosed_quantity");
-        rjh::getIfExists(val, price, "price");
-        rjh::getIfExists(val, triggerPrice, "trigger_price");
+        rjh::_getIfExists(val, orderType, "order_type");
+        rjh::_getIfExists(val, transactionType, "transaction_type");
+        rjh::_getIfExists(val, validity, "validity");
+        rjh::_getIfExists(val, product, "product");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, disclosedQuantity, "disclosed_quantity");
+        rjh::_getIfExists(val, price, "price");
+        rjh::_getIfExists(val, triggerPrice, "trigger_price");
 
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, filledQuantity, "filled_quantity");
-        rjh::getIfExists(val, pendingQuantity, "pending_quantity");
-        rjh::getIfExists(val, cancelledQuantity, "cancelled_quantity");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, filledQuantity, "filled_quantity");
+        rjh::_getIfExists(val, pendingQuantity, "pending_quantity");
+        rjh::_getIfExists(val, cancelledQuantity, "cancelled_quantity");
     };
 
     string accountID;
@@ -305,18 +305,18 @@ struct trade {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, quantity, "quantity");
-        rjh::getIfExists(val, tradeID, "trade_id");
-        rjh::getIfExists(val, product, "product");
-        rjh::getIfExists(val, fillTimestamp, "fill_timestamp");
-        rjh::getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        rjh::getIfExists(val, exchangeOrderID, "exchange_order_id");
-        rjh::getIfExists(val, orderID, "order_id");
-        rjh::getIfExists(val, transactionType, "transaction_type");
-        rjh::getIfExists(val, tradingSymbol, "tradingsymbol");
-        rjh::getIfExists(val, exchange, "exchange");
-        rjh::getIfExists(val, InstrumentToken, "instrument_token");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, tradeID, "trade_id");
+        rjh::_getIfExists(val, product, "product");
+        rjh::_getIfExists(val, fillTimestamp, "fill_timestamp");
+        rjh::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
+        rjh::_getIfExists(val, exchangeOrderID, "exchange_order_id");
+        rjh::_getIfExists(val, orderID, "order_id");
+        rjh::_getIfExists(val, transactionType, "transaction_type");
+        rjh::_getIfExists(val, tradingSymbol, "tradingsymbol");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, InstrumentToken, "instrument_token");
     };
 
     double averagePrice;
@@ -357,10 +357,10 @@ struct GTTCondition {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, exchange, "exchange");
-        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
-        rjh::getIfExists(val, lastPrice, "last_price");
-        rjh::getIfExists(val, triggerValues, "trigger_values");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::_getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, triggerValues, "trigger_values");
     };
 
     string exchange;
@@ -378,16 +378,16 @@ struct GTT {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, ID, "id");
-        rjh::getIfExists(val, userID, "user_id");
-        rjh::getIfExists(val, type, "type");
-        rjh::getIfExists(val, createdAt, "created_at");
-        rjh::getIfExists(val, updatedAt, "updated_at");
-        rjh::getIfExists(val, expiresAt, "expires_at");
-        rjh::getIfExists(val, status, "status");
+        rjh::_getIfExists(val, ID, "id");
+        rjh::_getIfExists(val, userID, "user_id");
+        rjh::_getIfExists(val, type, "type");
+        rjh::_getIfExists(val, createdAt, "created_at");
+        rjh::_getIfExists(val, updatedAt, "updated_at");
+        rjh::_getIfExists(val, expiresAt, "expires_at");
+        rjh::_getIfExists(val, status, "status");
 
         rj::Value condnVal(rj::kObjectType);
-        rjh::getIfExists(val, condnVal, "condition", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, condnVal, "condition", rjh::_RJValueType::Object);
         condition.parse(condnVal.GetObject());
 
         auto it = val.FindMember("orders");
@@ -417,25 +417,25 @@ struct holding {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
-        rjh::getIfExists(val, exchange, "exchange");
-        rjh::getIfExists(val, instrumentToken, "instrument_token");
-        rjh::getIfExists(val, ISIN, "isin");
-        rjh::getIfExists(val, product, "product");
+        rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, instrumentToken, "instrument_token");
+        rjh::_getIfExists(val, ISIN, "isin");
+        rjh::_getIfExists(val, product, "product");
 
-        rjh::getIfExists(val, price, "price");
-        rjh::getIfExists(val, quantity, "quantity");
-        rjh::getIfExists(val, t1Quantity, "t1_quantity");
-        rjh::getIfExists(val, realisedQuantity, "realised_quantity");
-        rjh::getIfExists(val, collateralQuantity, "collateral_quantity");
-        rjh::getIfExists(val, collateralType, "collateral_type");
+        rjh::_getIfExists(val, price, "price");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, t1Quantity, "t1_quantity");
+        rjh::_getIfExists(val, realisedQuantity, "realised_quantity");
+        rjh::_getIfExists(val, collateralQuantity, "collateral_quantity");
+        rjh::_getIfExists(val, collateralType, "collateral_type");
 
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, lastPrice, "last_price");
-        rjh::getIfExists(val, closePrice, "close_price");
-        rjh::getIfExists(val, PnL, "pnl");
-        rjh::getIfExists(val, dayChange, "day_change");
-        rjh::getIfExists(val, dayChangePercentage, "day_change_percentage");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, closePrice, "close_price");
+        rjh::_getIfExists(val, PnL, "pnl");
+        rjh::_getIfExists(val, dayChange, "day_change");
+        rjh::_getIfExists(val, dayChangePercentage, "day_change_percentage");
     };
 
 
@@ -471,41 +471,41 @@ struct position {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
-        rjh::getIfExists(val, exchange, "exchange");
-        rjh::getIfExists(val, instrumentToken, "instrument_token");
-        rjh::getIfExists(val, product, "product");
+        rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, instrumentToken, "instrument_token");
+        rjh::_getIfExists(val, product, "product");
 
-        rjh::getIfExists(val, quantity, "quantity");
-        rjh::getIfExists(val, overnightQuantity, "overnight_quantity");
-        rjh::getIfExists(val, multiplier, "multiplier");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, overnightQuantity, "overnight_quantity");
+        rjh::_getIfExists(val, multiplier, "multiplier");
 
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, closePrice, "close_price");
-        rjh::getIfExists(val, lastPrice, "last_price");
-        rjh::getIfExists(val, value, "value");
-        rjh::getIfExists(val, PnL, "pnl");
-        rjh::getIfExists(val, M2M, "m2m");
-        rjh::getIfExists(val, unrealised, "unrealised");
-        rjh::getIfExists(val, realised, "realised");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, closePrice, "close_price");
+        rjh::_getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, value, "value");
+        rjh::_getIfExists(val, PnL, "pnl");
+        rjh::_getIfExists(val, M2M, "m2m");
+        rjh::_getIfExists(val, unrealised, "unrealised");
+        rjh::_getIfExists(val, realised, "realised");
 
-        rjh::getIfExists(val, buyQuantity, "buy_quantity");
-        rjh::getIfExists(val, buyPrice, "buy_price");
-        rjh::getIfExists(val, buyValue, "buy_value");
-        rjh::getIfExists(val, buyM2MValue, "buy_m2m");
+        rjh::_getIfExists(val, buyQuantity, "buy_quantity");
+        rjh::_getIfExists(val, buyPrice, "buy_price");
+        rjh::_getIfExists(val, buyValue, "buy_value");
+        rjh::_getIfExists(val, buyM2MValue, "buy_m2m");
 
-        rjh::getIfExists(val, sellQuantity, "sell_quantity");
-        rjh::getIfExists(val, sellPrice, "sell_price");
-        rjh::getIfExists(val, sellValue, "sell_value");
-        rjh::getIfExists(val, sellM2MValue, "sell_m2m");
+        rjh::_getIfExists(val, sellQuantity, "sell_quantity");
+        rjh::_getIfExists(val, sellPrice, "sell_price");
+        rjh::_getIfExists(val, sellValue, "sell_value");
+        rjh::_getIfExists(val, sellM2MValue, "sell_m2m");
 
-        rjh::getIfExists(val, dayBuyQuantity, "day_buy_quantity");
-        rjh::getIfExists(val, dayBuyPrice, "day_buy_price");
-        rjh::getIfExists(val, dayBuyValue, "day_buy_value");
+        rjh::_getIfExists(val, dayBuyQuantity, "day_buy_quantity");
+        rjh::_getIfExists(val, dayBuyPrice, "day_buy_price");
+        rjh::_getIfExists(val, dayBuyValue, "day_buy_value");
 
-        rjh::getIfExists(val, daySellQuantity, "day_sell_quantity");
-        rjh::getIfExists(val, daySellPrice, "day_sell_price");
-        rjh::getIfExists(val, daySellValue, "averaday_sell_valuege_price");
+        rjh::_getIfExists(val, daySellQuantity, "day_sell_quantity");
+        rjh::_getIfExists(val, daySellPrice, "day_sell_price");
+        rjh::_getIfExists(val, daySellValue, "averaday_sell_valuege_price");
     };
 
 
@@ -556,11 +556,11 @@ struct positions {
     void parse(const rj::Value::Object& val) {
 
         rj::Value netVal(rj::kArrayType);
-        rjh::getIfExists(val, netVal, "net", rjh::RJValueType::Array);
+        rjh::_getIfExists(val, netVal, "net", rjh::_RJValueType::Array);
         for (auto& i : netVal.GetArray()) { net.emplace_back(i.GetObject()); };
 
         rj::Value dayVal(rj::kArrayType);
-        rjh::getIfExists(val, dayVal, "day", rjh::RJValueType::Array);
+        rjh::_getIfExists(val, dayVal, "day", rjh::_RJValueType::Array);
         for (auto& i : netVal.GetArray()) { day.emplace_back(i.GetObject()); };
     };
 
@@ -578,10 +578,10 @@ struct ohlc {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, open, "open");
-        rjh::getIfExists(val, high, "high");
-        rjh::getIfExists(val, low, "low");
-        rjh::getIfExists(val, close, "close");
+        rjh::_getIfExists(val, open, "open");
+        rjh::_getIfExists(val, high, "high");
+        rjh::_getIfExists(val, low, "low");
+        rjh::_getIfExists(val, close, "close");
     };
 
     double open = 0.0;
@@ -599,9 +599,9 @@ struct depth {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, price, "price");
-        rjh::getIfExists(val, quantity, "quantity");
-        rjh::getIfExists(val, orders, "orders");
+        rjh::_getIfExists(val, price, "price");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, orders, "orders");
     };
 
     double price = 0.0;
@@ -618,37 +618,37 @@ struct quote {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, instrumentToken, "instrument_token");
-        rjh::getIfExists(val, timestamp, "timestamp");
-        rjh::getIfExists(val, lastPrice, "last_price");
-        rjh::getIfExists(val, lastQuantity, "last_quantity");
-        rjh::getIfExists(val, lastTradeTime, "last_trade_time");
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, volume, "volume");
-        rjh::getIfExists(val, buyQuantity, "buy_quantity");
-        rjh::getIfExists(val, sellQuantity, "sell_quantity");
+        rjh::_getIfExists(val, instrumentToken, "instrument_token");
+        rjh::_getIfExists(val, timestamp, "timestamp");
+        rjh::_getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, lastQuantity, "last_quantity");
+        rjh::_getIfExists(val, lastTradeTime, "last_trade_time");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, volume, "volume");
+        rjh::_getIfExists(val, buyQuantity, "buy_quantity");
+        rjh::_getIfExists(val, sellQuantity, "sell_quantity");
 
         rj::Value ohlcVal(rj::kObjectType);
-        rjh::getIfExists(val, ohlcVal, "ohlc", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, ohlcVal, "ohlc", rjh::_RJValueType::Object);
         OHLC.parse(ohlcVal.GetObject());
 
-        rjh::getIfExists(val, netChange, "net_change");
-        rjh::getIfExists(val, OI, "oi");
-        rjh::getIfExists(val, OIDayHigh, "oi_day_high");
-        rjh::getIfExists(val, OIDayLow, "oi_day_low");
-        rjh::getIfExists(val, lowerCircuitLimit, "lower_circuit_limit");
-        rjh::getIfExists(val, upperCircuitLimit, "upper_circuit_limit");
+        rjh::_getIfExists(val, netChange, "net_change");
+        rjh::_getIfExists(val, OI, "oi");
+        rjh::_getIfExists(val, OIDayHigh, "oi_day_high");
+        rjh::_getIfExists(val, OIDayLow, "oi_day_low");
+        rjh::_getIfExists(val, lowerCircuitLimit, "lower_circuit_limit");
+        rjh::_getIfExists(val, upperCircuitLimit, "upper_circuit_limit");
 
         rj::Value tmpVal(rj::kObjectType);
-        rjh::getIfExists(val, tmpVal, "depth", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, tmpVal, "depth", rjh::_RJValueType::Object);
         auto depthVal = tmpVal.GetObject();
 
         rj::Value buyDepthVal(rj::kArrayType);
-        rjh::getIfExists(depthVal, buyDepthVal, "buy", rjh::RJValueType::Array);
+        rjh::_getIfExists(depthVal, buyDepthVal, "buy", rjh::_RJValueType::Array);
         for (auto& i : buyDepthVal.GetArray()) { marketDepth.buy.emplace_back(i.GetObject()); };
 
         rj::Value sellDepthVal(rj::kArrayType);
-        rjh::getIfExists(depthVal, sellDepthVal, "sell", rjh::RJValueType::Array);
+        rjh::_getIfExists(depthVal, sellDepthVal, "sell", rjh::_RJValueType::Array);
         for (auto& i : sellDepthVal.GetArray()) { marketDepth.sell.emplace_back(i.GetObject()); };
     };
 
@@ -688,11 +688,11 @@ struct OHLCQuote {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, instrumentToken, "instrument_token");
-        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, instrumentToken, "instrument_token");
+        rjh::_getIfExists(val, lastPrice, "last_price");
 
         rj::Value ohlcVal(rj::kObjectType);
-        rjh::getIfExists(val, ohlcVal, "ohlc", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, ohlcVal, "ohlc", rjh::_RJValueType::Object);
         OHLC.parse(ohlcVal.GetObject());
     };
 
@@ -710,8 +710,8 @@ struct LTPQuote {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, instrumentToken, "instrument_token");
-        rjh::getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, instrumentToken, "instrument_token");
+        rjh::_getIfExists(val, lastPrice, "last_price");
     };
 
     int instrumentToken = 0;
@@ -762,26 +762,26 @@ struct MFOrder {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, orderID, "order_id");
-        rjh::getIfExists(val, exchangeOrderID, "exchange_order_id");
-        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
-        rjh::getIfExists(val, status, "status");
-        rjh::getIfExists(val, statusMessage, "status_message");
-        rjh::getIfExists(val, folio, "folio");
-        rjh::getIfExists(val, fund, "fund");
-        rjh::getIfExists(val, orderTimestamp, "order_timestamp");
-        rjh::getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        rjh::getIfExists(val, settlementID, "settlement_id");
+        rjh::_getIfExists(val, orderID, "order_id");
+        rjh::_getIfExists(val, exchangeOrderID, "exchange_order_id");
+        rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::_getIfExists(val, status, "status");
+        rjh::_getIfExists(val, statusMessage, "status_message");
+        rjh::_getIfExists(val, folio, "folio");
+        rjh::_getIfExists(val, fund, "fund");
+        rjh::_getIfExists(val, orderTimestamp, "order_timestamp");
+        rjh::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
+        rjh::_getIfExists(val, settlementID, "settlement_id");
 
-        rjh::getIfExists(val, transactionType, "transaction_type");
-        rjh::getIfExists(val, variety, "variety");
-        rjh::getIfExists(val, purchaseType, "purchase_type");
-        rjh::getIfExists(val, quantity, "quantity");
-        rjh::getIfExists(val, amount, "amount");
-        rjh::getIfExists(val, lastPrice, "last_price");
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, placedBy, "placed_by");
-        rjh::getIfExists(val, tag, "tag");
+        rjh::_getIfExists(val, transactionType, "transaction_type");
+        rjh::_getIfExists(val, variety, "variety");
+        rjh::_getIfExists(val, purchaseType, "purchase_type");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, amount, "amount");
+        rjh::_getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, placedBy, "placed_by");
+        rjh::_getIfExists(val, tag, "tag");
     };
 
 
@@ -816,14 +816,14 @@ struct MFHolding {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, folio, "folio");
-        rjh::getIfExists(val, fund, "fund");
-        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
-        rjh::getIfExists(val, averagePrice, "average_price");
-        rjh::getIfExists(val, lastPrice, "last_price");
-        rjh::getIfExists(val, lastPriceDate, "last_price_date");
-        rjh::getIfExists(val, Pnl, "pnl");
-        rjh::getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, folio, "folio");
+        rjh::_getIfExists(val, fund, "fund");
+        rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, lastPrice, "last_price");
+        rjh::_getIfExists(val, lastPriceDate, "last_price_date");
+        rjh::_getIfExists(val, Pnl, "pnl");
+        rjh::_getIfExists(val, quantity, "quantity");
     };
 
     string folio;
@@ -846,25 +846,25 @@ struct MFSIP {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, ID, "sip_id");
-        rjh::getIfExists(val, tradingsymbol, "tradingsymbol");
-        rjh::getIfExists(val, fundName, "fund");
-        rjh::getIfExists(val, dividendType, "dividend_type");
-        rjh::getIfExists(val, transactionType, "transaction_type");
+        rjh::_getIfExists(val, ID, "sip_id");
+        rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
+        rjh::_getIfExists(val, fundName, "fund");
+        rjh::_getIfExists(val, dividendType, "dividend_type");
+        rjh::_getIfExists(val, transactionType, "transaction_type");
 
-        rjh::getIfExists(val, status, "status");
-        rjh::getIfExists(val, SIPType, "sip_type");
-        rjh::getIfExists(val, created, "created");
-        rjh::getIfExists(val, frequency, "frequency");
-        rjh::getIfExists(val, instalmentAmount, "instalment_amount");
-        rjh::getIfExists(val, instalments, "instalments");
-        rjh::getIfExists(val, lastInstalment, "last_instalment");
-        rjh::getIfExists(val, pendingInstalments, "pending_instalments");
-        rjh::getIfExists(val, instalmentDay, "instalment_day");
-        rjh::getIfExists(val, completedInstalments, "completed_instalments");
-        rjh::getIfExists(val, nextInstalment, "next_instalment");
-        rjh::getIfExists(val, triggerPrice, "trigger_price");
-        rjh::getIfExists(val, tag, "tag");
+        rjh::_getIfExists(val, status, "status");
+        rjh::_getIfExists(val, SIPType, "sip_type");
+        rjh::_getIfExists(val, created, "created");
+        rjh::_getIfExists(val, frequency, "frequency");
+        rjh::_getIfExists(val, instalmentAmount, "instalment_amount");
+        rjh::_getIfExists(val, instalments, "instalments");
+        rjh::_getIfExists(val, lastInstalment, "last_instalment");
+        rjh::_getIfExists(val, pendingInstalments, "pending_instalments");
+        rjh::_getIfExists(val, instalmentDay, "instalment_day");
+        rjh::_getIfExists(val, completedInstalments, "completed_instalments");
+        rjh::_getIfExists(val, nextInstalment, "next_instalment");
+        rjh::_getIfExists(val, triggerPrice, "trigger_price");
+        rjh::_getIfExists(val, tag, "tag");
     };
 
     string ID;
@@ -914,22 +914,22 @@ struct orderMargins {
 
     void parse(const rj::Value::Object& val) {
 
-        rjh::getIfExists(val, type, "type");
-        rjh::getIfExists(val, tradingSymbol, "tradingsymbol");
-        rjh::getIfExists(val, exchange, "exchange");
-        rjh::getIfExists(val, SPAN, "span");
-        rjh::getIfExists(val, exposure, "exposure");
-        rjh::getIfExists(val, optionPremium, "option_premium");
-        rjh::getIfExists(val, additional, "additional");
-        rjh::getIfExists(val, BO, "bo");
-        rjh::getIfExists(val, cash, "cash");
-        rjh::getIfExists(val, VAR, "var");
+        rjh::_getIfExists(val, type, "type");
+        rjh::_getIfExists(val, tradingSymbol, "tradingsymbol");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, SPAN, "span");
+        rjh::_getIfExists(val, exposure, "exposure");
+        rjh::_getIfExists(val, optionPremium, "option_premium");
+        rjh::_getIfExists(val, additional, "additional");
+        rjh::_getIfExists(val, BO, "bo");
+        rjh::_getIfExists(val, cash, "cash");
+        rjh::_getIfExists(val, VAR, "var");
 
         rj::Value pnlVal(rj::kObjectType);
-        rjh::getIfExists(val, pnlVal, "pnl", rjh::RJValueType::Object);
+        rjh::_getIfExists(val, pnlVal, "pnl", rjh::_RJValueType::Object);
         pnl.parse(pnlVal.GetObject());
 
-        rjh::getIfExists(val, total, "total");
+        rjh::_getIfExists(val, total, "total");
     };
 
     string type;
@@ -951,8 +951,8 @@ struct orderMargins {
 
         void parse(const rj::Value::Object& val) {
 
-            rjh::getIfExists(val, realised, "realised");
-            rjh::getIfExists(val, unrealised, "unrealised");
+            rjh::_getIfExists(val, realised, "realised");
+            rjh::_getIfExists(val, unrealised, "unrealised");
         };
 
         double realised = 0.0;
