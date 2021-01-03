@@ -5,9 +5,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 find_package(cpprestsdk REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 add_subdirectory("examples/example1")
 add_subdirectory("examples/example2")
+
+
 
 find_package(Doxygen)
 
@@ -29,7 +32,7 @@ if (DOXYGEN_FOUND)
 
         VERBATIM )
 else (DOXYGEN_FOUND)
-  message("Doxygen need to be installed to generate the doxygen documentation")
+  message("Doxygen needs to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
 
 

@@ -30,8 +30,7 @@
 #include <vector>
 
 #include "PicoSHA2/picosha2.h"
-#include <cpprest/filestream.h>
-#include <cpprest/http_client.h>
+#include "cpp-httplib/httplib.h"
 
 #include "config.hpp"
 #include "helperfunctions.hpp"
@@ -52,7 +51,8 @@ namespace kitepp {
 
 using std::string;
 
-namespace http = web::http;
+// namespace http = web::http;
+
 namespace rj = rapidjson;
 namespace rjh = kitepp::RJHelper;
 
@@ -72,12 +72,12 @@ class kite {
     /**
      * @brief Construct a new kite object
      *
-     * @param apikey API key
+     * @param apikey
      *
      * @paragraph ex1 example
      * @snippet example2.cpp initializing kite
      */
-    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(U(_rootURL)) {};
+    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {};
 
     // methods:
 
@@ -106,7 +106,7 @@ class kite {
     userSession generateSession(const string& requestToken, const string& apiSecret) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::POST, _endpoints.at("api.token"),
+        _sendReq_RJ(res, _methods::POST, _endpoints.at("api.token"),
             {
 
                 { "api_key", _apiKey },
@@ -143,7 +143,7 @@ class kite {
     void invalidateSession() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a = _apiKey, "access_token"_a = _accessToken));
+        _sendReq_RJ(res, _methods::DEL, FMT(_endpoints.at("api.token.invalidate"), "api_key"_a = _apiKey, "access_token"_a = _accessToken));
     };
 
     // user:
@@ -159,7 +159,7 @@ class kite {
     userProfile profile() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("user.profile"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("user.profile"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (profile())"); };
 
@@ -178,7 +178,7 @@ class kite {
     allMargins getMargins() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("user.margins"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("user.margins"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMargins())"); };
 
@@ -188,7 +188,7 @@ class kite {
     margins getMargins(const string& segment) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("user.margins.segment"), "segment"_a = segment));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("user.margins.segment"), "segment"_a = segment));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMargins(segment))"); };
 
@@ -246,7 +246,7 @@ class kite {
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = variety), bodyParams);
+        _sendReq_RJ(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = variety), bodyParams);
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeOrder)"); };
 
@@ -288,7 +288,7 @@ class kite {
         if (!std::isnan(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID), bodyParams);
+        _sendReq_RJ(res, _methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID), bodyParams);
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyOrder)"); };
 
@@ -313,9 +313,9 @@ class kite {
 
         rj::Document res;
         (variety == "bo") ?
-            _sendReq_RJ(res, http::methods::DEL,
+            _sendReq_RJ(res, _methods::DEL,
                 FMT(_endpoints.at("order.cancel.bo"), "variety"_a = variety, "order_id"_a = ordID, "parent_order_id"_a = parentOrdID)) :
-            _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("order.cancel"), "variety"_a = variety, "order_id"_a = ordID));
+            _sendReq_RJ(res, _methods::DEL, FMT(_endpoints.at("order.cancel"), "variety"_a = variety, "order_id"_a = ordID));
 
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelOrder)"); };
@@ -350,7 +350,7 @@ class kite {
     std::vector<order> orders() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("orders"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("orders"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orders())"); };
         if (!res["data"].IsArray()) { throw libException("Array was expected (orders())"); };
@@ -373,7 +373,7 @@ class kite {
     std::vector<order> orderHistory(const string& ordID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("order.info"), "order_id"_a = ordID));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("order.info"), "order_id"_a = ordID));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orderHistory())"); };
 
@@ -396,7 +396,7 @@ class kite {
     std::vector<trade> trades() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("trades"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("trades"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (trades())"); };
         if (!res["data"].IsArray()) { throw libException("Array was expected (trades())"); };
@@ -419,7 +419,7 @@ class kite {
     std::vector<trade> orderTrades(const string& ordID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("order.trades"), "order_id"_a = ordID));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("order.trades"), "order_id"_a = ordID));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orderTrades())"); };
         if (!res["data"].IsArray()) { throw libException("Array was expected (orderTrades())"); };
@@ -519,7 +519,7 @@ class kite {
         };
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::POST, _endpoints.at("gtt.place"),
+        _sendReq_RJ(res, _methods::POST, _endpoints.at("gtt.place"),
             {
 
                 { "type", trigType }, { "condition", rjh::dump(condition) }, { "orders", rjh::dump(params) }
@@ -546,7 +546,7 @@ class kite {
     std::vector<GTT> getGTTs() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("gtt"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("gtt"));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTTs)"); };
         if (!res["data"].IsArray()) { throw libException("Array was expected (getGTTs())"); };
 
@@ -568,7 +568,7 @@ class kite {
     GTT getGTT(int trigID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTT)"); };
 
         return GTT(res["data"].GetObject());
@@ -661,7 +661,7 @@ class kite {
         };
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
+        _sendReq_RJ(res, _methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
             {
 
                 { "type", trigType }, { "condition", rjh::dump(condition) }, { "orders", rjh::dump(params) }
@@ -688,7 +688,7 @@ class kite {
     int deleteGTT(int trigID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
+        _sendReq_RJ(res, _methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (deleteGTT)"); };
 
@@ -712,7 +712,7 @@ class kite {
     std::vector<holding> holdings() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.holdings"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("portfolio.holdings"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (holdings)"); };
         if (!res["data"].IsArray()) { throw libException("Array was expected (holdinga)"); };
@@ -734,7 +734,7 @@ class kite {
     positions getPositions() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.positions"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("portfolio.positions"));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getPositions)"); };
 
         return positions(res["data"].GetObject());
@@ -772,7 +772,7 @@ class kite {
         };
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
+        _sendReq_RJ(res, _methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (convertPosition)"); };
         if (!res["data"].IsBool()) { throw libException("data type wasn't the one expected. Expected bool (convertPosition)"); };
 
@@ -825,7 +825,7 @@ class kite {
     std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getQuote)"); };
 
         std::unordered_map<string, quote> quoteMap;
@@ -848,7 +848,7 @@ class kite {
     std::unordered_map<string, OHLCQuote> getOHLC(const std::vector<string>& symbols) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOHLC)"); };
 
         std::unordered_map<string, OHLCQuote> quoteMap;
@@ -871,7 +871,7 @@ class kite {
     std::unordered_map<string, LTPQuote> getLTP(const std::vector<string>& symbols) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getLTP)"); };
 
         std::unordered_map<string, LTPQuote> quoteMap;
@@ -903,7 +903,7 @@ class kite {
         int instrumentTok, const string& from, const string& to, const string& interval, bool continuous = false, bool oi = false) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET,
+        _sendReq_RJ(res, _methods::GET,
             FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval, "from"_a = from, "to"_a = to,
                 "continuous"_a = static_cast<int>(continuous), "oi"_a = static_cast<int>(oi)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getHistoricalData)"); };
@@ -946,7 +946,7 @@ class kite {
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::POST, _endpoints.at("mf.order.place"), bodyParams);
+        _sendReq_RJ(res, _methods::POST, _endpoints.at("mf.order.place"), bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFOrder)"); };
 
         string rcvdOrdID;
@@ -967,7 +967,7 @@ class kite {
     string cancelMFOrder(const string& ordID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
+        _sendReq_RJ(res, _methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelMFOrder)"); };
 
         string rcvdOrdID;
@@ -987,7 +987,7 @@ class kite {
     std::vector<MFOrder> getMFOrders() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("mf.orders"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("mf.orders"));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFOrders)"); };
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
@@ -1010,7 +1010,7 @@ class kite {
     MFOrder getMFOrder(const string& ordID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelMFOrder)"); };
 
@@ -1028,7 +1028,7 @@ class kite {
     std::vector<MFHolding> getMFHoldings() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("portfolio.holdings"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("portfolio.holdings"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFHoldings)"); };
         auto it = res.FindMember("data");
@@ -1075,7 +1075,7 @@ class kite {
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); };
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
+        _sendReq_RJ(res, _methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
 
         string rcvdOrdID, rcvdSipID;
@@ -1111,7 +1111,7 @@ class kite {
         if (!std::isnan(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
+        _sendReq_RJ(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
     };
 
     /**
@@ -1126,7 +1126,7 @@ class kite {
     string cancelMFSIP(const string& SIPID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
+        _sendReq_RJ(res, _methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
 
         string rcvdSipID;
@@ -1146,7 +1146,7 @@ class kite {
     std::vector<MFSIP> getSIPs() {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, _endpoints.at("mf.sips"));
+        _sendReq_RJ(res, _methods::GET, _endpoints.at("mf.sips"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIPs)"); };
         auto it = res.FindMember("data");
@@ -1170,7 +1170,7 @@ class kite {
     MFSIP getSIP(const string& SIPID) {
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
+        _sendReq_RJ(res, _methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIP)"); };
 
@@ -1273,7 +1273,7 @@ class kite {
         };
 
         rj::Document res;
-        _sendReq_RJ(res, http::methods::POST, _endpoints.at("order.margins"), { { "", rjh::dump(req) } }, true);
+        _sendReq_RJ(res, _methods::POST, _endpoints.at("order.margins"), { { "", rjh::dump(req) } }, true);
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOrderMargis)"); };
         auto it = res.FindMember("data");
@@ -1293,7 +1293,7 @@ class kite {
     string _accessToken = "";
 
     const string _kiteVersion = "3";
-    const string _rootURL = "https://api.kite.trade/";
+    const string _rootURL = "https://api.kite.trade";
     const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
     const std::unordered_map<string, string> _endpoints = {
 
@@ -1370,7 +1370,8 @@ class kite {
 
     };
 
-    http::client::http_client _httpClient;
+    httplib::Client _httpClient;
+    enum class _methods { GET, POST, PUT, DEL, HEAD };
 
 
     // methods:
@@ -1407,8 +1408,8 @@ class kite {
         return str;
     };
 
-    void _sendReq_RJ(rj::Document& data, const http::method& mtd, const string& endpoint,
-        const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
+    void _sendReq_RJ(rj::Document& data, const _methods& mtd, const string& endpoint, const std::vector<std::pair<string, string>>& bodyParams = {},
+        bool isJson = false) {
 
         /*
         If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of bodyParam's first pair with first
@@ -1417,23 +1418,91 @@ class kite {
 
         // create request
 
-        http::http_request req(mtd);
-        req.set_request_uri(U(endpoint));
+        httplib::Headers headers = {
 
-        req.headers().set_content_type(U((isJson) ? "application/json" : "application/x-www-form-urlencoded"));
-        req.headers().add(U("Authorization"), U(_getAuthStr()));
-        req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
+            { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion }
+        };
+        int code = 0;
+        string dataRcvd;
 
-        if ((mtd != http::methods::GET && mtd != http::methods::HEAD) && !bodyParams.empty()) {
+        // this code can obviously be shortened but return type of client.Get() etc. doesn't have a default constructor, which means we cannot init an
+        // instance and then assign to it later
+        if (mtd == _methods::GET) {
 
-            req.set_body(U((isJson) ? bodyParams[0].second : _encodeBody(bodyParams)));
+            if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
+
+                code = res->status;
+                dataRcvd = res->body;
+
+            } else {
+
+                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+            };
+
+        } else if (mtd == _methods::POST) {
+
+            if (auto res = _httpClient.Post(endpoint.c_str(), headers, (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
+                    (isJson) ? "application/json" : "application/x-www-form-urlencoded")) {
+
+                code = res->status;
+                dataRcvd = res->body;
+
+            } else {
+
+                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+            };
+        } else if (mtd == _methods::PUT) {
+
+            if (auto res = _httpClient.Put(endpoint.c_str(), headers, (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
+                    (isJson) ? "application/json" : "application/x-www-form-urlencoded")) {
+
+                code = res->status;
+                dataRcvd = res->body;
+
+            } else {
+
+                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+            };
+        } else if (mtd == _methods::DEL) {
+
+            if (auto res = _httpClient.Delete(endpoint.c_str(), headers)) {
+
+                code = res->status;
+                dataRcvd = res->body;
+            } else {
+
+                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+            };
         };
 
+        /*if (mtd == _methods::GET) {
 
-        // send request, get response and parse json
+            res = _httpClient.Get(endpoint.c_str(), headers)
 
-        http::http_response res = _httpClient.request(req).get();
-        string dataRcvd = res.extract_string().get();
+        } else if (mtd == _methods::POST) {
+
+            res = _httpClient.Post(endpoint, (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
+                (isJson) ? "application/json" : "application/x-www-form-urlencoded");
+
+        } else if (mtd == _methods::PUT) {
+
+            res = _httpClient.Put(endpoint, (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
+                (isJson) ? "application/json" : "application/x-www-form-urlencoded");
+
+        } else if (mtd == _methods::DEL) {
+
+            res = _httpClient.Delete(endpoint);
+        };
+
+        if (res) {
+
+            code = res->status;
+            if (code == 200) { dataRcvd = res->body; };
+
+        } else {
+
+            throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+        };*/
 
         //?std::cout << dataRcvd << std::endl;
 
@@ -1441,22 +1510,19 @@ class kite {
 
             rjh::parse(data, dataRcvd);
 
-            if (res.status_code() != http::status_codes::OK) {
+            if (code != 200) {
 
-                int code = 0;
                 string excpStr;
                 string message;
 
                 try {
 
-                    code = res.status_code();
                     if (!rjh::getIfExists(data, excpStr, "error_type")) { excpStr = "NoException"; };
                     rjh::getIfExists(data, message, "message");
 
                 } catch (const std::exception& e) {
 
-                    throw libException(
-                        FMT("{0} was thrown while extracting code({1}), excpStr({2}) and message({3}) (_sendReq)", e.what(), code, excpStr, message));
+                    throw libException(FMT("{0} was thrown while extracting excpStr({1}) and message({2}) (_sendReq)", e.what(), excpStr, message));
                 };
 
                 kitepp::_throwException(excpStr, code, message);
@@ -1472,29 +1538,32 @@ class kite {
 
     string _sendInstrumentsReq(const string& endpoint) {
 
-        // create request
+        // create request and send req
 
-        http::http_request req(http::methods::GET);
-        req.set_request_uri(U(endpoint));
+        httplib::Headers headers = {
 
-        req.headers().set_content_type(U("application/x-www-form-urlencoded"));
-        req.headers().add(U("Authorization"), U(_getAuthStr()));
-        req.headers().add(U("X-Kite-Version"), U(_kiteVersion));
+            { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion }
+        };
+        int code = 0;
+        string dataRcvd;
 
-        // send request, get data
+        if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
 
-        http::http_response res = _httpClient.request(req).get();
-        string dataRcvd = res.extract_string().get();
+            code = res->status;
+            if (code == 200) { dataRcvd = res->body; };
+
+        } else {
+
+            throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+        };
+
+        // get data
 
         if (!dataRcvd.empty()) {
 
-            if (res.status_code() == http::status_codes::OK) { return dataRcvd; }
+            if (code == 200) { return dataRcvd; }
 
-            int code = res.status_code();
-            string excpStr = "NoException";
-
-            kitepp::_throwException(excpStr, code, "");
-
+            kitepp::_throwException("NoException", code, "");
 
         } else {
 
@@ -1503,7 +1572,9 @@ class kite {
 
         return "";
     };
-};
+
+
+}; // namespace kitepp
 
 
 } // namespace kitepp
