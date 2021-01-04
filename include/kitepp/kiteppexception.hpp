@@ -21,30 +21,30 @@
 #include <string>
 #include <utility>
 
-
-namespace kitepp {
-
+namespace kitepp
+{
 
 using std::string;
 
 /**
- * @brief kitepp saves you the hassle of detecting API errors by looking at HTTP codes or JSON error responses. Instead, it raises aptly
- * named exceptions that you can catch. `kiteppException` is derived from `std::exception` and, along with other useful methods like `code()`,
- * `message()`, provides `what()` method. You should catch exceptions of this class. All kitepp exceptions barring `libException` are derived from
- * this class. `kiteppException` being a abstract class, you cannot create it direectly. Instead, use exceptions provided in `kiteexceptions.hpp`
- * file.
- * @attention libExcpetion isn't derived from this class. You'll either have to catch it directly or catch `std::exception`.
+ * @brief kitepp saves you the hassle of detecting API errors by looking at HTTP codes or JSON error responses. Instead,
+ * it raises aptly named exceptions that you can catch. `kiteppException` is derived from `std::exception` and, along
+ * with other useful methods like `code()`, `message()`, provides `what()` method. You should catch exceptions of this
+ * class. All kitepp exceptions barring `libException` are derived from this class. `kiteppException` being a abstract
+ * class, you cannot create it direectly. Instead, use exceptions provided in `kiteexceptions.hpp` file.
+ * @attention libExcpetion isn't derived from this class. You'll either have to catch it directly or catch
+ * `std::exception`.
  *
  * @paragraph ex1 example
  * @snippet example2.cpp dealing with kitepp exceptions
  */
-class kiteppException : public std::exception {
-
+class kiteppException : public std::exception
+{
 
   public:
     // constructors and destructor
 
-    kiteppException(int c, string msg): _code(c), _message(std::move(msg)) {};
+    kiteppException(int c, string msg) : _code(c), _message(std::move(msg)){};
 
     // methods
 
@@ -53,27 +53,31 @@ class kiteppException : public std::exception {
      *
      * @return const char*
      */
-    const char* what() const noexcept override = 0;
+    const char *what() const noexcept override = 0;
 
     /**
      * @brief returns HTTP code sent by REST API
      *
      * @return int
      */
-    int code() const noexcept { return _code; };
+    int code() const noexcept
+    {
+        return _code;
+    };
 
     /**
      * @brief returns message sent by REST API
      *
      * @return const char*
      */
-    const char* message() const noexcept { return _message.c_str(); };
-
+    const char *message() const noexcept
+    {
+        return _message.c_str();
+    };
 
   private:
     int _code = 0;
     string _message = "";
 };
-
 
 } // namespace kitepp

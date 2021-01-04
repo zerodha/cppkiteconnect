@@ -26,28 +26,32 @@
 #include <string>
 #include <vector>
 
-
 #include "boost/tokenizer.hpp"
 #include "helperfunctions.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rjhelper.hpp"
 
-namespace kitepp {
+namespace kitepp
+{
 
 using std::string;
 namespace rj = rapidjson;
 namespace rjh = kitepp::RJHelper;
 
-
 /// userProfile represents a user's personal and financial profile.
-struct userProfile {
+struct userProfile
+{
 
     userProfile() = default;
 
-    explicit userProfile(const rj::Value::Object& val) { parse(val); };
+    explicit userProfile(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, userName, "user_name");
         rjh::_getIfExists(val, userShortName, "user_shortname");
@@ -74,13 +78,18 @@ struct userProfile {
 };
 
 /// tokens received after successfull authentication
-struct userTokens {
+struct userTokens
+{
 
     userTokens() = default;
 
-    explicit userTokens(const rj::Value::Object& val) { parse(val); };
+    explicit userTokens(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, userID, "user_id");
         rjh::_getIfExists(val, accessToken, "access_token");
@@ -93,13 +102,18 @@ struct userTokens {
 };
 
 /// userSession represents the response after a successful authentication.
-struct userSession {
+struct userSession
+{
 
     userSession() = default;
 
-    explicit userSession(const rj::Value::Object& val) { parse(val); };
+    explicit userSession(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         profile.parse(val);
         tokens.parse(val);
@@ -117,13 +131,18 @@ struct userSession {
 };
 
 /// availableMargins represents the available margins from the margins response for a single segment.
-struct availableMargins {
+struct availableMargins
+{
 
     availableMargins() = default;
 
-    explicit availableMargins(const rj::Value::Object& val) { parse(val); };
+    explicit availableMargins(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         double debugval = val["cash"].GetDouble();
 
@@ -140,13 +159,18 @@ struct availableMargins {
 };
 
 /// usedMargins represents the used margins from the margins response for a single segment.
-struct usedMargins {
+struct usedMargins
+{
 
     usedMargins() = default;
 
-    explicit usedMargins(const rj::Value::Object& val) { parse(val); };
+    explicit usedMargins(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
         rjh::_getIfExists(val, debits, "debits");
         rjh::_getIfExists(val, exposure, "exposure");
         rjh::_getIfExists(val, M2MRealised, "m2m_realised");
@@ -170,13 +194,18 @@ struct usedMargins {
 };
 
 /// margins represents the user margins for a segment.
-struct margins {
+struct margins
+{
 
     margins() = default;
 
-    explicit margins(const rj::Value::Object& val) { parse(val); };
+    explicit margins(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, enabled, "enabled");
         rjh::_getIfExists(val, net, "net");
@@ -197,13 +226,18 @@ struct margins {
 };
 
 /// allMargins contains both equity and commodity margins.
-struct allMargins {
+struct allMargins
+{
 
     allMargins() = default;
 
-    explicit allMargins(const rj::Value::Object& val) { parse(val); };
+    explicit allMargins(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rj::Value eqVal(rj::kObjectType);
         rjh::_getIfExists(val, eqVal, "equity", rjh::_RJValueType::Object);
@@ -218,15 +252,19 @@ struct allMargins {
     margins commodity;
 };
 
-
 /// order represents a individual order response.
-struct order {
+struct order
+{
 
     order() = default;
 
-    explicit order(const rj::Value::Object& val) { parse(val); };
+    explicit order(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, accountID, "account_id");
         rjh::_getIfExists(val, placedBy, "placed_by");
@@ -297,13 +335,18 @@ struct order {
 };
 
 /// trade represents a individual order response.
-struct trade {
+struct trade
+{
 
     trade() = default;
 
-    explicit trade(const rj::Value::Object& val) { parse(val); };
+    explicit trade(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, averagePrice, "average_price");
         rjh::_getIfExists(val, quantity, "quantity");
@@ -334,12 +377,13 @@ struct trade {
 };
 
 /// GTTParams is the struct user needs to pass to placeGTT() to place a GTT
-struct GTTParams {
+struct GTTParams
+{
 
     GTTParams() = default;
 
     GTTParams(string txntype, int quant, string ordtype, string prod, double pr)
-        : transactionType(txntype), quantity(quant), orderType(ordtype), product(prod), price(pr) {};
+        : transactionType(txntype), quantity(quant), orderType(ordtype), product(prod), price(pr){};
 
     string transactionType;
     int quantity = 0;
@@ -349,13 +393,18 @@ struct GTTParams {
 };
 
 /// GTTCondition represents the condition inside a GTT order.
-struct GTTCondition {
+struct GTTCondition
+{
 
     GTTCondition() = default;
 
-    explicit GTTCondition(const rj::Value::Object& val) { parse(val); };
+    explicit GTTCondition(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, exchange, "exchange");
         rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
@@ -370,13 +419,18 @@ struct GTTCondition {
 };
 
 /// GTT represents a single GTT order.
-struct GTT {
+struct GTT
+{
 
     GTT() = default;
 
-    explicit GTT(const rj::Value::Object& val) { parse(val); };
+    explicit GTT(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, ID, "id");
         rjh::_getIfExists(val, userID, "user_id");
@@ -391,10 +445,19 @@ struct GTT {
         condition.parse(condnVal.GetObject());
 
         auto it = val.FindMember("orders");
-        if (it == val.MemberEnd()) { throw libException("Expected value wasn't found (GTT)"); };
-        if (!it->value.IsArray()) { throw libException("Expected value's type wasn't the one expected. Expected Array"); };
+        if (it == val.MemberEnd())
+        {
+            throw libException("Expected value wasn't found (GTT)");
+        };
+        if (!it->value.IsArray())
+        {
+            throw libException("Expected value's type wasn't the one expected. Expected Array");
+        };
 
-        for (auto& v : it->value.GetArray()) { orders.emplace_back(v.GetObject()); };
+        for (auto &v : it->value.GetArray())
+        {
+            orders.emplace_back(v.GetObject());
+        };
     };
 
     int ID = 0;
@@ -409,13 +472,18 @@ struct GTT {
 }; // namespace kitepp
 
 /// holding is an individual holdings response.
-struct holding {
+struct holding
+{
 
     holding() = default;
 
-    explicit holding(const rj::Value::Object& val) { parse(val); };
+    explicit holding(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
         rjh::_getIfExists(val, exchange, "exchange");
@@ -438,7 +506,6 @@ struct holding {
         rjh::_getIfExists(val, dayChangePercentage, "day_change_percentage");
     };
 
-
     string tradingsymbol;
     string exchange;
     int instrumentToken = 0;
@@ -460,16 +527,19 @@ struct holding {
     double dayChangePercentage = 0.0;
 };
 
-
 /// position represents an individual position response.
-struct position {
-
+struct position
+{
 
     position() = default;
 
-    explicit position(const rj::Value::Object& val) { parse(val); };
+    explicit position(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
         rjh::_getIfExists(val, exchange, "exchange");
@@ -507,7 +577,6 @@ struct position {
         rjh::_getIfExists(val, daySellPrice, "day_sell_price");
         rjh::_getIfExists(val, daySellValue, "averaday_sell_valuege_price");
     };
-
 
     string tradingsymbol;
     string exchange;
@@ -547,36 +616,51 @@ struct position {
 };
 
 /// positions represents all positions response.
-struct positions {
+struct positions
+{
 
     positions() = default;
 
-    explicit positions(const rj::Value::Object& val) { parse(val); };
+    explicit positions(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rj::Value netVal(rj::kArrayType);
         rjh::_getIfExists(val, netVal, "net", rjh::_RJValueType::Array);
-        for (auto& i : netVal.GetArray()) { net.emplace_back(i.GetObject()); };
+        for (auto &i : netVal.GetArray())
+        {
+            net.emplace_back(i.GetObject());
+        };
 
         rj::Value dayVal(rj::kArrayType);
         rjh::_getIfExists(val, dayVal, "day", rjh::_RJValueType::Array);
-        for (auto& i : netVal.GetArray()) { day.emplace_back(i.GetObject()); };
+        for (auto &i : netVal.GetArray())
+        {
+            day.emplace_back(i.GetObject());
+        };
     };
-
 
     std::vector<position> net;
     std::vector<position> day;
 };
 
 /// ohlc strcut
-struct ohlc {
+struct ohlc
+{
 
     ohlc() = default;
 
-    explicit ohlc(const rj::Value::Object& val) { parse(val); };
+    explicit ohlc(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, open, "open");
         rjh::_getIfExists(val, high, "high");
@@ -591,13 +675,18 @@ struct ohlc {
 };
 
 /// represents market depth
-struct depth {
+struct depth
+{
 
     depth() = default;
 
-    explicit depth(const rj::Value::Object& val) { parse(val); };
+    explicit depth(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, price, "price");
         rjh::_getIfExists(val, quantity, "quantity");
@@ -610,13 +699,18 @@ struct depth {
 };
 
 /// represents full quote respone
-struct quote {
+struct quote
+{
 
     quote() = default;
 
-    explicit quote(const rj::Value::Object& val) { parse(val); };
+    explicit quote(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, instrumentToken, "instrument_token");
         rjh::_getIfExists(val, timestamp, "timestamp");
@@ -645,13 +739,18 @@ struct quote {
 
         rj::Value buyDepthVal(rj::kArrayType);
         rjh::_getIfExists(depthVal, buyDepthVal, "buy", rjh::_RJValueType::Array);
-        for (auto& i : buyDepthVal.GetArray()) { marketDepth.buy.emplace_back(i.GetObject()); };
+        for (auto &i : buyDepthVal.GetArray())
+        {
+            marketDepth.buy.emplace_back(i.GetObject());
+        };
 
         rj::Value sellDepthVal(rj::kArrayType);
         rjh::_getIfExists(depthVal, sellDepthVal, "sell", rjh::_RJValueType::Array);
-        for (auto& i : sellDepthVal.GetArray()) { marketDepth.sell.emplace_back(i.GetObject()); };
+        for (auto &i : sellDepthVal.GetArray())
+        {
+            marketDepth.sell.emplace_back(i.GetObject());
+        };
     };
-
 
     int instrumentToken = 0;
     string timestamp;
@@ -671,7 +770,8 @@ struct quote {
     double lowerCircuitLimit = 0.0;
     double upperCircuitLimit = 0.0;
 
-    struct mDepth {
+    struct mDepth
+    {
 
         std::vector<depth> buy;
         std::vector<depth> sell;
@@ -680,13 +780,18 @@ struct quote {
 };
 
 /// represents ohlc quote respone
-struct OHLCQuote {
+struct OHLCQuote
+{
 
     OHLCQuote() = default;
 
-    explicit OHLCQuote(const rj::Value::Object& val) { parse(val); };
+    explicit OHLCQuote(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, instrumentToken, "instrument_token");
         rjh::_getIfExists(val, lastPrice, "last_price");
@@ -702,13 +807,18 @@ struct OHLCQuote {
 };
 
 // represents ltp quote respone
-struct LTPQuote {
+struct LTPQuote
+{
 
     LTPQuote() = default;
 
-    explicit LTPQuote(const rj::Value::Object& val) { parse(val); };
+    explicit LTPQuote(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, instrumentToken, "instrument_token");
         rjh::_getIfExists(val, lastPrice, "last_price");
@@ -719,18 +829,30 @@ struct LTPQuote {
 };
 
 /// represents historical data call reponse
-struct historicalData {
+struct historicalData
+{
 
     historicalData() = default;
 
-    explicit historicalData(const rj::Value::Array& val) { parse(val); };
+    explicit historicalData(const rj::Value::Array &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Array& val) {
+    void parse(const rj::Value::Array &val)
+    {
 
-        /// in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number doesn't have decimal
-        static auto getDouble = [](rj::Value& val) -> double {
-            if (val.IsDouble()) { return val.GetDouble(); };
-            if (val.IsInt()) { return val.GetInt(); }; //! may lead to data loss
+        /// in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number
+        /// doesn't have decimal
+        static auto getDouble = [](rj::Value &val) -> double {
+            if (val.IsDouble())
+            {
+                return val.GetDouble();
+            };
+            if (val.IsInt())
+            {
+                return val.GetInt();
+            }; //! may lead to data loss
 
             throw libException("type wasn't the one expected (expected double) (historicalData)");
         };
@@ -741,7 +863,10 @@ struct historicalData {
         low = getDouble(val[3]);
         close = getDouble(val[4]);
         volume = val[5].GetInt();
-        if (val.Size() > 6) { OI = val[6].GetInt(); };
+        if (val.Size() > 6)
+        {
+            OI = val[6].GetInt();
+        };
     };
 
     string datetime;
@@ -754,13 +879,18 @@ struct historicalData {
 };
 
 /// MFOrder represents a individual mutualfund order response.
-struct MFOrder {
+struct MFOrder
+{
 
     MFOrder() = default;
 
-    explicit MFOrder(const rj::Value::Object& val) { parse(val); };
+    explicit MFOrder(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, orderID, "order_id");
         rjh::_getIfExists(val, exchangeOrderID, "exchange_order_id");
@@ -783,7 +913,6 @@ struct MFOrder {
         rjh::_getIfExists(val, placedBy, "placed_by");
         rjh::_getIfExists(val, tag, "tag");
     };
-
 
     string orderID;
     string exchangeOrderID;
@@ -808,13 +937,18 @@ struct MFOrder {
 };
 
 /// MFHolding represents a individual mutualfund holding.
-struct MFHolding {
+struct MFHolding
+{
 
     MFHolding() = default;
 
-    explicit MFHolding(const rj::Value::Object& val) { parse(val); };
+    explicit MFHolding(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, folio, "folio");
         rjh::_getIfExists(val, fund, "fund");
@@ -837,14 +971,18 @@ struct MFHolding {
 };
 
 /// MFSIP represents a individual mutualfund SIP response.
-struct MFSIP {
-
+struct MFSIP
+{
 
     MFSIP() = default;
 
-    explicit MFSIP(const rj::Value::Object& val) { parse(val); };
+    explicit MFSIP(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, ID, "sip_id");
         rjh::_getIfExists(val, tradingsymbol, "tradingsymbol");
@@ -889,7 +1027,8 @@ struct MFSIP {
 };
 
 /// orderMarginsParams represents a position in the Margin Calculator API
-struct orderMarginsParams {
+struct orderMarginsParams
+{
 
     orderMarginsParams() = default;
 
@@ -905,14 +1044,18 @@ struct orderMarginsParams {
 };
 
 /// ordersMargins represents response from the Margin Calculator API.
-struct orderMargins {
-
+struct orderMargins
+{
 
     orderMargins() = default;
 
-    explicit orderMargins(const rj::Value::Object& val) { parse(val); };
+    explicit orderMargins(const rj::Value::Object &val)
+    {
+        parse(val);
+    };
 
-    void parse(const rj::Value::Object& val) {
+    void parse(const rj::Value::Object &val)
+    {
 
         rjh::_getIfExists(val, type, "type");
         rjh::_getIfExists(val, tradingSymbol, "tradingsymbol");
@@ -943,13 +1086,18 @@ struct orderMargins {
     double BO = 0.0;
     double cash = 0.0;
     double VAR = 0.0;
-    struct PNL {
+    struct PNL
+    {
 
         PNL() = default;
 
-        explicit PNL(const rj::Value::Object& val) { parse(val); };
+        explicit PNL(const rj::Value::Object &val)
+        {
+            parse(val);
+        };
 
-        void parse(const rj::Value::Object& val) {
+        void parse(const rj::Value::Object &val)
+        {
 
             rjh::_getIfExists(val, realised, "realised");
             rjh::_getIfExists(val, unrealised, "unrealised");
@@ -962,18 +1110,23 @@ struct orderMargins {
 };
 
 /// instrument represents individual instrument response.
-struct instrument {
+struct instrument
+{
 
     instrument() = default;
 
-    explicit instrument(const string& val) { parse(val); };
+    explicit instrument(const string &val)
+    {
+        parse(val);
+    };
 
-    void parse(const string& val) {
+    void parse(const string &val)
+    {
 
         std::vector<string> tokens = kitepp::_split(val, ',');
 
-        static const auto toInt = [](const string& str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
-        static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
+        static const auto toInt = [](const string &str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
+        static const auto toDouble = [](const string &str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
 
         instrumentToken = toInt(tokens[0]);
         exchangeToken = toInt(tokens[1]);
@@ -1004,17 +1157,22 @@ struct instrument {
 };
 
 /// MFInstrument represents individual mfinstrument response.
-struct MFInstrument {
+struct MFInstrument
+{
 
     MFInstrument() = default;
 
-    explicit MFInstrument(const string& val) { parse(val); };
+    explicit MFInstrument(const string &val)
+    {
+        parse(val);
+    };
 
-    void parse(const string& val) {
+    void parse(const string &val)
+    {
 
         std::vector<string> tokens = kitepp::_split(val, ',');
 
-        static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
+        static const auto toDouble = [](const string &str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
 
         tradingsymbol = tokens[0];
         AMC = tokens[1];

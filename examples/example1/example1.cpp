@@ -1,12 +1,13 @@
 #include <iostream>
 #include <kitepp.hpp>
 
-int main() {
+int main()
+{
 
     std::cout << "Running..\n";
 
-
-    try {
+    try
+    {
 
         kitepp::kite Kite("---apikey---");
 
@@ -28,7 +29,10 @@ int main() {
         kitepp::userProfile profile = Kite.profile();
         std::cout << "email is :" << profile.email << "\n";
         std::cout << "Order types are: \n";
-        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
+        for (const std::string &type : profile.orderTypes)
+        {
+            std::cout << type << ", ";
+        };
 
         // clang-format off
 } catch (kitepp::kiteppException& e) {

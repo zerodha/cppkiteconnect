@@ -24,10 +24,10 @@
 
 #include <string>
 
-namespace kitepp {
+namespace kitepp
+{
 
 using std::string;
-
 
 // Products
 const string PRODUCT_MIS = "MIS";

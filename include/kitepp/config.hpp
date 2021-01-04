@@ -31,22 +31,28 @@ using fmt::literals::operator""_a;
 
 //*********
 
-namespace kitepp {
+namespace kitepp
+{
 
 // constatnts required in more than one class (other than the explicit user constants defined in uderconstants.hpp)
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
-bool isValid(int num) { return std::isnan(num); };
-bool isValid(double num) { return std::isnan(num); };
+bool isValid(int num)
+{
+    return std::isnan(num);
+};
+bool isValid(double num)
+{
+    return std::isnan(num);
+};
 
-namespace config {
+namespace config
+{
 
-
-// configuration related constants and functions *required in more than one file* should go here (e.g., root url, port num etc.)
-
+// configuration related constants and functions *required in more than one file* should go here (e.g., root url, port
+// num etc.)
 
 } // namespace config
-
 
 } // namespace kitepp
