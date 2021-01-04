@@ -32,17 +32,16 @@
 #include "PicoSHA2/picosha2.h"
 #include "cpp-httplib/httplib.h"
 
+#include "rapidjson/document.h"
+#include "rapidjson/prettywriter.h"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
+
 #include "config.hpp"
 #include "helperfunctions.hpp"
 #include "kiteppexceptions.hpp"
-
-#include "rapidjson/rapidjson.h"
 #include "responses.hpp"
-
-#include "rapidjson/document.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
 #include "rjhelper.hpp"
 
 
@@ -1546,5 +1545,5 @@ class kite {
 // TODO rectify double lookup in functions
 // TODO catch exceptions wherever you use to_string/stoi/stod
 
-// TODO change namespace to kc
+// TODO change namespace to ?
 // TODO change formatting
