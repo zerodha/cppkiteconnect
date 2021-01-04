@@ -20,15 +20,15 @@ int main() {
     try {
 
         //! [initializing kite]
-        kitepp::kite Kite("a9gg2394xe9sqmjc");
+        kitepp::kite Kite("---apikey---");
         //! [initializing kite]
 
         //! [obtaining login url]
-        // std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
+        std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
         //! [obtaining login url]
 
         //! [obtaining access token]
-        /*std::string apiSecret;
+        std::string apiSecret;
         std::string reqToken;
 
         std::cout << "Enter obtained request token: ";
@@ -37,12 +37,12 @@ int main() {
         std::cin >> apiSecret;
 
         std::string accessToken = Kite.generateSession(reqToken, apiSecret).tokens.accessToken;
-        std::cout << "access token is " << accessToken << "\n";*/
+        std::cout << "access token is " << accessToken << "\n";
         //! [obtaining access token]
 
         //! [settting access token]
-        // Kite.setAccessToken(accessToken);
-        Kite.setAccessToken("NnettbUbgNYLt1szTgOnWRo68XVM6Drh");
+        Kite.setAccessToken(accessToken);
+        // Kite.setAccessToken("---accesstoken---");
         //! [settting access token]
 
         //! [invalidate session]
@@ -50,10 +50,10 @@ int main() {
         //! [invalidate session]
 
         //! [get user profile]
-        /*kitepp::userProfile profile = Kite.profile();
+        kitepp::userProfile profile = Kite.profile();
         std::cout << "email is :" << profile.email << "\n";
         std::cout << "Order types are: \n";
-        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };*/
+        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
         //! [get user profile]
 
         //! [get margins]

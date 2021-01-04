@@ -8,7 +8,7 @@ int main() {
 
     try {
 
-        kitepp::kite Kite("a9gg2394xe9sqmjc");
+        kitepp::kite Kite("---apikey---");
 
         std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
 

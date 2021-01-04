@@ -1545,4 +1545,6 @@ class kite {
 
 // TODO rectify double lookup in functions
 // TODO catch exceptions wherever you use to_string/stoi/stod
-// TODO start rjhelper function names with underscore
+
+// TODO change namespace to kc
+// TODO change formatting

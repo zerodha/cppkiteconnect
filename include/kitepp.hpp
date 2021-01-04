@@ -26,3 +26,4 @@
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 
 #include "kitepp/kite.hpp"
+#include "kitepp/userconstants.hpp"
