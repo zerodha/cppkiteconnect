@@ -2,27 +2,33 @@ cmake_minimum_required(VERSION 3.10.2)
 project(kitepp) 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+include(CTest)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 find_package(OpenSSL REQUIRED)
 
+#build examples
 add_subdirectory("examples/example1")
 add_subdirectory("examples/example2")
 
+#build tests
+if(BUILD_TESTING)
+        add_subdirectory("tests")
+endif()
 
 #generate documentation
+set(DOXY_FILE conf.doxygen)
 
 find_package(Doxygen)
-
 if (DOXYGEN_FOUND)
 
     # set input and output files
-    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/conf.doxygen)
+    set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/docs/${DOXY_FILE})
     set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.out)
 
     # request to configure the file
     configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
-    message("Doxygen build started")
+    message("Doxygen configured")
 
     # Note: do not put "ALL" - this builds docs together with application EVERY TIME!
     add_custom_target( docs

@@ -1905,6 +1905,11 @@ class kite
 
 // TODO rectify double lookup in functions
 // TODO catch exceptions wherever you use to_string/stoi/stod
+// TODO change helperfunctions to util and rjhelper to util
+// TODO rename doxygen file to config.doxygen
+// TODO delete compile_comands.json & .vscode/ symlink from project directory
+// TODO move doxygen to separate cmakelists
+// TODO add quiet option while building doxygen docs
 
 // TODO change namespace to ?
 // TODO change formatting
