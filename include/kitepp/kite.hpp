@@ -81,6 +81,16 @@ class kite
     // api:
 
     /**
+     * @brief get set API key
+     *
+     * @return string
+     */
+    string getAPIKey() const
+    {
+        return _apiKey;
+    };
+
+    /**
      * @brief Get the remote login url to which a user should be redirected to initiate the login flow.
      *
      * @return string
@@ -105,13 +115,13 @@ class kite
      */
     userSession generateSession(const string &requestToken, const string &apiSecret)
     {
-
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("api.token"),
                  {
 
                      {"api_key", _apiKey},
                      {"request_token", requestToken},
+                     // TODO add unit test for checking hash
                      {"checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret)},
 
                  });
@@ -135,6 +145,17 @@ class kite
     void setAccessToken(const string &arg)
     {
         _accessToken = arg;
+    };
+
+    /**
+     * @brief Get the Access Token
+     *
+     * @return string
+     */
+    string getAccessToken() const
+    {
+
+        return _accessToken;
     };
 
     /**
