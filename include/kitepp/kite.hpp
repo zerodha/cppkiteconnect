@@ -105,6 +105,7 @@ class kite {
      * @snippet example2.cpp obtaining access token
      */
     userSession generateSession(const string& requestToken, const string& apiSecret) {
+
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("api.token"),
             {
