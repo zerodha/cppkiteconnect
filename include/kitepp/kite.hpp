@@ -1532,7 +1532,6 @@ class kite {
     string _sendInstrumentsReq(const string& endpoint) {
 
         // create request and send req
-
         httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };
         int code = 0;
         string dataRcvd;
@@ -1547,7 +1546,6 @@ class kite {
         };
 
         // get data
-
         if (!dataRcvd.empty()) {
 
             if (code == 200) { return dataRcvd; }
