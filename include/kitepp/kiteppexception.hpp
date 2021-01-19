@@ -21,8 +21,7 @@
 #include <string>
 #include <utility>
 
-namespace kitepp
-{
+namespace kitepp {
 
 using std::string;
 
@@ -38,13 +37,12 @@ using std::string;
  * @paragraph ex1 example
  * @snippet example2.cpp dealing with kitepp exceptions
  */
-class kiteppException : public std::exception
-{
+class kiteppException : public std::exception {
 
   public:
     // constructors and destructor
 
-    kiteppException(int c, string msg) : _code(c), _message(std::move(msg)){};
+    kiteppException(int c, string msg): _code(c), _message(std::move(msg)) {};
 
     // methods
 
@@ -53,27 +51,21 @@ class kiteppException : public std::exception
      *
      * @return const char*
      */
-    const char *what() const noexcept override = 0;
+    const char* what() const noexcept override = 0;
 
     /**
      * @brief returns HTTP code sent by REST API
      *
      * @return int
      */
-    int code() const noexcept
-    {
-        return _code;
-    };
+    int code() const noexcept { return _code; };
 
     /**
      * @brief returns message sent by REST API
      *
      * @return const char*
      */
-    const char *message() const noexcept
-    {
-        return _message.c_str();
-    };
+    const char* message() const noexcept { return _message.c_str(); };
 
   private:
     int _code = 0;

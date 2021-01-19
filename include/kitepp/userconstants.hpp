@@ -24,8 +24,7 @@
 
 #include <string>
 
-namespace kitepp
-{
+namespace kitepp {
 
 using std::string;
 
