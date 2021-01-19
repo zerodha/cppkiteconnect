@@ -35,6 +35,14 @@ namespace kitepp
 {
 
 // constatnts required in more than one class (other than the explicit user constants defined in uderconstants.hpp)
+enum class _methods
+{
+    GET,
+    POST,
+    PUT,
+    DEL,
+    HEAD
+};
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();

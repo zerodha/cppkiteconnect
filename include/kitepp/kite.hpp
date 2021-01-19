@@ -48,12 +48,9 @@ namespace kitepp
 {
 
 using std::string;
-
-// namespace http = web::http;
-
 namespace rj = rapidjson;
 namespace rjh = kitepp::RJHelper;
-
+using kitepp::_methods;
 using kitepp::DEFAULTDOUBLE;
 using kitepp::DEFAULTINT;
 using kitepp::isValid;
@@ -75,6 +72,8 @@ class kite
      * @snippet example2.cpp initializing kite
      */
     explicit kite(string apikey) : _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()){};
+
+    virtual ~kite(){};
 
     // methods:
 
@@ -148,7 +147,7 @@ class kite
     };
 
     /**
-     * @brief Get the Access Token
+     * @brief Get the Access Token set currently
      *
      * @return string
      */
@@ -1669,14 +1668,6 @@ class kite
     };
 
     httplib::Client _httpClient;
-    enum class _methods
-    {
-        GET,
-        POST,
-        PUT,
-        DEL,
-        HEAD
-    };
 
     // methods:
 
@@ -1719,8 +1710,9 @@ class kite
         return str;
     };
 
-    void _sendReq(rj::Document &data, const _methods &mtd, const string &endpoint,
-                  const std::vector<std::pair<string, string>> &bodyParams = {}, bool isJson = false)
+    // GMock requires mock methods to be virtual
+    virtual void _sendReq(rj::Document &data, const _methods &mtd, const string &endpoint,
+                          const std::vector<std::pair<string, string>> &bodyParams = {}, bool isJson = false)
     {
 
         /*
@@ -1931,6 +1923,7 @@ class kite
 // TODO delete compile_comands.json & .vscode/ symlink from project directory
 // TODO move doxygen to separate cmakelists
 // TODO add quiet option while building doxygen docs
+// TODO change clang format to old style, but remove empty lines setting
 
 // TODO change namespace to ?
 // TODO change formatting
