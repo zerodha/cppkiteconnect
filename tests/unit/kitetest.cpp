@@ -98,7 +98,7 @@ TEST(kiteTest, profile) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, "/user/profile", _, _))
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
@@ -126,7 +126,7 @@ TEST(kiteTest, getMarginsTest1) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, "/user/margins", _, _))
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
@@ -276,4 +276,512 @@ TEST(kiteTest, exitOrderTest) {
     string orderID = Kite.exitOrder("arg1", "arg2");
 
     EXPECT_EQ(orderID, "151220000000000");
+}
+
+TEST(kiteTest, ordersTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/orders.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::order> Orders = Kite.orders();
+
+    // Expected values
+    ASSERT_THAT(Orders.size(), 7);
+
+    kitepp::order order1 = Orders[0];
+    EXPECT_EQ(order1.accountID, "");
+    EXPECT_EQ(order1.placedBy, "DA0017");
+    EXPECT_EQ(order1.orderID, "171228000850038");
+    EXPECT_EQ(order1.exchangeOrderID, "211736200053802");
+    EXPECT_EQ(order1.parentOrderID, "");
+    EXPECT_EQ(order1.status, "COMPLETE");
+    EXPECT_EQ(order1.statusMessage, "");
+    EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:39:14");
+    EXPECT_EQ(order1.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order1.exchangeTimestamp, "2017-12-28 11:39:14");
+    EXPECT_EQ(order1.rejectedBy, "");
+    EXPECT_EQ(order1.variety, "regular");
+    EXPECT_EQ(order1.exchange, "MCX");
+    EXPECT_EQ(order1.tradingSymbol, "GOLDGUINEA17DECFUT");
+    EXPECT_EQ(order1.instrumentToken, 53505799);
+    EXPECT_EQ(order1.orderType, "LIMIT");
+    EXPECT_EQ(order1.transactionType, "SELL");
+    EXPECT_EQ(order1.validity, "DAY");
+    EXPECT_EQ(order1.product, "NRML");
+    EXPECT_EQ(order1.quantity, 3);
+    EXPECT_EQ(order1.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order1.price, 23337);
+    EXPECT_DOUBLE_EQ(order1.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order1.averagePrice, 23337);
+    EXPECT_EQ(order1.filledQuantity, 3);
+    EXPECT_EQ(order1.pendingQuantity, 0);
+    EXPECT_EQ(order1.cancelledQuantity, 0);
+
+    kitepp::order order2 = Orders[1];
+    EXPECT_EQ(order2.accountID, "");
+    EXPECT_EQ(order2.placedBy, "DA0017");
+    EXPECT_EQ(order2.orderID, "171228000912853");
+    EXPECT_EQ(order2.exchangeOrderID, "1300000002730006");
+    EXPECT_EQ(order2.parentOrderID, "");
+    EXPECT_EQ(order2.status, "COMPLETE");
+    EXPECT_EQ(order2.statusMessage, "");
+    EXPECT_EQ(order2.orderTimestamp, "2017-12-28 12:09:31");
+    EXPECT_EQ(order2.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order2.exchangeTimestamp, "2017-12-28 12:00:28");
+    EXPECT_EQ(order2.rejectedBy, "");
+    EXPECT_EQ(order2.variety, "co");
+    EXPECT_EQ(order2.exchange, "NSE");
+    EXPECT_EQ(order2.tradingSymbol, "SBIN");
+    EXPECT_EQ(order2.instrumentToken, 779521);
+    EXPECT_EQ(order2.orderType, "LIMIT");
+    EXPECT_EQ(order2.transactionType, "BUY");
+    EXPECT_EQ(order2.validity, "DAY");
+    EXPECT_EQ(order2.product, "CO");
+    EXPECT_EQ(order2.quantity, 1);
+    EXPECT_EQ(order2.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order2.price, 311);
+    EXPECT_DOUBLE_EQ(order2.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order2.averagePrice, 311);
+    EXPECT_EQ(order2.filledQuantity, 1);
+    EXPECT_EQ(order2.pendingQuantity, 0);
+    EXPECT_EQ(order2.cancelledQuantity, 0);
+
+    kitepp::order order3 = Orders[2];
+    EXPECT_EQ(order3.accountID, "");
+    EXPECT_EQ(order3.placedBy, "DA0017");
+    EXPECT_EQ(order3.orderID, "171228001116651");
+    EXPECT_EQ(order3.exchangeOrderID, "211736200111089");
+    EXPECT_EQ(order3.parentOrderID, "");
+    EXPECT_EQ(order3.status, "COMPLETE");
+    EXPECT_EQ(order3.statusMessage, "");
+    EXPECT_EQ(order3.orderTimestamp, "2017-12-28 13:08:49");
+    EXPECT_EQ(order3.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order3.exchangeTimestamp, "2017-12-28 13:08:49");
+    EXPECT_EQ(order3.rejectedBy, "");
+    EXPECT_EQ(order3.variety, "regular");
+    EXPECT_EQ(order3.exchange, "MCX");
+    EXPECT_EQ(order3.tradingSymbol, "GOLDGUINEA17DECFUT");
+    EXPECT_EQ(order3.instrumentToken, 53505799);
+    EXPECT_EQ(order3.orderType, "LIMIT");
+    EXPECT_EQ(order3.transactionType, "BUY");
+    EXPECT_EQ(order3.validity, "DAY");
+    EXPECT_EQ(order3.product, "NRML");
+    EXPECT_EQ(order3.quantity, 1);
+    EXPECT_EQ(order3.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order3.price, 23388);
+    EXPECT_DOUBLE_EQ(order3.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order3.averagePrice, 23388);
+    EXPECT_EQ(order3.filledQuantity, 1);
+    EXPECT_EQ(order3.pendingQuantity, 0);
+    EXPECT_EQ(order3.cancelledQuantity, 0);
+
+    kitepp::order order4 = Orders[3];
+    EXPECT_EQ(order4.accountID, "");
+    EXPECT_EQ(order4.placedBy, "DA0017");
+    EXPECT_EQ(order4.orderID, "171228000912854");
+    EXPECT_EQ(order4.exchangeOrderID, "1300000002730007");
+    EXPECT_EQ(order4.parentOrderID, "171228000912853");
+    EXPECT_EQ(order4.status, "COMPLETE");
+    EXPECT_EQ(order4.statusMessage, "");
+    EXPECT_EQ(order4.orderTimestamp, "2017-12-28 15:00:40");
+    EXPECT_EQ(order4.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order4.exchangeTimestamp, "2017-12-28 15:00:40");
+    EXPECT_EQ(order4.rejectedBy, "");
+    EXPECT_EQ(order4.variety, "co");
+    EXPECT_EQ(order4.exchange, "NSE");
+    EXPECT_EQ(order4.tradingSymbol, "SBIN");
+    EXPECT_EQ(order4.instrumentToken, 779521);
+    EXPECT_EQ(order4.orderType, "LIMIT");
+    EXPECT_EQ(order4.transactionType, "SELL");
+    EXPECT_EQ(order4.validity, "DAY");
+    EXPECT_EQ(order4.product, "CO");
+    EXPECT_EQ(order4.quantity, 1);
+    EXPECT_EQ(order4.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order4.price, 0);
+    EXPECT_DOUBLE_EQ(order4.triggerPrice, 309);
+    EXPECT_DOUBLE_EQ(order4.averagePrice, 309);
+    EXPECT_EQ(order4.filledQuantity, 1);
+    EXPECT_EQ(order4.pendingQuantity, 0);
+    EXPECT_EQ(order4.cancelledQuantity, 0);
+
+    kitepp::order order5 = Orders[4];
+    EXPECT_EQ(order5.accountID, "");
+    EXPECT_EQ(order5.placedBy, "DA0017");
+    EXPECT_EQ(order5.orderID, "171228001686586");
+    EXPECT_EQ(order5.exchangeOrderID, "211736200181323");
+    EXPECT_EQ(order5.parentOrderID, "");
+    EXPECT_EQ(order5.status, "COMPLETE");
+    EXPECT_EQ(order5.statusMessage, "");
+    EXPECT_EQ(order5.orderTimestamp, "2017-12-28 15:28:56");
+    EXPECT_EQ(order5.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order5.exchangeTimestamp, "2017-12-28 15:28:56");
+    EXPECT_EQ(order5.rejectedBy, "");
+    EXPECT_EQ(order5.variety, "regular");
+    EXPECT_EQ(order5.exchange, "MCX");
+    EXPECT_EQ(order5.tradingSymbol, "GOLDGUINEA17DECFUT");
+    EXPECT_EQ(order5.instrumentToken, 53505799);
+    EXPECT_EQ(order5.orderType, "LIMIT");
+    EXPECT_EQ(order5.transactionType, "SELL");
+    EXPECT_EQ(order5.validity, "DAY");
+    EXPECT_EQ(order5.product, "NRML");
+    EXPECT_EQ(order5.quantity, 1);
+    EXPECT_EQ(order5.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order5.price, 23349);
+    EXPECT_DOUBLE_EQ(order5.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order5.averagePrice, 23349);
+    EXPECT_EQ(order5.filledQuantity, 1);
+    EXPECT_EQ(order5.pendingQuantity, 0);
+    EXPECT_EQ(order5.cancelledQuantity, 0);
+
+    kitepp::order order6 = Orders[5];
+    EXPECT_EQ(order6.accountID, "");
+    EXPECT_EQ(order6.placedBy, "DA0017");
+    EXPECT_EQ(order6.orderID, "171228001730092");
+    EXPECT_EQ(order6.exchangeOrderID, "211736200297236");
+    EXPECT_EQ(order6.parentOrderID, "");
+    EXPECT_EQ(order6.status, "COMPLETE");
+    EXPECT_EQ(order6.statusMessage, "");
+    EXPECT_EQ(order6.orderTimestamp, "2017-12-28 19:28:27");
+    EXPECT_EQ(order6.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order6.exchangeTimestamp, "2017-12-28 19:28:27");
+    EXPECT_EQ(order6.rejectedBy, "");
+    EXPECT_EQ(order6.variety, "regular");
+    EXPECT_EQ(order6.exchange, "MCX");
+    EXPECT_EQ(order6.tradingSymbol, "LEADMINI17DECFUT");
+    EXPECT_EQ(order6.instrumentToken, 53496327);
+    EXPECT_EQ(order6.orderType, "LIMIT");
+    EXPECT_EQ(order6.transactionType, "BUY");
+    EXPECT_EQ(order6.validity, "DAY");
+    EXPECT_EQ(order6.product, "NRML");
+    EXPECT_EQ(order6.quantity, 1);
+    EXPECT_EQ(order6.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order6.price, 161.05);
+    EXPECT_DOUBLE_EQ(order6.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order6.averagePrice, 161.05);
+    EXPECT_EQ(order6.filledQuantity, 1);
+    EXPECT_EQ(order6.pendingQuantity, 0);
+    EXPECT_EQ(order6.cancelledQuantity, 0);
+
+    kitepp::order order7 = Orders[6];
+    EXPECT_EQ(order7.accountID, "");
+    EXPECT_EQ(order7.placedBy, "DA0017");
+    EXPECT_EQ(order7.orderID, "171228001731490");
+    EXPECT_EQ(order7.exchangeOrderID, "211736200302177");
+    EXPECT_EQ(order7.parentOrderID, "");
+    EXPECT_EQ(order7.status, "COMPLETE");
+    EXPECT_EQ(order7.statusMessage, "");
+    EXPECT_EQ(order7.orderTimestamp, "2017-12-28 19:37:12");
+    EXPECT_EQ(order7.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order7.exchangeTimestamp, "2017-12-28 19:37:12");
+    EXPECT_EQ(order7.rejectedBy, "");
+    EXPECT_EQ(order7.variety, "regular");
+    EXPECT_EQ(order7.exchange, "MCX");
+    EXPECT_EQ(order7.tradingSymbol, "LEADMINI17DECFUT");
+    EXPECT_EQ(order7.instrumentToken, 53496327);
+    EXPECT_EQ(order7.orderType, "LIMIT");
+    EXPECT_EQ(order7.transactionType, "SELL");
+    EXPECT_EQ(order7.validity, "DAY");
+    EXPECT_EQ(order7.product, "NRML");
+    EXPECT_EQ(order7.quantity, 1);
+    EXPECT_EQ(order7.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order7.price, 161.2);
+    EXPECT_DOUBLE_EQ(order7.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order7.averagePrice, 161.2);
+    EXPECT_EQ(order7.filledQuantity, 1);
+    EXPECT_EQ(order7.pendingQuantity, 0);
+    EXPECT_EQ(order7.cancelledQuantity, 0);
+}
+
+TEST(kiteTest, orderHistoryTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/orders.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::order> Orders = Kite.orderHistory("arg1");
+
+    // Expected values
+    ASSERT_THAT(Orders.size(), 7);
+
+    kitepp::order order1 = Orders[0];
+    EXPECT_EQ(order1.accountID, "");
+    EXPECT_EQ(order1.placedBy, "DA0017");
+    EXPECT_EQ(order1.orderID, "171228000850038");
+    EXPECT_EQ(order1.exchangeOrderID, "211736200053802");
+    EXPECT_EQ(order1.parentOrderID, "");
+    EXPECT_EQ(order1.status, "COMPLETE");
+    EXPECT_EQ(order1.statusMessage, "");
+    EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:39:14");
+    EXPECT_EQ(order1.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order1.exchangeTimestamp, "2017-12-28 11:39:14");
+    EXPECT_EQ(order1.rejectedBy, "");
+    EXPECT_EQ(order1.variety, "regular");
+    EXPECT_EQ(order1.exchange, "MCX");
+    EXPECT_EQ(order1.tradingSymbol, "GOLDGUINEA17DECFUT");
+    EXPECT_EQ(order1.instrumentToken, 53505799);
+    EXPECT_EQ(order1.orderType, "LIMIT");
+    EXPECT_EQ(order1.transactionType, "SELL");
+    EXPECT_EQ(order1.validity, "DAY");
+    EXPECT_EQ(order1.product, "NRML");
+    EXPECT_EQ(order1.quantity, 3);
+    EXPECT_EQ(order1.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order1.price, 23337);
+    EXPECT_DOUBLE_EQ(order1.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order1.averagePrice, 23337);
+    EXPECT_EQ(order1.filledQuantity, 3);
+    EXPECT_EQ(order1.pendingQuantity, 0);
+    EXPECT_EQ(order1.cancelledQuantity, 0);
+
+    kitepp::order order2 = Orders[1];
+    EXPECT_EQ(order2.accountID, "");
+    EXPECT_EQ(order2.placedBy, "DA0017");
+    EXPECT_EQ(order2.orderID, "171228000912853");
+    EXPECT_EQ(order2.exchangeOrderID, "1300000002730006");
+    EXPECT_EQ(order2.parentOrderID, "");
+    EXPECT_EQ(order2.status, "COMPLETE");
+    EXPECT_EQ(order2.statusMessage, "");
+    EXPECT_EQ(order2.orderTimestamp, "2017-12-28 12:09:31");
+    EXPECT_EQ(order2.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order2.exchangeTimestamp, "2017-12-28 12:00:28");
+    EXPECT_EQ(order2.rejectedBy, "");
+    EXPECT_EQ(order2.variety, "co");
+    EXPECT_EQ(order2.exchange, "NSE");
+    EXPECT_EQ(order2.tradingSymbol, "SBIN");
+    EXPECT_EQ(order2.instrumentToken, 779521);
+    EXPECT_EQ(order2.orderType, "LIMIT");
+    EXPECT_EQ(order2.transactionType, "BUY");
+    EXPECT_EQ(order2.validity, "DAY");
+    EXPECT_EQ(order2.product, "CO");
+    EXPECT_EQ(order2.quantity, 1);
+    EXPECT_EQ(order2.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order2.price, 311);
+    EXPECT_DOUBLE_EQ(order2.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order2.averagePrice, 311);
+    EXPECT_EQ(order2.filledQuantity, 1);
+    EXPECT_EQ(order2.pendingQuantity, 0);
+    EXPECT_EQ(order2.cancelledQuantity, 0);
+
+    kitepp::order order3 = Orders[2];
+    EXPECT_EQ(order3.accountID, "");
+    EXPECT_EQ(order3.placedBy, "DA0017");
+    EXPECT_EQ(order3.orderID, "171228001116651");
+    EXPECT_EQ(order3.exchangeOrderID, "211736200111089");
+    EXPECT_EQ(order3.parentOrderID, "");
+    EXPECT_EQ(order3.status, "COMPLETE");
+    EXPECT_EQ(order3.statusMessage, "");
+    EXPECT_EQ(order3.orderTimestamp, "2017-12-28 13:08:49");
+    EXPECT_EQ(order3.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order3.exchangeTimestamp, "2017-12-28 13:08:49");
+    EXPECT_EQ(order3.rejectedBy, "");
+    EXPECT_EQ(order3.variety, "regular");
+    EXPECT_EQ(order3.exchange, "MCX");
+    EXPECT_EQ(order3.tradingSymbol, "GOLDGUINEA17DECFUT");
+    EXPECT_EQ(order3.instrumentToken, 53505799);
+    EXPECT_EQ(order3.orderType, "LIMIT");
+    EXPECT_EQ(order3.transactionType, "BUY");
+    EXPECT_EQ(order3.validity, "DAY");
+    EXPECT_EQ(order3.product, "NRML");
+    EXPECT_EQ(order3.quantity, 1);
+    EXPECT_EQ(order3.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order3.price, 23388);
+    EXPECT_DOUBLE_EQ(order3.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order3.averagePrice, 23388);
+    EXPECT_EQ(order3.filledQuantity, 1);
+    EXPECT_EQ(order3.pendingQuantity, 0);
+    EXPECT_EQ(order3.cancelledQuantity, 0);
+
+    kitepp::order order4 = Orders[3];
+    EXPECT_EQ(order4.accountID, "");
+    EXPECT_EQ(order4.placedBy, "DA0017");
+    EXPECT_EQ(order4.orderID, "171228000912854");
+    EXPECT_EQ(order4.exchangeOrderID, "1300000002730007");
+    EXPECT_EQ(order4.parentOrderID, "171228000912853");
+    EXPECT_EQ(order4.status, "COMPLETE");
+    EXPECT_EQ(order4.statusMessage, "");
+    EXPECT_EQ(order4.orderTimestamp, "2017-12-28 15:00:40");
+    EXPECT_EQ(order4.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order4.exchangeTimestamp, "2017-12-28 15:00:40");
+    EXPECT_EQ(order4.rejectedBy, "");
+    EXPECT_EQ(order4.variety, "co");
+    EXPECT_EQ(order4.exchange, "NSE");
+    EXPECT_EQ(order4.tradingSymbol, "SBIN");
+    EXPECT_EQ(order4.instrumentToken, 779521);
+    EXPECT_EQ(order4.orderType, "LIMIT");
+    EXPECT_EQ(order4.transactionType, "SELL");
+    EXPECT_EQ(order4.validity, "DAY");
+    EXPECT_EQ(order4.product, "CO");
+    EXPECT_EQ(order4.quantity, 1);
+    EXPECT_EQ(order4.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order4.price, 0);
+    EXPECT_DOUBLE_EQ(order4.triggerPrice, 309);
+    EXPECT_DOUBLE_EQ(order4.averagePrice, 309);
+    EXPECT_EQ(order4.filledQuantity, 1);
+    EXPECT_EQ(order4.pendingQuantity, 0);
+    EXPECT_EQ(order4.cancelledQuantity, 0);
+
+    kitepp::order order5 = Orders[4];
+    EXPECT_EQ(order5.accountID, "");
+    EXPECT_EQ(order5.placedBy, "DA0017");
+    EXPECT_EQ(order5.orderID, "171228001686586");
+    EXPECT_EQ(order5.exchangeOrderID, "211736200181323");
+    EXPECT_EQ(order5.parentOrderID, "");
+    EXPECT_EQ(order5.status, "COMPLETE");
+    EXPECT_EQ(order5.statusMessage, "");
+    EXPECT_EQ(order5.orderTimestamp, "2017-12-28 15:28:56");
+    EXPECT_EQ(order5.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order5.exchangeTimestamp, "2017-12-28 15:28:56");
+    EXPECT_EQ(order5.rejectedBy, "");
+    EXPECT_EQ(order5.variety, "regular");
+    EXPECT_EQ(order5.exchange, "MCX");
+    EXPECT_EQ(order5.tradingSymbol, "GOLDGUINEA17DECFUT");
+    EXPECT_EQ(order5.instrumentToken, 53505799);
+    EXPECT_EQ(order5.orderType, "LIMIT");
+    EXPECT_EQ(order5.transactionType, "SELL");
+    EXPECT_EQ(order5.validity, "DAY");
+    EXPECT_EQ(order5.product, "NRML");
+    EXPECT_EQ(order5.quantity, 1);
+    EXPECT_EQ(order5.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order5.price, 23349);
+    EXPECT_DOUBLE_EQ(order5.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order5.averagePrice, 23349);
+    EXPECT_EQ(order5.filledQuantity, 1);
+    EXPECT_EQ(order5.pendingQuantity, 0);
+    EXPECT_EQ(order5.cancelledQuantity, 0);
+
+    kitepp::order order6 = Orders[5];
+    EXPECT_EQ(order6.accountID, "");
+    EXPECT_EQ(order6.placedBy, "DA0017");
+    EXPECT_EQ(order6.orderID, "171228001730092");
+    EXPECT_EQ(order6.exchangeOrderID, "211736200297236");
+    EXPECT_EQ(order6.parentOrderID, "");
+    EXPECT_EQ(order6.status, "COMPLETE");
+    EXPECT_EQ(order6.statusMessage, "");
+    EXPECT_EQ(order6.orderTimestamp, "2017-12-28 19:28:27");
+    EXPECT_EQ(order6.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order6.exchangeTimestamp, "2017-12-28 19:28:27");
+    EXPECT_EQ(order6.rejectedBy, "");
+    EXPECT_EQ(order6.variety, "regular");
+    EXPECT_EQ(order6.exchange, "MCX");
+    EXPECT_EQ(order6.tradingSymbol, "LEADMINI17DECFUT");
+    EXPECT_EQ(order6.instrumentToken, 53496327);
+    EXPECT_EQ(order6.orderType, "LIMIT");
+    EXPECT_EQ(order6.transactionType, "BUY");
+    EXPECT_EQ(order6.validity, "DAY");
+    EXPECT_EQ(order6.product, "NRML");
+    EXPECT_EQ(order6.quantity, 1);
+    EXPECT_EQ(order6.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order6.price, 161.05);
+    EXPECT_DOUBLE_EQ(order6.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order6.averagePrice, 161.05);
+    EXPECT_EQ(order6.filledQuantity, 1);
+    EXPECT_EQ(order6.pendingQuantity, 0);
+    EXPECT_EQ(order6.cancelledQuantity, 0);
+
+    kitepp::order order7 = Orders[6];
+    EXPECT_EQ(order7.accountID, "");
+    EXPECT_EQ(order7.placedBy, "DA0017");
+    EXPECT_EQ(order7.orderID, "171228001731490");
+    EXPECT_EQ(order7.exchangeOrderID, "211736200302177");
+    EXPECT_EQ(order7.parentOrderID, "");
+    EXPECT_EQ(order7.status, "COMPLETE");
+    EXPECT_EQ(order7.statusMessage, "");
+    EXPECT_EQ(order7.orderTimestamp, "2017-12-28 19:37:12");
+    EXPECT_EQ(order7.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order7.exchangeTimestamp, "2017-12-28 19:37:12");
+    EXPECT_EQ(order7.rejectedBy, "");
+    EXPECT_EQ(order7.variety, "regular");
+    EXPECT_EQ(order7.exchange, "MCX");
+    EXPECT_EQ(order7.tradingSymbol, "LEADMINI17DECFUT");
+    EXPECT_EQ(order7.instrumentToken, 53496327);
+    EXPECT_EQ(order7.orderType, "LIMIT");
+    EXPECT_EQ(order7.transactionType, "SELL");
+    EXPECT_EQ(order7.validity, "DAY");
+    EXPECT_EQ(order7.product, "NRML");
+    EXPECT_EQ(order7.quantity, 1);
+    EXPECT_EQ(order7.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order7.price, 161.2);
+    EXPECT_DOUBLE_EQ(order7.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order7.averagePrice, 161.2);
+    EXPECT_EQ(order7.filledQuantity, 1);
+    EXPECT_EQ(order7.pendingQuantity, 0);
+    EXPECT_EQ(order7.cancelledQuantity, 0);
+}
+
+TEST(kiteTest, tradesTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/trades.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::trade> Trades = Kite.trades();
+
+    // Expected values
+    ASSERT_EQ(Trades.size(), 1);
+
+    kitepp::trade trade1 = Trades[0];
+    EXPECT_DOUBLE_EQ(trade1.averagePrice, 310.7);
+    EXPECT_EQ(trade1.exchange, "NSE");
+    EXPECT_EQ(trade1.exchangeOrderID, "1300000001887410");
+    EXPECT_EQ(trade1.exchangeTimestamp, "2017-12-29 12:02:05");
+    EXPECT_EQ(trade1.InstrumentToken, 779521);
+    EXPECT_EQ(trade1.orderID, "171229000724687");
+    EXPECT_EQ(trade1.product, "CNC");
+    EXPECT_DOUBLE_EQ(trade1.quantity, 1);
+    EXPECT_EQ(trade1.tradeID, "75894751");
+    EXPECT_EQ(trade1.tradingSymbol, "SBIN");
+    EXPECT_EQ(trade1.transactionType, "BUY");
+}
+
+TEST(kiteTest, orderTradesTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/order_trades.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::trade> Trades = Kite.orderTrades("arg1");
+
+    // Expected values
+    ASSERT_EQ(Trades.size(), 1);
+
+    kitepp::trade trade1 = Trades[0];
+    EXPECT_DOUBLE_EQ(trade1.averagePrice, 310.7);
+    EXPECT_EQ(trade1.exchange, "NSE");
+    EXPECT_EQ(trade1.exchangeOrderID, "1300000001887410");
+    EXPECT_EQ(trade1.exchangeTimestamp, "2017-12-29 12:02:05");
+    EXPECT_EQ(trade1.InstrumentToken, 779521);
+    EXPECT_EQ(trade1.orderID, "171229000724687");
+    EXPECT_EQ(trade1.product, "CNC");
+    EXPECT_DOUBLE_EQ(trade1.quantity, 1);
+    EXPECT_EQ(trade1.tradeID, "75894751");
+    EXPECT_EQ(trade1.tradingSymbol, "SBIN");
+    EXPECT_EQ(trade1.transactionType, "BUY");
 }
