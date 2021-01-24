@@ -501,7 +501,7 @@ struct position {
 
         rjh::_getIfExists(val, daySellQuantity, "day_sell_quantity");
         rjh::_getIfExists(val, daySellPrice, "day_sell_price");
-        rjh::_getIfExists(val, daySellValue, "averaday_sell_valuege_price");
+        rjh::_getIfExists(val, daySellValue, "day_sell_value");
     };
 
     string tradingsymbol;
@@ -556,7 +556,7 @@ struct positions {
 
         rj::Value dayVal(rj::kArrayType);
         rjh::_getIfExists(val, dayVal, "day", rjh::_RJValueType::Array);
-        for (auto& i : netVal.GetArray()) { day.emplace_back(i.GetObject()); };
+        for (auto& i : dayVal.GetArray()) { day.emplace_back(i.GetObject()); };
     };
 
     std::vector<position> net;
