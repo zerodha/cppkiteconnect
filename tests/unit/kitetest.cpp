@@ -1242,3 +1242,127 @@ TEST(kiteTest, convertPositionTest) {
     // Expected values
     EXPECT_EQ(result, true);
 }
+
+TEST(kiteTest, getQuoteTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/quote.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::unordered_map<string, kitepp::quote> quotes = Kite.getQuote({});
+
+    // Expected values
+    ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
+    kitepp::quote Quote = quotes["NSE:INFY"];
+
+    EXPECT_EQ(Quote.instrumentToken, 408065);
+    EXPECT_EQ(Quote.timestamp, "2018-01-12 10:40:29");
+    EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.8);
+    EXPECT_EQ(Quote.lastQuantity, 55);
+    EXPECT_EQ(Quote.lastTradeTime, "2018-01-12 10:40:28");
+    EXPECT_EQ(Quote.averagePrice, 1077.03);
+    EXPECT_EQ(Quote.volume, 1368065);
+    EXPECT_EQ(Quote.buyQuantity, 240020);
+    EXPECT_EQ(Quote.sellQuantity, 509481);
+
+    EXPECT_EQ(Quote.OHLC.open, 1085.8);
+    EXPECT_EQ(Quote.OHLC.high, 1085.9);
+    EXPECT_EQ(Quote.OHLC.low, 1070.9);
+    EXPECT_EQ(Quote.OHLC.close, 1075.8);
+
+    EXPECT_DOUBLE_EQ(Quote.netChange, 0);
+    EXPECT_DOUBLE_EQ(Quote.OI, 0);
+    EXPECT_DOUBLE_EQ(Quote.OIDayHigh, 0);
+    EXPECT_DOUBLE_EQ(Quote.OIDayLow, 0);
+
+    ASSERT_EQ(Quote.marketDepth.buy.size(), 5);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[0].price, 1074.8);
+    EXPECT_EQ(Quote.marketDepth.buy[0].quantity, 35);
+    EXPECT_EQ(Quote.marketDepth.buy[0].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[1].price, 1074.65);
+    EXPECT_EQ(Quote.marketDepth.buy[1].quantity, 5);
+    EXPECT_EQ(Quote.marketDepth.buy[1].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[2].price, 1074.6);
+    EXPECT_EQ(Quote.marketDepth.buy[2].quantity, 14);
+    EXPECT_EQ(Quote.marketDepth.buy[2].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[3].price, 1074.5);
+    EXPECT_EQ(Quote.marketDepth.buy[3].quantity, 1529);
+    EXPECT_EQ(Quote.marketDepth.buy[3].orders, 3);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[4].price, 1074.45);
+    EXPECT_EQ(Quote.marketDepth.buy[4].quantity, 139);
+    EXPECT_EQ(Quote.marketDepth.buy[4].orders, 1);
+
+    ASSERT_EQ(Quote.marketDepth.sell.size(), 5);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[0].price, 1074.85);
+    EXPECT_EQ(Quote.marketDepth.sell[0].quantity, 32);
+    EXPECT_EQ(Quote.marketDepth.sell[0].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[1].price, 1075);
+    EXPECT_EQ(Quote.marketDepth.sell[1].quantity, 1264);
+    EXPECT_EQ(Quote.marketDepth.sell[1].orders, 18);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[2].price, 1075.1);
+    EXPECT_EQ(Quote.marketDepth.sell[2].quantity, 14);
+    EXPECT_EQ(Quote.marketDepth.sell[2].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[3].price, 1075.2);
+    EXPECT_EQ(Quote.marketDepth.sell[3].quantity, 600);
+    EXPECT_EQ(Quote.marketDepth.sell[3].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[4].price, 1075.25);
+    EXPECT_EQ(Quote.marketDepth.sell[4].quantity, 22);
+    EXPECT_EQ(Quote.marketDepth.sell[4].orders, 2);
+}
+
+TEST(kiteTest, getOHLCTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/ohlc.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::unordered_map<string, kitepp::OHLCQuote> quotes = Kite.getOHLC({});
+
+    // Expected values
+    ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
+    kitepp::OHLCQuote Quote = quotes["NSE:INFY"];
+
+    EXPECT_EQ(Quote.instrumentToken, 408065);
+    EXPECT_DOUBLE_EQ(Quote.lastPrice, 1075);
+    EXPECT_DOUBLE_EQ(Quote.OHLC.open, 1085.8);
+    EXPECT_DOUBLE_EQ(Quote.OHLC.high, 1085.9);
+    EXPECT_DOUBLE_EQ(Quote.OHLC.low, 1070.9);
+    EXPECT_DOUBLE_EQ(Quote.OHLC.close, 1075.8);
+}
+
+TEST(kiteTest, getLTPTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/ltp.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::unordered_map<string, kitepp::LTPQuote> quotes = Kite.getLTP({});
+
+    // Expected values
+    ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
+    kitepp::LTPQuote Quote = quotes["NSE:INFY"];
+
+    EXPECT_EQ(Quote.instrumentToken, 408065);
+    EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);
+}
