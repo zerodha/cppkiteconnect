@@ -182,18 +182,18 @@ inline bool _getIfExists(const rj::Value::Object& val, std::vector<double>& out,
             for (const auto& v : it->value.GetArray()) {
 
                 if (v.IsDouble()) {
-
                     out.emplace_back(v.GetDouble());
-                    return true;
+                    continue;
                 };
                 if (v.IsInt()) {
-
                     out.emplace_back(v.GetInt());
-                    return true;
+                    continue;
                 };
                 throw libException(
                     FMT("Expected value({0})'s type wasn't the one expected (expected an array of doubles)", name));
             };
+
+            return true;
         };
         throw libException(
             FMT("Expected value({0})'s type wasn't the one expected (expected an array of double)", name));

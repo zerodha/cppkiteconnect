@@ -785,3 +785,159 @@ TEST(kiteTest, orderTradesTest) {
     EXPECT_EQ(trade1.tradingSymbol, "SBIN");
     EXPECT_EQ(trade1.transactionType, "BUY");
 }
+
+TEST(kiteTest, placeGTTTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/gtt_place_order.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    int orderID = Kite.placeGTT("arg1", "arg2", "arg3", {}, 0.0, {});
+
+    // Expected value
+    EXPECT_EQ(orderID, 123);
+}
+
+TEST(kiteTest, getGTTsTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/gtt_get_orders.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::GTT> Orders = Kite.getGTTs();
+
+    // Exptected values
+    ASSERT_EQ(Orders.size(), 2);
+
+    kitepp::GTT order1 = Orders[0];
+    EXPECT_EQ(order1.ID, 112127);
+    EXPECT_EQ(order1.userID, "XX0000");
+    EXPECT_EQ(order1.type, "single");
+    EXPECT_EQ(order1.createdAt, "2019-09-12 13:25:16");
+    EXPECT_EQ(order1.updatedAt, "2019-09-12 13:25:16");
+    EXPECT_EQ(order1.expiresAt, "2020-09-12 13:25:16");
+    EXPECT_EQ(order1.status, "active");
+    EXPECT_EQ(order1.condition.exchange, "NSE");
+    EXPECT_DOUBLE_EQ(order1.condition.lastPrice, 798);
+    EXPECT_EQ(order1.condition.tradingsymbol, "INFY");
+    EXPECT_DOUBLE_EQ(order1.condition.triggerValues[0], 702);
+    EXPECT_EQ(order1.orders[0].exchange, "NSE");
+    EXPECT_EQ(order1.orders[0].tradingSymbol, "INFY");
+    EXPECT_EQ(order1.orders[0].product, "CNC");
+    EXPECT_EQ(order1.orders[0].orderType, "LIMIT");
+    EXPECT_EQ(order1.orders[0].transactionType, "BUY");
+    EXPECT_EQ(order1.orders[0].quantity, 1);
+    EXPECT_DOUBLE_EQ(order1.orders[0].price, 702.5);
+
+    kitepp::GTT order2 = Orders[1];
+    EXPECT_EQ(order2.ID, 105099);
+    EXPECT_EQ(order2.userID, "XX0000");
+    EXPECT_EQ(order2.type, "two-leg");
+    EXPECT_EQ(order2.createdAt, "2019-09-09 15:13:22");
+    EXPECT_EQ(order2.updatedAt, "2019-09-09 15:15:08");
+    EXPECT_EQ(order2.expiresAt, "2020-01-01 12:00:00");
+    EXPECT_EQ(order2.status, "triggered");
+    EXPECT_EQ(order2.condition.exchange, "NSE");
+    EXPECT_DOUBLE_EQ(order2.condition.lastPrice, 102.6);
+    EXPECT_EQ(order2.condition.tradingsymbol, "RAIN");
+    EXPECT_THAT(order2.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
+    EXPECT_EQ(order2.orders[0].tradingSymbol, "RAIN");
+    EXPECT_EQ(order2.orders[0].product, "CNC");
+    EXPECT_EQ(order2.orders[0].orderType, "LIMIT");
+    EXPECT_EQ(order2.orders[0].transactionType, "SELL");
+    EXPECT_EQ(order2.orders[0].quantity, 1);
+    EXPECT_DOUBLE_EQ(order2.orders[0].price, 1);
+    EXPECT_EQ(order2.orders[1].tradingSymbol, "RAIN");
+    EXPECT_EQ(order2.orders[1].product, "CNC");
+    EXPECT_EQ(order2.orders[1].orderType, "LIMIT");
+    EXPECT_EQ(order2.orders[1].transactionType, "SELL");
+    EXPECT_EQ(order2.orders[1].quantity, 1);
+    EXPECT_DOUBLE_EQ(order2.orders[1].price, 1);
+}
+
+TEST(kiteTest, getGTTTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/gtt_get_order.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    kitepp::GTT order = Kite.getGTT(0);
+
+    // Expected values
+    EXPECT_EQ(order.ID, 123);
+    EXPECT_EQ(order.userID, "XX0000");
+    EXPECT_EQ(order.type, "two-leg");
+    EXPECT_EQ(order.createdAt, "2019-09-09 15:13:22");
+    EXPECT_EQ(order.updatedAt, "2019-09-09 15:15:08");
+    EXPECT_EQ(order.expiresAt, "2020-01-01 12:00:00");
+    EXPECT_EQ(order.status, "triggered");
+    EXPECT_EQ(order.condition.exchange, "NSE");
+    EXPECT_DOUBLE_EQ(order.condition.lastPrice, 102.6);
+    EXPECT_EQ(order.condition.tradingsymbol, "RAIN");
+    EXPECT_THAT(order.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
+    EXPECT_EQ(order.orders[0].tradingSymbol, "RAIN");
+    EXPECT_EQ(order.orders[0].product, "CNC");
+    EXPECT_EQ(order.orders[0].orderType, "LIMIT");
+    EXPECT_EQ(order.orders[0].transactionType, "SELL");
+    EXPECT_EQ(order.orders[0].quantity, 1);
+    EXPECT_DOUBLE_EQ(order.orders[0].price, 1);
+}
+
+TEST(kiteTest, modifyGTTTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/gtt_modify_order.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::PUT, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    int orderID = Kite.modifyGTT(0, "arg1", "arg2", "arg3", {}, 0, {});
+
+    // Expected values
+    EXPECT_EQ(orderID, 123);
+}
+
+TEST(kiteTest, deleteGTTTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/gtt_delete_order.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    int orderID = Kite.deleteGTT(0);
+
+    // Expected values
+    EXPECT_EQ(orderID, 123);
+}

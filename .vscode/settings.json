@@ -86,4 +86,5 @@
         "variant": "cpp"
     },
     "cmake.sourceDirectory": "${workspaceFolder}/.",
+    "output.smartScroll.enabled": true
 }
