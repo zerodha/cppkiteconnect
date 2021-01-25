@@ -852,7 +852,7 @@ struct MFSIP {
         rjh::_getIfExists(val, instalments, "instalments");
         rjh::_getIfExists(val, lastInstalment, "last_instalment");
         rjh::_getIfExists(val, pendingInstalments, "pending_instalments");
-        rjh::_getIfExists(val, instalmentDay, "instalment_day");
+        rjh::_getIfExists(val, instalmentDay, "instalment_date");
         rjh::_getIfExists(val, completedInstalments, "completed_instalments");
         rjh::_getIfExists(val, nextInstalment, "next_instalment");
         rjh::_getIfExists(val, triggerPrice, "trigger_price");

@@ -1607,3 +1607,125 @@ TEST(kiteTest, DISABLED_getMFHoldingsTest) {
     EXPECT_EQ(holding3.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);*/
 }
+
+TEST(kiteTest, placeMFSIPTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_order_response.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    auto res = Kite.placeMFSIP("arg1", 0.0, 0, "arg4");
+
+    // Expected values
+    EXPECT_EQ(res.first, "123457");
+    EXPECT_EQ(res.second, "123457");
+}
+
+TEST(kiteTest, modifyMFSIPTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_order_response.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::PUT, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    Kite.modifyMFSIP("arg1");
+}
+
+TEST(kiteTest, cancelMFSIPTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_order_response.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    string SIPID = Kite.cancelMFSIP("arg1");
+
+    // Expected values
+    EXPECT_EQ(SIPID, "123457");
+}
+
+TEST(kiteTest, getSIPsTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_sips.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::MFSIP> SIPs = Kite.getSIPs();
+
+    // Expected values
+    ASSERT_EQ(SIPs.size(), 1);
+
+    kitepp::MFSIP sip1 = SIPs[0];
+    EXPECT_EQ(sip1.ID, "1234");
+    EXPECT_EQ(sip1.tradingsymbol, "INF090I01239");
+    EXPECT_EQ(sip1.fundName, "Franklin India Prima Plus");
+    EXPECT_EQ(sip1.dividendType, "growth");
+    EXPECT_EQ(sip1.transactionType, "BUY");
+    EXPECT_EQ(sip1.status, "ACTIVE");
+    EXPECT_EQ(sip1.created, "2016-01-01 13:00:00");
+    EXPECT_EQ(sip1.frequency, "monthly");
+    EXPECT_DOUBLE_EQ(sip1.instalmentAmount, 1000);
+    EXPECT_EQ(sip1.instalments, -1);
+    EXPECT_EQ(sip1.lastInstalment, "2017-07-05 07:33:32");
+    EXPECT_EQ(sip1.pendingInstalments, -1);
+    EXPECT_EQ(sip1.instalmentDay, 5);
+    EXPECT_EQ(sip1.tag, "");
+}
+
+TEST(kiteTest, getSIPTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_sip_info.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    kitepp::MFSIP sip = Kite.getSIP("arg1");
+
+    // Expected values
+    EXPECT_EQ(sip.ID, "1234");
+    EXPECT_EQ(sip.tradingsymbol, "INF090I01239");
+    EXPECT_EQ(sip.fundName, "Franklin India Prima Plus");
+    EXPECT_EQ(sip.dividendType, "growth");
+    EXPECT_EQ(sip.transactionType, "BUY");
+    EXPECT_EQ(sip.status, "ACTIVE");
+    EXPECT_EQ(sip.created, "2016-01-01 13:00:00");
+    EXPECT_EQ(sip.frequency, "monthly");
+    EXPECT_DOUBLE_EQ(sip.instalmentAmount, 1000);
+    EXPECT_EQ(sip.instalments, -1);
+    EXPECT_EQ(sip.lastInstalment, "2017-07-05 07:33:32");
+    EXPECT_EQ(sip.pendingInstalments, -1);
+    EXPECT_EQ(sip.instalmentDay, 5);
+    EXPECT_EQ(sip.tag, "");
+}
