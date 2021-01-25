@@ -1366,3 +1366,244 @@ TEST(kiteTest, getLTPTest) {
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);
 }
+
+TEST(kiteTest, getHistoricalDataTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/historical_minute.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::historicalData> data = Kite.getHistoricalData(0, "arg1", "arg2", "arg3", "arg4");
+
+    // Expected values
+    ASSERT_EQ(data.size(), 3);
+
+    kitepp::historicalData data1 = data[0];
+    EXPECT_EQ(data1.datetime, "2017-12-15T09:15:00+0530");
+    EXPECT_DOUBLE_EQ(data1.open, 1704.5);
+    EXPECT_DOUBLE_EQ(data1.high, 1705);
+    EXPECT_DOUBLE_EQ(data1.low, 1699.25);
+    EXPECT_DOUBLE_EQ(data1.close, 1702.8);
+    EXPECT_EQ(data1.volume, 2499);
+    EXPECT_DOUBLE_EQ(data1.OI, 0);
+
+    kitepp::historicalData data2 = data[1];
+    EXPECT_EQ(data2.datetime, "2017-12-15T09:16:00+0530");
+    EXPECT_DOUBLE_EQ(data2.open, 1702);
+    EXPECT_DOUBLE_EQ(data2.high, 1702);
+    EXPECT_DOUBLE_EQ(data2.low, 1698.15);
+    EXPECT_DOUBLE_EQ(data2.close, 1698.15);
+    EXPECT_EQ(data2.volume, 1271);
+    EXPECT_DOUBLE_EQ(data2.OI, 0);
+
+    kitepp::historicalData data3 = data[2];
+    EXPECT_EQ(data3.datetime, "2017-12-15T09:17:00+0530");
+    EXPECT_DOUBLE_EQ(data3.open, 1698.15);
+    EXPECT_DOUBLE_EQ(data3.high, 1700.25);
+    EXPECT_DOUBLE_EQ(data3.low, 1698);
+    EXPECT_DOUBLE_EQ(data3.close, 1699.25);
+    EXPECT_EQ(data3.volume, 831);
+    EXPECT_DOUBLE_EQ(data3.OI, 0);
+}
+
+TEST(kiteTest, placeMFOrderTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_order_response.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    string orderID = Kite.placeMFOrder("arg1", "arg2");
+
+    // Expected values
+    EXPECT_EQ(orderID, "123457");
+}
+
+TEST(kiteTest, cancelMFOrderTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_order_response.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    string orderID = Kite.cancelMFOrder("arg1");
+
+    // Expected values
+    EXPECT_EQ(orderID, "123457");
+}
+
+TEST(kiteTest, getMFOrdersTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_orders.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::MFOrder> orders = Kite.getMFOrders();
+
+    // Expected values
+    ASSERT_EQ(orders.size(), 2);
+
+    kitepp::MFOrder order1 = orders[0];
+    EXPECT_EQ(order1.orderID, "867688079445476");
+    EXPECT_EQ(order1.exchangeOrderID, "");
+    EXPECT_EQ(order1.tradingsymbol, "INF174K01LS2");
+    EXPECT_EQ(order1.status, "CANCELLED");
+    EXPECT_EQ(order1.statusMessage, "");
+    EXPECT_EQ(order1.folio, "");
+    EXPECT_EQ(order1.fund, "Kotak Select Focus Fund - Direct Plan");
+    EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:44");
+    EXPECT_EQ(order1.exchangeTimestamp, "");
+    EXPECT_EQ(order1.settlementID, "");
+    EXPECT_EQ(order1.transactionType, "BUY");
+    EXPECT_EQ(order1.variety, "regular");
+    EXPECT_EQ(order1.purchaseType, "FRESH");
+    EXPECT_EQ(order1.quantity, 0);
+    EXPECT_DOUBLE_EQ(order1.amount, 5000);
+    EXPECT_DOUBLE_EQ(order1.lastPrice, 35.135);
+    EXPECT_DOUBLE_EQ(order1.averagePrice, 0);
+    EXPECT_EQ(order1.placedBy, "DA0017");
+    EXPECT_EQ(order1.tag, "");
+
+    kitepp::MFOrder order2 = orders[1];
+    EXPECT_EQ(order2.orderID, "396109826218232");
+    EXPECT_EQ(order2.exchangeOrderID, "");
+    EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
+    EXPECT_EQ(order2.status, "CANCELLED");
+    EXPECT_EQ(order2.statusMessage, "");
+    EXPECT_EQ(order2.folio, "");
+    EXPECT_EQ(order2.fund, "Kotak Select Focus Fund - Direct Plan");
+    EXPECT_EQ(order2.orderTimestamp, "2017-12-28 11:40");
+    EXPECT_EQ(order2.exchangeTimestamp, "");
+    EXPECT_EQ(order2.settlementID, "");
+    EXPECT_EQ(order2.transactionType, "BUY");
+    EXPECT_EQ(order2.variety, "regular");
+    EXPECT_EQ(order2.purchaseType, "FRESH");
+    EXPECT_EQ(order2.quantity, 0);
+    EXPECT_DOUBLE_EQ(order2.amount, 5000);
+    EXPECT_DOUBLE_EQ(order2.lastPrice, 35.135);
+    EXPECT_DOUBLE_EQ(order2.averagePrice, 0);
+    EXPECT_EQ(order2.placedBy, "DA0017");
+    EXPECT_EQ(order2.tag, "");
+}
+
+TEST(kiteTest, getMFOrderTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_orders_info.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    kitepp::MFOrder order = Kite.getMFOrder("arg1");
+
+    // Expected values
+    EXPECT_EQ(order.orderID, "460687158435713");
+    EXPECT_EQ(order.exchangeOrderID, "");
+    EXPECT_EQ(order.tradingsymbol, "INF174K01LS2");
+    EXPECT_EQ(order.status, "CANCELLED");
+    EXPECT_EQ(order.statusMessage, "");
+    EXPECT_EQ(order.folio, "");
+    EXPECT_EQ(order.fund, "Kotak Select Focus Fund - Direct Plan");
+    EXPECT_EQ(order.orderTimestamp, "2017-12-29 11:44");
+    EXPECT_EQ(order.exchangeTimestamp, "");
+    EXPECT_EQ(order.settlementID, "");
+    EXPECT_EQ(order.transactionType, "BUY");
+    EXPECT_EQ(order.variety, "regular");
+    EXPECT_EQ(order.purchaseType, "FRESH");
+    EXPECT_EQ(order.quantity, 0);
+    EXPECT_DOUBLE_EQ(order.amount, 5000);
+    EXPECT_DOUBLE_EQ(order.lastPrice, 35.135);
+    EXPECT_DOUBLE_EQ(order.averagePrice, 0);
+    EXPECT_EQ(order.placedBy, "DA0017");
+    EXPECT_EQ(order.tag, "");
+}
+
+TEST(kiteTest, DISABLED_getMFHoldingsTest) {
+
+    // FIXME fix this
+
+    std::ifstream jsonFile("../../tests/mock_responses/mf_holdings.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+    try {
+
+        std::vector<kitepp::MFHolding> Holdings = Kite.getMFHoldings();
+
+    } catch (const std::exception& e) {
+
+        string cerrStr = e.what();
+        std::cerr << e.what() << "\n\n";
+        ////////
+    };
+
+    // Expected values
+    /*ASSERT_EQ(Holdings.size(), 3);
+
+    kitepp::MFHolding holding1 = Holdings[0];
+    EXPECT_EQ(holding1.folio, "123123/123");
+    EXPECT_EQ(holding1.fund, "Kotak Select Focus Fund - Direct Plan");
+    EXPECT_EQ(holding1.tradingsymbol, "INF174K01LS2");
+    EXPECT_DOUBLE_EQ(holding1.averagePrice, 30.729);
+    EXPECT_DOUBLE_EQ(holding1.lastPrice, 33.014);
+    EXPECT_DOUBLE_EQ(holding1.Pnl, 594.769);
+    EXPECT_EQ(holding1.lastPriceDate, "2016-11-11");
+    EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);*/
+
+    /*kitepp::MFHolding holding2 = Holdings[1];
+    EXPECT_EQ(holding2.folio, "385080203");
+    EXPECT_EQ(holding2.fund, "KDSP BlackRock Money Manager Fund");
+    EXPECT_EQ(holding2.tradingsymbol, "INF740K01QQ3");
+    EXPECT_DOUBLE_EQ(holding2.averagePrice, 2146.131);
+    EXPECT_DOUBLE_EQ(holding2.lastPrice, 2277.0708);
+    EXPECT_DOUBLE_EQ(holding2.Pnl, 61.018);
+    EXPECT_EQ(holding2.lastPriceDate, "");
+    EXPECT_DOUBLE_EQ(holding2.quantity, 0.466);
+
+    kitepp::MFHolding holding3 = Holdings[2];
+    EXPECT_EQ(holding3.folio, "1052046771");
+    EXPECT_EQ(holding3.fund, "HDFC TaxSaver - Regular Plan");
+    EXPECT_EQ(holding3.tradingsymbol, "INF179K01BB8");
+    EXPECT_DOUBLE_EQ(holding3.averagePrice, 345.849);
+    EXPECT_DOUBLE_EQ(holding3.lastPrice, 559.081);
+    EXPECT_DOUBLE_EQ(holding3.Pnl, 61963.074);
+    EXPECT_EQ(holding3.lastPriceDate, "");
+    EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);*/
+}

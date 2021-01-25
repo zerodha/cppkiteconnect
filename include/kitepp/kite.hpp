@@ -999,6 +999,7 @@ class kite {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.orders"));
+
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFOrders)"); };
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
@@ -1050,10 +1051,10 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
 
-        std::vector<MFHolding> holdingssVec;
-        for (auto& i : it->value.GetArray()) { holdingssVec.emplace_back(i.GetObject()); }
+        std::vector<MFHolding> holdingsVec;
+        for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
 
-        return holdingssVec;
+        return holdingsVec;
     };
 
     // SIP:
