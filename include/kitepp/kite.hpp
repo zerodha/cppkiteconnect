@@ -804,8 +804,8 @@ class kite {
         const string rcvdData =
             (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
                                  _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
-
         if (rcvdData.empty()) { return {}; };
+
         std::vector<string> tokens = kitepp::_split(rcvdData, '\n');
         tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
 
@@ -1270,10 +1270,10 @@ class kite {
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("order.margins"), { { "", rjh::_dump(req) } }, true);
-
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (getOrderMargis)");
         };
+
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getOrderMargis)"); };
 
@@ -1414,7 +1414,6 @@ class kite {
         */
 
         // create request
-
         const httplib::Headers headers = {
 
             { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion }
@@ -1470,35 +1469,6 @@ class kite {
             };
         };
 
-        /*if (mtd == _methods::GET) {
-
-            res = _httpClient.Get(endpoint.c_str(), headers)
-
-        } else if (mtd == _methods::POST) {
-
-            res = _httpClient.Post(endpoint, (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
-                (isJson) ? "application/json" : "application/x-www-form-urlencoded");
-
-        } else if (mtd == _methods::PUT) {
-
-            res = _httpClient.Put(endpoint, (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
-                (isJson) ? "application/json" : "application/x-www-form-urlencoded");
-
-        } else if (mtd == _methods::DEL) {
-
-            res = _httpClient.Delete(endpoint);
-        };
-
-        if (res) {
-
-            code = res->status;
-            if (code == 200) { dataRcvd = res->body; };
-
-        } else {
-
-            throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-        };*/
-
         //?std::cout << dataRcvd << std::endl;
 
         if (!dataRcvd.empty()) {
@@ -1531,7 +1501,8 @@ class kite {
         };
     };
 
-    string _sendInstrumentsReq(const string& endpoint) {
+    // GMock requires mock methods to be virtual
+    virtual string _sendInstrumentsReq(const string& endpoint) {
 
         // create request and send req
         httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };

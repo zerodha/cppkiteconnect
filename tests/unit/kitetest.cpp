@@ -25,6 +25,8 @@ class mockKite : public kitepp::kite {
         (rj::Document & data, const kitepp::_methods& mtd, const string& endpoint,
             (const std::vector<std::pair<string, string>>) &bodyParams, bool isJson),
         (override));
+
+    MOCK_METHOD(string, _sendInstrumentsReq, (const string& endpoint), (override));
 };
 
 TEST(kiteTest, constructorTest) {
@@ -1728,4 +1730,38 @@ TEST(kiteTest, getSIPTest) {
     EXPECT_EQ(sip.pendingInstalments, -1);
     EXPECT_EQ(sip.instalmentDay, 5);
     EXPECT_EQ(sip.tag, "");
+}
+
+TEST(kiteTest, getOrderMarginsTest) {
+
+    std::ifstream jsonFile("../../tests/mock_responses/order_margins.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+
+    std::vector<kitepp::orderMargins> ordMargins = Kite.getOrderMargins({});
+
+    // Expected values
+    ASSERT_EQ(ordMargins.size(), 1);
+
+    kitepp::orderMargins ordMargins1 = ordMargins[0];
+    EXPECT_EQ(ordMargins1.type, "equity");
+    EXPECT_EQ(ordMargins1.tradingSymbol, "INFY");
+    EXPECT_EQ(ordMargins1.exchange, "NSE");
+    EXPECT_DOUBLE_EQ(ordMargins1.SPAN, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.exposure, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.optionPremium, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.additional, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.BO, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.cash, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.VAR, 961.45);
+    EXPECT_DOUBLE_EQ(ordMargins1.pnl.realised, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.pnl.unrealised, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.total, 961.45);
 }
