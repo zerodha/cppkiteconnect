@@ -1,4 +1,5 @@
 #include <fstream>
+#include <gmock/gmock-actions.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <ios>
@@ -36,6 +37,8 @@ TEST(kiteTest, constructorTest) {
 
     EXPECT_EQ(Kite.getAPIKey(), APIKey_expected);
 };
+
+// User tests
 
 TEST(kiteTest, loginURLTest) {
 
@@ -207,6 +210,8 @@ TEST(kiteTest, getMarginsTest2) {
     EXPECT_DOUBLE_EQ(margins.used.holdingSales, 0);
     EXPECT_DOUBLE_EQ(margins.used.turnover, 0);
 }
+
+// Orders tests
 
 TEST(kiteTest, placeOrderTest) {
 
@@ -788,6 +793,8 @@ TEST(kiteTest, orderTradesTest) {
     EXPECT_EQ(trade1.transactionType, "BUY");
 }
 
+// GTT tests
+
 TEST(kiteTest, placeGTTTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/gtt_place_order.json");
@@ -943,6 +950,8 @@ TEST(kiteTest, deleteGTTTest) {
     // Expected values
     EXPECT_EQ(orderID, 123);
 }
+
+// Market tests
 
 TEST(kiteTest, holdingsTest) {
 
@@ -1369,6 +1378,8 @@ TEST(kiteTest, getLTPTest) {
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);
 }
 
+// Historical data tests
+
 TEST(kiteTest, getHistoricalDataTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/historical_minute.json");
@@ -1414,6 +1425,8 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_EQ(data3.volume, 831);
     EXPECT_DOUBLE_EQ(data3.OI, 0);
 }
+
+// MF tests
 
 TEST(kiteTest, placeMFOrderTest) {
 
@@ -1610,6 +1623,8 @@ TEST(kiteTest, DISABLED_getMFHoldingsTest) {
     EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);*/
 }
 
+// SIP tests
+
 TEST(kiteTest, placeMFSIPTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/mf_order_response.json");
@@ -1732,6 +1747,8 @@ TEST(kiteTest, getSIPTest) {
     EXPECT_EQ(sip.tag, "");
 }
 
+// Order margins tests
+
 TEST(kiteTest, getOrderMarginsTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/order_margins.json");
@@ -1764,4 +1781,102 @@ TEST(kiteTest, getOrderMarginsTest) {
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.realised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.unrealised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.total, 961.45);
+}
+
+// Instruments tests
+
+TEST(kiteTest, getInstrumentsTest) {
+
+    std::ifstream csvFile("../../tests/mock_responses/instruments_all.csv");
+    ASSERT_TRUE(csvFile);
+    string csv(std::istreambuf_iterator<char> { csvFile }, {});
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
+
+    std::vector<kitepp::instrument> instruments = Kite.getInstruments();
+
+    // Expected values
+    ASSERT_EQ(instruments.size(), 2);
+
+    kitepp::instrument instrument1 = instruments[0];
+    EXPECT_EQ(instrument1.instrumentToken, 3813889);
+    EXPECT_EQ(instrument1.exchangeToken, 14898);
+    EXPECT_EQ(instrument1.tradingsymbol, "CENTRALBK-BE");
+    EXPECT_EQ(instrument1.name, "CENTRAL BANK OF INDIA");
+    EXPECT_DOUBLE_EQ(instrument1.lastPrice, 0.0);
+    EXPECT_EQ(instrument1.expiry, "");
+    EXPECT_DOUBLE_EQ(instrument1.strikePrice, 0.0);
+    EXPECT_DOUBLE_EQ(instrument1.tickSize, 0.05);
+    EXPECT_DOUBLE_EQ(instrument1.lotSize, 1);
+    EXPECT_EQ(instrument1.instrumentType, "EQ");
+    EXPECT_EQ(instrument1.segment, "NSE");
+    EXPECT_EQ(instrument1.exchange, "NSE");
+
+    kitepp::instrument instrument2 = instruments[1];
+    EXPECT_EQ(instrument2.instrumentToken, 4645121);
+    EXPECT_EQ(instrument2.exchangeToken, 18145);
+    EXPECT_EQ(instrument2.tradingsymbol, "EMMBI-BL");
+    EXPECT_EQ(instrument2.name, "EMMBI INDUSTRIES");
+    EXPECT_DOUBLE_EQ(instrument2.lastPrice, 0.0);
+    EXPECT_EQ(instrument2.expiry, "");
+    EXPECT_DOUBLE_EQ(instrument2.strikePrice, 0.0);
+    EXPECT_DOUBLE_EQ(instrument2.tickSize, 0.05);
+    EXPECT_DOUBLE_EQ(instrument2.lotSize, 1);
+    EXPECT_EQ(instrument2.instrumentType, "EQ");
+    EXPECT_EQ(instrument2.segment, "NSE");
+    EXPECT_EQ(instrument2.exchange, "NSE");
+}
+
+TEST(kiteTest, getMFInstrumentsTest) {
+
+    std::ifstream csvFile("../../tests/mock_responses/mf_instruments.csv");
+    ASSERT_TRUE(csvFile);
+    string csv(std::istreambuf_iterator<char> { csvFile }, {});
+
+    mockKite Kite;
+
+    EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
+
+    std::vector<kitepp::MFInstrument> instruments = Kite.getMFInstruments();
+
+    // Expected values
+    ASSERT_EQ(instruments.size(), 2);
+
+    kitepp::MFInstrument instrument1 = instruments[0];
+    EXPECT_EQ(instrument1.tradingsymbol, "INF209K01157");
+    EXPECT_EQ(instrument1.AMC, "BirlaSunLifeMutualFund_MF");
+    EXPECT_EQ(instrument1.name, "Aditya Birla Sun Life Advantage Fund");
+    EXPECT_EQ(instrument1.purchaseAllowed, true);
+    EXPECT_EQ(instrument1.redemtpionAllowed, true);
+    EXPECT_EQ(instrument1.minimumPurchaseAmount, 1000.0);
+    EXPECT_EQ(instrument1.purchaseAmountMultiplier, 1.0);
+    EXPECT_EQ(instrument1.minimumAdditionalPurchaseAmount, 1000.0);
+    EXPECT_EQ(instrument1.minimumRedemptionQuantity, 0.001);
+    EXPECT_EQ(instrument1.redemptionQuantityMultiplier, 0.001);
+    EXPECT_EQ(instrument1.dividendType, "payout");
+    EXPECT_EQ(instrument1.schemeType, "equity");
+    EXPECT_EQ(instrument1.plan, "regular");
+    EXPECT_EQ(instrument1.settlementType, "T3");
+    EXPECT_EQ(instrument1.lastPrice, 106.8);
+    EXPECT_EQ(instrument1.lastPriceDate, "2017-11-23");
+
+    kitepp::MFInstrument instrument2 = instruments[1];
+    EXPECT_EQ(instrument2.tradingsymbol, "INF209K01165");
+    EXPECT_EQ(instrument2.AMC, "BirlaSunLifeMutualFund_MF");
+    EXPECT_EQ(instrument2.name, "Aditya Birla Sun Life Advantage Fund");
+    EXPECT_EQ(instrument2.purchaseAllowed, true);
+    EXPECT_EQ(instrument2.redemtpionAllowed, true);
+    EXPECT_EQ(instrument2.minimumPurchaseAmount, 1000.0);
+    EXPECT_EQ(instrument2.purchaseAmountMultiplier, 1.0);
+    EXPECT_EQ(instrument2.minimumAdditionalPurchaseAmount, 1000.0);
+    EXPECT_EQ(instrument2.minimumRedemptionQuantity, 0.001);
+    EXPECT_EQ(instrument2.redemptionQuantityMultiplier, 0.001);
+    EXPECT_EQ(instrument2.dividendType, "growth");
+    EXPECT_EQ(instrument2.schemeType, "equity");
+    EXPECT_EQ(instrument2.plan, "regular");
+    EXPECT_EQ(instrument2.settlementType, "T3");
+    EXPECT_EQ(instrument2.lastPrice, 436.72);
+    EXPECT_EQ(instrument2.lastPriceDate, "2017-11-23");
 }
