@@ -1543,7 +1543,5 @@ class kite {
 // TODO delete compile_comands.json & .vscode/ symlink from project directory
 // TODO move doxygen to separate cmakelists
 // TODO add quiet option while building doxygen docs
-// TODO change clang format to old style, but remove empty lines setting
 
-// TODO change namespace to ?
-// TODO change formatting
+// TODO change namespace to kiteconnect

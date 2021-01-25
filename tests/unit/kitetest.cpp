@@ -17,6 +17,8 @@ using std::string;
 using ::testing::_;
 namespace rj = rapidjson;
 
+// Mocks
+
 class mockKite : public kitepp::kite {
 
   public:
@@ -29,6 +31,8 @@ class mockKite : public kitepp::kite {
 
     MOCK_METHOD(string, _sendInstrumentsReq, (const string& endpoint), (override));
 };
+
+// Constructor tests
 
 TEST(kiteTest, constructorTest) {
 
