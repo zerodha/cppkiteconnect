@@ -5,8 +5,9 @@
 #include "rapidjson/document.h"
 #include "rapidjson/error/error.h"
 
-/// test if rapdjson is parsing correctly
+// test if rapdjson is parsing correctly
 TEST(RJTest, parseTest) {
+
     const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
     const std::string project_expected = "rapidjson";
     constexpr int stars_expected = 10;
