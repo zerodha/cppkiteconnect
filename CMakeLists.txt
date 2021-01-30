@@ -5,12 +5,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 include(CTest)
 
-include_directories("${CMAKE_SOURCE_DIR}/include")
+#FIXME fix the include
+include_directories("${CMAKE_SOURCE_DIR}/include" "/opt/cpplibs/uWebSockets-0.14.8/src")
 find_package(OpenSSL REQUIRED)
 
 #build examples
 add_subdirectory("examples/example1")
 add_subdirectory("examples/example2")
+add_subdirectory("examples/example3")
 
 #build tests
 if(BUILD_TESTING)
