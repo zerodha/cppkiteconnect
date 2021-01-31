@@ -43,10 +43,7 @@ catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
 
 };
-//clang-format on
-
-
-
+    // clang-format on
 
     return 0;
 };

@@ -29,6 +29,33 @@
 using fmt::literals::operator""_a;
 #define FMT fmt::format
 
+/*
+   __BIG_ENDIAN__ and __LITTLE_ENDIAN__ are define in some gcc versions
+  only, probably depending on the architecture. Try to use endian.h if
+  the gcc way fails - endian.h also doesn not seem to be available on all
+  platforms.
+*/
+#ifdef __BIG_ENDIAN__
+#define WORDS_BIGENDIAN 1
+#else /* __BIG_ENDIAN__ */
+#ifdef __LITTLE_ENDIAN__
+#undef WORDS_BIGENDIAN
+#else
+#ifdef BSD
+#include <sys/endian.h>
+#else
+#include <endian.h>
+#endif
+#if __BYTE_ORDER == __BIG_ENDIAN
+#define WORDS_BIGENDIAN 1
+#elif __BYTE_ORDER == __LITTLE_ENDIAN
+#undef WORDS_BIGENDIAN
+#else
+#error "unable to determine endianess!"
+#endif /* __BYTE_ORDER */
+#endif /* __LITTLE_ENDIAN__ */
+#endif /* __BIG_ENDIAN__ */
+
 //*********
 
 namespace kitepp {

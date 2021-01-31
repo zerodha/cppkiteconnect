@@ -12,19 +12,21 @@ void onConnect(kitepp::kiteWS* ws) {
     std::cout << "connected..\n";
 };
 
-void onMessage(kitepp::kiteWS* ws, char* message, size_t length) {
+void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
 
-    std::cout << "message received..\n";
-    std::cout << std::string(message, length) << std::endl;
-};
+    for (const auto& i : ticks) {
+
+        std::cout << "instrument token: " << i.instrumentToken << " last price: " << i.lastPrice << "\n";
+    };
+}
 
 int main(int argc, char const* argv[]) {
 
     kitepp::kiteWS kWS("a9gg2394xe9sqmjc");
 
-    kWS.setAccessToken("Dze0745S2uL7QW1Ae25FdfK50ax5my5W");
+    kWS.setAccessToken("gbVToEHu8lmusVSjGaEy9A0Kk7Wzt2BB");
     kWS.onConnect = onConnect;
-    kWS.onMessage = onMessage;
+    kWS.onTicks = onTicks;
 
     kWS.connect();
 

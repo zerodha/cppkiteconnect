@@ -1054,7 +1054,7 @@ struct depthWS {
 struct tick {
 
     string mode;
-    int32_t InstrumentToken;
+    int32_t instrumentToken;
     bool isTradable;
     bool isIndex;
 

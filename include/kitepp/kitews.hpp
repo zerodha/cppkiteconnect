@@ -1,6 +1,7 @@
 #pragma once
 
 // FIXME correct this header
+#include <algorithm> //reverse
 #include <chrono>
 #include <cstdint>
 #include <cstring> //memcpy
@@ -32,8 +33,6 @@ namespace rjh = RJHelper;
 
 class kiteWS {
 
-    // FIXME have to create callbacks
-
   public:
     // member variables
     // user constants
@@ -45,9 +44,10 @@ class kiteWS {
 
     // callbacks
     std::function<void(kiteWS* ws)> onConnect;
-    std::function<void(kiteWS* ws, char* message, size_t length)> onMessage;
+    // std::function<void(kiteWS* ws, char* message, size_t length)> onMessage;
     std::function<void(kiteWS* ws, int code, char* message, size_t length)> onError;
     std::function<void(kiteWS* ws, int code, char* message, size_t length)> onClose;
+    std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
 
     // constructors & destructors
 
@@ -185,7 +185,7 @@ class kiteWS {
 
     uWS::Hub _hub;
     uWS::Group<uWS::CLIENT>* _hubGroup;
-    uWS::WebSocket<uWS::CLIENT>* _WS; // FIXME will have to invalidate it after disconnecting, errors etc.
+    uWS::WebSocket<uWS::CLIENT>* _WS; // FIXME will have to invalidate it after disconnecting
 
     // methods
 
@@ -199,7 +199,7 @@ class kiteWS {
         });
 
         _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
-            if (onMessage) { onMessage(this, message, length); }
+            if (opCode == uWS::OpCode::BINARY && onTicks) { onTicks(this, _parseBinaryMessage(message, length)); };
         });
 
         _hubGroup->onError([&](void*) { throw kitepp::libException("Unable to connect to Websocket"); });
@@ -213,13 +213,14 @@ class kiteWS {
         });
     };
 
-    void _parseBinary(char* bytes, size_t size) {
+    string _parseTextMessage(char* message) { std::cout << message << std::endl; };
 
-        // FIXME still need to ignore heartbeat
+    std::vector<kitepp::tick> _parseBinaryMessage(char* bytes, size_t size) {
 
-        std::vector<std::vector<char>> packets = _splitPackets(std::vector<char> { bytes, bytes + size });
+        std::vector<std::vector<char>> packets = _splitPackets(std::vector<char>(bytes, bytes + size));
+        if (packets.empty()) { return {}; };
+
         std::vector<kitepp::tick> ticks;
-
         for (const auto& packet : packets) {
 
             size_t packetSize = packet.size();
@@ -235,7 +236,7 @@ class kiteWS {
 
                 // FIXME code can be shortened by moving this part outside since it's common
                 Tick.isTradable = tradable;
-                Tick.InstrumentToken = instrumentToken;
+                Tick.instrumentToken = instrumentToken;
                 //
 
                 Tick.mode = MODE_LTP;
@@ -247,7 +248,7 @@ class kiteWS {
                 Tick.mode = (packetSize == 28) ? MODE_QUOTE : MODE_FULL;
                 Tick.isTradable = tradable;
 
-                Tick.InstrumentToken = instrumentToken;
+                Tick.instrumentToken = instrumentToken;
                 Tick.lastPrice = _getNum<double>(packet, 4, 7) / divisor;
                 Tick.OHLC.high = _getNum<double>(packet, 8, 11) / divisor;
                 Tick.OHLC.low = _getNum<double>(packet, 12, 15) / divisor;
@@ -265,7 +266,7 @@ class kiteWS {
                 Tick.mode = (packetSize == 44) ? MODE_QUOTE : MODE_FULL;
                 Tick.isTradable = tradable;
 
-                Tick.InstrumentToken = instrumentToken;
+                Tick.instrumentToken = instrumentToken;
                 Tick.lastPrice = _getNum<double>(packet, 4, 7) / divisor;
                 Tick.lastTradedQuantity = _getNum<double>(packet, 8, 11) / divisor;
                 Tick.averageTradePrice = _getNum<double>(packet, 12, 15) / divisor;
@@ -302,19 +303,36 @@ class kiteWS {
                 };
             };
         };
+
+        return ticks;
     };
 
     // Convert bytes array[start], arrray[end] to number of type T
     template <typename T> T _getNum(const std::vector<char>& bytes, size_t start, size_t end) {
 
         T value;
-        // TODO see if this copy can be avoided
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
+
+// clang-format off
+        #ifndef WORDS_BIGENDIAN
+        std::reverse(requiredBytes.begin(), requiredBytes.end());
+        #endif // !IS_BIG_ENDIAN
+        // clang-format on
 
         std::memcpy(&value, requiredBytes.data(), sizeof(T));
 
         return value;
     };
+
+    /*template <typename T> T _getNum2(const std::vector<char>& bytes, size_t start, size_t end) {
+        //doesn't work for int and double. Will need different code for big endian
+
+        std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
+
+        T result = 0;
+        for (int n = 0; n < sizeof(result); n++) { result = (result << 8) + requiredBytes[n]; };
+        return result;
+    };*/
 
     std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
 
@@ -323,6 +341,7 @@ class kiteWS {
         if (bytes.size() < 2) { return {}; };
 
         int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
+
         std::vector<std::vector<char>> packets;
 
         unsigned int packetLengthStartIdx = 2;
