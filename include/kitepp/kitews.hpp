@@ -199,7 +199,10 @@ class kiteWS {
         });
 
         _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
-            if (opCode == uWS::OpCode::BINARY && onTicks) { onTicks(this, _parseBinaryMessage(message, length)); };
+            if (opCode == uWS::OpCode::BINARY && onTicks) {
+                onTicks(this, _parseBinaryMessage(message, length));
+                ;
+            };
         });
 
         _hubGroup->onError([&](void*) { throw kitepp::libException("Unable to connect to Websocket"); });
@@ -216,6 +219,8 @@ class kiteWS {
     string _parseTextMessage(char* message) { std::cout << message << std::endl; };
 
     std::vector<kitepp::tick> _parseBinaryMessage(char* bytes, size_t size) {
+
+        // FIXME yeah i dont think doubles are getting parsed correctly
 
         std::vector<std::vector<char>> packets = _splitPackets(std::vector<char>(bytes, bytes + size));
         if (packets.empty()) { return {}; };
@@ -240,7 +245,7 @@ class kiteWS {
                 //
 
                 Tick.mode = MODE_LTP;
-                Tick.lastPrice = _getNum<double>(packet, 4, 7) / divisor;
+                Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
 
             } else if (packetSize == 28 || packetSize == 32) {
                 // indices quote and full mode
@@ -249,13 +254,13 @@ class kiteWS {
                 Tick.isTradable = tradable;
 
                 Tick.instrumentToken = instrumentToken;
-                Tick.lastPrice = _getNum<double>(packet, 4, 7) / divisor;
-                Tick.OHLC.high = _getNum<double>(packet, 8, 11) / divisor;
-                Tick.OHLC.low = _getNum<double>(packet, 12, 15) / divisor;
-                Tick.OHLC.open = _getNum<double>(packet, 16, 19) / divisor;
-                Tick.OHLC.close = _getNum<double>(packet, 20, 23) / divisor;
+                Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
+                Tick.OHLC.high = _getNum<int32_t>(packet, 8, 11) / divisor;
+                Tick.OHLC.low = _getNum<int32_t>(packet, 12, 15) / divisor;
+                Tick.OHLC.open = _getNum<int32_t>(packet, 16, 19) / divisor;
+                Tick.OHLC.close = _getNum<int32_t>(packet, 20, 23) / divisor;
                 // xTick.netChange = (Tick.lastPrice - Tick.OHLC.close) * 100 / Tick.OHLC.close;
-                Tick.netChange = _getNum<double>(packet, 24, 27) / divisor;
+                Tick.netChange = _getNum<int32_t>(packet, 24, 27) / divisor;
 
                 // parse full mode with timestamp
                 if (packetSize == 32) { Tick.timestamp = _getNum<int32_t>(packet, 28, 33); }
@@ -267,41 +272,43 @@ class kiteWS {
                 Tick.isTradable = tradable;
 
                 Tick.instrumentToken = instrumentToken;
-                Tick.lastPrice = _getNum<double>(packet, 4, 7) / divisor;
-                Tick.lastTradedQuantity = _getNum<double>(packet, 8, 11) / divisor;
-                Tick.averageTradePrice = _getNum<double>(packet, 12, 15) / divisor;
-                Tick.volumeTraded = _getNum<double>(packet, 16, 19) / divisor;
-                Tick.totalBuyQuantity = _getNum<double>(packet, 20, 23) / divisor;
-                Tick.totalSellQuantity = _getNum<double>(packet, 24, 27) / divisor;
-                Tick.OHLC.high = _getNum<double>(packet, 28, 31) / divisor;
-                Tick.OHLC.low = _getNum<double>(packet, 32, 35) / divisor;
-                Tick.OHLC.open = _getNum<double>(packet, 36, 39) / divisor;
-                Tick.OHLC.close = _getNum<double>(packet, 40, 43) / divisor;
+                Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
+                Tick.lastTradedQuantity = _getNum<int32_t>(packet, 8, 11) / divisor;
+                Tick.averageTradePrice = _getNum<int32_t>(packet, 12, 15) / divisor;
+                Tick.volumeTraded = _getNum<int32_t>(packet, 16, 19) / divisor;
+                Tick.totalBuyQuantity = _getNum<int32_t>(packet, 20, 23) / divisor;
+                Tick.totalSellQuantity = _getNum<int32_t>(packet, 24, 27) / divisor;
+                Tick.OHLC.high = _getNum<int32_t>(packet, 28, 31) / divisor;
+                Tick.OHLC.low = _getNum<int32_t>(packet, 32, 35) / divisor;
+                Tick.OHLC.open = _getNum<int32_t>(packet, 36, 39) / divisor;
+                Tick.OHLC.close = _getNum<int32_t>(packet, 40, 43) / divisor;
 
                 Tick.netChange = (Tick.lastPrice - Tick.OHLC.close) * 100 / Tick.OHLC.close;
 
                 // parse full mode
                 if (packetSize == 184) {
 
-                    Tick.lastTradeTime = _getNum<double>(packet, 44, 47) / divisor;
-                    Tick.OI = _getNum<double>(packet, 48, 51) / divisor;
-                    Tick.OIDayHigh = _getNum<double>(packet, 52, 55) / divisor;
-                    Tick.OIDayLow = _getNum<double>(packet, 56, 59) / divisor;
+                    Tick.lastTradeTime = _getNum<int32_t>(packet, 44, 47) / divisor;
+                    Tick.OI = _getNum<int32_t>(packet, 48, 51) / divisor;
+                    Tick.OIDayHigh = _getNum<int32_t>(packet, 52, 55) / divisor;
+                    Tick.OIDayLow = _getNum<int32_t>(packet, 56, 59) / divisor;
                     Tick.timestamp = _getNum<int32_t>(packet, 60, 63);
 
                     unsigned int depthStartIdx = 64;
                     for (int i = 0; i <= packetSize; i++) {
 
                         kitepp::depthWS depth;
-                        depth.quantity = _getNum<double>(packet, depthStartIdx, depthStartIdx + 3);
-                        depth.price = _getNum<double>(packet, depthStartIdx + 4, depthStartIdx + 7) / divisor;
-                        depth.orders = _getNum<double>(packet, depthStartIdx + 8, depthStartIdx + 9);
+                        depth.quantity = _getNum<int32_t>(packet, depthStartIdx, depthStartIdx + 3);
+                        depth.price = _getNum<int32_t>(packet, depthStartIdx + 4, depthStartIdx + 7) / divisor;
+                        depth.orders = _getNum<int32_t>(packet, depthStartIdx + 8, depthStartIdx + 9);
 
                         (i >= 5) ? Tick.marketDepth.sell.emplace_back(depth) : Tick.marketDepth.buy.emplace_back(depth);
                         depthStartIdx = depthStartIdx + 12;
                     };
                 };
             };
+
+            ticks.emplace_back(Tick);
         };
 
         return ticks;
@@ -324,16 +331,6 @@ class kiteWS {
         return value;
     };
 
-    /*template <typename T> T _getNum2(const std::vector<char>& bytes, size_t start, size_t end) {
-        //doesn't work for int and double. Will need different code for big endian
-
-        std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
-
-        T result = 0;
-        for (int n = 0; n < sizeof(result); n++) { result = (result << 8) + requiredBytes[n]; };
-        return result;
-    };*/
-
     std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
 
         // is a heartbeat
@@ -345,12 +342,13 @@ class kiteWS {
         std::vector<std::vector<char>> packets;
 
         unsigned int packetLengthStartIdx = 2;
-        for (int i = 0; i <= numberOfPackets; i++) {
+        for (int i = 1; i <= numberOfPackets; i++) {
 
             unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
             int16_t packetLength = _getNum<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
             // Assigns next packet's packetLengthStartIdx
             packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
+            // FIXME this might be wrong. i.e, an index pudhe mage
 
             packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1, bytes.begin() + packetLengthStartIdx);
         };

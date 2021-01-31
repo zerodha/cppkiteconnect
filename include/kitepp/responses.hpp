@@ -1045,41 +1045,41 @@ struct MFInstrument {
 /// Reoresents a single entry in market depth returned by kWS
 struct depthWS {
 
-    double price;
-    int32_t quantity;
-    int32_t orders;
+    double price = 0.0;
+    int32_t quantity = 0;
+    int32_t orders = 0;
 };
 
 /// Represents a single tick returned by kWS
 struct tick {
 
     string mode;
-    int32_t instrumentToken;
+    int32_t instrumentToken = 0;
     bool isTradable;
-    bool isIndex;
+    // xbool isIndex;
 
-    int32_t timestamp;
-    int32_t lastTradeTime;
-    double lastPrice;
-    int32_t lastTradedQuantity;
-    int32_t totalBuyQuantity;
-    int32_t totalSellQuantity;
-    int32_t volumeTraded;
-    int32_t totalBuy;
-    int32_t totalSell;
-    double averageTradePrice;
-    int32_t OI;
-    int32_t OIDayHigh;
-    int32_t OIDayLow;
-    double netChange;
+    int32_t timestamp = 0;
+    int32_t lastTradeTime = 0;
+    double lastPrice = 0.0;
+    int32_t lastTradedQuantity = 0;
+    int32_t totalBuyQuantity = 0;
+    int32_t totalSellQuantity = 0;
+    int32_t volumeTraded = 0;
+    int32_t totalBuy = 0;
+    int32_t totalSell = 0;
+    double averageTradePrice = 0.0;
+    int32_t OI = 0;
+    int32_t OIDayHigh = 0;
+    int32_t OIDayLow = 0;
+    double netChange = 0.0;
 
     // OHLC  OHLC
     struct ohlc {
         // xint32_t InstrumentToken;
-        double open;
-        double high;
-        double low;
-        double close;
+        double open = 0.0;
+        double high = 0.0;
+        double low = 0.0;
+        double close = 0.0;
     } OHLC;
 
     // Depth Depth
