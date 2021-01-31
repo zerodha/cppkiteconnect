@@ -26,7 +26,6 @@
 #include <string>
 #include <vector>
 
-#include "boost/tokenizer.hpp"
 #include "helperfunctions.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -1041,6 +1040,53 @@ struct MFInstrument {
     string settlementType;
     double lastPrice = 0.0;
     string lastPriceDate;
+};
+
+/// Reoresents a single entry in market depth returned by kWS
+struct depthWS {
+
+    double price;
+    int32_t quantity;
+    int32_t orders;
+};
+
+/// Represents a single tick returned by kWS
+struct tick {
+
+    string mode;
+    int32_t InstrumentToken;
+    bool isTradable;
+    bool isIndex;
+
+    int32_t timestamp;
+    int32_t lastTradeTime;
+    double lastPrice;
+    int32_t lastTradedQuantity;
+    int32_t totalBuyQuantity;
+    int32_t totalSellQuantity;
+    int32_t volumeTraded;
+    int32_t totalBuy;
+    int32_t totalSell;
+    double averageTradePrice;
+    int32_t OI;
+    int32_t OIDayHigh;
+    int32_t OIDayLow;
+    double netChange;
+
+    // OHLC  OHLC
+    struct ohlc {
+        // xint32_t InstrumentToken;
+        double open;
+        double high;
+        double low;
+        double close;
+    } OHLC;
+
+    // Depth Depth
+    struct m_depth {
+        std::vector<depthWS> buy;
+        std::vector<depthWS> sell;
+    } marketDepth;
 };
 
 } // namespace kitepp
