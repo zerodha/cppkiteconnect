@@ -22,7 +22,7 @@ int main(int argc, char const* argv[]) {
 
     kitepp::kiteWS kWS("a9gg2394xe9sqmjc");
 
-    kWS.setAccessToken("gbVToEHu8lmusVSjGaEy9A0Kk7Wzt2BB");
+    kWS.setAccessToken("cg2VOcUR6LREylLucds4OL9trxUqlk8a");
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
 

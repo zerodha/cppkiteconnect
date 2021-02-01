@@ -40,8 +40,6 @@ class kiteWS {
     const string MODE_QUOTE = "quote";
     const string MODE_FULL = "full";
 
-    std::chrono::time_point<std::chrono::system_clock> lastBeat;
-
     // callbacks
     std::function<void(kiteWS* ws)> onConnect;
     // std::function<void(kiteWS* ws, char* message, size_t length)> onMessage;
@@ -101,6 +99,7 @@ class kiteWS {
 
     bool isConnected() { return _WS; };
 
+    std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
     void run() { _hub.run(); };
 
     void subscribe(const std::vector<int>& instrumentToks) {
@@ -186,6 +185,7 @@ class kiteWS {
     uWS::Hub _hub;
     uWS::Group<uWS::CLIENT>* _hubGroup;
     uWS::WebSocket<uWS::CLIENT>* _WS; // FIXME will have to invalidate it after disconnecting
+    std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
 
     // methods
 
@@ -216,11 +216,56 @@ class kiteWS {
         });
     };
 
-    string _parseTextMessage(char* message) { std::cout << message << std::endl; };
+    string _parseTextMessage(char* message) {
+
+    };
+
+    // Convert bytes array[start], arrray[end] to number of type T
+    template <typename T> T _getNum(const std::vector<char>& bytes, size_t start, size_t end) {
+
+        T value;
+        std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
+
+// clang-format off
+        #ifndef WORDS_BIGENDIAN
+        std::reverse(requiredBytes.begin(), requiredBytes.end());
+        #endif // !IS_BIG_ENDIAN
+        // clang-format on
+
+        std::memcpy(&value, requiredBytes.data(), sizeof(T));
+
+        return value;
+    };
+
+    std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
+
+        // is a heartbeat
+        if (bytes.size() < 2) {
+
+            _lastBeatTime = std::chrono::system_clock::now();
+            return {};
+        };
+
+        int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
+
+        std::vector<std::vector<char>> packets;
+
+        unsigned int packetLengthStartIdx = 2;
+        for (int i = 1; i <= numberOfPackets; i++) {
+
+            unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
+            int16_t packetLength = _getNum<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
+            // Assigns next packet's packetLengthStartIdx
+            packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
+            // FIXME this might be wrong. i.e, an index pudhe mage
+
+            packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1, bytes.begin() + packetLengthStartIdx);
+        };
+
+        return packets;
+    };
 
     std::vector<kitepp::tick> _parseBinaryMessage(char* bytes, size_t size) {
-
-        // FIXME yeah i dont think doubles are getting parsed correctly
 
         std::vector<std::vector<char>> packets = _splitPackets(std::vector<char>(bytes, bytes + size));
         if (packets.empty()) { return {}; };
@@ -236,13 +281,11 @@ class kiteWS {
 
             kitepp::tick Tick;
 
+            Tick.isTradable = tradable;
+            Tick.instrumentToken = instrumentToken;
+
             // LTP packet
             if (packetSize == 8) {
-
-                // FIXME code can be shortened by moving this part outside since it's common
-                Tick.isTradable = tradable;
-                Tick.instrumentToken = instrumentToken;
-                //
 
                 Tick.mode = MODE_LTP;
                 Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
@@ -251,9 +294,6 @@ class kiteWS {
                 // indices quote and full mode
 
                 Tick.mode = (packetSize == 28) ? MODE_QUOTE : MODE_FULL;
-                Tick.isTradable = tradable;
-
-                Tick.instrumentToken = instrumentToken;
                 Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
                 Tick.OHLC.high = _getNum<int32_t>(packet, 8, 11) / divisor;
                 Tick.OHLC.low = _getNum<int32_t>(packet, 12, 15) / divisor;
@@ -269,9 +309,6 @@ class kiteWS {
                 // Quote and full mode
 
                 Tick.mode = (packetSize == 44) ? MODE_QUOTE : MODE_FULL;
-                Tick.isTradable = tradable;
-
-                Tick.instrumentToken = instrumentToken;
                 Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
                 Tick.lastTradedQuantity = _getNum<int32_t>(packet, 8, 11) / divisor;
                 Tick.averageTradePrice = _getNum<int32_t>(packet, 12, 15) / divisor;
@@ -312,48 +349,6 @@ class kiteWS {
         };
 
         return ticks;
-    };
-
-    // Convert bytes array[start], arrray[end] to number of type T
-    template <typename T> T _getNum(const std::vector<char>& bytes, size_t start, size_t end) {
-
-        T value;
-        std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
-
-// clang-format off
-        #ifndef WORDS_BIGENDIAN
-        std::reverse(requiredBytes.begin(), requiredBytes.end());
-        #endif // !IS_BIG_ENDIAN
-        // clang-format on
-
-        std::memcpy(&value, requiredBytes.data(), sizeof(T));
-
-        return value;
-    };
-
-    std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
-
-        // is a heartbeat
-        // FIXME incrememnt last heartbeat time here
-        if (bytes.size() < 2) { return {}; };
-
-        int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
-
-        std::vector<std::vector<char>> packets;
-
-        unsigned int packetLengthStartIdx = 2;
-        for (int i = 1; i <= numberOfPackets; i++) {
-
-            unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
-            int16_t packetLength = _getNum<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
-            // Assigns next packet's packetLengthStartIdx
-            packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
-            // FIXME this might be wrong. i.e, an index pudhe mage
-
-            packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1, bytes.begin() + packetLengthStartIdx);
-        };
-
-        return packets;
     };
 };
 

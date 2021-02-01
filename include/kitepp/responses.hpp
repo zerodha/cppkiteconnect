@@ -1089,4 +1089,62 @@ struct tick {
     } marketDepth;
 };
 
+struct postback {
+
+    postback() = default;
+
+    explicit postback(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+
+        rjh::_getIfExists(val, orderID, "order_id");
+        rjh::_getIfExists(val, exchangeOrderID, "exchange_order_id");
+        rjh::_getIfExists(val, placedBy, "placed_by");
+        rjh::_getIfExists(val, status, "status");
+        rjh::_getIfExists(val, statusMessage, "status_message");
+
+        rjh::_getIfExists(val, tradingSymbol, "tradingsymbol");
+        rjh::_getIfExists(val, exchange, "exchange");
+        rjh::_getIfExists(val, orderType, "order_type");
+        rjh::_getIfExists(val, transactionType, "transaction_type");
+        rjh::_getIfExists(val, validity, "validity");
+        rjh::_getIfExists(val, product, "product");
+
+        rjh::_getIfExists(val, averagePrice, "average_price");
+        rjh::_getIfExists(val, price, "price");
+        rjh::_getIfExists(val, quantity, "quantity");
+        rjh::_getIfExists(val, filledQuantity, "filled_quantity");
+        rjh::_getIfExists(val, unfilledQuantity, "unfilled_quantity");
+        rjh::_getIfExists(val, triggerPrice, "trigger_price");
+        rjh::_getIfExists(val, userID, "user_id");
+        rjh::_getIfExists(val, orderTimestamp, "order_timestamp");
+        rjh::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
+        rjh::_getIfExists(val, checksum, "checksum");
+    };
+
+    string orderID;
+    string exchangeOrderID;
+    string placedBy;
+    string status;
+    string statusMessage;
+
+    string tradingSymbol;
+    string exchange;
+    string orderType;
+    string transactionType;
+    string validity;
+    string product;
+
+    double averagePrice = 0.0;
+    double price = 0.0;
+    int quantity = 0;
+    int filledQuantity = 0;
+    int unfilledQuantity = 0;
+    double triggerPrice = 0.0;
+    string userID;
+    string orderTimestamp;
+    string exchangeTimestamp;
+    string checksum;
+};
+
 } // namespace kitepp
