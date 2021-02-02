@@ -42,10 +42,12 @@ class kiteWS {
 
     // callbacks
     std::function<void(kiteWS* ws)> onConnect;
-    // std::function<void(kiteWS* ws, char* message, size_t length)> onMessage;
-    std::function<void(kiteWS* ws, int code, char* message, size_t length)> onError;
-    std::function<void(kiteWS* ws, int code, char* message, size_t length)> onClose;
+    std::function<void(kiteWS* ws, int code, const string& message)> onError;
+    std::function<void(kiteWS* ws, int code, const string& message)> onClose;
     std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
+    std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
+    std::function<void(kiteWS* ws, const string& message)> onMessage;
+    std::function<void(kiteWS* ws)> onNoConnect;
 
     // constructors & destructors
 
@@ -200,24 +202,39 @@ class kiteWS {
 
         _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
             if (opCode == uWS::OpCode::BINARY && onTicks) {
+
                 onTicks(this, _parseBinaryMessage(message, length));
-                ;
+
+            } else if (opCode == uWS::OpCode::TEXT) {
+
+                _parseTextMessage(message, length);
             };
         });
 
-        _hubGroup->onError([&](void*) { throw kitepp::libException("Unable to connect to Websocket"); });
+        _hubGroup->onError([&](void*) {
+            if (onNoConnect) { onNoConnect(this); }
+        });
 
         _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
-            if (code != 1000) {
-                if (onError) { onError(this, code, reason, length); };
-            };
+            if (code != 1000 && onError) { onError(this, code, string(reason, length)); };
 
-            if (onClose) { onClose(this, code, reason, length); };
+            if (onClose) { onClose(this, code, string(reason, length)); };
         });
     };
 
-    string _parseTextMessage(char* message) {
+    void _parseTextMessage(char* message, size_t length) {
 
+        rj::Document res;
+        rjh::_parse(res, string(message, length));
+        if (!res.IsObject()) { throw libException("Expected a JSON object"); };
+
+        string type;
+        rjh::_getIfExists(res, type, "type");
+        if (type.empty()) { throw kitepp::libException(FMT("Cannot recognize websocket message type {0}", type)); }
+
+        if (type == "order" && onOrderUpdate) { onOrderUpdate(this, kitepp::postback(res["data"].GetObject())); }
+        if (type == "message" && onMessage) { onMessage(this, string(message, length)); };
+        if (type == "error" && onError) { onError(this, 0, string(message, length)); };
     };
 
     // Convert bytes array[start], arrray[end] to number of type T

@@ -5,7 +5,7 @@
 void onConnect(kitepp::kiteWS* ws) {
 
     ws->subscribe({ 408065 });
-    // ws->setMode("quote", { 408065 });
+    ws->setMode("quote", { 408065 });
 
     std::cout << "connected..\n";
 };
@@ -22,7 +22,7 @@ int main(int argc, char const* argv[]) {
 
     kitepp::kiteWS kWS("a9gg2394xe9sqmjc");
 
-    kWS.setAccessToken("cg2VOcUR6LREylLucds4OL9trxUqlk8a");
+    kWS.setAccessToken("7QK8YYPyFH9PmixW4vPNWF2tME3LTNZq");
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
 
