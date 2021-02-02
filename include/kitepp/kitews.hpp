@@ -1,6 +1,5 @@
 #pragma once
 
-// FIXME correct this header
 #include <algorithm> //reverse
 #include <atomic>
 #include <chrono>
@@ -26,6 +25,7 @@
 
 namespace kitepp {
 
+// To make sure doubles are parsed correctly
 static_assert(std::numeric_limits<double>::is_iec559, "Requires IEEE 754 floating point!");
 
 using std::string;
@@ -44,12 +44,12 @@ class kiteWS {
 
     // callbacks
     std::function<void(kiteWS* ws)> onConnect;
-    std::function<void(kiteWS* ws, int code, const string& message)> onError;
-    std::function<void(kiteWS* ws, int code, const string& message)> onClose;
     std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
     std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
     std::function<void(kiteWS* ws, const string& message)> onMessage;
+    std::function<void(kiteWS* ws, int code, const string& message)> onError;
     std::function<void(kiteWS* ws)> onWSError;
+    std::function<void(kiteWS* ws, int code, const string& message)> onClose;
 
     // constructors & destructors
 
@@ -204,7 +204,7 @@ class kiteWS {
     std::atomic<bool> _stop { false };
     const string _pingMessage = "";
     std::thread _pingThread;
-    const unsigned int _pingInterval = 3;
+    const unsigned int _pingInterval = 3; // in seconds
 
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
 
@@ -261,7 +261,7 @@ class kiteWS {
         if (type == "error" && onError) { onError(this, 0, string(message, length)); };
     };
 
-    // Convert bytes array[start], arrray[end] to number of type T
+    // Convert bytesarray(array[start], arrray[end]) to number of type T
     template <typename T> T _getNum(const std::vector<char>& bytes, size_t start, size_t end) {
 
         T value;
@@ -296,7 +296,6 @@ class kiteWS {
 
             unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
             int16_t packetLength = _getNum<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
-            // Assigns next packet's packetLengthStartIdx
             packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
             // FIXME this might be wrong. i.e, an index pudhe mage
 
