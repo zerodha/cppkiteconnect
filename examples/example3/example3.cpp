@@ -10,13 +10,20 @@ void onConnect(kitepp::kiteWS* ws) {
     std::cout << "connected..\n";
 };
 
+unsigned int tickCount = 0;
+
 void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
 
+    tickCount++;
     for (const auto& i : ticks) {
 
         std::cout << "instrument token: " << i.instrumentToken << " last price: " << i.lastPrice << "\n";
     };
+
+    if (tickCount >= 100) { ws->stop(); };
 }
+
+void onClose(kitepp::kiteWS* ws, int code, const std::string& message) { std::cout << "Closed the connection..\n"; }
 
 int main(int argc, char const* argv[]) {
 
@@ -25,6 +32,7 @@ int main(int argc, char const* argv[]) {
     kWS.setAccessToken("7QK8YYPyFH9PmixW4vPNWF2tME3LTNZq");
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
+    kWS.onClose = onClose;
 
     kWS.connect();
 

@@ -2,6 +2,7 @@
 
 // FIXME correct this header
 #include <algorithm> //reverse
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <cstring> //memcpy
@@ -9,6 +10,7 @@
 #include <iostream>
 #include <limits>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -47,7 +49,7 @@ class kiteWS {
     std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
     std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
     std::function<void(kiteWS* ws, const string& message)> onMessage;
-    std::function<void(kiteWS* ws)> onNoConnect;
+    std::function<void(kiteWS* ws)> onWSError;
 
     // constructors & destructors
 
@@ -102,7 +104,18 @@ class kiteWS {
     bool isConnected() { return _WS; };
 
     std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
-    void run() { _hub.run(); };
+
+    void run() {
+        _pingThread = std::thread(&kiteWS::_pingLoop, this);
+        _hub.run();
+    };
+
+    void stop() {
+
+        _stop = true;
+        if (_pingThread.joinable()) { _pingThread.join(); };
+        _WS->close();
+    };
 
     void subscribe(const std::vector<int>& instrumentToks) {
 
@@ -186,7 +199,13 @@ class kiteWS {
 
     uWS::Hub _hub;
     uWS::Group<uWS::CLIENT>* _hubGroup;
-    uWS::WebSocket<uWS::CLIENT>* _WS; // FIXME will have to invalidate it after disconnecting
+    uWS::WebSocket<uWS::CLIENT>* _WS;
+
+    std::atomic<bool> _stop { false };
+    const string _pingMessage = "";
+    std::thread _pingThread;
+    const unsigned int _pingInterval = 3;
+
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
 
     // methods
@@ -211,13 +230,18 @@ class kiteWS {
             };
         });
 
+        _hubGroup->onPong([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length) {
+            std::cout << "Pong recieved..\n";
+            // Will probably need to record this time for implementing reconnecting
+        });
+
         _hubGroup->onError([&](void*) {
-            if (onNoConnect) { onNoConnect(this); }
+            if (onWSError) { onWSError(this); }
         });
 
         _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
+            _WS = nullptr;
             if (code != 1000 && onError) { onError(this, code, string(reason, length)); };
-
             if (onClose) { onClose(this, code, string(reason, length)); };
         });
     };
@@ -243,7 +267,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif // !IS_BIG_ENDIAN
@@ -366,6 +390,18 @@ class kiteWS {
         };
 
         return ticks;
+    };
+
+    void _pingLoop() {
+
+        while (!_stop) {
+
+            std::cout << "Sending ping..\n";
+            if (_WS) {
+                _WS->ping(_pingMessage.data());
+                std::this_thread::sleep_for(std::chrono::seconds(_pingInterval));
+            };
+        };
     };
 };
 
