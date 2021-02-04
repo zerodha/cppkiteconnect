@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cstring> //memcpy
 #include <functional>
+#include <ios>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -48,6 +49,7 @@ class kiteWS {
     std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
     std::function<void(kiteWS* ws, const string& message)> onMessage;
     std::function<void(kiteWS* ws, int code, const string& message)> onError;
+    //! should probably be onNoconnect since it seems to be called only on not being able to connect
     std::function<void(kiteWS* ws)> onWSError;
     std::function<void(kiteWS* ws, unsigned int attemptCount)> onTryReconnect;
     std::function<void(kiteWS* ws, int code, const string& message)> onClose;
@@ -99,10 +101,10 @@ class kiteWS {
     void connect() {
 
         _assignCallbacks();
-        _hub.connect(FMT(_connectURLFmt, _apiKey, _accessToken), nullptr, {}, 5000, _hubGroup);
+        _connect();
     };
 
-    bool isConnected() { return _WS; };
+    bool isConnected() const { return _WS; };
 
     std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
 
@@ -118,8 +120,8 @@ class kiteWS {
         _WS->close();
     };
 
+    // FIXME while reconnecting, check for empty mode. If empty, subscribe quote
     void subscribe(const std::vector<int>& instrumentToks) {
-
         rj::Document req;
         req.SetObject();
         auto& reqAlloc = req.GetAllocator();
@@ -133,7 +135,7 @@ class kiteWS {
         req.AddMember("v", toksArr, reqAlloc);
 
         string reqStr = rjh::_dump(req);
-        if (_WS) {
+        if (isConnected()) {
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = ""; };
 
@@ -157,7 +159,7 @@ class kiteWS {
         req.AddMember("v", toksArr, reqAlloc);
 
         string reqStr = rjh::_dump(req);
-        if (_WS) {
+        if (isConnected()) {
 
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) {
@@ -172,7 +174,6 @@ class kiteWS {
     };
 
     void setMode(const string& mode, const std::vector<int>& instrumentToks) {
-        // FIXME check if string produced in correct
 
         rj::Document req;
         req.SetObject();
@@ -192,7 +193,7 @@ class kiteWS {
 
         string reqStr = rjh::_dump(req);
 
-        if (_WS) {
+        if (isConnected()) {
 
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = mode; };
@@ -230,45 +231,23 @@ class kiteWS {
     const string _pingMessage = "";
     std::thread _pingThread;
     const unsigned int _pingInterval = 3; // in seconds
+
+    // FIXME all these consts should be set by contructor
+    const bool _enableReconnect = false;
+    const unsigned int _initReconnectDelay = 2;           // in seconds
+    const unsigned int _maxReconnectDelay = 0;            // in seconds
+    const unsigned int _maxReconnectTries = 0;            // in seconds
+    const unsigned int _maxPongDelay = 2 * _pingInterval; // in seconds
+    const unsigned int _maxHeartbeatDelay = 5;            // in seconds
+    std::chrono::time_point<std::chrono::system_clock> _lastPongTime;
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
 
     // methods
 
-    void _assignCallbacks() {
+    void _connect() {
 
-        // will need to have a pointer to this class
-        _hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
-            std::cout << "connected...\n";
-            _WS = ws;
-            if (onConnect) { onConnect(this); };
-        });
-
-        _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
-            if (opCode == uWS::OpCode::BINARY && onTicks) {
-
-                onTicks(this, _parseBinaryMessage(message, length));
-
-            } else if (opCode == uWS::OpCode::TEXT) {
-
-                _parseTextMessage(message, length);
-            };
-        });
-
-        _hubGroup->onPong([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length) {
-            std::cout << "Pong recieved..\n";
-            // Will probably need to record this time for implementing reconnecting
-        });
-
-        _hubGroup->onError([&](void*) {
-            if (onWSError) { onWSError(this); }
-        });
-
-        _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
-            std::cout << "Disconnection code: " << code << "\n";
-            _WS = nullptr;
-            if (code != 1000 && onError) { onError(this, code, string(reason, length)); };
-            if (onClose) { onClose(this, code, string(reason, length)); };
-        });
+        // FIXME make timeout into a variable
+        _hub.connect(FMT(_connectURLFmt, _apiKey, _accessToken), nullptr, {}, 5000, _hubGroup);
     };
 
     void _parseTextMessage(char* message, size_t length) {
@@ -292,7 +271,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif // !IS_BIG_ENDIAN
@@ -420,13 +399,109 @@ class kiteWS {
 
         while (!_stop) {
 
+            auto tmDiff =
+                std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _lastPongTime)
+                    .count();
+            if (tmDiff > _maxPongDelay) {
+
+                if (_enableReconnect) { _attemptReconnect(); };
+            };
+
             std::cout << "Sending ping..\n";
-            if (_WS) {
+            if (isConnected()) {
                 _WS->ping(_pingMessage.data());
                 std::this_thread::sleep_for(std::chrono::seconds(_pingInterval));
             };
         };
     };
-};
+
+    void _resubInstruments() {
+
+        std::vector<int> LTPInstruments;
+        std::vector<int> quoteInstruments;
+        std::vector<int> fullInstruments;
+        for (const auto& i : _subbedInstruments) {
+
+            if (i.second == MODE_LTP) { LTPInstruments.push_back(i.first); };
+            if (i.second == MODE_QUOTE) { quoteInstruments.push_back(i.first); };
+            if (i.second == MODE_FULL) { fullInstruments.push_back(i.first); };
+            // Set mode as quote if no mode was set
+            if (i.second.empty()) { quoteInstruments.push_back(i.first); };
+        };
+
+        setMode(MODE_LTP, LTPInstruments);
+        setMode(MODE_QUOTE, quoteInstruments);
+        setMode(MODE_FULL, fullInstruments);
+    };
+
+    void _attemptReconnect(bool closeFirst = false) {
+        // IF closeFirst is set to true, existing connection will first be closed to make sure ghost connection doesn't
+        // exist. Useful when pong times out
+
+        unsigned int reconnectDelay = _initReconnectDelay;
+        unsigned int tries = 1;
+
+        if (closeFirst && isConnected()) {
+            _WS->close(1012);
+            std::this_thread::sleep_for(std::chrono::seconds(1)); // maybe can be omitted
+        };
+
+        while (tries <= _maxReconnectTries) {
+
+            onTryReconnect(this, tries);
+            _connect();
+
+            if (isConnected()) {
+                _resubInstruments();
+                break;
+            } else {
+                std::this_thread::sleep_for(std::chrono::seconds(reconnectDelay));
+            };
+
+            reconnectDelay = (reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : reconnectDelay * 2;
+            tries++;
+        };
+    };
+
+    void _assignCallbacks() {
+
+        // will need to have a pointer to this class
+        _hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
+            std::cout << "connected...\n";
+            _WS = ws;
+            if (onConnect) { onConnect(this); };
+        });
+
+        _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
+            if (opCode == uWS::OpCode::BINARY && onTicks) {
+                onTicks(this, _parseBinaryMessage(message, length));
+
+            } else if (opCode == uWS::OpCode::TEXT) {
+                _parseTextMessage(message, length);
+            };
+        });
+
+        _hubGroup->onPong([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length) {
+            std::cout << "Pong recieved..\n";
+            // Will probably need to record this time for implementing reconnecting
+            _lastPongTime = std::chrono::system_clock::now();
+        });
+
+        _hubGroup->onError([&](void*) {
+            if (onWSError) { onWSError(this); }
+            if (_enableReconnect) { _attemptReconnect(); };
+        });
+
+        _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
+            std::cout << "Disconnection code: " << code << "\n";
+            _WS = nullptr;
+            if (code != 1000) {
+                if (onError) { onError(this, code, string(reason, length)); };
+                if (_enableReconnect) { _attemptReconnect(); };
+            };
+            if (onClose) { onClose(this, code, string(reason, length)); };
+        });
+    };
+}; // namespace kitepp
 
 } // namespace kitepp
