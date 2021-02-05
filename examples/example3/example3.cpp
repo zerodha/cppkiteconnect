@@ -50,7 +50,7 @@ void onClose(kitepp::kiteWS* ws, int code, const std::string& message) {
 
 int main(int argc, char const* argv[]) {
 
-    kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5000, true, 10);
+    kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5000, true, 5);
 
     kWS.setAccessToken("XLtDccOJ7p3NeMOGcGd2hMAvIjuP7GXS");
     kWS.onConnect = onConnect;
@@ -66,6 +66,8 @@ int main(int argc, char const* argv[]) {
     kWS.connect();
 
     kWS.run();
+
+    kWS.stop();
 
     /*std::vector<char> bytes = { static_cast<char>(0xdd), static_cast<char>(0xcc), static_cast<char>(0xbb),
         static_cast<char>(0xaa) };

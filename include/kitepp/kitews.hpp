@@ -61,14 +61,13 @@ class kiteWS {
     kiteWS(const string& apikey, unsigned int connecttimeout = 5000, bool enablereconnect = false,
         unsigned int maxreconnectdelay = 60, unsigned int maxreconnecttries = 30)
         : _apiKey(apikey), _connectTimeout(connecttimeout), _enableReconnect(enablereconnect),
-          _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries) /*,
-           _hubGroup(_hub.createGroup<uWS::CLIENT>())*/
-          {
+          _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
+          _hubGroup(_hub.createGroup<uWS::CLIENT>()) {
 
           };
 
     ~kiteWS() {
-        if (!_stop) { stop(); };
+        // if (!_stop) { stop(); };
     };
 
     // methods
@@ -430,7 +429,7 @@ class kiteWS {
         unsigned int tries = 1;
 
         if (closeFirst && isConnected()) {
-            _WS->close(1012);
+            _WS->close(1006);
             // connect();
             //_hubGroup = _hub.createGroup<uWS::CLIENT>();
             //_assignCallbacks();
@@ -507,7 +506,7 @@ class kiteWS {
 
         _hubGroup->onError([&](void*) {
             if (onWSError) { onWSError(this); }
-            if (_enableReconnect) { _attemptReconnect(); };
+            // if (_enableReconnect) { _attemptReconnect(); };
         });
 
         _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
