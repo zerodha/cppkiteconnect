@@ -11,7 +11,6 @@ void onConnect(kitepp::kiteWS* ws) {
 };
 
 unsigned int tickCount = 0;
-
 void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
 
     tickCount++;
@@ -21,17 +20,47 @@ void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
     };
 
     if (tickCount >= 100) { ws->stop(); };
-}
+};
 
-void onClose(kitepp::kiteWS* ws, int code, const std::string& message) { std::cout << "Closed the connection..\n"; }
+void onOrderUpdate(kitepp::kiteWS* ws, const kitepp::postback& postback) {
+
+    std::cout << "trading symbol: " << postback.tradingSymbol << " status: " << postback.status
+              << " filled quantity: " << postback.filledQuantity << "\n";
+};
+
+void onMessage(kitepp::kiteWS* ws, const std::string& message) { std::cout << "Received message: " << message << "\n"; }
+
+void onError(kitepp::kiteWS* ws, int code, const std::string& message) {
+
+    std::cout << "Error! Code: " << code << " message: " << message << "\n";
+};
+
+void onWSError(kitepp::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
+
+void onTryReconnect(kitepp::kiteWS* ws, unsigned int attemptCount) {
+
+    std::cout << "Trying to reconnect.. Attempt " << attemptCount << "\n";
+};
+
+void onReconnectFail(kitepp::kiteWS* ws) { std::cout << "Failed to reconnect!\n"; }
+
+void onClose(kitepp::kiteWS* ws, int code, const std::string& message) {
+    std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
+}
 
 int main(int argc, char const* argv[]) {
 
-    kitepp::kiteWS kWS("a9gg2394xe9sqmjc");
+    kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5000, true, 10);
 
-    kWS.setAccessToken("7QK8YYPyFH9PmixW4vPNWF2tME3LTNZq");
+    kWS.setAccessToken("XLtDccOJ7p3NeMOGcGd2hMAvIjuP7GXS");
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
+    kWS.onOrderUpdate = onOrderUpdate;
+    kWS.onMessage = onMessage;
+    kWS.onError = onError;
+    kWS.onWSError = onWSError;
+    kWS.onTryReconnect = onTryReconnect;
+    kWS.onReconnectFail = onReconnectFail;
     kWS.onClose = onClose;
 
     kWS.connect();
