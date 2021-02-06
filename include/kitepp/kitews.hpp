@@ -63,8 +63,8 @@ class kiteWS {
         : _apiKey(apikey), _connectTimeout(connecttimeout), _enableReconnect(enablereconnect),
           _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
           _hubGroup(_hub.createGroup<uWS::CLIENT>()) {
-
-          };
+        _assignCallbacks();
+    };
 
     ~kiteWS() {
         // if (!_stop) { stop(); };
@@ -104,8 +104,8 @@ class kiteWS {
     string getAccessToken() const { return _accessToken; };
 
     void connect() {
-        _hubGroup = _hub.createGroup<uWS::CLIENT>();
-        _assignCallbacks();
+        //_hubGroup = _hub.createGroup<uWS::CLIENT>();
+        //_assignCallbacks();
         _connect();
     };
 
@@ -196,7 +196,6 @@ class kiteWS {
         req.AddMember("v", valArr, reqAlloc);
 
         string reqStr = rjh::_dump(req);
-
         if (isConnected()) {
 
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
@@ -244,6 +243,10 @@ class kiteWS {
     const unsigned int _maxPongDelay = 2 * _pingInterval; // in seconds
     const unsigned int _connectTimeout = 5000;            // in seconds
 
+    unsigned int _reconnectTries = 0;
+    unsigned int _reconnectDelay = _initReconnectDelay;
+    std::atomic<bool> isReconnecting { false };
+
     std::chrono::time_point<std::chrono::system_clock> _lastPongTime;
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
 
@@ -254,7 +257,7 @@ class kiteWS {
     };
 
     void _parseTextMessage(char* message, size_t length) {
-
+        // FIXME rename this method to parse and send or sumn like processtextmsg
         rj::Document res;
         rjh::_parse(res, string(message, length));
         if (!res.IsObject()) { throw libException("Expected a JSON object"); };
@@ -289,11 +292,10 @@ class kiteWS {
     std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
 
         // is a heartbeat
-        if (bytes.size() < 2) {
-
+        /*if (bytes.size() < 2) {
             _lastBeatTime = std::chrono::system_clock::now();
             return {};
-        };
+        };*/
 
         int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
 
@@ -413,9 +415,9 @@ class kiteWS {
             if (i.second.empty()) { quoteInstruments.push_back(i.first); };
         };
 
-        setMode(MODE_LTP, LTPInstruments);
-        setMode(MODE_QUOTE, quoteInstruments);
-        setMode(MODE_FULL, fullInstruments);
+        if (!LTPInstruments.empty()) { setMode(MODE_LTP, LTPInstruments); };
+        if (!quoteInstruments.empty()) { setMode(MODE_QUOTE, quoteInstruments); };
+        if (!fullInstruments.empty()) { setMode(MODE_FULL, fullInstruments); };
     };
 
     void _attemptReconnect(bool closeFirst = false) {
@@ -459,6 +461,32 @@ class kiteWS {
         _isReconnecting = false;
     };
 
+    void _reconnect() {
+        // IF closeFirst is set to true, existing connection will first be closed to make sure ghost connection doesn't
+        // exist. Useful when pong times out
+
+        _isReconnecting = true;
+
+        if (isConnected()) { return; };
+
+        if (_reconnectTries <= _maxReconnectTries) {
+
+            _reconnectTries++;
+            if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
+            connect();
+
+            if (isConnected()) { return; };
+
+            std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
+            _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
+            _reconnect();
+
+        } else {
+
+            if (onReconnectFail) { onReconnectFail(this); };
+        };
+    };
+
     void _pingLoop() {
 
         while (!_stop) {
@@ -473,12 +501,23 @@ class kiteWS {
                     std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _lastPongTime)
                         .count();
 
-                if (tmDiff > _maxPongDelay) { _attemptReconnect(true); };
+                //?if (tmDiff > _maxPongDelay) { _attemptReconnect(true); };
+                if (tmDiff > _maxPongDelay) {
+
+                    std::cout << FMT("Max pong exceeded.. tmDiff={0}\n", tmDiff);
+                    if (isConnected()) {
+
+                        //_WS->close(1006);
+                    };
+                    connect();
+                };
             };
         };
     };
 
     void _assignCallbacks() {
+
+        std::cout << "Assigning callbacks..\n";
 
         _hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
             std::cout << "connected...\n";
@@ -486,12 +525,24 @@ class kiteWS {
             // Not setting this time would prompt reconnecting immediately even when conected since pongTime would be
             // far back or default
             _lastPongTime = std::chrono::system_clock::now();
+
+            _reconnectTries = 0;
+            _reconnectDelay = _initReconnectDelay;
+            _isReconnecting = false;
+            if (!_subbedInstruments.empty()) { _resubInstruments(); };
+            // FIXME if user subs in onConnect (like they're supposed to), there will be duplicate subs)
+
             if (onConnect) { onConnect(this); };
         });
 
         _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
             if (opCode == uWS::OpCode::BINARY && onTicks) {
-                onTicks(this, _parseBinaryMessage(message, length));
+
+                if (length == 1) {
+                    _lastBeatTime = std::chrono::system_clock::now();
+                } else {
+                    onTicks(this, _parseBinaryMessage(message, length));
+                };
 
             } else if (opCode == uWS::OpCode::TEXT) {
                 _parseTextMessage(message, length);
@@ -506,7 +557,7 @@ class kiteWS {
 
         _hubGroup->onError([&](void*) {
             if (onWSError) { onWSError(this); }
-            // if (_enableReconnect) { _attemptReconnect(); };
+            if (_enableReconnect && !_isReconnecting) { _reconnect(); };
         });
 
         _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
@@ -514,10 +565,15 @@ class kiteWS {
             _WS = nullptr;
             if (code != 1000) {
                 if (onError) { onError(this, code, string(reason, length)); };
-                if (_enableReconnect) { _attemptReconnect(); };
             };
             if (onClose) { onClose(this, code, string(reason, length)); };
+            if (code != 1000) {
+                //?if (_enableReconnect) { _attemptReconnect(); };
+                if (_enableReconnect) { connect(); };
+            };
         });
+
+        std::cout << "End assigning callbacks..\n";
     };
 };
 
