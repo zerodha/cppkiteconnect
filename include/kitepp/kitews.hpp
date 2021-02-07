@@ -104,12 +104,7 @@ class kiteWS {
     string getAccessToken() const { return _accessToken; };
 
     void connect() {
-        //_hubGroup = _hub.createGroup<uWS::CLIENT>();
         _assignCallbacks();
-        /*_hubGroup->onConnection([](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
-            std::cout << "connect, sending HELLO" << std::endl;
-        });*/
-
         _connect();
     };
 
@@ -119,19 +114,12 @@ class kiteWS {
 
     void run() {
         _pingThread = std::thread(&kiteWS::_pingLoop, this);
-
-        //_reconnectThread = std::thread(&kiteWS::_reconnectLoop, this);
-
         _hub.run();
     };
 
     void stop() {
-
         _stop = true;
         if (_pingThread.joinable()) { _pingThread.join(); };
-
-        // if (_reconnectThread.joinable()) { _reconnectThread.join(); };
-
         if (isConnected()) { _WS->close(); };
     };
 
@@ -256,10 +244,6 @@ class kiteWS {
     unsigned int _reconnectTries = 0;
     unsigned int _reconnectDelay = _initReconnectDelay;
     std::atomic<bool> isReconnecting { false };
-
-    std::thread _reconnectThread;
-    std::mutex _reconnectMtx;
-    std::condition_variable _reconnectCV;
 
     std::chrono::time_point<std::chrono::system_clock> _lastPongTime;
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
@@ -434,50 +418,7 @@ class kiteWS {
         if (!fullInstruments.empty()) { setMode(MODE_FULL, fullInstruments); };
     };
 
-    /* void _attemptReconnect(bool closeFirst = false) {
-         // IF closeFirst is set to true, existing connection will first be closed to make sure ghost connection doesn't
-         // exist. Useful when pong times out
-
-         if (_isReconnecting) { return; };
-         _isReconnecting = true;
-
-         unsigned int reconnectDelay = _initReconnectDelay;
-         unsigned int tries = 1;
-
-         if (closeFirst && isConnected()) {
-             _WS->close(1006);
-             // connect();
-             //_hubGroup = _hub.createGroup<uWS::CLIENT>();
-             //_assignCallbacks();
-         };
-
-         while (tries <= _maxReconnectTries && !isConnected()) {
-
-             if (onTryReconnect) { onTryReconnect(this, tries); };
-
-             connect();
-
-             if (isConnected()) {
-                 _resubInstruments();
-                 break;
-             } else {
-                 std::this_thread::sleep_for(std::chrono::seconds(reconnectDelay));
-             };
-
-             reconnectDelay = (reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : reconnectDelay * 2;
-             tries++;
-         };
-
-         if (tries > _maxReconnectTries) {
-             if (onReconnectFail) { onReconnectFail(this); };
-         };
-
-         _isReconnecting = false;
-     };*/
-
-    /*void _reconnect() {
-        // IF closeFirst is set to true, existing connection will first be closed to make sure ghost connection doesn't
-        // exist. Useful when pong times out
+    void _reconnect() {
 
         std::cout << "_reconnect called\n";
 
@@ -487,44 +428,14 @@ class kiteWS {
 
         if (_reconnectTries <= _maxReconnectTries) {
 
-            _reconnectTries++;
-            if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
-            connect();
-
-            if (isConnected()) { return; };
-
-            std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
-            _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
-            _reconnect();
-
-        } else {
-
-            if (onReconnectFail) { onReconnectFail(this); };
-        };
-    };*/
-
-    void _reconnect() {
-
-        std::cout << "_reconnect2 called\n";
-
-        _isReconnecting = true;
-
-        if (isConnected()) { return; };
-
-        if (_reconnectTries <= _maxReconnectTries) {
-
-            _reconnectTries++;
-
             std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
             _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
 
+            _reconnectTries++;
             if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
             _connect();
 
             if (isConnected()) { return; };
-
-            // std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
-            //_reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
 
         } else {
 
@@ -547,74 +458,14 @@ class kiteWS {
                     std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _lastPongTime)
                         .count();
 
-                //?if (tmDiff > _maxPongDelay) { _attemptReconnect(true); };
                 if (tmDiff > _maxPongDelay) {
 
                     std::cout << FMT("Max pong exceeded.. tmDiff={0}\n", tmDiff);
                     if (isConnected()) { _WS->close(1006, "ping timed out"); };
-                    if (!_isReconnecting) { _connect(); };
+                    //?already handles by onDiscnonnection
+                    //?if (!_isReconnecting) { _reconnect(); };
                 };
             };
-        };
-    };
-
-    void _reconnectLoop() {
-
-        while (!_stop) {
-
-            std::unique_lock<std::mutex> ul(_reconnectMtx);
-            _reconnectCV.wait(ul);
-
-            _isReconnecting = true;
-
-            // if (isConnected()) { continue; };
-
-            while (_reconnectTries <= _maxReconnectTries) {
-
-                if (isConnected()) { break; };
-
-                _reconnectTries++;
-                if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
-                connect();
-
-                if (isConnected()) { break; };
-
-                if (_reconnectTries > _maxReconnectTries) {
-
-                    if (onReconnectFail) {
-                        onReconnectFail(this);
-                        _isReconnecting = false;
-                    };
-                };
-
-                std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
-                _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
-            };
-
-            /*if (_reconnectTries > _maxReconnectTries) {
-
-                if (onReconnectFail) {
-                    onReconnectFail(this);
-                    _isReconnecting = false;
-                };
-            };*/
-
-            /*if (_reconnectTries <= _maxReconnectTries) {
-
-                _reconnectTries++;
-                if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
-                connect();
-
-                if (isConnected()) { continue; };
-
-                std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
-                _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
-                //_reconnect();
-
-            } else {
-
-                if (onReconnectFail) { onReconnectFail(this); };
-            };*/
         };
     };
 
@@ -657,18 +508,14 @@ class kiteWS {
         });
 
         _hubGroup->onError([&](void*) {
+            if (onWSError) { onWSError(this); }
+
             // Close the ghost connection
             if (isConnected()) {
 
-                //?_WS = nullptr;
+                std::cout << "***Closing connection in onError***\n";
                 _WS->close(1006);
             };
-
-            if (onWSError) { onWSError(this); }
-            //?if (_enableReconnect && !_isReconnecting) { _reconnect(); };
-            //?if (_enableReconnect && !_isReconnecting) { _reconnectCV.notify_one(); };
-
-            // std::this_thread::sleep_for(std::chrono::seconds(1));
             if (_enableReconnect) { _reconnect(); };
         });
 
@@ -680,11 +527,9 @@ class kiteWS {
             };
             if (onClose) { onClose(this, code, string(reason, length)); };
             if (code != 1000) {
-                if (_enableReconnect) { connect(); };
+                if (_enableReconnect && !_isReconnecting) { _reconnect(); };
             };
         });
-
-        _hubGroup->onTransfer([](uWS::WebSocket<uWS::CLIENT>* ws) { std::cout << "ON TRANSFER CALLED\n"; });
     };
 };
 
