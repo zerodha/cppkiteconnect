@@ -79,7 +79,10 @@ int main(int argc, char const* argv[]) {
 
     hubGroup = hub.createGroup<uWS::CLIENT>();
 
-    hubGroup->onConnection([](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
+    uWS::WebSocket<uWS::CLIENT>* wsPtr = nullptr;
+
+    hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
+        wsPtr = ws;
         std::cout << "connect, sending HELLO" << std::endl;
         std::string msg = "HELLO";
         ws->send(msg.data(), msg.size(), uWS::OpCode::TEXT);
@@ -87,16 +90,34 @@ int main(int argc, char const* argv[]) {
 
     hubGroup->onMessage([](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
         std::cout << "Got reply: " << std::string(message, length) << std::endl;
-        ws->terminate();
+        std::string msg = "HELLO";
+        ws->send(msg.data(), msg.size(), uWS::OpCode::TEXT);
+        // ws->terminate();
     });
 
-    hubGroup->onDisconnection([](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* message, size_t length) {
+    hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* message, size_t length) {
+        wsPtr = nullptr;
         std::cout << "Disconnect." << std::endl;
     });
 
-    hub.connect("wss://echo.websocket.org", nullptr, {}, 5000, hubGroup);
+    hubGroup->onError([&](void*) {
+        if (wsPtr) { wsPtr->close(); };
+        std::cout << "onError called\n";
+        std::cout << "Calling connect()\n";
 
-    hub.run();*/
+        // hubGroup = hub.createGroup<uWS::CLIENT>();
+        // hubGroup->onMessage([](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
+        //     std::cout << "New callback..\n";
+        // });
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    hub.connect("wss://echo.websocket.org", nullptr, {}, 5000, hubGroup);
+});
+
+hub.connect("wss://echo.websocket.org", nullptr, {}, 5000, hubGroup);
+
+hub.run();
+*/
 
     //!
 
