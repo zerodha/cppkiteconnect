@@ -118,7 +118,7 @@ class kiteWS {
     std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
 
     void run() {
-        //_pingThread = std::thread(&kiteWS::_pingLoop, this);
+        _pingThread = std::thread(&kiteWS::_pingLoop, this);
 
         //_reconnectThread = std::thread(&kiteWS::_reconnectLoop, this);
 
@@ -128,7 +128,7 @@ class kiteWS {
     void stop() {
 
         _stop = true;
-        // if (_pingThread.joinable()) { _pingThread.join(); };
+        if (_pingThread.joinable()) { _pingThread.join(); };
 
         // if (_reconnectThread.joinable()) { _reconnectThread.join(); };
 
@@ -514,6 +514,7 @@ class kiteWS {
         if (_reconnectTries <= _maxReconnectTries) {
 
             _reconnectTries++;
+
             std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
             _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
 
@@ -550,11 +551,8 @@ class kiteWS {
                 if (tmDiff > _maxPongDelay) {
 
                     std::cout << FMT("Max pong exceeded.. tmDiff={0}\n", tmDiff);
-                    if (isConnected()) {
-
-                        //_WS->close(1006);
-                    };
-                    connect();
+                    if (isConnected()) { _WS->close(1006, "ping timed out"); };
+                    if (!_isReconnecting) { _connect(); };
                 };
             };
         };
@@ -660,7 +658,11 @@ class kiteWS {
 
         _hubGroup->onError([&](void*) {
             // Close the ghost connection
-            if (isConnected()) { _WS = nullptr; };
+            if (isConnected()) {
+
+                //?_WS = nullptr;
+                _WS->close(1006);
+            };
 
             if (onWSError) { onWSError(this); }
             //?if (_enableReconnect && !_isReconnecting) { _reconnect(); };
