@@ -106,6 +106,10 @@ class kiteWS {
     void connect() {
         //_hubGroup = _hub.createGroup<uWS::CLIENT>();
         //_assignCallbacks();
+        /*_hubGroup->onConnection([](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
+            std::cout << "connect, sending HELLO" << std::endl;
+        });*/
+
         _connect();
     };
 
@@ -278,7 +282,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif // !IS_BIG_ENDIAN
@@ -471,6 +475,8 @@ class kiteWS {
 
         if (_reconnectTries <= _maxReconnectTries) {
 
+            // FIXME FFS THIS ISNT GETTING CALLED AT ALL
+
             _reconnectTries++;
             if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
             connect();
@@ -539,6 +545,7 @@ class kiteWS {
             if (opCode == uWS::OpCode::BINARY && onTicks) {
 
                 if (length == 1) {
+                    // is a heartbeat
                     _lastBeatTime = std::chrono::system_clock::now();
                 } else {
                     onTicks(this, _parseBinaryMessage(message, length));
@@ -572,6 +579,8 @@ class kiteWS {
                 if (_enableReconnect) { connect(); };
             };
         });
+
+        _hubGroup->onTransfer([](uWS::WebSocket<uWS::CLIENT>* ws) { std::cout << "ON TRANSFER CALLED\n"; });
 
         std::cout << "End assigning callbacks..\n";
     };
