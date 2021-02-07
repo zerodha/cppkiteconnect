@@ -62,9 +62,7 @@ class kiteWS {
           _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
           _hubGroup(_hub.createGroup<uWS::CLIENT>()) {};
 
-    ~kiteWS() {
-        // if (!_stop) { stop(); };
-    };
+    // x~kiteWS() {};
 
     // methods
 
@@ -108,14 +106,9 @@ class kiteWS {
 
     std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
 
-    void run() {
-        _pingThread = std::thread(&kiteWS::_pingLoop, this);
-        _hub.run();
-    };
+    void run() { _hub.run(); };
 
     void stop() {
-        _stop = true;
-        if (_pingThread.joinable()) { _pingThread.join(); };
         if (isConnected()) { _WS->close(); };
     };
 
@@ -223,21 +216,18 @@ class kiteWS {
     uWS::Hub _hub;
     uWS::Group<uWS::CLIENT>* _hubGroup;
     uWS::WebSocket<uWS::CLIENT>* _WS = nullptr;
-    std::atomic<bool> _stop { false };
+    const unsigned int _connectTimeout = 5000; // in ms
 
     const string _pingMessage = "";
-    std::thread _pingThread;
-    const unsigned int _pingInterval = 3;                 // in seconds
-    const unsigned int _initReconnectDelay = 2;           // in seconds
-    const unsigned int _maxReconnectDelay = 0;            // in seconds
-    const unsigned int _maxReconnectTries = 0;            // in seconds
-    const unsigned int _maxPongDelay = 2 * _pingInterval; // in seconds
-    const unsigned int _connectTimeout = 5000;            // in seconds
+    const unsigned int _pingInterval = 3000; // in ms
 
     const bool _enableReconnect = false;
-    std::atomic<bool> _isReconnecting { false };
-    unsigned int _reconnectTries = 0;
+    const unsigned int _initReconnectDelay = 2; // in seconds
     unsigned int _reconnectDelay = _initReconnectDelay;
+    const unsigned int _maxReconnectDelay = 0; // in seconds
+    unsigned int _reconnectTries = 0;
+    const unsigned int _maxReconnectTries = 0; // in seconds
+    std::atomic<bool> _isReconnecting { false };
 
     std::chrono::time_point<std::chrono::system_clock> _lastPongTime;
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
@@ -428,6 +418,8 @@ class kiteWS {
         };
     };
 
+    /*
+    handled by uWS::Group::StartAutoPing() now. Code kept here as fallback.
     void _pingLoop() {
 
         while (!_stop) {
@@ -448,7 +440,7 @@ class kiteWS {
                 };
             };
         };
-    };
+    };*/
 
     void _assignCallbacks() {
 
@@ -512,9 +504,9 @@ class kiteWS {
                 if (_enableReconnect && !_isReconnecting) { _reconnect(); };
             };
         });
+
+        _hubGroup->startAutoPing(_pingInterval, _pingMessage);
     };
 };
 
 } // namespace kitepp
-
-// TODO try using autoping function of Group
