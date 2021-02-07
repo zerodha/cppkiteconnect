@@ -56,9 +56,9 @@ class kiteWS {
 
     // constructors & destructors
 
-    kiteWS(const string& apikey, unsigned int connecttimeout = 5000, bool enablereconnect = false,
+    kiteWS(const string& apikey, unsigned int connecttimeout = 5, bool enablereconnect = false,
         unsigned int maxreconnectdelay = 60, unsigned int maxreconnecttries = 30)
-        : _apiKey(apikey), _connectTimeout(connecttimeout), _enableReconnect(enablereconnect),
+        : _apiKey(apikey), _connectTimeout(connecttimeout * 1000), _enableReconnect(enablereconnect),
           _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
           _hubGroup(_hub.createGroup<uWS::CLIENT>()) {};
 
@@ -261,7 +261,7 @@ class kiteWS {
         // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
-        #endif // !IS_BIG_ENDIAN
+        #endif
         // clang-format on
 
         std::memcpy(&value, requiredBytes.data(), sizeof(T));
