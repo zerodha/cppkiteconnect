@@ -268,7 +268,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif // !IS_BIG_ENDIAN
@@ -291,8 +291,6 @@ class kiteWS {
             unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
             int16_t packetLength = _getNum<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
             packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
-            // FIXME this might be wrong. i.e, an index pudhe mage
-
             packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1, bytes.begin() + packetLengthStartIdx);
         };
 
@@ -465,7 +463,8 @@ class kiteWS {
             _reconnectDelay = _initReconnectDelay;
             _isReconnecting = false;
             if (!_subbedInstruments.empty()) { _resubInstruments(); };
-            // FIXME if user subs in onConnect (like they're supposed to), there will be duplicate subs)
+            // FIXME if user subs in onConnect (like they're supposed to), there will be duplicate subs. Not sure if
+            // it'd be a problem
             if (onConnect) { onConnect(this); };
         });
 
