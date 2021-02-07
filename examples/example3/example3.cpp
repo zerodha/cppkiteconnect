@@ -54,7 +54,7 @@ int main(int argc, char const* argv[]) {
 
     kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5000, true, 5);
 
-    kWS.setAccessToken("cvqF3GrirMZcZo3zaswqkqeKVylC6nCu");
+    kWS.setAccessToken("3mxGoAL82rTFfD3vjAR6oVbE2z8qK8y8");
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
     kWS.onOrderUpdate = onOrderUpdate;

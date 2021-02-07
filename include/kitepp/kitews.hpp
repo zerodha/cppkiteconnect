@@ -63,8 +63,8 @@ class kiteWS {
         : _apiKey(apikey), _connectTimeout(connecttimeout), _enableReconnect(enablereconnect),
           _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
           _hubGroup(_hub.createGroup<uWS::CLIENT>()) {
-        _assignCallbacks();
-    };
+              //_assignCallbacks();
+          };
 
     ~kiteWS() {
         // if (!_stop) { stop(); };
@@ -104,8 +104,8 @@ class kiteWS {
     string getAccessToken() const { return _accessToken; };
 
     void connect() {
-        //_hubGroup = _hub.createGroup<uWS::CLIENT>();
-        //_assignCallbacks();
+        _hubGroup = _hub.createGroup<uWS::CLIENT>();
+        _assignCallbacks();
         /*_hubGroup->onConnection([](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
             std::cout << "connect, sending HELLO" << std::endl;
         });*/
@@ -282,7 +282,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif // !IS_BIG_ENDIAN
@@ -469,6 +469,8 @@ class kiteWS {
         // IF closeFirst is set to true, existing connection will first be closed to make sure ghost connection doesn't
         // exist. Useful when pong times out
 
+        std::cout << "_reconnect called\n";
+
         _isReconnecting = true;
 
         if (isConnected()) { return; };
@@ -523,8 +525,6 @@ class kiteWS {
 
     void _assignCallbacks() {
 
-        std::cout << "Assigning callbacks..\n";
-
         _hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
             std::cout << "connected...\n";
             _WS = ws;
@@ -563,6 +563,9 @@ class kiteWS {
         });
 
         _hubGroup->onError([&](void*) {
+            // Close the ghost connection
+            if (isConnected()) { _WS = nullptr; };
+
             if (onWSError) { onWSError(this); }
             if (_enableReconnect && !_isReconnecting) { _reconnect(); };
         });
@@ -581,8 +584,6 @@ class kiteWS {
         });
 
         _hubGroup->onTransfer([](uWS::WebSocket<uWS::CLIENT>* ws) { std::cout << "ON TRANSFER CALLED\n"; });
-
-        std::cout << "End assigning callbacks..\n";
     };
 };
 
