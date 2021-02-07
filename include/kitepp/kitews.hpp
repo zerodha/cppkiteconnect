@@ -396,16 +396,16 @@ class kiteWS {
 
         std::cout << "_reconnect called\n";
 
-        _isReconnecting = true;
-
         if (isConnected()) { return; };
+
+        _isReconnecting = true;
+        _reconnectTries++;
 
         if (_reconnectTries <= _maxReconnectTries) {
 
             std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
             _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
 
-            _reconnectTries++;
             if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
             _connect();
 
