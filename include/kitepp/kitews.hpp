@@ -259,8 +259,7 @@ class kiteWS {
 
         if (type == "order" && onOrderUpdate) { onOrderUpdate(this, kitepp::postback(res["data"].GetObject())); }
         if (type == "message" && onMessage) { onMessage(this, string(message, length)); };
-        // TODO make error struct
-        if (type == "error" && onError) { onError(this, 0, string(message, length)); };
+        if (type == "error" && onError) { onError(this, 0, res["data"].GetString()); };
     };
 
     // Convert bytesarray(array[start], arrray[end]) to number of type T

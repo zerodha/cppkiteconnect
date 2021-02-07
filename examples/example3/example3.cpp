@@ -4,7 +4,7 @@
 
 void onConnect(kitepp::kiteWS* ws) {
 
-    ws->subscribe({ 408065 });
+    // ws->subscribe({ 408065 });
     ws->setMode("quote", { 408065 });
 
     std::cout << "connected..\n";
