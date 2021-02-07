@@ -3,14 +3,12 @@
 #include <algorithm> //reverse
 #include <atomic>
 #include <chrono>
-#include <condition_variable>
 #include <cstdint>
 #include <cstring> //memcpy
 #include <functional>
 #include <ios>
 #include <iostream>
 #include <limits>
-#include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -48,12 +46,10 @@ class kiteWS {
     // callbacks
     std::function<void(kiteWS* ws)> onConnect;
     std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
-    // FIXME checkout update format sent by Rohan
     std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
     std::function<void(kiteWS* ws, const string& message)> onMessage;
     std::function<void(kiteWS* ws, int code, const string& message)> onError;
-    //! should probably be onNoconnect since it seems to be called only on not being able to connect
-    std::function<void(kiteWS* ws)> onWSError;
+    std::function<void(kiteWS* ws)> onConnectError;
     std::function<void(kiteWS* ws, unsigned int attemptCount)> onTryReconnect;
     std::function<void(kiteWS* ws)> onReconnectFail;
     std::function<void(kiteWS* ws, int code, const string& message)> onClose;
@@ -142,7 +138,7 @@ class kiteWS {
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = ""; };
 
         } else {
-            throw kitepp::libException("_WS doesn't point to anything");
+            throw kitepp::libException("Not connected to websocket server");
         };
     };
 
@@ -171,7 +167,7 @@ class kiteWS {
 
         } else {
 
-            throw kitepp::libException("_WS doesn't point to anything");
+            throw kitepp::libException("Not connected to websocket server");
         };
     };
 
@@ -201,7 +197,7 @@ class kiteWS {
 
         } else {
 
-            throw kitepp::libException("_WS doesn't point to anything");
+            throw kitepp::libException("Not connected to websocket server");
         };
     };
 
@@ -227,13 +223,10 @@ class kiteWS {
     uWS::Hub _hub;
     uWS::Group<uWS::CLIENT>* _hubGroup;
     uWS::WebSocket<uWS::CLIENT>* _WS = nullptr;
-
     std::atomic<bool> _stop { false };
+
     const string _pingMessage = "";
     std::thread _pingThread;
-    const bool _enableReconnect = false;
-    std::atomic<bool> _isReconnecting { false };
-
     const unsigned int _pingInterval = 3;                 // in seconds
     const unsigned int _initReconnectDelay = 2;           // in seconds
     const unsigned int _maxReconnectDelay = 0;            // in seconds
@@ -241,9 +234,10 @@ class kiteWS {
     const unsigned int _maxPongDelay = 2 * _pingInterval; // in seconds
     const unsigned int _connectTimeout = 5000;            // in seconds
 
+    const bool _enableReconnect = false;
+    std::atomic<bool> _isReconnecting { false };
     unsigned int _reconnectTries = 0;
     unsigned int _reconnectDelay = _initReconnectDelay;
-    std::atomic<bool> isReconnecting { false };
 
     std::chrono::time_point<std::chrono::system_clock> _lastPongTime;
     std::chrono::time_point<std::chrono::system_clock> _lastBeatTime;
@@ -254,8 +248,7 @@ class kiteWS {
         _hub.connect(FMT(_connectURLFmt, _apiKey, _accessToken), nullptr, {}, _connectTimeout, _hubGroup);
     };
 
-    void _parseTextMessage(char* message, size_t length) {
-        // FIXME rename this method to parse and send or sumn like processtextmsg
+    void _processTextMessage(char* message, size_t length) {
         rj::Document res;
         rjh::_parse(res, string(message, length));
         if (!res.IsObject()) { throw libException("Expected a JSON object"); };
@@ -276,7 +269,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif // !IS_BIG_ENDIAN
@@ -288,12 +281,6 @@ class kiteWS {
     };
 
     std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
-
-        // is a heartbeat
-        /*if (bytes.size() < 2) {
-            _lastBeatTime = std::chrono::system_clock::now();
-            return {};
-        };*/
 
         int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
 
@@ -459,11 +446,8 @@ class kiteWS {
                         .count();
 
                 if (tmDiff > _maxPongDelay) {
-
                     std::cout << FMT("Max pong exceeded.. tmDiff={0}\n", tmDiff);
                     if (isConnected()) { _WS->close(1006, "ping timed out"); };
-                    //?already handles by onDiscnonnection
-                    //?if (!_isReconnecting) { _reconnect(); };
                 };
             };
         };
@@ -474,7 +458,7 @@ class kiteWS {
         _hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
             std::cout << "connected...\n";
             _WS = ws;
-            // Not setting this time would prompt reconnecting immediately even when conected since pongTime would be
+            // Not setting this time would prompt reconnecting immediately, even when conected since pongTime would be
             // far back or default
             _lastPongTime = std::chrono::system_clock::now();
 
@@ -483,7 +467,6 @@ class kiteWS {
             _isReconnecting = false;
             if (!_subbedInstruments.empty()) { _resubInstruments(); };
             // FIXME if user subs in onConnect (like they're supposed to), there will be duplicate subs)
-
             if (onConnect) { onConnect(this); };
         });
 
@@ -498,7 +481,7 @@ class kiteWS {
                 };
 
             } else if (opCode == uWS::OpCode::TEXT) {
-                _parseTextMessage(message, length);
+                _processTextMessage(message, length);
             };
         });
 
@@ -508,9 +491,9 @@ class kiteWS {
         });
 
         _hubGroup->onError([&](void*) {
-            if (onWSError) { onWSError(this); }
+            if (onConnectError) { onConnectError(this); }
 
-            // Close the ghost connection
+            // Close the non-responsive connection
             if (isConnected()) {
 
                 std::cout << "***Closing connection in onError***\n";
@@ -522,6 +505,7 @@ class kiteWS {
         _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
             std::cout << "Disconnection code: " << code << "\n";
             _WS = nullptr;
+
             if (code != 1000) {
                 if (onError) { onError(this, code, string(reason, length)); };
             };
@@ -534,3 +518,5 @@ class kiteWS {
 };
 
 } // namespace kitepp
+
+// TODO try using autoping function of Group

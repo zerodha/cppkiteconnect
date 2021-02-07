@@ -37,7 +37,7 @@ void onError(kitepp::kiteWS* ws, int code, const std::string& message) {
     std::cout << "Error! Code: " << code << " message: " << message << "\n";
 };
 
-void onWSError(kitepp::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
+void onConnectError(kitepp::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
 
 void onTryReconnect(kitepp::kiteWS* ws, unsigned int attemptCount) {
 
@@ -60,7 +60,7 @@ int main(int argc, char const* argv[]) {
     kWS.onOrderUpdate = onOrderUpdate;
     kWS.onMessage = onMessage;
     kWS.onError = onError;
-    kWS.onWSError = onWSError;
+    kWS.onConnectError = onConnectError;
     kWS.onTryReconnect = onTryReconnect;
     kWS.onReconnectFail = onReconnectFail;
     kWS.onClose = onClose;
