@@ -39,6 +39,7 @@ class kiteWS {
   public:
     // member variables
     // user constants
+    // FIXME make these static
     const string MODE_LTP = "ltp";
     const string MODE_QUOTE = "quote";
     const string MODE_FULL = "full";
@@ -354,7 +355,7 @@ class kiteWS {
                     Tick.timestamp = _getNum<int32_t>(packet, 60, 63);
 
                     unsigned int depthStartIdx = 64;
-                    for (int i = 0; i <= packetSize; i++) {
+                    for (int i = 0; i <= 9; i++) {
 
                         kitepp::depthWS depth;
                         depth.quantity = _getNum<int32_t>(packet, depthStartIdx, depthStartIdx + 3);
@@ -455,8 +456,6 @@ class kiteWS {
             _reconnectDelay = _initReconnectDelay;
             _isReconnecting = false;
             if (!_subbedInstruments.empty()) { _resubInstruments(); };
-            // FIXME if user subs in onConnect (like they're supposed to), there will be duplicate subs. Not sure if
-            // it'd be a problem
             if (onConnect) { onConnect(this); };
         });
 
