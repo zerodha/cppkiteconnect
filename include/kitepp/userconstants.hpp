@@ -85,4 +85,9 @@ const string GTT_STATUS_CANCELLED = "cancelled";
 const string GTT_STATUS_REJECTED = "rejected";
 const string GTT_STATUS_DELETED = "deleted";
 
+// kiteWS modes
+const string MODE_LTP = "ltp";
+const string MODE_QUOTE = "quote";
+const string MODE_FULL = "full";
+
 } // namespace kitepp

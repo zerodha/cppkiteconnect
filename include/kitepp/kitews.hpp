@@ -17,6 +17,7 @@
 #include "config.hpp"
 #include "kiteppexceptions.hpp"
 #include "responses.hpp"
+#include "userconstants.hpp" //modes
 
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -40,11 +41,6 @@ class kiteWS {
 
   public:
     // member variables
-    // user constants
-    // FIXME make these static
-    const string MODE_LTP = "ltp";
-    const string MODE_QUOTE = "quote";
-    const string MODE_FULL = "full";
 
     // callbacks
     std::function<void(kiteWS* ws)> onConnect;
@@ -59,7 +55,7 @@ class kiteWS {
 
     // constructors & destructors
 
-    kiteWS(const string& apikey, unsigned int connecttimeout = 5, bool enablereconnect = false,
+    kiteWS(const string& apikey, unsigned int connecttimeout = 10, bool enablereconnect = false,
         unsigned int maxreconnectdelay = 60, unsigned int maxreconnecttries = 30)
         : _apiKey(apikey), _connectTimeout(connecttimeout * 1000), _enableReconnect(enablereconnect),
           _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
