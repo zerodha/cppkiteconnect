@@ -36,3 +36,17 @@ include_directories(${kiteTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUD
 #target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
 target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
 #FIXME will fail on windows while linking pthread. there's a solutuion that on SO and etc
+
+#kws-test
+#FIXME fix build
+link_directories("/opt/cpplibs/uWebSockets-0.14.8")
+find_package(ZLIB REQUIRED)
+set(kWSTest_source_list "${CMAKE_SOURCE_DIR}/tests/unit/kwstest.cpp")
+set(kWSTest_BINARY_NAME kWSTest)
+
+add_executable(${kWSTest_BINARY_NAME} ${kWSTest_source_list})
+add_test(NAME kWS-test COMMAND ${kWSTest_BINARY_NAME})
+
+include_directories(${kWSTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS})
+
+target_link_libraries(${kWSTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB uv uWS ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})

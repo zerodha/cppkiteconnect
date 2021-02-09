@@ -1065,8 +1065,6 @@ struct tick {
     int32_t totalBuyQuantity = 0;
     int32_t totalSellQuantity = 0;
     int32_t volumeTraded = 0;
-    int32_t totalBuy = 0;
-    int32_t totalSell = 0;
     double averageTradePrice = 0.0;
     int32_t OI = 0;
     int32_t OIDayHigh = 0;
@@ -1075,7 +1073,6 @@ struct tick {
 
     // OHLC  OHLC
     struct ohlc {
-        // xint32_t InstrumentToken;
         double open = 0.0;
         double high = 0.0;
         double low = 0.0;

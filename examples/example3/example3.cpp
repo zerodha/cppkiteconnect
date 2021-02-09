@@ -1,11 +1,11 @@
 #include <iostream>
 
-#include "kitepp/kitews.hpp"
+#include "kitepp.hpp"
 
 void onConnect(kitepp::kiteWS* ws) {
 
     // ws->subscribe({ 408065 });
-    ws->setMode("full", { 408065, 2953217 });
+    ws->setMode("full", { 408065 /*, 2953217*/ });
 
     std::cout << "connected..\n";
 };
@@ -54,7 +54,7 @@ int main(int argc, char const* argv[]) {
 
     kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5, true, 5);
 
-    kWS.setAccessToken("bALpnlJSC6CHgK6fZ54lu2V0UYCoytmP");
+    kWS.setAccessToken("nvQKMP2Sqvo3oPDxNeaVIqpHXXFZwP9c");
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
     kWS.onOrderUpdate = onOrderUpdate;

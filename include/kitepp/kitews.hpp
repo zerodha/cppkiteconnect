@@ -24,6 +24,8 @@
 #include "rjhelper.hpp"
 #include "uWS.h"
 
+//#include <gtest/gtest_prod.h>
+
 namespace kitepp {
 
 // To make sure doubles are parsed correctly
@@ -38,6 +40,8 @@ class kiteWS {
 
   public:
     // member variables
+    // friend class kWSTest;
+    // friend class kWSTest_binaryParsingTest_Test;
     // user constants
     // FIXME make these static
     const string MODE_LTP = "ltp";
@@ -196,6 +200,8 @@ class kiteWS {
     };
 
   private:
+    friend class kWSTest_binaryParsingTest_Test;
+    // FRIEND_TEST(kWSTest, binaryParsingTest);
     // member variables
     const string _connectURLFmt = "wss://ws.kite.trade/?api_key={0}&access_token={1}";
     string _apiKey;
@@ -239,6 +245,32 @@ class kiteWS {
         _hub.connect(FMT(_connectURLFmt, _apiKey, _accessToken), nullptr, {}, _connectTimeout, _hubGroup);
     };
 
+    void _reconnect() {
+
+        std::cout << "_reconnect called\n";
+
+        if (isConnected()) { return; };
+
+        _isReconnecting = true;
+        _reconnectTries++;
+
+        if (_reconnectTries <= _maxReconnectTries) {
+
+            std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
+            _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
+
+            if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
+            _connect();
+
+            if (isConnected()) { return; };
+
+        } else {
+
+            if (onReconnectFail) { onReconnectFail(this); };
+            _isReconnecting = false;
+        };
+    };
+
     void _processTextMessage(char* message, size_t length) {
         rj::Document res;
         rjh::_parse(res, string(message, length));
@@ -259,7 +291,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
@@ -333,11 +365,11 @@ class kiteWS {
 
                 Tick.mode = (packetSize == 44) ? MODE_QUOTE : MODE_FULL;
                 Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
-                Tick.lastTradedQuantity = _getNum<int32_t>(packet, 8, 11) / divisor;
+                Tick.lastTradedQuantity = _getNum<int32_t>(packet, 8, 11);
                 Tick.averageTradePrice = _getNum<int32_t>(packet, 12, 15) / divisor;
-                Tick.volumeTraded = _getNum<int32_t>(packet, 16, 19) / divisor;
-                Tick.totalBuyQuantity = _getNum<int32_t>(packet, 20, 23) / divisor;
-                Tick.totalSellQuantity = _getNum<int32_t>(packet, 24, 27) / divisor;
+                Tick.volumeTraded = _getNum<int32_t>(packet, 16, 19);
+                Tick.totalBuyQuantity = _getNum<int32_t>(packet, 20, 23);
+                Tick.totalSellQuantity = _getNum<int32_t>(packet, 24, 27);
                 Tick.OHLC.high = _getNum<int32_t>(packet, 28, 31) / divisor;
                 Tick.OHLC.low = _getNum<int32_t>(packet, 32, 35) / divisor;
                 Tick.OHLC.open = _getNum<int32_t>(packet, 36, 39) / divisor;
@@ -348,10 +380,10 @@ class kiteWS {
                 // parse full mode
                 if (packetSize == 184) {
 
-                    Tick.lastTradeTime = _getNum<int32_t>(packet, 44, 47) / divisor;
-                    Tick.OI = _getNum<int32_t>(packet, 48, 51) / divisor;
-                    Tick.OIDayHigh = _getNum<int32_t>(packet, 52, 55) / divisor;
-                    Tick.OIDayLow = _getNum<int32_t>(packet, 56, 59) / divisor;
+                    Tick.lastTradeTime = _getNum<int32_t>(packet, 44, 47);
+                    Tick.OI = _getNum<int32_t>(packet, 48, 51);
+                    Tick.OIDayHigh = _getNum<int32_t>(packet, 52, 55);
+                    Tick.OIDayLow = _getNum<int32_t>(packet, 56, 59);
                     Tick.timestamp = _getNum<int32_t>(packet, 60, 63);
 
                     unsigned int depthStartIdx = 64;
@@ -391,32 +423,6 @@ class kiteWS {
         if (!LTPInstruments.empty()) { setMode(MODE_LTP, LTPInstruments); };
         if (!quoteInstruments.empty()) { setMode(MODE_QUOTE, quoteInstruments); };
         if (!fullInstruments.empty()) { setMode(MODE_FULL, fullInstruments); };
-    };
-
-    void _reconnect() {
-
-        std::cout << "_reconnect called\n";
-
-        if (isConnected()) { return; };
-
-        _isReconnecting = true;
-        _reconnectTries++;
-
-        if (_reconnectTries <= _maxReconnectTries) {
-
-            std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
-            _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
-
-            if (onTryReconnect) { onTryReconnect(this, _reconnectTries); };
-            _connect();
-
-            if (isConnected()) { return; };
-
-        } else {
-
-            if (onReconnectFail) { onReconnectFail(this); };
-            _isReconnecting = false;
-        };
     };
 
     /*
