@@ -1047,7 +1047,7 @@ struct depthWS {
 
     double price = 0.0;
     int32_t quantity = 0;
-    int32_t orders = 0;
+    int16_t orders = 0;
 };
 
 /// Represents a single tick returned by kWS

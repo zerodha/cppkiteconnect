@@ -289,7 +289,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
@@ -390,7 +390,7 @@ class kiteWS {
                         kitepp::depthWS depth;
                         depth.quantity = _getNum<int32_t>(packet, depthStartIdx, depthStartIdx + 3);
                         depth.price = _getNum<int32_t>(packet, depthStartIdx + 4, depthStartIdx + 7) / divisor;
-                        depth.orders = _getNum<int32_t>(packet, depthStartIdx + 8, depthStartIdx + 9);
+                        depth.orders = _getNum<int16_t>(packet, depthStartIdx + 8, depthStartIdx + 9);
 
                         (i >= 5) ? Tick.marketDepth.sell.emplace_back(depth) : Tick.marketDepth.buy.emplace_back(depth);
                         depthStartIdx = depthStartIdx + 12;

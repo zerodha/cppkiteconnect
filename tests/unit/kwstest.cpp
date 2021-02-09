@@ -46,7 +46,7 @@ TEST(kWSTest, binaryParsingTest) {
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.buy[0].price, 1299);
     EXPECT_EQ(tick1.marketDepth.buy[0].quantity, 2098);
-    EXPECT_EQ(tick1.marketDepth.buy[0].orders, 5111818);
+    EXPECT_EQ(tick1.marketDepth.buy[0].orders, 10);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.buy[1].price, 1298.90);
     EXPECT_EQ(tick1.marketDepth.buy[1].quantity, 6);
@@ -54,19 +54,19 @@ TEST(kWSTest, binaryParsingTest) {
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.buy[2].price, 1298.8);
     EXPECT_EQ(tick1.marketDepth.buy[2].quantity, 135);
-    EXPECT_EQ(tick1.marketDepth.buy[2].orders, 5111813);
+    EXPECT_EQ(tick1.marketDepth.buy[2].orders, 5);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.buy[3].price, 1298.75);
     EXPECT_EQ(tick1.marketDepth.buy[3].quantity, 1);
-    EXPECT_EQ(tick1.marketDepth.buy[3].orders, 5111809);
+    EXPECT_EQ(tick1.marketDepth.buy[3].orders, 1);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.buy[4].price, 1298.7);
     EXPECT_EQ(tick1.marketDepth.buy[4].quantity, 55);
-    EXPECT_EQ(tick1.marketDepth.buy[4].orders, 5111810);
+    EXPECT_EQ(tick1.marketDepth.buy[4].orders, 2);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.sell[0].price, 1299.05);
     EXPECT_EQ(tick1.marketDepth.sell[0].quantity, 335);
-    EXPECT_EQ(tick1.marketDepth.sell[0].orders, 5111815);
+    EXPECT_EQ(tick1.marketDepth.sell[0].orders, 7);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.sell[1].price, 1299.1);
     EXPECT_EQ(tick1.marketDepth.sell[1].quantity, 1);
@@ -74,15 +74,15 @@ TEST(kWSTest, binaryParsingTest) {
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.sell[2].price, 1299.4);
     EXPECT_EQ(tick1.marketDepth.sell[2].quantity, 45);
-    EXPECT_EQ(tick1.marketDepth.sell[2].orders, 5111810);
+    EXPECT_EQ(tick1.marketDepth.sell[2].orders, 2);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.sell[3].price, 1299.45);
     EXPECT_EQ(tick1.marketDepth.sell[3].quantity, 120);
-    EXPECT_EQ(tick1.marketDepth.sell[3].orders, 5111810);
+    EXPECT_EQ(tick1.marketDepth.sell[3].orders, 2);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.sell[4].price, 1299.5);
     EXPECT_EQ(tick1.marketDepth.sell[4].quantity, 233);
-    EXPECT_EQ(tick1.marketDepth.sell[4].orders, 5111811);
+    EXPECT_EQ(tick1.marketDepth.sell[4].orders, 3);
 
     kitepp::tick tick2 = ticks[1];
     EXPECT_EQ(tick2.mode, "full");
@@ -108,7 +108,7 @@ TEST(kWSTest, binaryParsingTest) {
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.buy[0].price, 3209.7);
     EXPECT_EQ(tick2.marketDepth.buy[0].quantity, 1);
-    EXPECT_EQ(tick2.marketDepth.buy[0].orders, 5111809);
+    EXPECT_EQ(tick2.marketDepth.buy[0].orders, 1);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.buy[1].price, 3209.4);
     EXPECT_EQ(tick2.marketDepth.buy[1].quantity, 300);
@@ -116,19 +116,19 @@ TEST(kWSTest, binaryParsingTest) {
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.buy[2].price, 3209.25);
     EXPECT_EQ(tick2.marketDepth.buy[2].quantity, 138);
-    EXPECT_EQ(tick2.marketDepth.buy[2].orders, 5111809);
+    EXPECT_EQ(tick2.marketDepth.buy[2].orders, 1);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.buy[3].price, 3209.15);
     EXPECT_EQ(tick2.marketDepth.buy[3].quantity, 31);
-    EXPECT_EQ(tick2.marketDepth.buy[3].orders, 5111809);
+    EXPECT_EQ(tick2.marketDepth.buy[3].orders, 1);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.buy[4].price, 3209.05);
     EXPECT_EQ(tick2.marketDepth.buy[4].quantity, 52);
-    EXPECT_EQ(tick2.marketDepth.buy[4].orders, 5111809);
+    EXPECT_EQ(tick2.marketDepth.buy[4].orders, 1);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.sell[0].price, 3209.95);
     EXPECT_EQ(tick2.marketDepth.sell[0].quantity, 16);
-    EXPECT_EQ(tick2.marketDepth.sell[0].orders, 5111810);
+    EXPECT_EQ(tick2.marketDepth.sell[0].orders, 2);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.sell[1].price, 3210.05);
     EXPECT_EQ(tick2.marketDepth.sell[1].quantity, 35);
@@ -136,14 +136,14 @@ TEST(kWSTest, binaryParsingTest) {
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.sell[2].price, 3210.1);
     EXPECT_EQ(tick2.marketDepth.sell[2].quantity, 47);
-    EXPECT_EQ(tick2.marketDepth.sell[2].orders, 5111810);
+    EXPECT_EQ(tick2.marketDepth.sell[2].orders, 2);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.sell[3].price, 3210.15);
     EXPECT_EQ(tick2.marketDepth.sell[3].quantity, 30);
-    EXPECT_EQ(tick2.marketDepth.sell[3].orders, 5111811);
+    EXPECT_EQ(tick2.marketDepth.sell[3].orders, 3);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.sell[4].price, 3210.2);
     EXPECT_EQ(tick2.marketDepth.sell[4].quantity, 670);
-    EXPECT_EQ(tick2.marketDepth.sell[4].orders, 5111809);
+    EXPECT_EQ(tick2.marketDepth.sell[4].orders, 1);
 };
 } // namespace kitepp
