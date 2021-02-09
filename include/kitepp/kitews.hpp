@@ -368,9 +368,9 @@ class kiteWS {
                 Tick.volumeTraded = _getNum<int32_t>(packet, 16, 19);
                 Tick.totalBuyQuantity = _getNum<int32_t>(packet, 20, 23);
                 Tick.totalSellQuantity = _getNum<int32_t>(packet, 24, 27);
-                Tick.OHLC.high = _getNum<int32_t>(packet, 28, 31) / divisor;
-                Tick.OHLC.low = _getNum<int32_t>(packet, 32, 35) / divisor;
-                Tick.OHLC.open = _getNum<int32_t>(packet, 36, 39) / divisor;
+                Tick.OHLC.open = _getNum<int32_t>(packet, 28, 31) / divisor;
+                Tick.OHLC.high = _getNum<int32_t>(packet, 32, 35) / divisor;
+                Tick.OHLC.low = _getNum<int32_t>(packet, 36, 39) / divisor;
                 Tick.OHLC.close = _getNum<int32_t>(packet, 40, 43) / divisor;
 
                 Tick.netChange = (Tick.lastPrice - Tick.OHLC.close) * 100 / Tick.OHLC.close;
