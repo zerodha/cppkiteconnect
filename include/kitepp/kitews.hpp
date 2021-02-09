@@ -40,8 +40,6 @@ class kiteWS {
 
   public:
     // member variables
-    // friend class kWSTest;
-    // friend class kWSTest_binaryParsingTest_Test;
     // user constants
     // FIXME make these static
     const string MODE_LTP = "ltp";
@@ -200,8 +198,8 @@ class kiteWS {
     };
 
   private:
+    // For testing binary parsing
     friend class kWSTest_binaryParsingTest_Test;
-    // FRIEND_TEST(kWSTest, binaryParsingTest);
     // member variables
     const string _connectURLFmt = "wss://ws.kite.trade/?api_key={0}&access_token={1}";
     string _apiKey;
@@ -291,7 +289,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
