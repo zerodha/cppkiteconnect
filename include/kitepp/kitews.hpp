@@ -55,7 +55,7 @@ class kiteWS {
 
     // constructors & destructors
 
-    kiteWS(const string& apikey, unsigned int connecttimeout = 10, bool enablereconnect = false,
+    kiteWS(const string& apikey, unsigned int connecttimeout = 5, bool enablereconnect = false,
         unsigned int maxreconnectdelay = 60, unsigned int maxreconnecttries = 30)
         : _apiKey(apikey), _connectTimeout(connecttimeout * 1000), _enableReconnect(enablereconnect),
           _maxReconnectDelay(maxreconnectdelay), _maxReconnectTries(maxreconnecttries),
@@ -103,7 +103,7 @@ class kiteWS {
 
     bool isConnected() const { return _WS; };
 
-    std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
+    auto getLastBeatTime() { return _lastBeatTime; };
 
     void run() { _hub.run(); };
 
@@ -112,6 +112,7 @@ class kiteWS {
     };
 
     void subscribe(const std::vector<int>& instrumentToks) {
+
         rj::Document req;
         req.SetObject();
         auto& reqAlloc = req.GetAllocator();
@@ -177,7 +178,7 @@ class kiteWS {
 
         val.SetString(mode.c_str(), mode.size(), reqAlloc);
         valArr.PushBack(val, reqAlloc);
-        for (const int& tok : instrumentToks) { toksArr.PushBack(tok, reqAlloc); }
+        for (const int tok : instrumentToks) { toksArr.PushBack(tok, reqAlloc); }
         valArr.PushBack(toksArr, reqAlloc);
         req.AddMember("v", valArr, reqAlloc);
 
@@ -285,7 +286,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
