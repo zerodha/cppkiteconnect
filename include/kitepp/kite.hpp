@@ -1050,11 +1050,12 @@ class kite {
     std::vector<MFHolding> getMFHoldings() {
 
         rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("portfolio.holdings"));
+        _sendReq(res, _methods::GET, _endpoints.at("mf.holdings"));
 
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (getMFHoldings)");
         };
+
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
 
@@ -1552,3 +1553,4 @@ class kite {
 // TODO add quiet option while building doxygen docs
 
 // TODO change namespace to kiteconnect
+// TODO change example names to intuative ones

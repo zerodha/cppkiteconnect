@@ -825,7 +825,7 @@ struct MFHolding {
     double lastPrice = 0.0;
     string lastPriceDate;
     double Pnl = 0.0;
-    int quantity = 0;
+    double quantity = 0;
 };
 
 /// MFSIP represents a individual mutualfund SIP response.
@@ -1041,6 +1041,8 @@ struct MFInstrument {
     double lastPrice = 0.0;
     string lastPriceDate;
 };
+
+// kiteWS responses
 
 /// Reoresents a single entry in market depth returned by kWS
 struct depthWS {

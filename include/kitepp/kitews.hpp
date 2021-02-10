@@ -25,8 +25,6 @@
 #include "rjhelper.hpp"
 #include "uWS.h"
 
-//#include <gtest/gtest_prod.h>
-
 namespace kitepp {
 
 // To make sure doubles are parsed correctly
@@ -103,7 +101,7 @@ class kiteWS {
 
     bool isConnected() const { return _WS; };
 
-    auto getLastBeatTime() { return _lastBeatTime; };
+    std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
 
     void run() { _hub.run(); };
 
@@ -286,7 +284,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif

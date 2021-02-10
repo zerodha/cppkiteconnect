@@ -1568,9 +1568,7 @@ TEST(kiteTest, getMFOrderTest) {
     EXPECT_EQ(order.tag, "");
 }
 
-TEST(kiteTest, DISABLED_getMFHoldingsTest) {
-
-    // FIXME fix this
+TEST(kiteTest, getMFHoldingsTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/mf_holdings.json");
     ASSERT_TRUE(jsonFile);
@@ -1582,19 +1580,11 @@ TEST(kiteTest, DISABLED_getMFHoldingsTest) {
         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
-    try {
 
-        std::vector<kitepp::MFHolding> Holdings = Kite.getMFHoldings();
-
-    } catch (const std::exception& e) {
-
-        string cerrStr = e.what();
-        std::cerr << e.what() << "\n\n";
-        ////////
-    };
+    std::vector<kitepp::MFHolding> Holdings = Kite.getMFHoldings();
 
     // Expected values
-    /*ASSERT_EQ(Holdings.size(), 3);
+    ASSERT_EQ(Holdings.size(), 5);
 
     kitepp::MFHolding holding1 = Holdings[0];
     EXPECT_EQ(holding1.folio, "123123/123");
@@ -1604,11 +1594,11 @@ TEST(kiteTest, DISABLED_getMFHoldingsTest) {
     EXPECT_DOUBLE_EQ(holding1.lastPrice, 33.014);
     EXPECT_DOUBLE_EQ(holding1.Pnl, 594.769);
     EXPECT_EQ(holding1.lastPriceDate, "2016-11-11");
-    EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);*/
+    EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);
 
-    /*kitepp::MFHolding holding2 = Holdings[1];
+    kitepp::MFHolding holding2 = Holdings[1];
     EXPECT_EQ(holding2.folio, "385080203");
-    EXPECT_EQ(holding2.fund, "KDSP BlackRock Money Manager Fund");
+    EXPECT_EQ(holding2.fund, "DSP BlackRock Money Manager Fund");
     EXPECT_EQ(holding2.tradingsymbol, "INF740K01QQ3");
     EXPECT_DOUBLE_EQ(holding2.averagePrice, 2146.131);
     EXPECT_DOUBLE_EQ(holding2.lastPrice, 2277.0708);
@@ -1624,7 +1614,27 @@ TEST(kiteTest, DISABLED_getMFHoldingsTest) {
     EXPECT_DOUBLE_EQ(holding3.lastPrice, 559.081);
     EXPECT_DOUBLE_EQ(holding3.Pnl, 61963.074);
     EXPECT_EQ(holding3.lastPriceDate, "");
-    EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);*/
+    EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);
+
+    kitepp::MFHolding holding4 = Holdings[3];
+    EXPECT_EQ(holding4.folio, "91022348426");
+    EXPECT_EQ(holding4.fund, "Axis Long Term Equity Fund");
+    EXPECT_EQ(holding4.tradingsymbol, "INF846K01131");
+    EXPECT_DOUBLE_EQ(holding4.averagePrice, 28.779);
+    EXPECT_DOUBLE_EQ(holding4.lastPrice, 41.3876);
+    EXPECT_DOUBLE_EQ(holding4.Pnl, 44467.717);
+    EXPECT_EQ(holding4.lastPriceDate, "");
+    EXPECT_DOUBLE_EQ(holding4.quantity, 3526.834);
+
+    kitepp::MFHolding holding5 = Holdings[4];
+    EXPECT_EQ(holding5.folio, "488155267386");
+    EXPECT_EQ(holding5.fund, "Reliance Money Manager Fund");
+    EXPECT_EQ(holding5.tradingsymbol, "INF204K01EY0");
+    EXPECT_DOUBLE_EQ(holding5.averagePrice, 1002.948);
+    EXPECT_DOUBLE_EQ(holding5.lastPrice, 1007.5645);
+    EXPECT_DOUBLE_EQ(holding5.Pnl, 2.304);
+    EXPECT_EQ(holding5.lastPriceDate, "");
+    EXPECT_DOUBLE_EQ(holding5.quantity, 0.499);
 }
 
 // SIP tests
