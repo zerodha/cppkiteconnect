@@ -35,6 +35,10 @@ using std::string;
 namespace rj = rapidjson;
 namespace rjh = RJHelper;
 
+/**
+ * @brief Used for accessing websocket interface of Kite API.
+ *
+ */
 class kiteWS {
 
   public:

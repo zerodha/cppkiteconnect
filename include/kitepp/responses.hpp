@@ -693,7 +693,7 @@ struct OHLCQuote {
     ohlc OHLC;
 };
 
-// represents ltp quote respone
+/// represents ltp quote respone
 struct LTPQuote {
 
     LTPQuote() = default;
@@ -1088,6 +1088,7 @@ struct tick {
     } marketDepth;
 };
 
+/// Represents postback sent via websockets
 struct postback {
 
     postback() = default;

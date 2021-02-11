@@ -54,6 +54,10 @@ using kitepp::DEFAULTDOUBLE;
 using kitepp::DEFAULTINT;
 using kitepp::isValid;
 
+/**
+ * @brief Used for accessing REST interface provided by Kite API.
+ *
+ */
 class kite {
 
   public:
@@ -1553,4 +1557,3 @@ class kite {
 // TODO add quiet option while building doxygen docs
 
 // TODO change namespace to kiteconnect
-// TODO change example names to intuative ones
