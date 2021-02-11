@@ -199,6 +199,7 @@ class kiteWS {
     const string _connectURLFmt = "wss://ws.kite.trade/?api_key={0}&access_token={1}";
     string _apiKey;
     string _accessToken;
+    // TODO make these into constants since they aren't used much
     const std::unordered_map<string, int> _segmentConstants = {
 
         { "nse", 1 },
@@ -235,12 +236,11 @@ class kiteWS {
     // methods
 
     void _connect() {
+
         _hub.connect(FMT(_connectURLFmt, _apiKey, _accessToken), nullptr, {}, _connectTimeout, _hubGroup);
     };
 
     void _reconnect() {
-
-        std::cout << "_reconnect called\n";
 
         if (isConnected()) { return; };
 
@@ -284,7 +284,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
@@ -297,7 +297,7 @@ class kiteWS {
 
     std::vector<std::vector<char>> _splitPackets(const std::vector<char>& bytes) {
 
-        int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
+        const int16_t numberOfPackets = _getNum<int16_t>(bytes, 0, 1);
 
         std::vector<std::vector<char>> packets;
 
@@ -445,7 +445,6 @@ class kiteWS {
     void _assignCallbacks() {
 
         _hubGroup->onConnection([&](uWS::WebSocket<uWS::CLIENT>* ws, uWS::HttpRequest req) {
-            std::cout << "connected...\n";
             _WS = ws;
             // Not setting this time would prompt reconnecting immediately, even when conected since pongTime would be
             // far back or default
@@ -474,24 +473,17 @@ class kiteWS {
         });
 
         _hubGroup->onPong([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length) {
-            std::cout << "Pong recieved..\n";
             _lastPongTime = std::chrono::system_clock::now();
         });
 
         _hubGroup->onError([&](void*) {
             if (onConnectError) { onConnectError(this); }
-
             // Close the non-responsive connection
-            if (isConnected()) {
-
-                std::cout << "***Closing connection in onError***\n";
-                _WS->close(1006);
-            };
+            if (isConnected()) { _WS->close(1006); };
             if (_enableReconnect) { _reconnect(); };
         });
 
         _hubGroup->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* ws, int code, char* reason, size_t length) {
-            std::cout << "Disconnection code: " << code << "\n";
             _WS = nullptr;
 
             if (code != 1000) {
