@@ -19,12 +19,17 @@ find_package(OpenSSL REQUIRED)
 #kite-test
 set(kiteTest_BINARY_NAME kiteTest)
 
+#Find Threading library (GMock requires threads)
+find_package (Threads REQUIRED)
+
+option(CMAKE_USE_WIN32_THREADS_INIT "using WIN32 threads" ON)
+option(gtest_disable_pthreads "Disable uses of pthreads in gtest." ON)
+
 add_executable(${kiteTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/kitetest.cpp")
 add_test(NAME kite-test COMMAND ${kiteTest_BINARY_NAME})
 
 target_include_directories(${kiteTest_BINARY_NAME} PUBLIC ${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS})
-#FIXME will fail on windows while linking pthread. there's a solutuion that on SO and etc
-target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} Threads::Threads)
 
 #find zlib
 find_package(ZLIB REQUIRED)
