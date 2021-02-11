@@ -30,7 +30,7 @@
 
 namespace kiteconnect {
 
-namespace RJHelper {
+namespace rjutils {
 
 using std::string;
 namespace rj = rapidjson;

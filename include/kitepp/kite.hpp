@@ -49,7 +49,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
-namespace rjh = kc::RJHelper;
+namespace rju = kc::rjutils;
 using kc::_methods;
 using kc::DEFAULTDOUBLE;
 using kc::DEFAULTINT;
@@ -289,7 +289,7 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeOrder)"); };
 
         string rcvdOrdID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
 
         return rcvdOrdID;
     };
@@ -333,7 +333,7 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyOrder)"); };
 
         string rcvdOrdID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
 
         return rcvdOrdID;
     };
@@ -362,7 +362,7 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelOrder)"); };
 
         string rcvdOrdID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
 
         return rcvdOrdID;
     };
@@ -555,14 +555,14 @@ class kite {
         _sendReq(res, _methods::POST, _endpoints.at("gtt.place"),
             {
 
-                { "type", trigType }, { "condition", rjh::_dump(condition) }, { "orders", rjh::_dump(params) }
+                { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) }
 
             });
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeGTT)"); };
 
         int rcvdTrigID = DEFAULTINT;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
 
         return rcvdTrigID;
     };
@@ -679,14 +679,14 @@ class kite {
         _sendReq(res, _methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
             {
 
-                { "type", trigType }, { "condition", rjh::_dump(condition) }, { "orders", rjh::_dump(params) }
+                { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) }
 
             });
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyGTT)"); };
 
         int rcvdTrigID = DEFAULTINT;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
 
         return rcvdTrigID;
     };
@@ -709,7 +709,7 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (deleteGTT)"); };
 
         int rcvdTrigID = DEFAULTINT;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
 
         return rcvdTrigID;
     };
@@ -971,7 +971,7 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFOrder)"); };
 
         string rcvdOrdID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
 
         return rcvdOrdID;
     };
@@ -995,7 +995,7 @@ class kite {
         };
 
         string rcvdOrdID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
 
         return rcvdOrdID;
     };
@@ -1110,8 +1110,8 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
 
         string rcvdOrdID, rcvdSipID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-        rjh::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
 
         return { rcvdOrdID, rcvdSipID };
     };
@@ -1161,7 +1161,7 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
 
         string rcvdSipID;
-        rjh::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
+        rju::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
 
         return rcvdSipID;
     };
@@ -1283,7 +1283,7 @@ class kite {
         };
 
         rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("order.margins"), { { "", rjh::_dump(req) } }, true);
+        _sendReq(res, _methods::POST, _endpoints.at("order.margins"), { { "", rju::_dump(req) } }, true);
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (getOrderMargis)");
         };
@@ -1487,7 +1487,7 @@ class kite {
 
         if (!dataRcvd.empty()) {
 
-            rjh::_parse(data, dataRcvd);
+            rju::_parse(data, dataRcvd);
 
             if (code != 200) {
 
@@ -1496,8 +1496,8 @@ class kite {
 
                 try {
 
-                    if (!rjh::_getIfExists(data, excpStr, "error_type")) { excpStr = "NoException"; };
-                    rjh::_getIfExists(data, message, "message");
+                    if (!rju::_getIfExists(data, excpStr, "error_type")) { excpStr = "NoException"; };
+                    rju::_getIfExists(data, message, "message");
 
                 } catch (const std::exception& e) {
 
