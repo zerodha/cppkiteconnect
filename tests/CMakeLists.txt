@@ -45,7 +45,7 @@ set(kWSTest_source_list "${CMAKE_SOURCE_DIR}/tests/unit/kwstest.cpp")
 set(kWSTest_BINARY_NAME kWSTest)
 
 add_executable(${kWSTest_BINARY_NAME} ${kWSTest_source_list})
-add_test(NAME kWS-test COMMAND ${kWSTest_BINARY_NAME})
+add_test(NAME kiteWS-test COMMAND ${kWSTest_BINARY_NAME})
 
 include_directories(${kWSTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS})
 

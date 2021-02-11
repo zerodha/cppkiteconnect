@@ -26,10 +26,10 @@
 #include <string>
 #include <vector>
 
-#include "helperfunctions.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rjhelper.hpp"
+#include "utils.hpp"
 
 namespace kitepp {
 

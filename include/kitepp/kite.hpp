@@ -39,10 +39,10 @@
 #include "rapidjson/writer.h"
 
 #include "config.hpp"
-#include "helperfunctions.hpp"
 #include "kiteppexceptions.hpp"
 #include "responses.hpp"
 #include "rjhelper.hpp"
+#include "utils.hpp"
 
 namespace kitepp {
 
@@ -1549,11 +1549,13 @@ class kite {
 } // namespace kitepp
 
 // TODO *rectify double lookup in functions
-// TODO catch exceptions wherever you use stoi/stod. Use grep -E 'stoi|stod' *
 // TODO change helperfunctions to util and rjhelper to rjutil
 // TODO rename doxygen file to config.doxygen
 // TODO delete compile_comands.json & .vscode/ symlink from project directory
 // TODO move doxygen to separate cmakelists
 // TODO add quiet option while building doxygen docs
+// TODO clean config.hpp
+// TODO add copyight
 
 // TODO change namespace to kiteconnect
+// TODO write README & doxygen main
