@@ -4,26 +4,18 @@
 
 void onConnect(kitepp::kiteWS* ws) {
     std::cout << "connected.. Subscribing now..\n";
-
-    // ws->subscribe({ 408065, 2953217 });
     ws->setMode("full", { 408065, 2953217 });
 };
 
 unsigned int tickCount = 0;
 void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
-
     tickCount++;
 
     for (const auto& i : ticks) {
         std::cout << "instrument token: " << i.instrumentToken << " last price: " << i.lastPrice << "\n";
     };
 
-    if (tickCount >= 100) {
-        // is not necessary
-        if (ws->isConnected()) { ws->unsubscribe({ 408065, 2953217 }); };
-
-        ws->stop();
-    };
+    if (tickCount >= 100) { ws->stop(); };
 };
 
 void onOrderUpdate(kitepp::kiteWS* ws, const kitepp::postback& postback) {
@@ -43,18 +35,17 @@ void onTryReconnect(kitepp::kiteWS* ws, unsigned int attemptCount) {
     std::cout << "Trying to reconnect.. Attempt " << attemptCount << "\n";
 };
 
-void onReconnectFail(kitepp::kiteWS* ws) { std::cout << "Failed to reconnect!\n"; }
+void onReconnectFail(kitepp::kiteWS* ws) { std::cout << "Failed to reconnect!\n"; };
 
 void onClose(kitepp::kiteWS* ws, int code, const std::string& message) {
-
     std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
-}
+};
 
 int main(int argc, char const* argv[]) {
 
-    kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5, true, 5);
+    kitepp::kiteWS kWS("---APIKEY---", 5, true, 5);
 
-    kWS.setAccessToken("6QORGRaXV3YEDm0YH4ZYh55kuDJYmsw4");
+    kWS.setAccessToken("---ACCESSTOKEN---");
 
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;

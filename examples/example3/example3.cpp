@@ -22,13 +22,13 @@ void onConnectError(kitepp::kiteWS* ws) { std::cout << "Couldn't connect..\n"; }
 void onClose(kitepp::kiteWS* ws, int code, const std::string& message) {
 
     std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
-}
+};
 
 int main(int argc, char const* argv[]) {
 
-    kitepp::kiteWS kWS("a9gg2394xe9sqmjc", 5, true, 5);
+    kitepp::kiteWS kWS("---APIKEY---", 5, true, 5);
 
-    kWS.setAccessToken("6QORGRaXV3YEDm0YH4ZYh55kuDJYmsw4");
+    kWS.setAccessToken("---ACCESSTOKEN---");
 
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;
