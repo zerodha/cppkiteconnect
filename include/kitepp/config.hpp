@@ -18,17 +18,10 @@
 
 #include <cmath> //isnan()
 #include <string>
-
-// headers/macros/operators required in more than one file
-//********
-
-//! These defines will dilute the global namespace
 #define FMT_HEADER_ONLY 1
 #include "fmt/format.h"
 
-using fmt::literals::operator""_a;
-#define FMT fmt::format
-
+// Check endieness of platform
 /*
    __BIG_ENDIAN__ and __LITTLE_ENDIAN__ are define in some gcc versions
   only, probably depending on the architecture. Try to use endian.h if
@@ -56,12 +49,27 @@ using fmt::literals::operator""_a;
 #endif /* __LITTLE_ENDIAN__ */
 #endif /* __BIG_ENDIAN__ */
 
-//*********
+//!************************************************
+// macros/operators required in more than one file*
+//!************************************************
+
+using fmt::literals::operator""_a;
+#define FMT fmt::format
 
 namespace kitepp {
 
-// constatnts required in more than one class (other than the explicit user constants defined in uderconstants.hpp)
-enum class _methods { GET, POST, PUT, DEL, HEAD };
+//!*****************************************************************************************************************
+// constatnts required in more than one class (other than the explicit user constants defined in uderconstants.hpp)*
+//!*****************************************************************************************************************
+
+enum class _methods
+{
+    GET,
+    POST,
+    PUT,
+    DEL,
+    HEAD
+};
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
@@ -70,8 +78,10 @@ bool isValid(double num) { return std::isnan(num); };
 
 namespace config {
 
-// configuration related constants and functions *required in more than one file* should go here (e.g., root url, port
+//!********************************************************************************************************************
+// configuration related constants and functions *required in more than one file* should go here (e.g., root url, port*
 // num etc.)
+//!********************************************************************************************************************
 
 } // namespace config
 

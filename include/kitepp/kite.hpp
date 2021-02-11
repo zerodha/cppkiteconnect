@@ -1549,13 +1549,13 @@ class kite {
 } // namespace kitepp
 
 // TODO *rectify double lookup in functions
-// TODO change helperfunctions to util and rjhelper to rjutil
+
 // TODO rename doxygen file to config.doxygen
-// TODO delete compile_comands.json & .vscode/ symlink from project directory
 // TODO move doxygen to separate cmakelists
 // TODO add quiet option while building doxygen docs
-// TODO clean config.hpp
-// TODO add copyight
 
 // TODO change namespace to kiteconnect
 // TODO write README & doxygen main
+
+// TODO add copyight
+// TODO delete compile_comands.json & .vscode/ symlink from project directory
