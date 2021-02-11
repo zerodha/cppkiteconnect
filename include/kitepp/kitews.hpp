@@ -63,7 +63,7 @@ class kiteWS {
     std::function<void(kiteWS* ws, const string& message)> onMessage;
 
     /**
-     * @brief Called when connection is closed with an error.
+     * @brief Called when connection is closed with an error or websocket server sends an error message.
      */
     std::function<void(kiteWS* ws, int code, const string& message)> onError;
 
@@ -167,7 +167,7 @@ class kiteWS {
     bool isConnected() const { return _WS; };
 
     /**
-     * @brief Get the last time heartbeat was received. Should be used in conjugation with `isConnected()` method.
+     * @brief Get the last time heartbeat was received. Should be used in conjunction with `isConnected()` method.
      *
      * @return std::chrono::time_point<std::chrono::system_clock>
      */
@@ -378,7 +378,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
