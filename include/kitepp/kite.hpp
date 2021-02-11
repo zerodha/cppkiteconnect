@@ -1550,9 +1550,8 @@ class kite {
 
 // TODO *rectify double lookup in functions
 
-// TODO rename doxygen file to config.doxygen
 // TODO move doxygen to separate cmakelists
-// TODO add quiet option while building doxygen docs
+// TODO rename doxygen file to config.doxygen
 
 // TODO change namespace to kiteconnect
 // TODO write README & doxygen main
