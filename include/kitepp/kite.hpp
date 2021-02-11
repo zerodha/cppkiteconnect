@@ -70,7 +70,7 @@ class kite {
      *
      * @param apikey
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp initializing kite
      */
     explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {};
@@ -100,7 +100,7 @@ class kite {
      *
      * @return string
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp obtaining login url
      */
     string loginURL() const { return FMT(_loginURLFmt, "api_key"_a = _apiKey); };
@@ -112,7 +112,7 @@ class kite {
      * @param apiSecret
      * @return userSession
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp obtaining access token
      */
     userSession generateSession(const string& requestToken, const string& apiSecret) {
@@ -140,7 +140,7 @@ class kite {
      *
      * @param arg the string you want to set as access token
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp settting access token
      */
     void setAccessToken(const string& arg) { _accessToken = arg; };
@@ -159,7 +159,7 @@ class kite {
      *
      * @return njson
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp invalidate session
      */
     void invalidateSession() {
@@ -176,7 +176,7 @@ class kite {
      *
      * @return userProfile
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get user profile
      *
      */
@@ -195,7 +195,7 @@ class kite {
      *
      * @return allMargins
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get margins
      */
     allMargins getMargins() {
@@ -214,7 +214,7 @@ class kite {
      * @param segment
      * @return margins
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get margins
      */
     margins getMargins(const string& segment) {
@@ -252,7 +252,7 @@ class kite {
      *
      * @return string orderID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp placing an order
      */
     string placeOrder(const string& variety, const string& exchange, const string& symbol, const string& txnType,
@@ -307,7 +307,7 @@ class kite {
      *
      * @return string order ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp modifying an order
      */
     string modifyOrder(const string& variety, const string& ordID, const string& parentOrdID = "",
@@ -345,7 +345,7 @@ class kite {
      *
      * @return string order ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp cancelling an order
      */
     string cancelOrder(const string& variety, const string& ordID, const string& parentOrdID = "") {
@@ -374,7 +374,7 @@ class kite {
      *
      * @return string order ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp exiting an order
      */
     string exitOrder(const string& variety, const string& ordID, const string& parentOrdID = "") {
@@ -386,7 +386,7 @@ class kite {
      *
      * @return std::vector<order>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get orders
      */
     std::vector<order> orders() {
@@ -410,7 +410,7 @@ class kite {
      *
      *  @return std::vector<order>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get order history
      */
     std::vector<order> orderHistory(const string& ordID) {
@@ -435,7 +435,7 @@ class kite {
      *
      * @return std::vector<trade>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get trades
      */
     std::vector<trade> trades() {
@@ -459,7 +459,7 @@ class kite {
      *
      *  @return std::vector<trade>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get order trades
      */
     std::vector<trade> orderTrades(const string& ordID) {
@@ -492,7 +492,7 @@ class kite {
      *
      * @return int trigger ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp placing a gtt
      */
     int placeGTT(const string& trigType, const string& symbol, const string& exchange,
@@ -570,7 +570,7 @@ class kite {
      *
      * @return std::vector<GTT>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get gtts
      */
     std::vector<GTT> getGTTs() {
@@ -592,7 +592,7 @@ class kite {
      * @param trigID
      * @return GTT
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get gtt info
      */
     GTT getGTT(int trigID) {
@@ -617,7 +617,7 @@ class kite {
      *
      * @return int trigger ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp modifying a gtt
      */
     int modifyGTT(int trigID, const string& trigType, const string& symbol, const string& exchange,
@@ -696,7 +696,7 @@ class kite {
      *
      * @return int trigger ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp delete a gtt
      */
     int deleteGTT(int trigID) {
@@ -719,7 +719,7 @@ class kite {
      *
      * @return std::vector<holding>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get holdings
      */
     std::vector<holding> holdings() {
@@ -741,7 +741,7 @@ class kite {
      *
      * @return positions
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get positions
      */
     positions getPositions() {
@@ -766,7 +766,7 @@ class kite {
      *
      * @return bool true if position was successfully modified
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp convert position
      */
     bool convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType,
@@ -807,7 +807,7 @@ class kite {
      *
      * @attention Note that the results could be large, with tens of thousands of entries.
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get instruments
      */
     std::vector<instrument> getInstruments(const string& exchange = "") {
@@ -836,7 +836,7 @@ class kite {
      *
      *  @return std::unordered_map<string, quote>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get quote
      */
     std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols) {
@@ -859,7 +859,7 @@ class kite {
      *
      * @return std::unordered_map<string, OHLCQuote>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get ohlc
      */
     std::unordered_map<string, OHLCQuote> getOHLC(const std::vector<string>& symbols) {
@@ -882,7 +882,7 @@ class kite {
      *
      * @return std::unordered_map<string, LTPQuote>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get ltp
      */
     std::unordered_map<string, LTPQuote> getLTP(const std::vector<string>& symbols) {
@@ -912,7 +912,7 @@ class kite {
      *
      *  @return std::vector<historicalData>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get historical data
      */
     std::vector<historicalData> getHistoricalData(int instrumentTok, const string& from, const string& to,
@@ -947,7 +947,7 @@ class kite {
      *
      * @return string order ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp place mf order
      */
     string placeMFOrder(const string& symbol, const string& txnType, int quantity = DEFAULTINT,
@@ -981,7 +981,7 @@ class kite {
      *
      * @return string order ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp cancel a mf order
      */
     string cancelMFOrder(const string& ordID) {
@@ -1003,7 +1003,7 @@ class kite {
      *
      * @return std::vector<MFOrder>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get mf orders
      */
     std::vector<MFOrder> getMFOrders() {
@@ -1028,7 +1028,7 @@ class kite {
      *
      * @return MFOrder
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get mf order info
      */
     MFOrder getMFOrder(const string& ordID) {
@@ -1048,7 +1048,7 @@ class kite {
      *
      * @return njson
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get mf holdings
      */
     std::vector<MFHolding> getMFHoldings() {
@@ -1084,7 +1084,7 @@ class kite {
      *
      * @return std::pair<string, string>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp place mf sip order
      */
     std::pair<string, string> placeMFSIP(const string& symbol, double amount, int installments, const string& freq,
@@ -1124,7 +1124,7 @@ class kite {
      * @param freq frequency
      * @param installDay installment day
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp modify mf sip order
      */
     void modifyMFSIP(const string& SIPID, double amount = DEFAULTDOUBLE, const string& status = "",
@@ -1149,7 +1149,7 @@ class kite {
      *
      * @return SIP ID
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp cancel mf sip
      */
     string cancelMFSIP(const string& SIPID) {
@@ -1169,7 +1169,7 @@ class kite {
      *
      * @return std::vector<MFSIP>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get sips
      */
     std::vector<MFSIP> getSIPs() {
@@ -1194,7 +1194,7 @@ class kite {
      *
      * @return MFSIP
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get sip info
      */
     MFSIP getSIP(const string& SIPID) {
@@ -1212,7 +1212,7 @@ class kite {
      *
      * @return std::vector<MFInstrument>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get mf instruments
      */
     std::vector<MFInstrument> getMFInstruments() {
@@ -1241,7 +1241,7 @@ class kite {
      *
      * @return std::vector<orderMargins>
      *
-     * @paragraph ex1 example
+     * @paragraph ex1 Example
      * @snippet example2.cpp get order margins
      */
     std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params) {
