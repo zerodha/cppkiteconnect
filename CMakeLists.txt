@@ -12,6 +12,7 @@ find_package(OpenSSL REQUIRED)
 #build examples
 add_subdirectory("examples/example1")
 add_subdirectory("examples/example2")
+add_subdirectory("examples/example3")
 add_subdirectory("examples/example4")
 
 #build tests
