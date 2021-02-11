@@ -28,7 +28,7 @@
 
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
-#include "rjhelper.hpp"
+#include "rjutils.hpp"
 #include "utils.hpp"
 
 namespace kitepp {

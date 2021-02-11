@@ -41,7 +41,7 @@
 #include "config.hpp"
 #include "kiteppexceptions.hpp"
 #include "responses.hpp"
-#include "rjhelper.hpp"
+#include "rjutils.hpp"
 #include "utils.hpp"
 
 namespace kitepp {
