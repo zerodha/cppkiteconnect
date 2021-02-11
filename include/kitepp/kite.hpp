@@ -1552,6 +1552,7 @@ class kite {
 
 // TODO change namespace to kiteconnect
 
+// TODO fix build system
 // TODO add copyight
 // TODO write README & doxygen main (sep branch)
 // TODO delete compile_comands.json & .vscode/ symlink from project directory
