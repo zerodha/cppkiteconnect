@@ -1552,9 +1552,6 @@ class kite {
 
 // TODO *rectify double lookup in functions
 
-// TODO change namespace to kiteconnect
-// TODO change RJHelper namespace to rjutil
-
 // TODO fix build system
 // TODO add copyight
 // TODO write README & doxygen main (sep branch)

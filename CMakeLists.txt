@@ -1,13 +1,12 @@
-cmake_minimum_required(VERSION 3.10.2)
+cmake_minimum_required(VERSION 3.10)
 project(kitepp) 
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
 include(CTest)
 
-#FIXME fix the include
-include_directories("${CMAKE_SOURCE_DIR}/include" "/opt/cpplibs/uWebSockets-0.14.8/src")
-find_package(OpenSSL REQUIRED)
+include_directories("${CMAKE_SOURCE_DIR}/include")
 
 #build examples
 add_subdirectory("examples/example1")

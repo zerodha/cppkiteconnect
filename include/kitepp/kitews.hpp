@@ -23,7 +23,7 @@
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/writer.h"
 #include "rjutils.hpp"
-#include "uWS.h"
+#include <uWS/uWS.h>
 
 namespace kiteconnect {
 
@@ -382,7 +382,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif

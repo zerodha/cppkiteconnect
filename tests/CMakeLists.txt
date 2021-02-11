@@ -1,52 +1,47 @@
-# Locate GTest
+# Find GTest
 find_package(GTest REQUIRED)
+
+#Find GMock
 find_package(GMock REQUIRED)
 
-# file(GLOB_RECURSE source_list "${CMAKE_SOURCE_DIR}/tests/*.cpp")
-# set(RJTest_source_list "${CMAKE_SOURCE_DIR}/tests/rjtest.cpp")
-# set(kiteTest_source_list "${CMAKE_SOURCE_DIR}/tests/kitetest.cpp")
-
-# set(BINARY_NAME kitepp_test)
-
-# add_executable(${BINARY_NAME} ${source_list})
-# add_test(NAME ${BINARY_NAME} COMMAND ${BINARY_NAME})
-
-# include_directories(${BINARY_NAME} ${GTEST_INCLUDE_DIRS})
-# target_link_libraries(${BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
-
 #rapidjson-test
-set(RJTest_source_list "${CMAKE_SOURCE_DIR}/tests/unit/rjtest.cpp")
 set(RJTest_BINARY_NAME RJTest)
 
-add_executable(${RJTest_BINARY_NAME} ${RJTest_source_list})
+add_executable(${RJTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/rjtest.cpp")
 add_test(NAME rapidjson-test COMMAND ${RJTest_BINARY_NAME})
 
-include_directories(${RJTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS})
+target_include_directories(${RJTest_BINARY_NAME} PUBLIC ${GTEST_INCLUDE_DIRS})
 target_link_libraries(${RJTest_BINARY_NAME} PUBLIC ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
 
+#find openSSL
+find_package(OpenSSL REQUIRED)
+
 #kite-test
-set(kiteTest_source_list "${CMAKE_SOURCE_DIR}/tests/unit/kitetest.cpp")
 set(kiteTest_BINARY_NAME kiteTest)
 
-add_executable(${kiteTest_BINARY_NAME} ${kiteTest_source_list})
+add_executable(${kiteTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/kitetest.cpp")
 add_test(NAME kite-test COMMAND ${kiteTest_BINARY_NAME})
 
-#include_directories(${kiteTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS})
-include_directories(${kiteTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS})
-#target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
-target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+target_include_directories(${kiteTest_BINARY_NAME} PUBLIC ${GTEST_INCLUDE_DIRS} ${GMOCK_INCLUDE_DIRS})
 #FIXME will fail on windows while linking pthread. there's a solutuion that on SO and etc
+target_link_libraries(${kiteTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ${GTEST_BOTH_LIBRARIES} ${GMOCK_BOTH_LIBRARIES} pthread)
+
+#find zlib
+find_package(ZLIB REQUIRED)
+
+#find libuv (optional on Linux)
+find_library(UV_LIB uv)
+find_path(UV_INCLUDE "uv.h")
+
+#find uWS
+find_library(UWS_LIB uWS REQUIRED)
+find_path(UWS_INCLUDE uWS REQUIRED)
 
 #kws-test
-#FIXME fix build
-link_directories("/opt/cpplibs/uWebSockets-0.14.8")
-find_package(ZLIB REQUIRED)
-set(kWSTest_source_list "${CMAKE_SOURCE_DIR}/tests/unit/kwstest.cpp")
 set(kWSTest_BINARY_NAME kWSTest)
 
-add_executable(${kWSTest_BINARY_NAME} ${kWSTest_source_list})
+add_executable(${kWSTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/kwstest.cpp")
 add_test(NAME kiteWS-test COMMAND ${kWSTest_BINARY_NAME})
 
-include_directories(${kWSTest_BINARY_NAME} ${GTEST_INCLUDE_DIRS})
-
-target_link_libraries(${kWSTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB uv uWS ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
+target_include_directories(${kWSTest_BINARY_NAME} PUBLIC ${UV_INCLUDE} ${UWS_INCLUDE} ${GTEST_INCLUDE_DIRS})
+target_link_libraries(${kWSTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UV_LIB} ${UWS_LIB} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
