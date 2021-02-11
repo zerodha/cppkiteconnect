@@ -16,16 +16,17 @@
 using std::string;
 using ::testing::_;
 namespace rj = rapidjson;
+namespace kc = kiteconnect;
 
 // Mocks
 
-class mockKite : public kitepp::kite {
+class mockKite : public kc::kite {
 
   public:
     mockKite(): kite("apiKey123") {};
 
     MOCK_METHOD(void, _sendReq,
-        (rj::Document & data, const kitepp::_methods& mtd, const string& endpoint,
+        (rj::Document & data, const kc::_methods& mtd, const string& endpoint,
             (const std::vector<std::pair<string, string>>) &bodyParams, bool isJson),
         (override));
 
@@ -62,12 +63,12 @@ TEST(kiteTest, generateSessionTest) {
 
     // We need to pass an lambda instead of directly modifying the argument because rapidjson::Document objcect's copy
     // constructor is deleted and setArgumentRefree<> copies the object passed internally
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, "/session/token", _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, "/session/token", _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::userSession session = Kite.generateSession("arg1", "arg2");
+    kc::userSession session = Kite.generateSession("arg1", "arg2");
 
     // Expected values
     EXPECT_EQ(session.profile.userName, "Kite Connect");
@@ -94,7 +95,7 @@ TEST(kiteTest, invalidateSessionTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _)).WillOnce(::testing::Return());
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _)).WillOnce(::testing::Return());
 
     Kite.invalidateSession();
 };
@@ -107,12 +108,12 @@ TEST(kiteTest, profile) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::userProfile profile = Kite.profile();
+    kc::userProfile profile = Kite.profile();
 
     // Expected values
     EXPECT_EQ(profile.userName, "AxAx Bxx");
@@ -135,12 +136,12 @@ TEST(kiteTest, getMarginsTest1) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::allMargins margins = Kite.getMargins();
+    kc::allMargins margins = Kite.getMargins();
 
     // Expected values
     EXPECT_EQ(margins.equity.enabled, true);
@@ -188,12 +189,12 @@ TEST(kiteTest, getMarginsTest2) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::margins margins = Kite.getMargins("equity");
+    kc::margins margins = Kite.getMargins("equity");
 
     // Expected values
     EXPECT_EQ(margins.enabled, true);
@@ -225,8 +226,8 @@ TEST(kiteTest, placeOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -243,8 +244,8 @@ TEST(kiteTest, modifyOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::PUT, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::PUT, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -261,8 +262,8 @@ TEST(kiteTest, cancelOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -279,8 +280,8 @@ TEST(kiteTest, exitOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -297,17 +298,17 @@ TEST(kiteTest, ordersTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::order> Orders = Kite.orders();
+    std::vector<kc::order> Orders = Kite.orders();
 
     // Expected values
     ASSERT_THAT(Orders.size(), 7);
 
-    kitepp::order order1 = Orders[0];
+    kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
     EXPECT_EQ(order1.placedBy, "DA0017");
     EXPECT_EQ(order1.orderID, "171228000850038");
@@ -336,7 +337,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order1.pendingQuantity, 0);
     EXPECT_EQ(order1.cancelledQuantity, 0);
 
-    kitepp::order order2 = Orders[1];
+    kc::order order2 = Orders[1];
     EXPECT_EQ(order2.accountID, "");
     EXPECT_EQ(order2.placedBy, "DA0017");
     EXPECT_EQ(order2.orderID, "171228000912853");
@@ -365,7 +366,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order2.pendingQuantity, 0);
     EXPECT_EQ(order2.cancelledQuantity, 0);
 
-    kitepp::order order3 = Orders[2];
+    kc::order order3 = Orders[2];
     EXPECT_EQ(order3.accountID, "");
     EXPECT_EQ(order3.placedBy, "DA0017");
     EXPECT_EQ(order3.orderID, "171228001116651");
@@ -394,7 +395,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order3.pendingQuantity, 0);
     EXPECT_EQ(order3.cancelledQuantity, 0);
 
-    kitepp::order order4 = Orders[3];
+    kc::order order4 = Orders[3];
     EXPECT_EQ(order4.accountID, "");
     EXPECT_EQ(order4.placedBy, "DA0017");
     EXPECT_EQ(order4.orderID, "171228000912854");
@@ -423,7 +424,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order4.pendingQuantity, 0);
     EXPECT_EQ(order4.cancelledQuantity, 0);
 
-    kitepp::order order5 = Orders[4];
+    kc::order order5 = Orders[4];
     EXPECT_EQ(order5.accountID, "");
     EXPECT_EQ(order5.placedBy, "DA0017");
     EXPECT_EQ(order5.orderID, "171228001686586");
@@ -452,7 +453,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order5.pendingQuantity, 0);
     EXPECT_EQ(order5.cancelledQuantity, 0);
 
-    kitepp::order order6 = Orders[5];
+    kc::order order6 = Orders[5];
     EXPECT_EQ(order6.accountID, "");
     EXPECT_EQ(order6.placedBy, "DA0017");
     EXPECT_EQ(order6.orderID, "171228001730092");
@@ -481,7 +482,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order6.pendingQuantity, 0);
     EXPECT_EQ(order6.cancelledQuantity, 0);
 
-    kitepp::order order7 = Orders[6];
+    kc::order order7 = Orders[6];
     EXPECT_EQ(order7.accountID, "");
     EXPECT_EQ(order7.placedBy, "DA0017");
     EXPECT_EQ(order7.orderID, "171228001731490");
@@ -519,17 +520,17 @@ TEST(kiteTest, orderHistoryTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::order> Orders = Kite.orderHistory("arg1");
+    std::vector<kc::order> Orders = Kite.orderHistory("arg1");
 
     // Expected values
     ASSERT_THAT(Orders.size(), 7);
 
-    kitepp::order order1 = Orders[0];
+    kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
     EXPECT_EQ(order1.placedBy, "DA0017");
     EXPECT_EQ(order1.orderID, "171228000850038");
@@ -558,7 +559,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order1.pendingQuantity, 0);
     EXPECT_EQ(order1.cancelledQuantity, 0);
 
-    kitepp::order order2 = Orders[1];
+    kc::order order2 = Orders[1];
     EXPECT_EQ(order2.accountID, "");
     EXPECT_EQ(order2.placedBy, "DA0017");
     EXPECT_EQ(order2.orderID, "171228000912853");
@@ -587,7 +588,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order2.pendingQuantity, 0);
     EXPECT_EQ(order2.cancelledQuantity, 0);
 
-    kitepp::order order3 = Orders[2];
+    kc::order order3 = Orders[2];
     EXPECT_EQ(order3.accountID, "");
     EXPECT_EQ(order3.placedBy, "DA0017");
     EXPECT_EQ(order3.orderID, "171228001116651");
@@ -616,7 +617,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order3.pendingQuantity, 0);
     EXPECT_EQ(order3.cancelledQuantity, 0);
 
-    kitepp::order order4 = Orders[3];
+    kc::order order4 = Orders[3];
     EXPECT_EQ(order4.accountID, "");
     EXPECT_EQ(order4.placedBy, "DA0017");
     EXPECT_EQ(order4.orderID, "171228000912854");
@@ -645,7 +646,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order4.pendingQuantity, 0);
     EXPECT_EQ(order4.cancelledQuantity, 0);
 
-    kitepp::order order5 = Orders[4];
+    kc::order order5 = Orders[4];
     EXPECT_EQ(order5.accountID, "");
     EXPECT_EQ(order5.placedBy, "DA0017");
     EXPECT_EQ(order5.orderID, "171228001686586");
@@ -674,7 +675,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order5.pendingQuantity, 0);
     EXPECT_EQ(order5.cancelledQuantity, 0);
 
-    kitepp::order order6 = Orders[5];
+    kc::order order6 = Orders[5];
     EXPECT_EQ(order6.accountID, "");
     EXPECT_EQ(order6.placedBy, "DA0017");
     EXPECT_EQ(order6.orderID, "171228001730092");
@@ -703,7 +704,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order6.pendingQuantity, 0);
     EXPECT_EQ(order6.cancelledQuantity, 0);
 
-    kitepp::order order7 = Orders[6];
+    kc::order order7 = Orders[6];
     EXPECT_EQ(order7.accountID, "");
     EXPECT_EQ(order7.placedBy, "DA0017");
     EXPECT_EQ(order7.orderID, "171228001731490");
@@ -741,17 +742,17 @@ TEST(kiteTest, tradesTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::trade> Trades = Kite.trades();
+    std::vector<kc::trade> Trades = Kite.trades();
 
     // Expected values
     ASSERT_EQ(Trades.size(), 1);
 
-    kitepp::trade trade1 = Trades[0];
+    kc::trade trade1 = Trades[0];
     EXPECT_DOUBLE_EQ(trade1.averagePrice, 310.7);
     EXPECT_EQ(trade1.exchange, "NSE");
     EXPECT_EQ(trade1.exchangeOrderID, "1300000001887410");
@@ -773,17 +774,17 @@ TEST(kiteTest, orderTradesTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::trade> Trades = Kite.orderTrades("arg1");
+    std::vector<kc::trade> Trades = Kite.orderTrades("arg1");
 
     // Expected values
     ASSERT_EQ(Trades.size(), 1);
 
-    kitepp::trade trade1 = Trades[0];
+    kc::trade trade1 = Trades[0];
     EXPECT_DOUBLE_EQ(trade1.averagePrice, 310.7);
     EXPECT_EQ(trade1.exchange, "NSE");
     EXPECT_EQ(trade1.exchangeOrderID, "1300000001887410");
@@ -807,8 +808,8 @@ TEST(kiteTest, placeGTTTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -826,17 +827,17 @@ TEST(kiteTest, getGTTsTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::GTT> Orders = Kite.getGTTs();
+    std::vector<kc::GTT> Orders = Kite.getGTTs();
 
     // Exptected values
     ASSERT_EQ(Orders.size(), 2);
 
-    kitepp::GTT order1 = Orders[0];
+    kc::GTT order1 = Orders[0];
     EXPECT_EQ(order1.ID, 112127);
     EXPECT_EQ(order1.userID, "XX0000");
     EXPECT_EQ(order1.type, "single");
@@ -856,7 +857,7 @@ TEST(kiteTest, getGTTsTest) {
     EXPECT_EQ(order1.orders[0].quantity, 1);
     EXPECT_DOUBLE_EQ(order1.orders[0].price, 702.5);
 
-    kitepp::GTT order2 = Orders[1];
+    kc::GTT order2 = Orders[1];
     EXPECT_EQ(order2.ID, 105099);
     EXPECT_EQ(order2.userID, "XX0000");
     EXPECT_EQ(order2.type, "two-leg");
@@ -890,12 +891,12 @@ TEST(kiteTest, getGTTTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::GTT order = Kite.getGTT(0);
+    kc::GTT order = Kite.getGTT(0);
 
     // Expected values
     EXPECT_EQ(order.ID, 123);
@@ -925,8 +926,8 @@ TEST(kiteTest, modifyGTTTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::PUT, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::PUT, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -944,8 +945,8 @@ TEST(kiteTest, deleteGTTTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -965,17 +966,17 @@ TEST(kiteTest, holdingsTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::holding> Holdings = Kite.holdings();
+    std::vector<kc::holding> Holdings = Kite.holdings();
 
     // Expected values
     ASSERT_EQ(Holdings.size(), 3);
 
-    kitepp::holding holding1 = Holdings[0];
+    kc::holding holding1 = Holdings[0];
     EXPECT_EQ(holding1.tradingsymbol, "BENGALASM");
     EXPECT_EQ(holding1.exchange, "BSE");
     EXPECT_EQ(holding1.instrumentToken, 136472324);
@@ -994,7 +995,7 @@ TEST(kiteTest, holdingsTest) {
     EXPECT_DOUBLE_EQ(holding1.dayChange, -131.0999999999999);
     EXPECT_DOUBLE_EQ(holding1.dayChangePercentage, -4.7653665806404675);
 
-    kitepp::holding holding2 = Holdings[1];
+    kc::holding holding2 = Holdings[1];
     EXPECT_EQ(holding2.tradingsymbol, "CONFIPET");
     EXPECT_EQ(holding2.exchange, "BSE");
     EXPECT_EQ(holding2.instrumentToken, 134868228);
@@ -1013,7 +1014,7 @@ TEST(kiteTest, holdingsTest) {
     EXPECT_DOUBLE_EQ(holding2.dayChange, -0.14999999999999858);
     EXPECT_DOUBLE_EQ(holding2.dayChangePercentage, -0.4761904761904716);
 
-    kitepp::holding holding3 = Holdings[2];
+    kc::holding holding3 = Holdings[2];
     EXPECT_EQ(holding3.tradingsymbol, "IPOWER");
     EXPECT_EQ(holding3.exchange, "BSE");
     EXPECT_EQ(holding3.instrumentToken, 131175684);
@@ -1041,18 +1042,18 @@ TEST(kiteTest, getPositionsTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::positions Positions = Kite.getPositions();
+    kc::positions Positions = Kite.getPositions();
 
     // Expected values
     ASSERT_EQ(Positions.net.size(), 3);
     ASSERT_EQ(Positions.day.size(), 3);
 
-    kitepp::position netPosition1 = Positions.net[0];
+    kc::position netPosition1 = Positions.net[0];
     EXPECT_EQ(netPosition1.tradingsymbol, "LEADMINI17DECFUT");
     EXPECT_EQ(netPosition1.exchange, "MCX");
     EXPECT_EQ(netPosition1.instrumentToken, 53496327);
@@ -1083,7 +1084,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(netPosition1.daySellPrice, 0);
     EXPECT_DOUBLE_EQ(netPosition1.daySellValue, 0);
 
-    kitepp::position netPosition2 = Positions.net[1];
+    kc::position netPosition2 = Positions.net[1];
     EXPECT_EQ(netPosition2.tradingsymbol, "GOLDGUINEA17DECFUT");
     EXPECT_EQ(netPosition2.exchange, "MCX");
     EXPECT_EQ(netPosition2.instrumentToken, 53505799);
@@ -1114,7 +1115,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(netPosition2.daySellPrice, 23340);
     EXPECT_DOUBLE_EQ(netPosition2.daySellValue, 93360);
 
-    kitepp::position netPosition3 = Positions.net[2];
+    kc::position netPosition3 = Positions.net[2];
     EXPECT_EQ(netPosition3.tradingsymbol, "SBIN");
     EXPECT_EQ(netPosition3.exchange, "NSE");
     EXPECT_EQ(netPosition3.instrumentToken, 779521);
@@ -1145,7 +1146,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(netPosition3.daySellPrice, 309);
     EXPECT_DOUBLE_EQ(netPosition3.daySellValue, 309);
 
-    kitepp::position dayPosition1 = Positions.day[0];
+    kc::position dayPosition1 = Positions.day[0];
     EXPECT_EQ(dayPosition1.tradingsymbol, "GOLDGUINEA17DECFUT");
     EXPECT_EQ(dayPosition1.exchange, "MCX");
     EXPECT_EQ(dayPosition1.instrumentToken, 53505799);
@@ -1176,7 +1177,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(dayPosition1.daySellPrice, 23340);
     EXPECT_DOUBLE_EQ(dayPosition1.daySellValue, 93360);
 
-    kitepp::position dayPosition2 = Positions.day[1];
+    kc::position dayPosition2 = Positions.day[1];
     EXPECT_EQ(dayPosition2.tradingsymbol, "LEADMINI17DECFUT");
     EXPECT_EQ(dayPosition2.exchange, "MCX");
     EXPECT_EQ(dayPosition2.instrumentToken, 53496327);
@@ -1207,7 +1208,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(dayPosition2.daySellPrice, 0);
     EXPECT_DOUBLE_EQ(dayPosition2.daySellValue, 0);
 
-    kitepp::position dayPosition3 = Positions.day[2];
+    kc::position dayPosition3 = Positions.day[2];
     EXPECT_EQ(dayPosition3.tradingsymbol, "SBIN");
     EXPECT_EQ(dayPosition3.exchange, "NSE");
     EXPECT_EQ(dayPosition3.instrumentToken, 779521);
@@ -1247,8 +1248,8 @@ TEST(kiteTest, convertPositionTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::PUT, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::PUT, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -1266,16 +1267,16 @@ TEST(kiteTest, getQuoteTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kitepp::quote> quotes = Kite.getQuote({});
+    std::unordered_map<string, kc::quote> quotes = Kite.getQuote({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kitepp::quote Quote = quotes["NSE:INFY"];
+    kc::quote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_EQ(Quote.timestamp, "2018-01-12 10:40:29");
@@ -1340,16 +1341,16 @@ TEST(kiteTest, getOHLCTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kitepp::OHLCQuote> quotes = Kite.getOHLC({});
+    std::unordered_map<string, kc::OHLCQuote> quotes = Kite.getOHLC({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kitepp::OHLCQuote Quote = quotes["NSE:INFY"];
+    kc::OHLCQuote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1075);
@@ -1367,16 +1368,16 @@ TEST(kiteTest, getLTPTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kitepp::LTPQuote> quotes = Kite.getLTP({});
+    std::unordered_map<string, kc::LTPQuote> quotes = Kite.getLTP({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kitepp::LTPQuote Quote = quotes["NSE:INFY"];
+    kc::LTPQuote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);
@@ -1392,17 +1393,17 @@ TEST(kiteTest, getHistoricalDataTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::historicalData> data = Kite.getHistoricalData(0, "arg1", "arg2", "arg3", "arg4");
+    std::vector<kc::historicalData> data = Kite.getHistoricalData(0, "arg1", "arg2", "arg3", "arg4");
 
     // Expected values
     ASSERT_EQ(data.size(), 3);
 
-    kitepp::historicalData data1 = data[0];
+    kc::historicalData data1 = data[0];
     EXPECT_EQ(data1.datetime, "2017-12-15T09:15:00+0530");
     EXPECT_DOUBLE_EQ(data1.open, 1704.5);
     EXPECT_DOUBLE_EQ(data1.high, 1705);
@@ -1411,7 +1412,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_EQ(data1.volume, 2499);
     EXPECT_DOUBLE_EQ(data1.OI, 0);
 
-    kitepp::historicalData data2 = data[1];
+    kc::historicalData data2 = data[1];
     EXPECT_EQ(data2.datetime, "2017-12-15T09:16:00+0530");
     EXPECT_DOUBLE_EQ(data2.open, 1702);
     EXPECT_DOUBLE_EQ(data2.high, 1702);
@@ -1420,7 +1421,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_EQ(data2.volume, 1271);
     EXPECT_DOUBLE_EQ(data2.OI, 0);
 
-    kitepp::historicalData data3 = data[2];
+    kc::historicalData data3 = data[2];
     EXPECT_EQ(data3.datetime, "2017-12-15T09:17:00+0530");
     EXPECT_DOUBLE_EQ(data3.open, 1698.15);
     EXPECT_DOUBLE_EQ(data3.high, 1700.25);
@@ -1440,8 +1441,8 @@ TEST(kiteTest, placeMFOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -1459,8 +1460,8 @@ TEST(kiteTest, cancelMFOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -1478,17 +1479,17 @@ TEST(kiteTest, getMFOrdersTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::MFOrder> orders = Kite.getMFOrders();
+    std::vector<kc::MFOrder> orders = Kite.getMFOrders();
 
     // Expected values
     ASSERT_EQ(orders.size(), 2);
 
-    kitepp::MFOrder order1 = orders[0];
+    kc::MFOrder order1 = orders[0];
     EXPECT_EQ(order1.orderID, "867688079445476");
     EXPECT_EQ(order1.exchangeOrderID, "");
     EXPECT_EQ(order1.tradingsymbol, "INF174K01LS2");
@@ -1509,7 +1510,7 @@ TEST(kiteTest, getMFOrdersTest) {
     EXPECT_EQ(order1.placedBy, "DA0017");
     EXPECT_EQ(order1.tag, "");
 
-    kitepp::MFOrder order2 = orders[1];
+    kc::MFOrder order2 = orders[1];
     EXPECT_EQ(order2.orderID, "396109826218232");
     EXPECT_EQ(order2.exchangeOrderID, "");
     EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
@@ -1539,12 +1540,12 @@ TEST(kiteTest, getMFOrderTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::MFOrder order = Kite.getMFOrder("arg1");
+    kc::MFOrder order = Kite.getMFOrder("arg1");
 
     // Expected values
     EXPECT_EQ(order.orderID, "460687158435713");
@@ -1576,17 +1577,17 @@ TEST(kiteTest, getMFHoldingsTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::MFHolding> Holdings = Kite.getMFHoldings();
+    std::vector<kc::MFHolding> Holdings = Kite.getMFHoldings();
 
     // Expected values
     ASSERT_EQ(Holdings.size(), 5);
 
-    kitepp::MFHolding holding1 = Holdings[0];
+    kc::MFHolding holding1 = Holdings[0];
     EXPECT_EQ(holding1.folio, "123123/123");
     EXPECT_EQ(holding1.fund, "Kotak Select Focus Fund - Direct Plan");
     EXPECT_EQ(holding1.tradingsymbol, "INF174K01LS2");
@@ -1596,7 +1597,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding1.lastPriceDate, "2016-11-11");
     EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);
 
-    kitepp::MFHolding holding2 = Holdings[1];
+    kc::MFHolding holding2 = Holdings[1];
     EXPECT_EQ(holding2.folio, "385080203");
     EXPECT_EQ(holding2.fund, "DSP BlackRock Money Manager Fund");
     EXPECT_EQ(holding2.tradingsymbol, "INF740K01QQ3");
@@ -1606,7 +1607,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding2.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding2.quantity, 0.466);
 
-    kitepp::MFHolding holding3 = Holdings[2];
+    kc::MFHolding holding3 = Holdings[2];
     EXPECT_EQ(holding3.folio, "1052046771");
     EXPECT_EQ(holding3.fund, "HDFC TaxSaver - Regular Plan");
     EXPECT_EQ(holding3.tradingsymbol, "INF179K01BB8");
@@ -1616,7 +1617,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding3.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);
 
-    kitepp::MFHolding holding4 = Holdings[3];
+    kc::MFHolding holding4 = Holdings[3];
     EXPECT_EQ(holding4.folio, "91022348426");
     EXPECT_EQ(holding4.fund, "Axis Long Term Equity Fund");
     EXPECT_EQ(holding4.tradingsymbol, "INF846K01131");
@@ -1626,7 +1627,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding4.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding4.quantity, 3526.834);
 
-    kitepp::MFHolding holding5 = Holdings[4];
+    kc::MFHolding holding5 = Holdings[4];
     EXPECT_EQ(holding5.folio, "488155267386");
     EXPECT_EQ(holding5.fund, "Reliance Money Manager Fund");
     EXPECT_EQ(holding5.tradingsymbol, "INF204K01EY0");
@@ -1647,8 +1648,8 @@ TEST(kiteTest, placeMFSIPTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -1667,8 +1668,8 @@ TEST(kiteTest, modifyMFSIPTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::PUT, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::PUT, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -1683,8 +1684,8 @@ TEST(kiteTest, cancelMFSIPTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
@@ -1702,17 +1703,17 @@ TEST(kiteTest, getSIPsTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::MFSIP> SIPs = Kite.getSIPs();
+    std::vector<kc::MFSIP> SIPs = Kite.getSIPs();
 
     // Expected values
     ASSERT_EQ(SIPs.size(), 1);
 
-    kitepp::MFSIP sip1 = SIPs[0];
+    kc::MFSIP sip1 = SIPs[0];
     EXPECT_EQ(sip1.ID, "1234");
     EXPECT_EQ(sip1.tradingsymbol, "INF090I01239");
     EXPECT_EQ(sip1.fundName, "Franklin India Prima Plus");
@@ -1737,12 +1738,12 @@ TEST(kiteTest, getSIPTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kitepp::MFSIP sip = Kite.getSIP("arg1");
+    kc::MFSIP sip = Kite.getSIP("arg1");
 
     // Expected values
     EXPECT_EQ(sip.ID, "1234");
@@ -1771,17 +1772,17 @@ TEST(kiteTest, getOrderMarginsTest) {
 
     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kitepp::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kitepp::_methods& mtd, const string& endpoint,
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kitepp::orderMargins> ordMargins = Kite.getOrderMargins({});
+    std::vector<kc::orderMargins> ordMargins = Kite.getOrderMargins({});
 
     // Expected values
     ASSERT_EQ(ordMargins.size(), 1);
 
-    kitepp::orderMargins ordMargins1 = ordMargins[0];
+    kc::orderMargins ordMargins1 = ordMargins[0];
     EXPECT_EQ(ordMargins1.type, "equity");
     EXPECT_EQ(ordMargins1.tradingSymbol, "INFY");
     EXPECT_EQ(ordMargins1.exchange, "NSE");
@@ -1809,12 +1810,12 @@ TEST(kiteTest, getInstrumentsTest) {
 
     EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
 
-    std::vector<kitepp::instrument> instruments = Kite.getInstruments();
+    std::vector<kc::instrument> instruments = Kite.getInstruments();
 
     // Expected values
     ASSERT_EQ(instruments.size(), 2);
 
-    kitepp::instrument instrument1 = instruments[0];
+    kc::instrument instrument1 = instruments[0];
     EXPECT_EQ(instrument1.instrumentToken, 3813889);
     EXPECT_EQ(instrument1.exchangeToken, 14898);
     EXPECT_EQ(instrument1.tradingsymbol, "CENTRALBK-BE");
@@ -1828,7 +1829,7 @@ TEST(kiteTest, getInstrumentsTest) {
     EXPECT_EQ(instrument1.segment, "NSE");
     EXPECT_EQ(instrument1.exchange, "NSE");
 
-    kitepp::instrument instrument2 = instruments[1];
+    kc::instrument instrument2 = instruments[1];
     EXPECT_EQ(instrument2.instrumentToken, 4645121);
     EXPECT_EQ(instrument2.exchangeToken, 18145);
     EXPECT_EQ(instrument2.tradingsymbol, "EMMBI-BL");
@@ -1853,12 +1854,12 @@ TEST(kiteTest, getMFInstrumentsTest) {
 
     EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
 
-    std::vector<kitepp::MFInstrument> instruments = Kite.getMFInstruments();
+    std::vector<kc::MFInstrument> instruments = Kite.getMFInstruments();
 
     // Expected values
     ASSERT_EQ(instruments.size(), 2);
 
-    kitepp::MFInstrument instrument1 = instruments[0];
+    kc::MFInstrument instrument1 = instruments[0];
     EXPECT_EQ(instrument1.tradingsymbol, "INF209K01157");
     EXPECT_EQ(instrument1.AMC, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument1.name, "Aditya Birla Sun Life Advantage Fund");
@@ -1876,7 +1877,7 @@ TEST(kiteTest, getMFInstrumentsTest) {
     EXPECT_EQ(instrument1.lastPrice, 106.8);
     EXPECT_EQ(instrument1.lastPriceDate, "2017-11-23");
 
-    kitepp::MFInstrument instrument2 = instruments[1];
+    kc::MFInstrument instrument2 = instruments[1];
     EXPECT_EQ(instrument2.tradingsymbol, "INF209K01165");
     EXPECT_EQ(instrument2.AMC, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument2.name, "Aditya Birla Sun Life Advantage Fund");

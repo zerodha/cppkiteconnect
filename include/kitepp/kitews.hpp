@@ -25,7 +25,7 @@
 #include "rjutils.hpp"
 #include "uWS.h"
 
-namespace kitepp {
+namespace kiteconnect {
 
 // To make sure doubles are parsed correctly
 static_assert(std::numeric_limits<double>::is_iec559, "Requires IEEE 754 floating point!");
@@ -34,6 +34,7 @@ using std::string;
 
 namespace rj = rapidjson;
 namespace rjh = RJHelper;
+namespace kc = kiteconnect;
 
 /**
  * @brief Used for accessing websocket interface of Kite API.
@@ -54,12 +55,12 @@ class kiteWS {
     /**
      * @brief Called when ticks are received.
      */
-    std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
+    std::function<void(kiteWS* ws, const std::vector<kc::tick>& ticks)> onTicks;
 
     /**
      * @brief Called when an order update is received.
      */
-    std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
+    std::function<void(kiteWS* ws, const kc::postback& postback)> onOrderUpdate;
 
     /**
      * @brief Called when a message is received.
@@ -216,7 +217,7 @@ class kiteWS {
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = ""; };
 
         } else {
-            throw kitepp::libException("Not connected to websocket server");
+            throw kc::libException("Not connected to websocket server");
         };
     };
 
@@ -250,7 +251,7 @@ class kiteWS {
 
         } else {
 
-            throw kitepp::libException("Not connected to websocket server");
+            throw kc::libException("Not connected to websocket server");
         };
     };
 
@@ -286,7 +287,7 @@ class kiteWS {
 
         } else {
 
-            throw kitepp::libException("Not connected to websocket server");
+            throw kc::libException("Not connected to websocket server");
         };
     };
 
@@ -369,9 +370,9 @@ class kiteWS {
 
         string type;
         rjh::_getIfExists(res, type, "type");
-        if (type.empty()) { throw kitepp::libException(FMT("Cannot recognize websocket message type {0}", type)); }
+        if (type.empty()) { throw kc::libException(FMT("Cannot recognize websocket message type {0}", type)); }
 
-        if (type == "order" && onOrderUpdate) { onOrderUpdate(this, kitepp::postback(res["data"].GetObject())); }
+        if (type == "order" && onOrderUpdate) { onOrderUpdate(this, kc::postback(res["data"].GetObject())); }
         if (type == "message" && onMessage) { onMessage(this, string(message, length)); };
         if (type == "error" && onError) { onError(this, 0, res["data"].GetString()); };
     };
@@ -411,12 +412,12 @@ class kiteWS {
         return packets;
     };
 
-    std::vector<kitepp::tick> _parseBinaryMessage(char* bytes, size_t size) {
+    std::vector<kc::tick> _parseBinaryMessage(char* bytes, size_t size) {
 
         std::vector<std::vector<char>> packets = _splitPackets(std::vector<char>(bytes, bytes + size));
         if (packets.empty()) { return {}; };
 
-        std::vector<kitepp::tick> ticks;
+        std::vector<kc::tick> ticks;
         for (const auto& packet : packets) {
 
             size_t packetSize = packet.size();
@@ -425,7 +426,7 @@ class kiteWS {
             double divisor = (segment == _segmentConstants.at("cds")) ? 10000000.0 : 100.0;
             bool tradable = (segment == _segmentConstants.at("indices")) ? false : true;
 
-            kitepp::tick Tick;
+            kc::tick Tick;
 
             Tick.isTradable = tradable;
             Tick.instrumentToken = instrumentToken;
@@ -480,7 +481,7 @@ class kiteWS {
                     unsigned int depthStartIdx = 64;
                     for (int i = 0; i <= 9; i++) {
 
-                        kitepp::depthWS depth;
+                        kc::depthWS depth;
                         depth.quantity = _getNum<int32_t>(packet, depthStartIdx, depthStartIdx + 3);
                         depth.price = _getNum<int32_t>(packet, depthStartIdx + 4, depthStartIdx + 7) / divisor;
                         depth.orders = _getNum<int16_t>(packet, depthStartIdx + 8, depthStartIdx + 9);
@@ -597,4 +598,4 @@ class kiteWS {
     };
 };
 
-} // namespace kitepp
+} // namespace kiteconnect

@@ -6,21 +6,24 @@
 
 #include "kitepp.hpp"
 
-namespace kitepp {
+namespace kiteconnect {
+
+namespace kc = kiteconnect;
+
 TEST(kWSTest, binaryParsingTest) {
-    kitepp::kiteWS kws("apikey123");
+    kc::kiteWS kws("apikey123");
 
     std::ifstream dataFile("../../tests/mock_responses/websocket_ticks.bin");
     ASSERT_TRUE(dataFile);
 
     std::vector<char> data(std::istreambuf_iterator<char>(dataFile), {});
 
-    std::vector<kitepp::tick> ticks = kws._parseBinaryMessage(data.data(), data.size());
+    std::vector<kc::tick> ticks = kws._parseBinaryMessage(data.data(), data.size());
 
     // Expected values
     ASSERT_EQ(ticks.size(), 2);
 
-    kitepp::tick tick1 = ticks[0];
+    kc::tick tick1 = ticks[0];
     EXPECT_EQ(tick1.mode, "full");
     EXPECT_EQ(tick1.instrumentToken, 408065);
     EXPECT_EQ(tick1.isTradable, true);
@@ -82,7 +85,7 @@ TEST(kWSTest, binaryParsingTest) {
     EXPECT_EQ(tick1.marketDepth.sell[4].quantity, 233);
     EXPECT_EQ(tick1.marketDepth.sell[4].orders, 3);
 
-    kitepp::tick tick2 = ticks[1];
+    kc::tick tick2 = ticks[1];
     EXPECT_EQ(tick2.mode, "full");
     EXPECT_EQ(tick2.instrumentToken, 2953217);
     EXPECT_EQ(tick2.isTradable, true);
@@ -144,4 +147,4 @@ TEST(kWSTest, binaryParsingTest) {
     EXPECT_EQ(tick2.marketDepth.sell[4].quantity, 670);
     EXPECT_EQ(tick2.marketDepth.sell[4].orders, 1);
 };
-} // namespace kitepp
+} // namespace kiteconnect

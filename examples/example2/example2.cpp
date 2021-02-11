@@ -9,6 +9,8 @@
 #include "kitepp/responses.hpp"
 //! [adding kitepp header]
 
+namespace kc = kiteconnect;
+
 int main() {
 
     std::cout << "RUNNING\n";
@@ -18,7 +20,7 @@ int main() {
     try {
 
         //! [initializing kite]
-        kitepp::kite Kite("---apikey---");
+        kc::kite Kite("---apikey---");
         //! [initializing kite]
 
         //! [obtaining login url]
@@ -48,24 +50,24 @@ int main() {
         //! [invalidate session]
 
         //! [get user profile]
-        kitepp::userProfile profile = Kite.profile();
+        kc::userProfile profile = Kite.profile();
         std::cout << "email is :" << profile.email << "\n";
         std::cout << "Order types are: \n";
         for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
         //! [get user profile]
 
         //! [get margins]
-        /*kitepp::allMargins Margins = Kite.getMargins();
+        /*kc::allMargins Margins = Kite.getMargins();
         std::cout << "Available cash for equity segment is " << Margins.equity.available.cash << "\n";
 
-        kitepp::margins eqMargins = Kite.getMargins("equity");
+        kc::margins eqMargins = Kite.getMargins("equity");
         std::cout << "adhoc margin for equity segment is " << eqMargins.available.adHocMargin << "\n";*/
         //! [get margins]
 
         //! [placing an order]
         /*std::string ordID = Kite.placeOrder("co", "NSE", "BHEL", "BUY", 1, "MIS", "LIMIT", 33.5, "DAY", 32,
-        kitepp::DEFAULTDOUBLE, std::string ordID2 = Kite.placeOrder("regular", "NSE", "BHEL", "SELL", 1, "MIS",
-        "MARKET", 33.60, "DAY"); kitepp::DEFAULTDOUBLE, kitepp::DEFAULTDOUBLE); if (!ordID.empty()) {
+        kc::DEFAULTDOUBLE, std::string ordID2 = Kite.placeOrder("regular", "NSE", "BHEL", "SELL", 1, "MIS",
+        "MARKET", 33.60, "DAY"); kc::DEFAULTDOUBLE, kc::DEFAULTDOUBLE); if (!ordID.empty()) {
 
             std::cout << "order ID: " << ordID << "\n";
         } else {
@@ -117,38 +119,38 @@ int main() {
         //! [exiting an order]
 
         //! [get orders]
-        /*std::vector<kitepp::order> orderVec = Kite.orders();
+        /*std::vector<kc::order> orderVec = Kite.orders();
         for (const auto& i : orderVec) { std::cout << "Order ID: " << i.orderID << " & status: " << i.status << "\n";
         }*/
         //! [get orders]
 
         //! [get order history]
-        /*std::vector<kitepp::order> orderHistoryVec = Kite.orderHistory("201223002380513");
+        /*std::vector<kc::order> orderHistoryVec = Kite.orderHistory("201223002380513");
         for (const auto& i : orderHistoryVec) { std::cout << "status: " << i.status << " & filled quantity: " <<
         i.filledQuantity << "\n"; };*/
         //! [get order history]
 
         //! [get trades]
-        /*std::vector<kitepp::trade> tradesVec = Kite.trades();
+        /*std::vector<kc::trade> tradesVec = Kite.trades();
         for (const auto& i : tradesVec) { std::cout << "trade ID: " << i.tradeID << " & filled at: " << i.fillTimestamp
         << "\n"; };*/
         //! [get trades]
 
         //! [get order trades]
-        /*std::vector<kitepp::trade> tradesVec = Kite.orderTrades("201223002511160");
+        /*std::vector<kc::trade> tradesVec = Kite.orderTrades("201223002511160");
         for (const auto& i : tradesVec) { std::cout << "trade ID: " << i.tradeID << " & filled at: " << i.fillTimestamp
         << "\n"; };*/
         //! [get order trades]
 
         //! [placing a gtt]
-        /*kitepp::GTTParams gttparam("BUY", 1, "LIMIT", "CNC", 21100);
-        std::vector<kitepp::GTTParams> gttparams = { gttparam };
+        /*kc::GTTParams gttparam("BUY", 1, "LIMIT", "CNC", 21100);
+        std::vector<kc::GTTParams> gttparams = { gttparam };
         // gttparams.emplace_back("BUY", 10, "LIMIT", "CNC", 21105);
         // int trigID = Kite.placeGTT("two-leg", "NESTLEIND", "NSE", { 15000, 20007 }, 18580.0, gttparams);
 
         int trigID = Kite.placeGTT("single", "NESTLEIND", "NSE", { 20000 }, 18450.70, gttparams);
 
-        if (!kitepp::isValid(trigID)) {
+        if (!kc::isValid(trigID)) {
 
             std::cout << "trigger ID: " << trigID << "\n";
         } else {
@@ -159,12 +161,12 @@ int main() {
         //! [placing a gtt]
 
         //! [modifying a gtt]
-        /*kitepp::GTTParams gttparam("BUY", 1, "LIMIT", "CNC", 21100);
-        std::vector<kitepp::GTTParams> gttparams = { gttparam };
+        /*kc::GTTParams gttparam("BUY", 1, "LIMIT", "CNC", 21100);
+        std::vector<kc::GTTParams> gttparams = { gttparam };
 
         int modTrigID = Kite.modifyGTT(24028028, "single", "NESTLEIND", "NSE", { 23500 }, 18450.70, gttparams);
 
-        if (!kitepp::isValid(modTrigID)) {
+        if (!kc::isValid(modTrigID)) {
 
             std::cout << "trigger ID: " << modTrigID << "\n";
         } else {
@@ -175,13 +177,13 @@ int main() {
         //! [modifying a gtt]
 
         //! [get gtts]
-        /*std::vector<kitepp::GTT> gttVec = Kite.getGTTs();
+        /*std::vector<kc::GTT> gttVec = Kite.getGTTs();
         for (const auto& gtt : gttVec) { std::cout << "ID: " << gtt.ID << " & created at: " << gtt.createdAt << "\n";
         };*/
         //! [get gtts]
 
         //! [get gtt info]
-        /*kitepp::GTT gtt = Kite.getGTT(23271899);
+        /*kc::GTT gtt = Kite.getGTT(23271899);
         std::cout << "Created at: " << gtt.createdAt << " & first trigger value: " << gtt.condition.triggerValues[0] <<
         "\n";*/
         //! [get gtt info]
@@ -189,7 +191,7 @@ int main() {
         //! [delete a gtt]
         /*int trigID = Kite.deleteGTT(24028028);
 
-        if (!kitepp::isValid(trigID)) {
+        if (!kc::isValid(trigID)) {
 
             std::cout << "trigger ID: " << trigID << "\n";
         } else {
@@ -200,13 +202,13 @@ int main() {
         //! [delete a gtt]
 
         //! [get holdings]
-        /*std::vector<kitepp::holding> holdings = Kite.holdings();
+        /*std::vector<kc::holding> holdings = Kite.holdings();
         for (const auto& i : holdings) { std::cout << "trading symbol: " << i.tradingsymbol << " & average price: " <<
         i.averagePrice << "\n"; };*/
         //! [get holdings]
 
         //! [get positions]
-        /*kitepp::positions pos = Kite.getPositions();
+        /*kc::positions pos = Kite.getPositions();
         if (!pos.day.empty()) { std::cout << "tradingsymbol: " << pos.day[0].tradingsymbol << " & quantity: " <<
         pos.day[0].quantity << "\n"; };*/
         //! [get positions]
@@ -222,7 +224,7 @@ int main() {
         //! [convert position]
 
         //! [get quote]
-        /*std::unordered_map<std::string, kitepp::quote> quotes = Kite.getQuote({ "NSE:INFY", "NSE:NIFTY 50",
+        /*std::unordered_map<std::string, kc::quote> quotes = Kite.getQuote({ "NSE:INFY", "NSE:NIFTY 50",
         "NSE:RELIANCE" }); std::cout << "nifty50 close: " << quotes["NSE:NIFTY 50"].OHLC.close << "\n"; if
         (quotes.find("NSE:INFY") != quotes.end()) {
 
@@ -235,23 +237,23 @@ int main() {
         //! [get quote]
 
         //! [get ohlc]
-        /*std::unordered_map<std::string, kitepp::OHLCQuote> ohlcQuotes = Kite.getOHLC({ "NSE:INFY", "NSE:NIFTY 50",
+        /*std::unordered_map<std::string, kc::OHLCQuote> ohlcQuotes = Kite.getOHLC({ "NSE:INFY", "NSE:NIFTY 50",
         "NSE:RELIANCE" }); std::cout << "nifty50 close: " << ohlcQuotes["NSE:NIFTY 50"].OHLC.close << "\n";*/
         //! [get ohlc]
 
         //! [get ltp]
-        /*std::unordered_map<std::string, kitepp::LTPQuote> ltpQuotes = Kite.getLTP({ "NSE:INFY", "NSE:NIFTY 50",
+        /*std::unordered_map<std::string, kc::LTPQuote> ltpQuotes = Kite.getLTP({ "NSE:INFY", "NSE:NIFTY 50",
         "NSE:RELIANCE" }); std::cout << "RELIANCE LTP: " << ltpQuotes["NSE:RELIANCE"].lastPrice << "\n";*/
         //! [get ltp]
 
         //! [get historical data]
-        /*std::vector<kitepp::historicalData> histData = Kite.getHistoricalData(5633, "2020-12-02 09:30:00", "2020-12-10
+        /*std::vector<kc::historicalData> histData = Kite.getHistoricalData(5633, "2020-12-02 09:30:00", "2020-12-10
         10:30:00", "minute");
         for (const auto& i : histData) { std::cout << "datetime: " << i.datetime << " close: " << i.close << "\n"; };*/
         //! [get historical data]
 
         //! [place mf order]
-        /*std::string MFOrdID = Kite.placeMFOrder("INF174K01LS2", "BUY", kitepp::DEFAULTINT, 10000);
+        /*std::string MFOrdID = Kite.placeMFOrder("INF174K01LS2", "BUY", kc::DEFAULTINT, 10000);
         if (!MFOrdID.empty()) {
 
             std::cout << "order ID: " << MFOrdID << "\n";
@@ -263,12 +265,12 @@ int main() {
         //! [place mf order]
 
         //! [get mf order info]
-        /*kitepp::MFOrder mforder = Kite.getMFOrder("51ac086a-0e39-42b5-a725-157507614d79");
+        /*kc::MFOrder mforder = Kite.getMFOrder("51ac086a-0e39-42b5-a725-157507614d79");
         std::cout << "status: " << mforder.status << "\n";*/
         //! [get mf order info]
 
         //! [get mf orders]
-        /*std::vector<kitepp::MFOrder> mforders = Kite.getMFOrders();
+        /*std::vector<kc::MFOrder> mforders = Kite.getMFOrders();
         for (const auto& i : mforders) { std::cout << "order ID: " << i.orderID << " status: " << i.status << "\n"; };*/
         //! [get mf orders]
 
@@ -300,7 +302,7 @@ int main() {
         //! [modify mf sip order]
 
         //! [get sip info]
-        /*kitepp::MFSIP sip = Kite.getSIP("555299391983723");
+        /*kc::MFSIP sip = Kite.getSIP("555299391983723");
         std::cout << "SIP ID: " << sip.ID << " status:" << sip.status << "\n";*/
         //! [get sip info]
 
@@ -316,31 +318,31 @@ int main() {
         //! [cancel mf sip]
 
         //! [get sips]
-        /*std::vector<kitepp::MFSIP> sips = Kite.getSIPs();
+        /*std::vector<kc::MFSIP> sips = Kite.getSIPs();
         for (const auto& sip : sips) { std::cout << "ID: " << sip.ID << " status: " << sip.status << "\n"; };*/
         //! [get sips]
 
         //! [get mf holdings]
-        /*std::vector<kitepp::MFHolding> mfholdings = Kite.getMFHoldings();
+        /*std::vector<kc::MFHolding> mfholdings = Kite.getMFHoldings();
         for (const auto& i : mfholdings) { std::cout << "fund: " << i.fund << " last price: " << i.lastPrice << "\n";
         };*/
         //! [get mf holdings]
 
         //! [get instruments]
-        /*std::vector<kitepp::instrument> inst = Kite.getInstruments();
+        /*std::vector<kc::instrument> inst = Kite.getInstruments();
         for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " token: " << i.instrumentToken <<
         "\n"; };*/
         //! [get instruments]
 
         //! [get mf instruments]
-        /*std::vector<kitepp::MFInstrument> inst = Kite.getMFInstruments();
+        /*std::vector<kc::MFInstrument> inst = Kite.getMFInstruments();
         for (auto const& i : inst) { std::cout << "symbol: " << i.tradingsymbol << " last price: " << i.lastPrice <<
         "\n"; };*/
 
         //! [get mf instruments]
 
         //! [get order margins]
-        /*kitepp::orderMarginsParams params;
+        /*kc::orderMarginsParams params;
         params.exchange = "NSE";
         params.tradingsymbol = "INFY";
         params.orderType = "MARKET";
@@ -351,15 +353,15 @@ int main() {
         params.price = 0;
         params.triggerPrice = 0;
 
-        std::vector<kitepp::orderMargins> ordMargins = Kite.getOrderMargins({ params });
+        std::vector<kc::orderMargins> ordMargins = Kite.getOrderMargins({ params });
 
         std::cout << "trading symbol: " << ordMargins[0].tradingSymbol << " total: " << ordMargins[0].total << "\n";*/
         //! [get order margins]
 
         //! [dealing with kitepp exceptions]
-    } catch (kitepp::kiteppException& e) {
+    } catch (kc::kiteppException& e) {
         std::cerr << e.what() << ", " << e.code() << ", " << e.message() << "\n";
-    } catch (kitepp::libException& e) {
+    } catch (kc::libException& e) {
         std::cerr << e.what() << "\n";
     }
     //! [dealing with kitepp exceptions]

@@ -22,9 +22,9 @@
 
 #include "kiteppexception.hpp"
 
-namespace kitepp {
+namespace kiteconnect {
 
-using kitepp::kiteppException;
+using kiteconnect::kiteppException;
 using std::string;
 
 // exceptions
@@ -240,4 +240,4 @@ inline void _throwException(const string& excpStr, int code, const string& msg) 
     throw libException("Unknown exception was thrown by REST API");
 };
 
-} // namespace kitepp
+} // namespace kiteconnect

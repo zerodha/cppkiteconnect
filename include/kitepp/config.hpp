@@ -56,7 +56,7 @@
 using fmt::literals::operator""_a;
 #define FMT fmt::format
 
-namespace kitepp {
+namespace kiteconnect {
 
 //!*****************************************************************************************************************
 // constatnts required in more than one class (other than the explicit user constants defined in uderconstants.hpp)*
@@ -85,4 +85,4 @@ namespace config {
 
 } // namespace config
 
-} // namespace kitepp
+} // namespace kiteconnect

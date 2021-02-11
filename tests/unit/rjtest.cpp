@@ -1,6 +1,6 @@
 #include <string>
 
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include "rapidjson/document.h"
 #include "rapidjson/error/error.h"

@@ -1,13 +1,15 @@
 #include <iostream>
 #include <kitepp.hpp>
 
+namespace kc = kiteconnect;
+
 int main() {
 
     std::cout << "Running..\n";
 
     try {
 
-        kitepp::kite Kite("---apikey---");
+        kc::kite Kite("---apikey---");
 
         std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
 
@@ -24,17 +26,17 @@ int main() {
 
         Kite.setAccessToken(accessToken);
 
-        kitepp::userProfile profile = Kite.profile();
+        kc::userProfile profile = Kite.profile();
         std::cout << "email is :" << profile.email << "\n";
         std::cout << "Order types are: \n";
         for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
 
         // clang-format off
-} catch (kitepp::kiteppException& e) {
+} catch (kc::kiteppException& e) {
 
     std::cerr << e.what() << ", " << e.code() << ", " << e.message() << "\n";
 
-} catch (kitepp::libException& e) {
+} catch (kc::libException& e) {
 
      std::cerr << e.what() << "\n";
 }

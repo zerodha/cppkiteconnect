@@ -28,14 +28,18 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
-namespace kitepp {
+namespace kiteconnect {
 
 namespace RJHelper {
 
 using std::string;
 namespace rj = rapidjson;
 
-enum class _RJValueType : int { Object, Array };
+enum class _RJValueType : int
+{
+    Object,
+    Array
+};
 
 inline bool _parse(rj::Document& dom, const string& str) {
 
@@ -248,4 +252,4 @@ inline string _dump(rj::Document& dom) {
 
 } // namespace RJHelper
 
-} // namespace kitepp
+} // namespace kiteconnect

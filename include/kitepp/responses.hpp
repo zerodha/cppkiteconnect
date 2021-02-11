@@ -31,11 +31,12 @@
 #include "rjutils.hpp"
 #include "utils.hpp"
 
-namespace kitepp {
+namespace kiteconnect {
 
 using std::string;
 namespace rj = rapidjson;
-namespace rjh = kitepp::RJHelper;
+namespace kc = kiteconnect;
+namespace rjh = kc::RJHelper;
 
 /// userProfile represents a user's personal and financial profile.
 struct userProfile {
@@ -960,7 +961,7 @@ struct instrument {
 
     void parse(const string& val) {
 
-        std::vector<string> tokens = kitepp::_split(val, ',');
+        std::vector<string> tokens = kc::_split(val, ',');
 
         static const auto toInt = [](const string& str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
         static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
@@ -1002,7 +1003,7 @@ struct MFInstrument {
 
     void parse(const string& val) {
 
-        std::vector<string> tokens = kitepp::_split(val, ',');
+        std::vector<string> tokens = kc::_split(val, ',');
 
         static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
 
@@ -1147,4 +1148,4 @@ struct postback {
     string checksum;
 };
 
-} // namespace kitepp
+} // namespace kiteconnect

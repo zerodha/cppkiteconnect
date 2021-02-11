@@ -2,13 +2,15 @@
 
 #include "kitepp.hpp"
 
-void onConnect(kitepp::kiteWS* ws) {
+namespace kc = kiteconnect;
+
+void onConnect(kc::kiteWS* ws) {
     std::cout << "connected.. Subscribing now..\n";
     ws->setMode("full", { 408065, 2953217 });
 };
 
 unsigned int tickCount = 0;
-void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
+void onTicks(kc::kiteWS* ws, const std::vector<kc::tick>& ticks) {
     tickCount++;
 
     for (const auto& i : ticks) {
@@ -18,32 +20,32 @@ void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
     if (tickCount >= 100) { ws->stop(); };
 };
 
-void onOrderUpdate(kitepp::kiteWS* ws, const kitepp::postback& postback) {
+void onOrderUpdate(kc::kiteWS* ws, const kc::postback& postback) {
     std::cout << "Order update: trading symbol: " << postback.tradingSymbol << " status: " << postback.status
               << " filled quantity: " << postback.filledQuantity << "\n";
 };
 
-void onMessage(kitepp::kiteWS* ws, const std::string& message) { std::cout << "Received message: " << message << "\n"; }
+void onMessage(kc::kiteWS* ws, const std::string& message) { std::cout << "Received message: " << message << "\n"; }
 
-void onError(kitepp::kiteWS* ws, int code, const std::string& message) {
+void onError(kc::kiteWS* ws, int code, const std::string& message) {
     std::cout << "Error! Code: " << code << " message: " << message << "\n";
 };
 
-void onConnectError(kitepp::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
+void onConnectError(kc::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
 
-void onTryReconnect(kitepp::kiteWS* ws, unsigned int attemptCount) {
+void onTryReconnect(kc::kiteWS* ws, unsigned int attemptCount) {
     std::cout << "Trying to reconnect.. Attempt " << attemptCount << "\n";
 };
 
-void onReconnectFail(kitepp::kiteWS* ws) { std::cout << "Failed to reconnect!\n"; };
+void onReconnectFail(kc::kiteWS* ws) { std::cout << "Failed to reconnect!\n"; };
 
-void onClose(kitepp::kiteWS* ws, int code, const std::string& message) {
+void onClose(kc::kiteWS* ws, int code, const std::string& message) {
     std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
 };
 
 int main(int argc, char const* argv[]) {
 
-    kitepp::kiteWS kWS("---APIKEY---", 5, true, 5);
+    kc::kiteWS kWS("---APIKEY---", 5, true, 5);
 
     kWS.setAccessToken("---ACCESSTOKEN---");
 

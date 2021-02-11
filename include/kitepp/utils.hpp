@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-namespace kitepp {
+namespace kiteconnect {
 
 using std::string;
 
@@ -38,4 +38,4 @@ std::vector<string> _split(const std::string& text, char sep) {
     return tokens;
 };
 
-} // namespace kitepp
+} // namespace kiteconnect

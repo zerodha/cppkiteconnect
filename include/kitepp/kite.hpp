@@ -44,15 +44,17 @@
 #include "rjutils.hpp"
 #include "utils.hpp"
 
-namespace kitepp {
+namespace kiteconnect {
 
 using std::string;
 namespace rj = rapidjson;
-namespace rjh = kitepp::RJHelper;
-using kitepp::_methods;
-using kitepp::DEFAULTDOUBLE;
-using kitepp::DEFAULTINT;
-using kitepp::isValid;
+namespace kc = kiteconnect;
+namespace rjh = kc::RJHelper;
+using kc::_methods;
+using kc::DEFAULTDOUBLE;
+using kc::DEFAULTINT;
+using kc::isValid;
+using kc::libException;
 
 /**
  * @brief Used for accessing REST interface provided by Kite API.
@@ -817,7 +819,7 @@ class kite {
                                  _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
         if (rcvdData.empty()) { return {}; };
 
-        std::vector<string> tokens = kitepp::_split(rcvdData, '\n');
+        std::vector<string> tokens = kc::_split(rcvdData, '\n');
         tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
 
         for (auto& tok : tokens) {
@@ -1220,7 +1222,7 @@ class kite {
         const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
 
         if (rcvdData.empty()) { return {}; };
-        std::vector<string> tokens = kitepp::_split(rcvdData, '\n');
+        std::vector<string> tokens = kc::_split(rcvdData, '\n');
         tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
 
         for (auto& tok : tokens) {
@@ -1503,7 +1505,7 @@ class kite {
                         e.what(), excpStr, message));
                 };
 
-                kitepp::_throwException(excpStr, code, message);
+                kc::_throwException(excpStr, code, message);
             };
         } else {
 
@@ -1535,7 +1537,7 @@ class kite {
 
             if (code == 200) { return dataRcvd; }
 
-            kitepp::_throwException("NoException", code, "");
+            kc::_throwException("NoException", code, "");
         } else {
 
             return "";
@@ -1546,11 +1548,12 @@ class kite {
 
 }; // namespace kitepp
 
-} // namespace kitepp
+} // namespace kiteconnect
 
 // TODO *rectify double lookup in functions
 
 // TODO change namespace to kiteconnect
+// TODO change RJHelper namespace to rjutil
 
 // TODO fix build system
 // TODO add copyight

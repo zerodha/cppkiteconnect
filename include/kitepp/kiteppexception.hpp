@@ -21,7 +21,7 @@
 #include <string>
 #include <utility>
 
-namespace kitepp {
+namespace kiteconnect {
 
 using std::string;
 
@@ -72,4 +72,4 @@ class kiteppException : public std::exception {
     string _message = "";
 };
 
-} // namespace kitepp
+} // namespace kiteconnect

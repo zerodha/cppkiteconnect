@@ -24,7 +24,7 @@
 
 #include <string>
 
-namespace kitepp {
+namespace kiteconnect {
 
 using std::string;
 
@@ -90,4 +90,4 @@ const string MODE_LTP = "ltp";
 const string MODE_QUOTE = "quote";
 const string MODE_FULL = "full";
 
-} // namespace kitepp
+} // namespace kiteconnect
