@@ -41,18 +41,75 @@ class kiteWS {
     // member variables
 
     // callbacks
+
+    /**
+     * @brief Called on successful connect.
+     */
     std::function<void(kiteWS* ws)> onConnect;
+
+    /**
+     * @brief Called when ticks are received.
+     */
     std::function<void(kiteWS* ws, const std::vector<kitepp::tick>& ticks)> onTicks;
+
+    /**
+     * @brief Called when an order update is received.
+     */
     std::function<void(kiteWS* ws, const kitepp::postback& postback)> onOrderUpdate;
+
+    /**
+     * @brief Called when a message is received.
+     */
     std::function<void(kiteWS* ws, const string& message)> onMessage;
+
+    /**
+     * @brief Called when connection is closed with an error.
+     */
     std::function<void(kiteWS* ws, int code, const string& message)> onError;
+
+    /**
+     * @brief Called when an error occures while trying to connect.
+     */
     std::function<void(kiteWS* ws)> onConnectError;
+
+    /**
+     * @brief Called when reconnection is being attempted.
+     *
+     * Auto reconnection:
+     *
+     * Auto reconnection is disabled by default and can be enabled by setting `enablereconnect` to `true` in `kiteWS`'s
+     * constructor.
+     * Auto reonnection mechanism is based on Exponential backoff algorithm in which next retry interval
+     * will be increased exponentially. maxreconnectdelay and maxreconnecttries params can be used to tewak the
+     * alogrithm where maxreconnectdelay is the maximum delay after which subsequent reconnection interval will become
+     * constant and maxreconnecttries is maximum number of retries before its quiting reconnection.
+     *
+     */
     std::function<void(kiteWS* ws, unsigned int attemptCount)> onTryReconnect;
+
+    /**
+     * @brief Called when reconnect attempts exceed maximum reconnect attempts set by user i.e., when client is unable
+     * to reconnect
+     */
     std::function<void(kiteWS* ws)> onReconnectFail;
+
+    /**
+     * @brief Called when connection is closed.
+     */
     std::function<void(kiteWS* ws, int code, const string& message)> onClose;
 
     // constructors & destructors
 
+    /**
+     * @brief Construct a new kiteWS object
+     *
+     * @param apikey API key
+     * @param connecttimeout Connection timeout
+     * @param enablereconnect Should be set to `true` for enabling reconnection
+     * @param maxreconnectdelay Maximum reconnect delay for reconnection
+     * @param maxreconnecttries Maximum reconnection attempts after which onReconnectFail will be called and no further
+     * attempt to reconnect will be made.
+     */
     kiteWS(const string& apikey, unsigned int connecttimeout = 5, bool enablereconnect = false,
         unsigned int maxreconnectdelay = 60, unsigned int maxreconnecttries = 30)
         : _apiKey(apikey), _connectTimeout(connecttimeout * 1000), _enableReconnect(enablereconnect),
@@ -94,21 +151,47 @@ class kiteWS {
      */
     string getAccessToken() const { return _accessToken; };
 
+    /**
+     * @brief Connect to websocket server
+     *
+     */
     void connect() {
         _assignCallbacks();
         _connect();
     };
 
+    /**
+     * @brief Check if client is connected at present.
+     *
+     */
     bool isConnected() const { return _WS; };
 
+    /**
+     * @brief Get the last time heartbeat was received. Should be used in conjugation with `isConnected()` method.
+     *
+     * @return std::chrono::time_point<std::chrono::system_clock>
+     */
     std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() { return _lastBeatTime; };
 
+    /**
+     * @brief Start the client. Should always be called after `connect()`.
+     *
+     */
     void run() { _hub.run(); };
 
+    /**
+     * @brief Stop the client. Closes the connection if connected. Should be the last method to be called.
+     *
+     */
     void stop() {
         if (isConnected()) { _WS->close(); };
     };
 
+    /**
+     * @brief Subscribe instrument tokens.
+     *
+     * @param instrumentToks vector of instrument tokens to be subscribed.
+     */
     void subscribe(const std::vector<int>& instrumentToks) {
 
         rj::Document req;
@@ -133,6 +216,11 @@ class kiteWS {
         };
     };
 
+    /**
+     * @brief unsubscribe instrument tokens.
+     *
+     * @param instrumentToks vector of instrument tokens to be unsubscribed.
+     */
     void unsubscribe(const std::vector<int>& instrumentToks) {
 
         rj::Document req;
@@ -162,6 +250,12 @@ class kiteWS {
         };
     };
 
+    /**
+     * @brief Set the mode of instrument tokens.
+     *
+     * @param mode mode
+     * @param instrumentToks vector of instrument tokens.
+     */
     void setMode(const string& mode, const std::vector<int>& instrumentToks) {
 
         rj::Document req;

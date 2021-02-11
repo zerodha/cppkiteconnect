@@ -3,7 +3,6 @@
 #include "kitepp.hpp"
 
 void onConnect(kitepp::kiteWS* ws) {
-
     std::cout << "connected.. Subscribing now..\n";
     ws->setMode("full", { 408065, 2953217 });
 };
@@ -12,8 +11,8 @@ unsigned int tickCount = 0;
 void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
 
     tickCount++;
-    for (const auto& i : ticks) {
 
+    for (const auto& i : ticks) {
         std::cout << "instrument token: " << i.instrumentToken << " last price: " << i.lastPrice << "\n";
     };
 
@@ -21,7 +20,6 @@ void onTicks(kitepp::kiteWS* ws, const std::vector<kitepp::tick>& ticks) {
 };
 
 void onOrderUpdate(kitepp::kiteWS* ws, const kitepp::postback& postback) {
-
     std::cout << "Order update: trading symbol: " << postback.tradingSymbol << " status: " << postback.status
               << " filled quantity: " << postback.filledQuantity << "\n";
 };
@@ -29,14 +27,12 @@ void onOrderUpdate(kitepp::kiteWS* ws, const kitepp::postback& postback) {
 void onMessage(kitepp::kiteWS* ws, const std::string& message) { std::cout << "Received message: " << message << "\n"; }
 
 void onError(kitepp::kiteWS* ws, int code, const std::string& message) {
-
     std::cout << "Error! Code: " << code << " message: " << message << "\n";
 };
 
 void onConnectError(kitepp::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
 
 void onTryReconnect(kitepp::kiteWS* ws, unsigned int attemptCount) {
-
     std::cout << "Trying to reconnect.. Attempt " << attemptCount << "\n";
 };
 
