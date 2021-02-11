@@ -18,7 +18,6 @@
 
 #include <algorithm> //for_each
 #include <array>
-#include <boost/token_functions.hpp>
 #include <cmath>    //isnan()
 #include <iostream> //debug
 #include <limits>   //nan
