@@ -1,5 +1,7 @@
 build/
 .clangd
 docs/**
-!docs/conf.doxygen
+!docs/config.doxygen
+!docs/CMakeLists.txt
+
 
