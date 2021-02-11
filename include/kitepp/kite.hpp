@@ -1550,11 +1550,8 @@ class kite {
 
 // TODO *rectify double lookup in functions
 
-// TODO move doxygen to separate cmakelists
-// TODO rename doxygen file to config.doxygen
-
 // TODO change namespace to kiteconnect
-// TODO write README & doxygen main
 
 // TODO add copyight
+// TODO write README & doxygen main (sep branch)
 // TODO delete compile_comands.json & .vscode/ symlink from project directory
