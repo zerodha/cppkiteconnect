@@ -1,5 +1,11 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.11)
 project(kitepp) 
+
+#Warning: FreeBSD will also pass this
+if(UNIX AND NOT APPLE)
+        message("Linux was detected..")
+        set(LINUX TRUE)
+endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")

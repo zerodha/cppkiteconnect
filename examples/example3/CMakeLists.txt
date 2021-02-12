@@ -5,13 +5,28 @@ find_package(OpenSSL REQUIRED)
 find_package(ZLIB REQUIRED)
 
 #find libuv (optional on Linux)
-find_library(UV_LIB uv)
-find_path(UV_INCLUDE "uv.h")
+if(DEFINED LINUX)
+    find_library(UV_LIB uv)
+    find_path(UV_INCLUDE "uv.h")
+else()
+    find_library(UV_LIB uv REQUIRED)
+    find_path(UV_INCLUDE "uv.h" REQUIRED)
+endif()
 
 #find uWS
 find_library(UWS_LIB uWS REQUIRED)
 find_path(UWS_INCLUDE uWS REQUIRED)
 
 add_executable(example3 "${CMAKE_CURRENT_SOURCE_DIR}/example3.cpp")
-target_include_directories(example3 PUBLIC ${UWS_INCLUDE} ${UV_INCLUDE})
-target_link_libraries(example3 PUBLIC pthread OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${UV_LIB})
+
+if((NOT UV_LIB OR NOT UV_INCLUDE) AND DEFINED LINUX)
+    message("Couldn't find libuv..\nProceding anyway since Linux was detected..")
+    target_include_directories(example3 PUBLIC ${UWS_INCLUDE})
+    target_link_libraries(example3 PUBLIC pthread OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB})
+else()
+    target_include_directories(example3 PUBLIC ${UWS_INCLUDE} ${UV_INCLUDE})
+    target_link_libraries(example3 PUBLIC pthread OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${UV_LIB})
+endif()
+
+
+
