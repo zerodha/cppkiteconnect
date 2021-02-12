@@ -7,6 +7,7 @@ build/
 #generated docs
 docs/**
 !docs/config.doxygen
+!docs/mainpage.dox
 !docs/CMakeLists.txt
 
 #downloaded dependancies
