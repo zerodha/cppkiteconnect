@@ -68,100 +68,103 @@ make
 
 ### REST API
 
-    #include <iostream>
-    #include <kitepp.hpp>
-    
-    namespace kc = kiteconnect;
-    
-    int main() {
-    
-        std::cout << "Running..\n";
-    
-        try {
-    
-            kc::kite Kite("---apikey---");
-    
-            std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
-    
-            std::string apiSecret;
-            std::string reqToken;
-    
-            std::cout << "Enter obtained request token: ";
-            std::cin >> reqToken;
-            std::cout << "Enter API secret: ";
-            std::cin >> apiSecret;
-    
-            std::string accessToken = Kite.generateSession(reqToken, apiSecret).tokens.accessToken;
-            std::cout << "access token is " << accessToken << "\n";
-    
-            Kite.setAccessToken(accessToken);
-    
-            kc::userProfile profile = Kite.profile();
-            std::cout << "email is :" << profile.email << "\n";
-            std::cout << "Order types are: \n";
-            for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
-    
-    } catch (kc::kiteppException& e) {
-        std::cerr << e.what() << ", " << e.code() << ", " << e.message() << "\n";
-    } catch (kc::libException& e) {
-         std::cerr << e.what() << "\n";
-    }
-    catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
-    };
-        return 0;
-    };
-    
+```c++
+#include <iostream>
+#include <kitepp.hpp>
+
+namespace kc = kiteconnect;
+
+int main() {
+
+    std::cout << "Running..\n";
+
+    try {
+
+        kc::kite Kite("---apikey---");
+
+        std::cout << "Login URL: " << Kite.loginURL() << "\nLogin with this URL and obtain the request token.\n";
+
+        std::string apiSecret;
+        std::string reqToken;
+
+        std::cout << "Enter obtained request token: ";
+        std::cin >> reqToken;
+        std::cout << "Enter API secret: ";
+        std::cin >> apiSecret;
+
+        std::string accessToken = Kite.generateSession(reqToken, apiSecret).tokens.accessToken;
+        std::cout << "access token is " << accessToken << "\n";
+
+        Kite.setAccessToken(accessToken);
+
+        kc::userProfile profile = Kite.profile();
+        std::cout << "email is :" << profile.email << "\n";
+        std::cout << "Order types are: \n";
+        for (const std::string& type : profile.orderTypes) { std::cout << type << ", "; };
+
+} catch (kc::kiteppException& e) {
+    std::cerr << e.what() << ", " << e.code() << ", " << e.message() << "\n";
+} catch (kc::libException& e) {
+        std::cerr << e.what() << "\n";
+}
+catch (std::exception& e) {
+    std::cerr << e.what() << std::endl;
+};
+    return 0;
+};
+```
 
 
 ### Ticker
-    #include <iostream>
-    #include "kitepp.hpp"
-    
-    namespace kc = kiteconnect;
-    
-    void onConnect(kc::kiteWS* ws) {
-        std::cout << "connected.. Subscribing now..\n";
-        ws->setMode("full", { 408065, 2953217 });
+
+```c++
+#include <iostream>
+#include "kitepp.hpp"
+
+namespace kc = kiteconnect;
+
+void onConnect(kc::kiteWS* ws) {
+    std::cout << "connected.. Subscribing now..\n";
+    ws->setMode("full", { 408065, 2953217 });
+};
+
+void onTicks(kc::kiteWS* ws, const std::vector<kc::tick>& ticks) {
+    for (const auto& i : ticks) {
+        std::cout << "instrument token: " << i.instrumentToken << " last price: " << i.lastPrice << "\n";
     };
-    
-    void onTicks(kc::kiteWS* ws, const std::vector<kc::tick>& ticks) {
-        for (const auto& i : ticks) {
-            std::cout << "instrument token: " << i.instrumentToken << " last price: " << i.lastPrice << "\n";
-        };
-    };
-    
-    void onError(kc::kiteWS* ws, int code, const std::string& message) {
-        std::cout << "Error! Code: " << code << " message: " << message << "\n";
-    };
-    
-    void onConnectError(kc::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
-    
-    void onClose(kc::kiteWS* ws, int code, const std::string& message) {
-        std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
-    };
-    
-    int main(int argc, char const* argv[]) {
-    
-        kc::kiteWS kWS("---APIKEY---", 5, true, 5);
-    
-        kWS.setAccessToken("---ACCESSTOKEN---");
-    
-        kWS.onConnect = onConnect;
-        kWS.onTicks = onTicks;
-        kWS.onError = onError;
-        kWS.onConnectError = onConnectError;
-        kWS.onClose = onClose;
-    
-        kWS.connect();
-    
-        kWS.run();
-    
-        kWS.stop();
-    
-        return 0;
-    };
-    
+};
+
+void onError(kc::kiteWS* ws, int code, const std::string& message) {
+    std::cout << "Error! Code: " << code << " message: " << message << "\n";
+};
+
+void onConnectError(kc::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
+
+void onClose(kc::kiteWS* ws, int code, const std::string& message) {
+    std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
+};
+
+int main(int argc, char const* argv[]) {
+
+    kc::kiteWS kWS("---APIKEY---", 5, true, 5);
+
+    kWS.setAccessToken("---ACCESSTOKEN---");
+
+    kWS.onConnect = onConnect;
+    kWS.onTicks = onTicks;
+    kWS.onError = onError;
+    kWS.onConnectError = onConnectError;
+    kWS.onClose = onClose;
+
+    kWS.connect();
+
+    kWS.run();
+
+    kWS.stop();
+
+    return 0;
+};
+```
 
 These and other more extensive examples as well as their `cmake` build files for reference can be found in the [examples directory](https://github.com/bhumitattarde/kitepp/tree/main/examples).
 
