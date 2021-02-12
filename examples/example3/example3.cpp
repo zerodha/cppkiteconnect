@@ -22,7 +22,6 @@ void onError(kc::kiteWS* ws, int code, const std::string& message) {
 void onConnectError(kc::kiteWS* ws) { std::cout << "Couldn't connect..\n"; };
 
 void onClose(kc::kiteWS* ws, int code, const std::string& message) {
-
     std::cout << "Closed the connection.. code: " << code << " message: " << message << "\n";
 };
 
