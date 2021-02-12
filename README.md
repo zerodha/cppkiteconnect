@@ -26,7 +26,7 @@ Kite Connect is a set of REST-like APIs that expose many capabilities required t
 
 kitepp has following dependancies:
 - [OpenSSL (devel)](https://github.com/openssl/openssl "OpenSSL")
-- [uWebSockets v0.14 (devel)](https://github.com/uNetworking/uWebSockets/tree/v0.14) and [it's dependancies](https://github.com/hoytech/uWebSockets).
+- [uWebSockets v0.14 (devel)](https://github.com/uNetworking/uWebSockets/tree/v0.14) and [it's dependancies](https://github.com/hoytech/uWebSockets/blob/master/docs/Misc.-details.md#dependencies).
 - [googletest (devel)]() and [googlemock (devel)]() are required for running tests.
 - Doxygen is required for generating HTML/XML documentation.
 
@@ -105,7 +105,7 @@ int main() {
 } catch (kc::kiteppException& e) {
     std::cerr << e.what() << ", " << e.code() << ", " << e.message() << "\n";
 } catch (kc::libException& e) {
-        std::cerr << e.what() << "\n";
+    std::cerr << e.what() << "\n";
 }
 catch (std::exception& e) {
     std::cerr << e.what() << std::endl;
