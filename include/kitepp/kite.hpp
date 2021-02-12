@@ -1551,6 +1551,5 @@ class kite {
 
 // TODO *rectify double lookup in functions
 
-// TODO write README & doxygen main (sep branch)
 // TODO add copyight
 // TODO delete compile_comands.json & .vscode/ symlink from project directory

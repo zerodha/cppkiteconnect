@@ -1,15 +1,15 @@
 # THE KITE CONNECT API C++ CLIENT
 
-- [Overview]()
-- [Dependencies]()
-- [Getting dependencies]()
-	- [Linux]()
-- [Building & installation]()
-- [Examples]()
-	- [REST API]()
-	- [Ticker]()
-- [Documentation]()
-- [License]()
+- [Overview](https://github.com/bhumitattarde/kitepp#overview)
+- [Dependencies](https://github.com/bhumitattarde/kitepp#dependencies)
+- [Getting dependencies](https://github.com/bhumitattarde/kitepp#getting-dependencies)
+	- [Linux](https://github.com/bhumitattarde/kitepp#linux)
+- [Building & installation](https://github.com/bhumitattarde/kitepp#building--installation)
+- [Examples](https://github.com/bhumitattarde/kitepp#examples)
+	- [REST API](https://github.com/bhumitattarde/kitepp#rest-api)
+	- [Ticker](https://github.com/bhumitattarde/kitepp#ticker)
+- [Documentation](https://github.com/bhumitattarde/kitepp#documentation)
+- [License](https://github.com/bhumitattarde/kitepp#license)
 
 
 
@@ -48,20 +48,20 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 
 kitepp is a header-only C++ library. Just copy the `include` folder to system or project's include path.
 
-##### Build examples and tests:
+### Build examples and tests:
 ```bash
 mkdir build && cd build
 cmake .. 
 make
 ```
 
-##### Run tests:
+### Run tests:
 `make test`
 
-##### Generate docs:
+### Generate docs:
 `make docs`
 
-##### Download dependancies:
+### Download dependancies:
 `cmake .. -DGET_ALL_DEPS=True `
 
 ## Examples
