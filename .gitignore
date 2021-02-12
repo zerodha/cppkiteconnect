@@ -1,7 +1,16 @@
+#build files
 build/
+
+#VS Code auto generated files
 .clangd
+
+#generated docs
 docs/**
 !docs/config.doxygen
 !docs/CMakeLists.txt
+
+#downloaded dependancies
+deps/**
+!deps/CMakeLists.txt
 
 

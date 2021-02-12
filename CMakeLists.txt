@@ -1,17 +1,11 @@
 cmake_minimum_required(VERSION 3.11)
 project(kitepp) 
 
-#Warning: FreeBSD will also pass this
-if(UNIX AND NOT APPLE)
-        message("Linux was detected..")
-        set(LINUX TRUE)
-endif()
-
+#set variables
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 
-include(CTest)
-
+#set project include directory
 include_directories("${CMAKE_SOURCE_DIR}/include")
 
 #build examples
@@ -21,12 +15,18 @@ add_subdirectory("examples/example3")
 add_subdirectory("examples/example4")
 
 #build tests
+include(CTest)
 if(BUILD_TESTING)
         add_subdirectory("tests")
 endif()
 
 #generate documentation
 add_subdirectory("docs")
+
+#download dependancies
+if(GET_ALL_DEPS OR GET_UWS)
+        add_subdirectory("deps")
+endif()
 
 
 
