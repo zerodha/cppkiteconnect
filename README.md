@@ -41,6 +41,8 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 ### Linux:
 - On Fedora 32:
 `sudo dnf install openssl-devel zlib-devel` + (`gtest-devel gmock-devel` for running tests)
+- On Ubuntu:
+`sudo apt install libssl-dev zlib1g-dev` + (googletest & googlemock for running tests)
 
 ## Building
 
