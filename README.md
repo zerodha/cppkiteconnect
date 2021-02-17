@@ -54,7 +54,7 @@ make
 ```
 
 ### Run tests:
-`make && make test`
+`make && make test ARGS='-V'`
 
 ### Generate docs:
 `make docs`
