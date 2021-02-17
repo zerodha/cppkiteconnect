@@ -1,3 +1,4 @@
+#TODO can prolly work with version 3.10
 cmake_minimum_required(VERSION 3.11)
 project(kitepp) 
 

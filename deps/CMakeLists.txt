@@ -1,5 +1,3 @@
-include(FetchContent)
-
 function(downloadFile URL destination hashType hash)
 
 if (NOT EXISTS ${destination})
