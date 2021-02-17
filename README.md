@@ -42,7 +42,7 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 - On Fedora 32:
 `sudo dnf install openssl-devel zlib-devel` + (`gtest-devel gmock-devel` for running tests)
 
-## Building & installation
+## Building
 
 kitepp is a header-only C++ library. Just copy the `include` folder to system or project's include path.
 
