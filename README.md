@@ -44,7 +44,7 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 - On Ubuntu:
 `sudo apt install libssl-dev zlib1g-dev` + (googletest & googlemock for running tests)
 
-## Building
+## Building & Installation
 
 kitepp is a header-only C++ library. Just copy the `include` folder to system or project's include path.
 
