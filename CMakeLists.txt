@@ -1,15 +1,9 @@
-#TODO can prolly work with version 3.10
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.10)
 project(kitepp) 
 
 #detect Linux (for optional linking of libuv)
 if(UNIX AND NOT APPLE)
         set(LINUX TRUE)
-endif()
-
-#download dependancies
-if(GET_ALL_DEPS OR GET_UWS)
-        add_subdirectory("deps")
 endif()
 
 #set variables
