@@ -32,7 +32,7 @@ kitepp has following dependancies:
 
 ## Getting dependencies
 
-kitepp saves you the hassle of finding dependencies and provides convenient `cmake` options to download source packages as tarballs. 
+kitepp saves you the hassle of finding dependencies and provides convenient cmake target to download source packages as tarballs. 
 
 - To download dependencies: `cmake .` in `deps` directory.
 
