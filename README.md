@@ -34,8 +34,7 @@ kitepp has following dependancies:
 
 kitepp saves you the hassle of finding dependencies and provides convenient `cmake` options to download source packages as tarballs. 
 
-- To download all dependencies: `cmake . -DGET_ALL_DEPS=True` in `deps` directory.
-- To download just `uWS`: `cmake .`in `deps` directory.
+- To download dependencies: `cmake .` in `deps` directory.
 
 Alternatively and preferably, use package managers provided by your OS. Unless your package manager provides `v0.14` of `uWS`, you'll have to build and install it manually.
 
