@@ -62,9 +62,11 @@ void onClose(kc::kiteWS* ws, int code, const std::string& message) {
 
 int main(int argc, char const* argv[]) {
 
-    kc::kiteWS kWS("---APIKEY---", 5, true, 5);
+    // kc::kiteWS kWS("---APIKEY---", 5, true, 5);
+    kc::kiteWS kWS(std::getenv("KITE_API_KEY"), 5, true, 5);
 
-    kWS.setAccessToken("---ACCESSTOKEN---");
+    // kWS.setAccessToken("---ACCESSTOKEN---");
+    kWS.setAccessToken(std::getenv("KITE_ACCESS_TOKEN"));
 
     kWS.onConnect = onConnect;
     kWS.onTicks = onTicks;

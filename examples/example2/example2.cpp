@@ -37,7 +37,8 @@ int main() {
     try {
 
         //! [initializing kite]
-        kc::kite Kite("---apikey---");
+        kc::kite Kite(std::getenv("KITE_API_KEY"));
+        // kc::kite Kite("---apikey---");
         //! [initializing kite]
 
         //! [obtaining login url]
@@ -50,8 +51,10 @@ int main() {
 
         std::cout << "Enter obtained request token: ";
         std::cin >> reqToken;
-        std::cout << "Enter API secret: ";
-        std::cin >> apiSecret;
+
+        // std::cout << "Enter API secret: ";
+        // std::cin >> apiSecret;
+        apiSecret = std::getenv("KITE_API_SECRET");
 
         std::string accessToken = Kite.generateSession(reqToken, apiSecret).tokens.accessToken;
         std::cout << "access token is " << accessToken << "\n";
