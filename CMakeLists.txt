@@ -6,6 +6,11 @@ if(UNIX AND NOT APPLE)
         set(LINUX TRUE)
 endif()
 
+#download dependancies
+if(GET_ALL_DEPS OR GET_UWS)
+        add_subdirectory("deps")
+endif()
+
 #set variables
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
@@ -27,11 +32,5 @@ endif()
 
 #generate documentation
 add_subdirectory("docs")
-
-#download dependancies
-if(GET_ALL_DEPS OR GET_UWS)
-        add_subdirectory("deps")
-endif()
-
 
 
