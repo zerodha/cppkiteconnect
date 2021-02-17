@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.10)
+project(kitepp) 
+
 function(downloadFile URL destination hashType hash)
 
 if (NOT EXISTS ${destination})
@@ -22,6 +25,7 @@ downloadFile(   "https://github.com/uNetworking/uWebSockets/archive/v0.14.8.tar.
                 SHA256
                 663a22b521c8258e215e34e01c7fcdbbd500296aab2c31d36857228424bb7675
             )
+            
 if(GET_ALL_DEPS)
 
     #Download GTest
