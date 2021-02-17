@@ -48,6 +48,8 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 
 kitepp is a header-only C++ library. Just copy the `include` folder to system or project's include path.
 
+Refer to [this](https://github.com/bhumitattarde/kiteppex) repository to see a project using kitepp and a boilerplate `CMakeLists.txt` to get started.
+
 ### Build examples and tests:
 ```bash
 mkdir build && cd build
