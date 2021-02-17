@@ -4,6 +4,12 @@ find_package(GTest REQUIRED)
 #Find GMock
 find_package(GMock REQUIRED)
 
+#Find Threading library (GTest & GMock require threads)
+find_package (Threads REQUIRED)
+
+option(CMAKE_USE_WIN32_THREADS_INIT "using WIN32 threads" ON)
+option(gtest_disable_pthreads "Disable uses of pthreads in gtest." ON)
+
 #rapidjson-test
 set(RJTest_BINARY_NAME RJTest)
 
@@ -11,19 +17,13 @@ add_executable(${RJTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/rjtest.cpp"
 add_test(NAME rapidjson-test COMMAND ${RJTest_BINARY_NAME})
 
 target_include_directories(${RJTest_BINARY_NAME} PUBLIC ${GTEST_INCLUDE_DIRS})
-target_link_libraries(${RJTest_BINARY_NAME} PUBLIC ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES})
+target_link_libraries(${RJTest_BINARY_NAME} PUBLIC ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} Threads::Threads)
 
 #find openSSL
 find_package(OpenSSL REQUIRED)
 
 #kite-test
 set(kiteTest_BINARY_NAME kiteTest)
-
-#Find Threading library (GMock requires threads)
-find_package (Threads REQUIRED)
-
-option(CMAKE_USE_WIN32_THREADS_INIT "using WIN32 threads" ON)
-option(gtest_disable_pthreads "Disable uses of pthreads in gtest." ON)
 
 add_executable(${kiteTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/kitetest.cpp")
 add_test(NAME kite-test COMMAND ${kiteTest_BINARY_NAME})
