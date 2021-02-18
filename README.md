@@ -172,7 +172,7 @@ These and other more extensive examples as well as their `cmake` build files for
 ## Documentation
 
 - [Kite Connect HTTP API documentation](https://kite.trade/docs/connect/v3/)
-- [kitepp reference documentation](link_to_doxygen_docs_site)
+- [kitepp reference documentation](https://kite.trade/docs/cppkiteconnect/)
 
 ## License
 
