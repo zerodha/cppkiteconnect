@@ -32,17 +32,19 @@ kitepp has following dependancies:
 
 ## Getting dependencies
 
-kitepp saves you the hassle of finding dependencies and provides convenient cmake target to download source packages as tarballs. 
-
-- To download dependencies: `cmake .` in `deps` directory.
-
-Alternatively and preferably, use package managers provided by your OS. Unless your package manager provides `v0.14` of `uWS`, you'll have to build and install it manually.
-
 ### Linux:
 - On Fedora 32:
-`sudo dnf install openssl-devel zlib-devel` + (`gtest-devel gmock-devel` for running tests)
+`sudo dnf install openssl-devel zlib-devel` + (uWS v0.14) + (`gtest-devel gmock-devel` for running tests)
 - On Ubuntu:
-`sudo apt install libssl-dev zlib1g-dev` + (googletest & googlemock for running tests)
+`sudo apt install libssl-dev zlib1g-dev` + (uWS v0.14) + (googletest & googlemock for running tests)
+
+### Others & uWS v0.14
+
+kitepp saves you the hassle of finding dependencies and provides convenient cmake target to download source packages as tarballs. 
+
+- To download dependencies (including uWS v0.14): `cmake .` in `deps` directory.
+
+Alternatively and preferably, use package managers provided by your OS. Unless your package manager provides `v0.14` of `uWS`, you'll have to build and install it manually.
 
 ## Building & Installation
 
