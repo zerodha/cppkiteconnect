@@ -4,7 +4,7 @@
 *<b>This serves as reference documentation. It is recommended that you go through README first.</b>
 *
 *<ul>
-*<li><a href="https://github.com/bhumitattarde/kitepp/blob/main/README.md">README</a></li>
+*<li><a href="https://github.com/zerodha/cppkiteconnect/blob/main/README.md">README</a></li>
 *<li><a href="hierarchy.html">Hierarchial list of classes</a></li>
 *<li><a href="classkiteconnect_1_1kite.html">kite (REST) class</a></li>
 *<li><a href="classkiteconnect_1_1kiteWS.html">kiteWS (websocket ticker) class</a></li>
