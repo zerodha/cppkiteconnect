@@ -1,15 +1,16 @@
 # THE KITE CONNECT API C++ CLIENT
 
-- [Overview](https://github.com/bhumitattarde/kitepp#overview)
-- [Dependencies](https://github.com/bhumitattarde/kitepp#dependencies)
-- [Getting dependencies](https://github.com/bhumitattarde/kitepp#getting-dependencies)
-	- [Linux](https://github.com/bhumitattarde/kitepp#linux)
-- [Building & installation](https://github.com/bhumitattarde/kitepp#building--installation)
-- [Examples](https://github.com/bhumitattarde/kitepp#examples)
-	- [REST API](https://github.com/bhumitattarde/kitepp#rest-api)
-	- [Ticker](https://github.com/bhumitattarde/kitepp#ticker)
-- [Documentation](https://github.com/bhumitattarde/kitepp#documentation)
-- [License](https://github.com/bhumitattarde/kitepp#license)
+- [Overview](https://github.com/zerodha/cppkiteconnect#overview)
+- [Dependencies](https://github.com/zerodha/cppkiteconnect#dependencies)
+- [Getting dependencies](https://github.com/zerodha/cppkiteconnect#getting-dependencies)
+	- [Linux](https://github.com/zerodha/cppkiteconnect#linux)
+	- [Others & uWS v0.14](https://github.com/zerodha/cppkiteconnect#others--uws-v014)
+- [Building & installation](https://github.com/zerodha/cppkiteconnect#building--installation)
+- [Examples](https://github.com/zerodha/cppkiteconnect#examples)
+	- [REST API](https://github.com/zerodha/cppkiteconnect#rest-api)
+	- [Ticker](https://github.com/zerodha/cppkiteconnect#ticker)
+- [Documentation](https://github.com/zerodha/cppkiteconnect#documentation)
+- [License](https://github.com/zerodha/cppkiteconnect#license)
 
 
 
