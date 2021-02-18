@@ -176,7 +176,7 @@ These and other more extensive examples as well as their `cmake` build files for
 
 ## License
 
-GPLv3
+MIT
 
 
 
