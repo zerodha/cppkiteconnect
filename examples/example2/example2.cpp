@@ -117,10 +117,8 @@ int main() {
         /*std::string canOrdID = Kite.cancelOrder("regular", "201223002513052");
 
         if (!canOrdID.empty()) {
-
             std::cout << "order ID: " << canOrdID << "\n";
         } else {
-
             std::cout << "failed to cancel order"
                       << "\n";
         };*/
@@ -130,10 +128,8 @@ int main() {
         /*std::string exitOrdID = Kite.exitOrder("regular", "201223002546330", "201223002546328");
 
         if (!exitOrdID.empty()) {
-
             std::cout << "order ID: " << exitOrdID << "\n";
         } else {
-
             std::cout << "failed to exit order"
                       << "\n";
         };*/
@@ -172,10 +168,8 @@ int main() {
         int trigID = Kite.placeGTT("single", "NESTLEIND", "NSE", { 20000 }, 18450.70, gttparams);
 
         if (!kc::isValid(trigID)) {
-
             std::cout << "trigger ID: " << trigID << "\n";
         } else {
-
             std::cout << "failed to place gtt"
                       << "\n";
         };*/
@@ -188,10 +182,8 @@ int main() {
         int modTrigID = Kite.modifyGTT(24028028, "single", "NESTLEIND", "NSE", { 23500 }, 18450.70, gttparams);
 
         if (!kc::isValid(modTrigID)) {
-
             std::cout << "trigger ID: " << modTrigID << "\n";
         } else {
-
             std::cout << "failed to modify gtt"
                       << "\n";
         };*/
@@ -213,10 +205,8 @@ int main() {
         /*int trigID = Kite.deleteGTT(24028028);
 
         if (!kc::isValid(trigID)) {
-
             std::cout << "trigger ID: " << trigID << "\n";
         } else {
-
             std::cout << "failed to delete gtt"
                       << "\n";
         };*/
@@ -236,35 +226,33 @@ int main() {
 
         //! [convert position]
         /*if (Kite.convertPosition("NSE", "BHEL", "BUY", "day", 1, "MIS", "CNC")) {
-
             std::cout << "Successfully converted the position\n";
         } else {
-
             std::cout << "Failed to convert the position\n";
         };*/
         //! [convert position]
 
         //! [get quote]
         /*std::unordered_map<std::string, kc::quote> quotes = Kite.getQuote({ "NSE:INFY", "NSE:NIFTY 50",
-        "NSE:RELIANCE" }); std::cout << "nifty50 close: " << quotes["NSE:NIFTY 50"].OHLC.close << "\n"; if
-        (quotes.find("NSE:INFY") != quotes.end()) {
-
+        "NSE:RELIANCE" });
+        std::cout << "nifty50 close: " << quotes["NSE:NIFTY 50"].OHLC.close << "\n";
+        if(quotes.find("NSE:INFY") != quotes.end()) {
             std::cout << "INFY open: " << quotes["NSE:INFY"].OHLC.open << "\n";
-
         } else {
-
             std::cout << "INFY quote not found\n";
         };*/
         //! [get quote]
 
         //! [get ohlc]
         /*std::unordered_map<std::string, kc::OHLCQuote> ohlcQuotes = Kite.getOHLC({ "NSE:INFY", "NSE:NIFTY 50",
-        "NSE:RELIANCE" }); std::cout << "nifty50 close: " << ohlcQuotes["NSE:NIFTY 50"].OHLC.close << "\n";*/
+        "NSE:RELIANCE" });
+        std::cout << "nifty50 close: " << ohlcQuotes["NSE:NIFTY 50"].OHLC.close << "\n";*/
         //! [get ohlc]
 
         //! [get ltp]
         /*std::unordered_map<std::string, kc::LTPQuote> ltpQuotes = Kite.getLTP({ "NSE:INFY", "NSE:NIFTY 50",
-        "NSE:RELIANCE" }); std::cout << "RELIANCE LTP: " << ltpQuotes["NSE:RELIANCE"].lastPrice << "\n";*/
+        "NSE:RELIANCE" });
+        std::cout << "RELIANCE LTP: " << ltpQuotes["NSE:RELIANCE"].lastPrice << "\n";*/
         //! [get ltp]
 
         //! [get historical data]
@@ -276,10 +264,8 @@ int main() {
         //! [place mf order]
         /*std::string MFOrdID = Kite.placeMFOrder("INF174K01LS2", "BUY", kc::DEFAULTINT, 10000);
         if (!MFOrdID.empty()) {
-
             std::cout << "order ID: " << MFOrdID << "\n";
         } else {
-
             std::cout << "failed to place order"
                       << "\n";
         };*/
@@ -298,10 +284,8 @@ int main() {
         //! [cancel a mf order]
         /*std::string canMforder = Kite.cancelMFOrder("51ac086a-0e39-42b5-a725-157507614d79");
         if (!canMforder.empty()) {
-
             std::cout << "order ID: " << canMforder << "\n";
         } else {
-
             std::cout << "failed to cancel order"
                       << "\n";
         };*/
@@ -310,10 +294,8 @@ int main() {
         //! [place mf sip order]
         /*std::pair<std::string, std::string> sipRes = Kite.placeMFSIP("INF174K01LS2", 10000, -1, "monthly", 50000, 1);
         if (!sipRes.first.empty() && !sipRes.second.empty()) {
-
             std::cout << "order ID: " << sipRes.first << " SIP ID: " << sipRes.second << "\n";
         } else {
-
             std::cout << "failed to place SIP order\n";
         };*/
         //! [place mf sip order]
@@ -330,10 +312,8 @@ int main() {
         //! [cancel mf sip]
         /*std::string canSipID = Kite.cancelMFSIP("823098377587704");
         if (!canSipID.empty()) {
-
             std::cout << "cancelled SIP\n";
         } else {
-
             std::cout << "failed to cancel SIP\n";
         };*/
         //! [cancel mf sip]
