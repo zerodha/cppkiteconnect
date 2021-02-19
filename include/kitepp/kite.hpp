@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 #pragma once
 
 #include <algorithm> //for_each
@@ -1400,30 +1400,13 @@ class kite {
         string str;
 
         for (const auto& symbol : symbols) {
-
-            //! could cause problems because there will that `&` after last query. can be solved by scraping the last
-            //! char of string after the for loop
+            //! could cause problems because there will be extra `&` after last query. can be solved by scraping the
+            //! last char of string after the for loop, if necessary
             str.append(FMT("i={0}&", symbol));
         };
 
         return str;
     }
-
-    static string _encodeBody(const std::vector<std::pair<string, string>>& params) {
-
-        // encodes body in `urlencoded` form
-
-        string str;
-
-        for (const auto& param : params) {
-
-            //! could cause problems because there will that `&` after last query. can be solved by scraping the last
-            //! char of string after the for loop
-            str.append(FMT("{0}={1}&", param.first, param.second));
-        };
-
-        return str;
-    };
 
     // GMock requires mock methods to be virtual
     virtual void _sendReq(rj::Document& data, const _methods& mtd, const string& endpoint,
@@ -1435,15 +1418,13 @@ class kite {
         */
 
         // create request
-        const httplib::Headers headers = {
-
-            { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion }
-        };
+        const httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };
+        httplib::Params params;
         int code = 0;
         string dataRcvd;
 
         // this code can obviously be shortened but return type of client.Get() etc. doesn't have a default constructor,
-        // which means we cannot init an instance and then assign to it later
+        // which means we cannot init an instance and assign to it later
         if (mtd == _methods::GET) {
 
             if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
@@ -1456,28 +1437,50 @@ class kite {
             };
         } else if (mtd == _methods::POST) {
 
-            if (auto res = _httpClient.Post(endpoint.c_str(), headers,
-                    (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
-                    (isJson) ? "application/json" : "application/x-www-form-urlencoded")) {
+            if (!isJson) {
 
-                code = res->status;
-                dataRcvd = res->body;
+                for (const auto& i : bodyParams) { params.emplace(i.first, i.second); };
+
+                if (auto res = _httpClient.Post(endpoint.c_str(), headers, params)) {
+                    code = res->status;
+                    dataRcvd = res->body;
+                } else {
+                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+                };
+
             } else {
 
-                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+                if (auto res = _httpClient.Post(endpoint.c_str(), headers, bodyParams[0].second, "application/json")) {
+                    code = res->status;
+                    dataRcvd = res->body;
+                } else {
+                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+                };
             };
+
         } else if (mtd == _methods::PUT) {
 
-            if (auto res = _httpClient.Put(endpoint.c_str(), headers,
-                    (isJson) ? bodyParams[0].second : _encodeBody(bodyParams),
-                    (isJson) ? "application/json" : "application/x-www-form-urlencoded")) {
+            if (!isJson) {
 
-                code = res->status;
-                dataRcvd = res->body;
+                for (const auto& i : bodyParams) { params.emplace(i.first, i.second); };
+
+                if (auto res = _httpClient.Put(endpoint.c_str(), headers, params)) {
+                    code = res->status;
+                    dataRcvd = res->body;
+                } else {
+                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+                };
+
             } else {
 
-                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+                if (auto res = _httpClient.Put(endpoint.c_str(), headers, bodyParams[0].second, "application/json")) {
+                    code = res->status;
+                    dataRcvd = res->body;
+                } else {
+                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
+                };
             };
+
         } else if (mtd == _methods::DEL) {
 
             if (auto res = _httpClient.Delete(endpoint.c_str(), headers)) {
