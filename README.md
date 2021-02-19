@@ -168,7 +168,7 @@ int main(int argc, char const* argv[]) {
 };
 ```
 
-These and other more extensive examples as well as their `cmake` build files for reference can be found in the [examples directory](https://github.com/bhumitattarde/kitepp/tree/main/examples).
+These and other more extensive examples as well as their `cmake` build files for reference can be found in the [examples directory](https://github.com/zerodha/cppkiteconnect/tree/main/examples).
 
 ## Documentation
 
