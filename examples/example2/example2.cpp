@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 
 #include <iostream>
 #include <string>
@@ -46,7 +46,7 @@ int main() {
 
         //! [initializing kite]
         kc::kite Kite(std::getenv("KITE_API_KEY"));
-        // kc::kite Kite("---apikey---");
+        // kc::kite Kite("---APIKEY---");
         //! [initializing kite]
 
         //! [obtaining login url]
@@ -70,7 +70,7 @@ int main() {
 
         //! [settting access token]
         Kite.setAccessToken(accessToken);
-        // Kite.setAccessToken("---accesstoken---");
+        // Kite.setAccessToken("---ACCESSTOKEN---");
         //! [settting access token]
 
         //! [invalidate session]
@@ -93,28 +93,21 @@ int main() {
         //! [get margins]
 
         //! [placing an order]
-        /*std::string ordID = Kite.placeOrder("co", "NSE", "BHEL", "BUY", 1, "MIS", "LIMIT", 33.5, "DAY", 32,
-        kc::DEFAULTDOUBLE, std::string ordID2 = Kite.placeOrder("regular", "NSE", "BHEL", "SELL", 1, "MIS",
-        "MARKET", 33.60, "DAY"); kc::DEFAULTDOUBLE, kc::DEFAULTDOUBLE); if (!ordID.empty()) {
-
+        /*std::string ordID = Kite.placeOrder("co", "NSE", "BHEL", "BUY", 1, "MIS", "LIMIT", 42, "DAY", 39);
+        if (!ordID.empty()) {
             std::cout << "order ID: " << ordID << "\n";
         } else {
-
             std::cout << "failed to place order"
                       << "\n";
         };*/
         //! [placing an order]
 
         //! [modifying an order]
-        // std::cout << "modify order response: " << Kite.modifyOrder("regular", "151220000000000", "", "2", "",
-        // "MARKET", "", "DAY").dump(4) << "\n";
-
-        /*std::string modOrdID = Kite.modifyOrder("regular", "201223002459577", "", 2, Kite.DEFAULTDOUBLE, "MARKET",
-        Kite.DEFAULTDOUBLE, "DAY"); if (!modOrdID.empty()) {
-
+        /*std::string modOrdID = Kite.modifyOrder(
+            "regular", "201223002459577", "", 2, kc::DEFAULTDOUBLE, "MARKET", kc::DEFAULTDOUBLE, "DAY");
+        if (!modOrdID.empty()) {
             std::cout << "order ID: " << modOrdID << "\n";
         } else {
-
             std::cout << "failed to modify order"
                       << "\n";
         };*/
