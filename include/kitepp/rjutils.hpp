@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 
 // this file has helper functions for rapidjson library
 
@@ -43,11 +43,7 @@ namespace rjutils {
 using std::string;
 namespace rj = rapidjson;
 
-enum class _RJValueType : int
-{
-    Object,
-    Array
-};
+enum class _RJValueType : int { Object, Array };
 
 inline bool _parse(rj::Document& dom, const string& str) {
 
@@ -61,15 +57,12 @@ inline bool _getIfExists(const rj::Value::Object& val, string& out, const char* 
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsString()) {
-
             out = it->value.GetString();
             return true;
         };
 
         if (it->value.IsNull()) {
-
             out = "";
             return true;
         };
@@ -84,15 +77,12 @@ inline bool _getIfExists(const rj::Document& val, string& out, const char* name)
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsString()) {
-
             out = it->value.GetString();
             return true;
         };
 
         if (it->value.IsNull()) {
-
             out = "";
             return true;
         };
@@ -107,9 +97,7 @@ inline bool _getIfExists(const rj::Value::Object& val, double& out, const char* 
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsDouble()) {
-
             out = it->value.GetDouble();
             return true;
         };
@@ -117,7 +105,6 @@ inline bool _getIfExists(const rj::Value::Object& val, double& out, const char* 
         // in case returned number doesn't have decimal point. Directly calling GetDouble() will cause error if number
         // doesn't have decimal
         if (it->value.IsInt()) {
-
             out = it->value.GetInt(); //! may lead to precision loss
             return true;
         };
@@ -132,9 +119,7 @@ inline bool _getIfExists(const rj::Value::Object& val, int& out, const char* nam
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsInt()) {
-
             out = it->value.GetInt();
             return true;
         };
@@ -149,9 +134,7 @@ inline bool _getIfExists(const rj::Value::Object& val, bool& out, const char* na
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsBool()) {
-
             out = it->value.GetBool();
             return true;
         };
@@ -165,11 +148,8 @@ inline bool _getIfExists(const rj::Value::Object& val, std::vector<string>& out,
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsArray()) {
-
             for (const auto& v : it->value.GetArray()) {
-
                 (v.IsString()) ?
                     out.emplace_back(v.GetString()) :
                     throw libException(
@@ -188,11 +168,8 @@ inline bool _getIfExists(const rj::Value::Object& val, std::vector<double>& out,
 
     auto it = val.FindMember(name);
     if (it != val.MemberEnd()) {
-
         if (it->value.IsArray()) {
-
             for (const auto& v : it->value.GetArray()) {
-
                 if (v.IsDouble()) {
                     out.emplace_back(v.GetDouble());
                     continue;
@@ -219,9 +196,7 @@ inline bool _getIfExists(const rj::Value::Object& val, rj::Value& out, const cha
     auto it = val.FindMember(name);
 
     if (type == _RJValueType::Object) {
-
         if (it != val.MemberEnd()) {
-
             if (it->value.IsObject()) {
                 out = it->value.GetObject();
                 return true;
@@ -232,9 +207,7 @@ inline bool _getIfExists(const rj::Value::Object& val, rj::Value& out, const cha
 
         return false;
     } else if (type == _RJValueType::Array) {
-
         if (it != val.MemberEnd()) {
-
             if (it->value.IsArray()) {
                 out = it->value.GetArray();
                 return true;
@@ -258,6 +231,6 @@ inline string _dump(rj::Document& dom) {
     return buffer.GetString();
 }
 
-} // namespace RJHelper
+} // namespace rjutils
 
 } // namespace kiteconnect
