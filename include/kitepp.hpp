@@ -21,10 +21,10 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 
 /**
- * @brief convinience header for kitepp. This is the ONLY header that should be included.
+ * @brief convenience header for kitepp. This is the ONLY header that should be included.
  *
  * @paragraph ex1 example1
  * @snippet example2.cpp adding kitepp header
