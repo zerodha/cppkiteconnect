@@ -1,4 +1,4 @@
-# THE KITE CONNECT API C++ CLIENT
+# Kite Connect API C++ client
 
 - [Overview](https://github.com/zerodha/cppkiteconnect#overview)
 - [Dependencies](https://github.com/zerodha/cppkiteconnect#dependencies)
