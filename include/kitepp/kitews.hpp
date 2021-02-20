@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 
 #pragma once
 
@@ -213,6 +213,7 @@ class kiteWS {
      *
      */
     void stop() {
+
         if (isConnected()) { _WS->close(); };
     };
 
@@ -239,7 +240,6 @@ class kiteWS {
         if (isConnected()) {
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = ""; };
-
         } else {
             throw kc::libException("Not connected to websocket server");
         };
@@ -266,15 +266,12 @@ class kiteWS {
 
         string reqStr = rju::_dump(req);
         if (isConnected()) {
-
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) {
                 auto it = _subbedInstruments.find(tok);
                 if (it != _subbedInstruments.end()) { _subbedInstruments.erase(it); };
             };
-
         } else {
-
             throw kc::libException("Not connected to websocket server");
         };
     };
@@ -305,12 +302,9 @@ class kiteWS {
 
         string reqStr = rju::_dump(req);
         if (isConnected()) {
-
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = mode; };
-
         } else {
-
             throw kc::libException("Not connected to websocket server");
         };
     };
@@ -324,7 +318,6 @@ class kiteWS {
     string _accessToken;
     // TODO make these into constants since they aren't used much
     const std::unordered_map<string, int> _segmentConstants = {
-
         { "nse", 1 },
         { "nfo", 2 },
         { "cds", 3 },
@@ -371,7 +364,6 @@ class kiteWS {
         _reconnectTries++;
 
         if (_reconnectTries <= _maxReconnectTries) {
-
             std::this_thread::sleep_for(std::chrono::seconds(_reconnectDelay));
             _reconnectDelay = (_reconnectDelay * 2 > _maxReconnectDelay) ? _maxReconnectDelay : _reconnectDelay * 2;
 
@@ -379,15 +371,14 @@ class kiteWS {
             _connect();
 
             if (isConnected()) { return; };
-
         } else {
-
             if (onReconnectFail) { onReconnectFail(this); };
             _isReconnecting = false;
         };
     };
 
     void _processTextMessage(char* message, size_t length) {
+
         rj::Document res;
         rju::_parse(res, string(message, length));
         if (!res.IsObject()) { throw libException("Expected a JSON object"); };
@@ -407,7 +398,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-// clang-format off
+        // clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
@@ -426,7 +417,6 @@ class kiteWS {
 
         unsigned int packetLengthStartIdx = 2;
         for (int i = 1; i <= numberOfPackets; i++) {
-
             unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
             int16_t packetLength = _getNum<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
             packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
@@ -443,7 +433,6 @@ class kiteWS {
 
         std::vector<kc::tick> ticks;
         for (const auto& packet : packets) {
-
             size_t packetSize = packet.size();
             int32_t instrumentToken = _getNum<int32_t>(packet, 0, 3);
             int segment = instrumentToken & 0xff;
@@ -457,7 +446,6 @@ class kiteWS {
 
             // LTP packet
             if (packetSize == 8) {
-
                 Tick.mode = MODE_LTP;
                 Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
 
@@ -495,7 +483,6 @@ class kiteWS {
 
                 // parse full mode
                 if (packetSize == 184) {
-
                     Tick.lastTradeTime = _getNum<int32_t>(packet, 44, 47);
                     Tick.OI = _getNum<int32_t>(packet, 48, 51);
                     Tick.OIDayHigh = _getNum<int32_t>(packet, 52, 55);
@@ -504,7 +491,6 @@ class kiteWS {
 
                     unsigned int depthStartIdx = 64;
                     for (int i = 0; i <= 9; i++) {
-
                         kc::depthWS depth;
                         depth.quantity = _getNum<int32_t>(packet, depthStartIdx, depthStartIdx + 3);
                         depth.price = _getNum<int32_t>(packet, depthStartIdx + 4, depthStartIdx + 7) / divisor;
@@ -528,7 +514,6 @@ class kiteWS {
         std::vector<int> quoteInstruments;
         std::vector<int> fullInstruments;
         for (const auto& i : _subbedInstruments) {
-
             if (i.second == MODE_LTP) { LTPInstruments.push_back(i.first); };
             if (i.second == MODE_QUOTE) { quoteInstruments.push_back(i.first); };
             if (i.second == MODE_FULL) { fullInstruments.push_back(i.first); };
@@ -582,14 +567,12 @@ class kiteWS {
 
         _hubGroup->onMessage([&](uWS::WebSocket<uWS::CLIENT>* ws, char* message, size_t length, uWS::OpCode opCode) {
             if (opCode == uWS::OpCode::BINARY && onTicks) {
-
                 if (length == 1) {
                     // is a heartbeat
                     _lastBeatTime = std::chrono::system_clock::now();
                 } else {
                     onTicks(this, _parseBinaryMessage(message, length));
                 };
-
             } else if (opCode == uWS::OpCode::TEXT) {
                 _processTextMessage(message, length);
             };
