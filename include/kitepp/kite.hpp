@@ -93,12 +93,12 @@ class kite {
     /**
      * @brief Set the API key
      *
-     * @param arg
+     * @param arg The string that should be set as API key
      */
     void setAPIKey(const string& arg) { _apiKey = arg; };
 
     /**
-     * @brief get set API key
+     * @brief Fetch current API key
      *
      * @return string
      */
