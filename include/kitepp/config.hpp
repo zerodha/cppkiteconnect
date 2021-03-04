@@ -24,7 +24,6 @@
  */
 #pragma once
 
-#include <cmath> //isnan()
 #include <string>
 #define FMT_HEADER_ONLY 1
 #include "fmt/format.h"
@@ -78,8 +77,8 @@ enum class _methods { GET, POST, PUT, DEL, HEAD };
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
-bool isValid(int num) { return std::isnan(num); };
-bool isValid(double num) { return std::isnan(num); };
+bool isValid(int num) { return num == DEFAULTINT; };
+bool isValid(double num) { return num == DEFAULTDOUBLE; };
 
 namespace config {
 
