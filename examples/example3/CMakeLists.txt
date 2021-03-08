@@ -1,3 +1,5 @@
+find_package(Threads)
+
 #find openSSL
 find_package(OpenSSL REQUIRED)
 
@@ -22,10 +24,10 @@ add_executable(example3 "${CMAKE_CURRENT_SOURCE_DIR}/example3.cpp")
 if((NOT UV_LIB OR NOT UV_INCLUDE) AND DEFINED LINUX)
     message("Couldn't find libuv..\nProceding anyway since Linux was detected..")
     target_include_directories(example3 PUBLIC ${UWS_INCLUDE})
-    target_link_libraries(example3 PUBLIC pthread OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB})
+    target_link_libraries(example3 PUBLIC Threads::Threads OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB})
 else()
     target_include_directories(example3 PUBLIC ${UWS_INCLUDE} ${UV_INCLUDE})
-    target_link_libraries(example3 PUBLIC pthread OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${UV_LIB})
+    target_link_libraries(example3 PUBLIC Threads::Threads OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${UV_LIB})
 endif()
 
 

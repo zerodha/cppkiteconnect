@@ -26,7 +26,6 @@
 
 #include <algorithm> //for_each
 #include <array>
-#include <cmath>    //isnan()
 #include <iostream> //debug
 #include <limits>   //nan
 #include <sstream>
@@ -274,13 +273,13 @@ class kite {
             { "order_type", orderType },
         };
 
-        if (!std::isnan(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
+        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
         if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!std::isnan(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
-        if (!std::isnan(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!std::isnan(sqOff)) { bodyParams.emplace_back("squareoff", std::to_string(sqOff)); }
-        if (!std::isnan(SL)) { bodyParams.emplace_back("stoploss", std::to_string(SL)); }
-        if (!std::isnan(trailSL)) { bodyParams.emplace_back("trailing_stoploss", std::to_string(trailSL)); }
+        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
+        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
+        if (!isValid(sqOff)) { bodyParams.emplace_back("squareoff", std::to_string(sqOff)); }
+        if (!isValid(SL)) { bodyParams.emplace_back("stoploss", std::to_string(SL)); }
+        if (!isValid(trailSL)) { bodyParams.emplace_back("trailing_stoploss", std::to_string(trailSL)); }
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         rj::Document res;
@@ -318,12 +317,12 @@ class kite {
         std::vector<std::pair<string, string>> bodyParams = {};
 
         if (!parentOrdID.empty()) { bodyParams.emplace_back("parent_order_id", parentOrdID); }
-        if (!std::isnan(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!std::isnan(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
+        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
+        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
         if (!ordType.empty()) { bodyParams.emplace_back("order_type", ordType); }
-        if (!std::isnan(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
+        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
         if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!std::isnan(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
+        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
 
         rj::Document res;
         _sendReq(res, _methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID),
@@ -944,8 +943,8 @@ class kite {
             { "transaction_type", txnType },
         };
 
-        if (!std::isnan(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!std::isnan(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
+        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
+        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
 
         rj::Document res;
@@ -1079,8 +1078,8 @@ class kite {
             { "frequency", freq },
         };
 
-        if (!std::isnan(initAmount)) { bodyParams.emplace_back("initial_amount", std::to_string(initAmount)); };
-        if (!std::isnan(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); };
+        if (!isValid(initAmount)) { bodyParams.emplace_back("initial_amount", std::to_string(initAmount)); };
+        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); };
         if (!tag.empty()) { bodyParams.emplace_back("tag", tag); };
 
         rj::Document res;
@@ -1112,11 +1111,11 @@ class kite {
 
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!std::isnan(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
+        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
         if (!status.empty()) { bodyParams.emplace_back("status", status); }
-        if (!std::isnan(installments)) { bodyParams.emplace_back("instalments", std::to_string(installments)); }
+        if (!isValid(installments)) { bodyParams.emplace_back("instalments", std::to_string(installments)); }
         if (!freq.empty()) { bodyParams.emplace_back("frequency", freq); }
-        if (!std::isnan(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
+        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
 
         rj::Document res;
         _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);

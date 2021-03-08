@@ -21,10 +21,9 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 #pragma once
 
-#include <cmath> //isnan()
 #include <string>
 #define FMT_HEADER_ONLY 1
 #include "fmt/format.h"
@@ -36,6 +35,9 @@
   the gcc way fails - endian.h also doesn not seem to be available on all
   platforms.
 */
+#if defined(_WIN32)
+// Do nothing (Assuming all modern Windows machines are little endian)
+#else // Windows check
 #ifdef __BIG_ENDIAN__
 #define WORDS_BIGENDIAN 1
 #else /* __BIG_ENDIAN__ */
@@ -56,6 +58,7 @@
 #endif /* __BYTE_ORDER */
 #endif /* __LITTLE_ENDIAN__ */
 #endif /* __BIG_ENDIAN__ */
+#endif // Windows check
 
 //!************************************************
 // macros/operators required in more than one file*
@@ -70,19 +73,12 @@ namespace kiteconnect {
 // constatnts required in more than one class (other than the explicit user constants defined in uderconstants.hpp)*
 //!*****************************************************************************************************************
 
-enum class _methods
-{
-    GET,
-    POST,
-    PUT,
-    DEL,
-    HEAD
-};
+enum class _methods { GET, POST, PUT, DEL, HEAD };
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
-bool isValid(int num) { return std::isnan(num); };
-bool isValid(double num) { return std::isnan(num); };
+bool isValid(int num) { return num == DEFAULTINT; };
+bool isValid(double num) { return num == DEFAULTDOUBLE; };
 
 namespace config {
 
