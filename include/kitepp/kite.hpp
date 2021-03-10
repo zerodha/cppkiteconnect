@@ -238,21 +238,21 @@ class kite {
     /**
      * @brief place an order.
      *
-     * @param variety
-     * @param exchange
+     * @param variety variety of the order
+     * @param exchange name of the exchange
      * @param symbol trading symbol
      * @param txnType transaction type
-     * @param quantity
-     * @param product
-     * @param orderType
-     * @param price
-     * @param validity
+     * @param quantity quantity to transact
+     * @param product margin product to use for the order (margins are blocked based on this)
+     * @param orderType order type (MARKET, LIMIT etc.)
+     * @param price the min or max price to execute the order at (for LIMIT orders)
+     * @param validity order validity
      * @param trigPrice trigger price
      * @param sqOff square off
      * @param SL stoploss
      * @param trailSL trailing stoploss
      * @param discQuantity disclosed quantity
-     * @param tag
+     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 20 chars)
      *
      * @return string orderID
      *
@@ -296,14 +296,14 @@ class kite {
     /**
      * @brief modify an order
      *
-     * @param variety
+     * @param variety variety of the order
      * @param ordID order ID
      * @param parentOrdID parent order ID
-     * @param quantity
-     * @param price
+     * @param quantity quantity to transact
+     * @param price the min or max price to execute the order at (for LIMIT orders)
      * @param ordType order type
      * @param trigPrice trigger price
-     * @param validity
+     * @param validity order validity
      * @param discQuantity disclosed quantity
      *
      * @return string order ID
@@ -339,7 +339,7 @@ class kite {
     /**
      * @brief cancel an order
      *
-     * @param variety
+     * @param variety variety of the order
      * @param ordID order ID
      * @param parentOrdID parent order ID
      *
@@ -367,7 +367,7 @@ class kite {
     /**
      * @brief exit an order
      *
-     * @param variety
+     * @param variety variety of the order
      * @param ordID order ID
      * @param parentOrdID parent order ID
      *
@@ -408,7 +408,7 @@ class kite {
      *
      * @param ordID order ID
      *
-     *  @return std::vector<order>
+     * @return std::vector<order>
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get order history
@@ -484,7 +484,7 @@ class kite {
      *
      * @param trigType trigger type
      * @param symbol trading symbol
-     * @param exchange
+     * @param exchange exchange name
      * @param trigValues trigger values
      * @param lastPrice last price
      * @param gttParams vector of GTTParams
@@ -583,7 +583,7 @@ class kite {
     /**
      * @brief get details of a GTT
      *
-     * @param trigID
+     * @param trigID trigger ID
      * @return GTT
      *
      * @paragraph ex1 Example
@@ -604,7 +604,7 @@ class kite {
      * @param trigID trigger ID
      * @param trigType trigger type
      * @param symbol trading symbol
-     * @param exchange
+     * @param exchange name of the exchange
      * @param trigValues trigger values
      * @param lastPrice last traded price of the instrument
      * @param gttParams vector of GTTParams
@@ -743,11 +743,11 @@ class kite {
     /**
      * @brief Modify an open position's product type.
      *
-     * @param exchange
-     * @param symbol
+     * @param exchange exchange name
+     * @param symbol trading symbol
      * @param txnType transaction type
      * @param posType position type
-     * @param quantity
+     * @param quantity quantity to transact
      * @param oldProduct old product
      * @param newProduct new product
      *
@@ -925,11 +925,12 @@ class kite {
     /**
      * @brief place a mutual fund order
      *
-     * @param symbol
+     * @param symbol trading symbol
      * @param txnType transaction type
-     * @param quantity
-     * @param amount
-     * @param tag
+     * @param quantity Quantity to SELL. Not applicable on BUYs. If the holding is less than
+     * minimum_redemption_quantity, all the units have to be sold
+     * @param amount amount worth of units to purchase. Not applicable on SELLs
+     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 8 chars)
      *
      * @return string order ID
      *
@@ -1029,7 +1030,7 @@ class kite {
     /**
      * @brief get mutual fund holdings
      *
-     * @return njson
+     * @return std::vector<MFHolding>
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf holdings
@@ -1056,13 +1057,14 @@ class kite {
     /**
      * @brief place MF SIP
      *
-     * @param symbol
-     * @param amount
-     * @param installments
+     * @param symbol tradingsymbol (ISIN) of the fund
+     * @param amount amount worth of units to purchase. Not applicable on SELLs
+     * @param installments number of instalments to trigger. If set to -1, instalments are triggered at fixed intervals
+     * until the SIP is cancelled
      * @param freq frequency
      * @param initAmount initial amount
      * @param installDay installment day
-     * @param tag
+     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 8 chars)
      *
      * @return std::pair<string, string>
      *
@@ -1098,10 +1100,12 @@ class kite {
      * @brief modify a MF SIP order
      *
      * @param SIPID SIP ID
-     * @param amount
-     * @param status
-     * @param installments
-     * @param freq frequency
+     * @param amount amount worth of units to purchase. It should be equal to or greated than
+     * minimum_additional_purchase_amount and in multiple of purchase_amount_multiplier in the instrument master.
+     * @param status pause or unpause an SIP (active or paused)
+     * @param installments number of instalments to trigger. If set to -1, instalments are triggered idefinitely until
+     * the SIP is cancelled
+     * @param freq weekly, monthly, or quarterly
      * @param installDay installment day
      *
      * @paragraph ex1 Example
