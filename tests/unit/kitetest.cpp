@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 
 #include <fstream>
 #include <gmock/gmock-actions.h>
@@ -96,12 +96,12 @@ TEST(kiteTest, generateSessionTest) {
     kc::userSession session = Kite.generateSession("arg1", "arg2");
 
     // Expected values
+    EXPECT_EQ(session.profile.userID, "XX000");
     EXPECT_EQ(session.profile.userName, "Kite Connect");
     EXPECT_EQ(session.profile.userShortName, "Kite");
     EXPECT_EQ(session.profile.avatarURL, "");
     EXPECT_EQ(session.profile.userType, "investor");
     EXPECT_EQ(session.profile.email, "kite@kite.trade");
-    EXPECT_EQ(session.profile.phone, "");
     EXPECT_EQ(session.profile.broker, "ZERODHA");
     EXPECT_THAT(session.profile.products, ::testing::ElementsAre("BO", "CNC", "CO", "MIS", "NRML"));
     EXPECT_THAT(session.profile.orderTypes, ::testing::ElementsAre("LIMIT", "MARKET", "SL", "SL-M"));
@@ -141,16 +141,17 @@ TEST(kiteTest, profile) {
     kc::userProfile profile = Kite.profile();
 
     // Expected values
+    EXPECT_EQ(profile.userID, "AB1234");
     EXPECT_EQ(profile.userName, "AxAx Bxx");
     EXPECT_EQ(profile.userShortName, "abc");
     EXPECT_EQ(profile.avatarURL, "");
     EXPECT_EQ(profile.userType, "investor");
     EXPECT_EQ(profile.email, "xxxyyy@gmail.com");
-    EXPECT_EQ(profile.phone, "");
     EXPECT_EQ(profile.broker, "ZERODHA");
     EXPECT_THAT(profile.products, ::testing::ElementsAre("BO", "CNC", "CO", "MIS", "NRML"));
     EXPECT_THAT(profile.orderTypes, ::testing::ElementsAre("LIMIT", "MARKET", "SL", "SL-M"));
     EXPECT_THAT(profile.exchanges, ::testing::ElementsAre("BSE", "BFO", "NFO", "MCX", "CDS", "NSE"));
+    EXPECT_EQ(profile.meta.dematConsent, "physical");
 };
 
 TEST(kiteTest, getMarginsTest1) {

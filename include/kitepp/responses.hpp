@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 
 /**
  * @file responses.hpp
@@ -55,28 +55,43 @@ struct userProfile {
 
     void parse(const rj::Value::Object& val) {
 
+        rju::_getIfExists(val, userID, "user_id");
         rju::_getIfExists(val, userName, "user_name");
         rju::_getIfExists(val, userShortName, "user_shortname");
         rju::_getIfExists(val, avatarURL, "avatar_url");
         rju::_getIfExists(val, userType, "user_type");
         rju::_getIfExists(val, email, "email");
-        // x rju::_getIfExists(val, phone, "phone");
         rju::_getIfExists(val, broker, "broker");
         rju::_getIfExists(val, products, "products");
         rju::_getIfExists(val, orderTypes, "order_types");
         rju::_getIfExists(val, exchanges, "exchanges");
+        rju::_getIfExists(val, meta.dematConsent, "exchanges");
+
+        rj::Value metaVal(rj::kObjectType);
+        rju::_getIfExists(val, metaVal, "meta", rju::_RJValueType::Object);
+        meta.parse(metaVal.GetObject());
     };
 
+    string userID;
     string userName;
     string userShortName;
     string avatarURL;
     string userType;
     string email;
-    string phone;
     string broker;
     std::vector<string> products;
     std::vector<string> orderTypes;
     std::vector<string> exchanges;
+    struct Meta {
+
+        Meta() = default;
+
+        explicit Meta(const rj::Value::Object& val) { parse(val); };
+
+        void parse(const rj::Value::Object& val) { rju::_getIfExists(val, dematConsent, "demat_consent"); }
+
+        string dematConsent;
+    } meta;
 };
 
 /// tokens received after successfull authentication
