@@ -65,7 +65,6 @@ struct userProfile {
         rju::_getIfExists(val, products, "products");
         rju::_getIfExists(val, orderTypes, "order_types");
         rju::_getIfExists(val, exchanges, "exchanges");
-        rju::_getIfExists(val, meta.dematConsent, "exchanges");
 
         rj::Value metaVal(rj::kObjectType);
         rju::_getIfExists(val, metaVal, "meta", rju::_RJValueType::Object);
