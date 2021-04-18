@@ -130,7 +130,6 @@ class kite {
             {
                 { "api_key", _apiKey },
                 { "request_token", requestToken },
-                // TODO add unit test for checking hash
                 { "checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret) },
             });
 
@@ -394,10 +393,12 @@ class kite {
         _sendReq(res, _methods::GET, _endpoints.at("orders"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orders())"); };
-        if (!res["data"].IsArray()) { throw libException("Array was expected (orders())"); };
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsArray()) { throw libException("Array was expected (orders())"); };
 
         std::vector<order> orderVec;
-        for (auto& i : res["data"].GetArray()) { orderVec.emplace_back(i.GetObject()); }
+        for (auto& i : it->value.GetArray()) { orderVec.emplace_back(i.GetObject()); }
 
         return orderVec;
     };
@@ -420,10 +421,12 @@ class kite {
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (orderHistory())");
         };
-        if (!res["data"].IsArray()) { throw libException("Array was expected (orderHistory())"); };
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsArray()) { throw libException("Array was expected (orderHistory())"); };
 
         std::vector<order> orderVec;
-        for (auto& i : res["data"].GetArray()) { orderVec.emplace_back(i.GetObject()); }
+        for (auto& i : it->value.GetArray()) { orderVec.emplace_back(i.GetObject()); }
 
         return orderVec;
     };
@@ -442,10 +445,12 @@ class kite {
         _sendReq(res, _methods::GET, _endpoints.at("trades"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (trades())"); };
-        if (!res["data"].IsArray()) { throw libException("Array was expected (trades())"); };
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsArray()) { throw libException("Array was expected (trades())"); };
 
         std::vector<trade> tradeVec;
-        for (auto& i : res["data"].GetArray()) { tradeVec.emplace_back(i.GetObject()); }
+        for (auto& i : it->value.GetArray()) { tradeVec.emplace_back(i.GetObject()); }
 
         return tradeVec;
     };
@@ -468,10 +473,12 @@ class kite {
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (orderTrades())");
         };
-        if (!res["data"].IsArray()) { throw libException("Array was expected (orderTrades())"); };
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsArray()) { throw libException("Array was expected (orderTrades())"); };
 
         std::vector<trade> tradeVec;
-        for (auto& i : res["data"].GetArray()) { tradeVec.emplace_back(i.GetObject()); }
+        for (auto& i : it->value.GetArray()) { tradeVec.emplace_back(i.GetObject()); }
 
         return tradeVec;
     };
@@ -571,10 +578,12 @@ class kite {
         _sendReq(res, _methods::GET, _endpoints.at("gtt"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTTs)"); };
-        if (!res["data"].IsArray()) { throw libException("Array was expected (getGTTs())"); };
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsArray()) { throw libException("Array was expected (getGTTs())"); };
 
         std::vector<GTT> gttVec;
-        for (auto& i : res["data"].GetArray()) { gttVec.emplace_back(i.GetObject()); }
+        for (auto& i : it->value.GetArray()) { gttVec.emplace_back(i.GetObject()); }
 
         return gttVec;
     };
@@ -714,10 +723,12 @@ class kite {
         _sendReq(res, _methods::GET, _endpoints.at("portfolio.holdings"));
 
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (holdings)"); };
-        if (!res["data"].IsArray()) { throw libException("Array was expected (holdinga)"); };
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsArray()) { throw libException("Array was expected (holdinga)"); };
 
         std::vector<holding> holdingsVec;
-        for (auto& i : res["data"].GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
+        for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
 
         return holdingsVec;
     };
@@ -774,11 +785,13 @@ class kite {
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (convertPosition)");
         };
-        if (!res["data"].IsBool()) {
+
+        auto it = res.FindMember("data");
+        if (!it->value.IsBool()) {
             throw libException("data type wasn't the one expected. Expected bool (convertPosition)");
         };
 
-        return res["data"].GetBool();
+        return it->value.GetBool();
     };
 
     // quotes and instruments:
@@ -911,10 +924,12 @@ class kite {
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (getHistoricalData)");
         };
-        if (!res["data"]["candles"].IsArray()) { throw libException("Array was expected (trades())"); };
+
+        auto it = res.FindMember("data")->value.FindMember("candles");
+        if (!it->value.IsArray()) { throw libException("Array was expected (trades())"); };
 
         std::vector<historicalData> dataVec;
-        for (auto& i : res["data"]["candles"].GetArray()) { dataVec.emplace_back(i.GetArray()); };
+        for (auto& i : it->value.GetArray()) { dataVec.emplace_back(i.GetArray()); };
 
         return dataVec;
     };
@@ -1087,8 +1102,9 @@ class kite {
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
 
         string rcvdOrdID, rcvdSipID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-        rju::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
+        auto it = res.FindMember("data");
+        rju::_getIfExists(it->value.GetObject(), rcvdOrdID, "order_id");
+        rju::_getIfExists(it->value.GetObject(), rcvdSipID, "sip_id");
 
         return { rcvdOrdID, rcvdSipID };
     };
@@ -1492,5 +1508,3 @@ class kite {
 }; // namespace kitepp
 
 } // namespace kiteconnect
-
-// TODO *rectify double lookup in functions

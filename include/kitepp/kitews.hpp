@@ -316,7 +316,6 @@ class kiteWS {
     const string _connectURLFmt = "wss://ws.kite.trade/?api_key={0}&access_token={1}";
     string _apiKey;
     string _accessToken;
-    // TODO make these into constants since they aren't used much
     const std::unordered_map<string, int> _segmentConstants = {
         { "nse", 1 },
         { "nfo", 2 },
@@ -398,7 +397,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif
