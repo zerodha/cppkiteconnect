@@ -162,8 +162,6 @@ class kite {
      * through a new login flow before further interactions. This does not log the user out of the official Kite web or
      * mobile applications.
      *
-     * @return njson
-     *
      * @paragraph ex1 Example
      * @snippet example2.cpp invalidate session
      */
