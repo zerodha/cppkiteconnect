@@ -1,0 +1,44 @@
+name: CPPKiteConnect-test
+
+# Get triggered on
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  release:
+
+jobs:
+  # This job builds and runs unit tests
+  build-and-test:
+    # Define a strategy
+    strategy:
+      # Matrix of configs to test
+      matrix:
+        config:
+          - { name: ubuntu, os: ubuntu-latest }
+          #TODO - { name: macOS, os: macos-latest }
+          #TODO - { name: windows, os: windows-latest }
+
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+
+    steps:
+      # Check out repo with submodules
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      # Build & test on Linux
+      - name: Build and test on (Ubuntu) Linux
+        if: startsWith(matrix.config.name, 'ubuntu')
+        run: |
+          - apt update && apt -y install libssl-dev zlib1g-dev git g++ build-essential cmake googletest google-mock libgtest-dev libgmock-dev doxygen
+          - git clone https://github.com/zerodha/cppkiteconnect.git
+          - cd cppkiteconnect
+          - cd deps && cmake .
+          - cd deps && tar -xzvf uWebSocketsv-0.14.8.tar.gz && cd uWebSockets-0.14.8
+          - make && make install
+          - cd ../../../
+          - mkdir build && cd build
+          - cmake .. && make && make test ARGS="-V"
