@@ -23,7 +23,7 @@ endfunction(downloadFile)
 downloadFile(   "https://api.github.com/repos/hoytech/uWebSockets/tarball/master"
                 "${CMAKE_SOURCE_DIR}/deps/uWebSockets.tar.gz"
                 SHA256
-                d51301a9a0b36d6ec531b3ce867cf9c343978abc137e39d217524cb8e6d9d0dd
+                40ecedbdd2fb5b6f69f06e8830e9139dc290c3125d1eb1f3449b9fd9277b50c8
             )
 
 #Download GTest
