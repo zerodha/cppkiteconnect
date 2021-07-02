@@ -46,7 +46,7 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 
 CPPKiteConnect is a header-only C++ library. Just copy the `include` folder to system or project's include path.
 
-Refer to [this](https://github.com/bhumitattarde/CPPKiteConnectex) repository to see a project using CPPKiteConnect and a boilerplate `CMakeLists.txt` to get started.
+Refer to [this](https://github.com/bhumitattarde/kiteppex) repository to see a project using CPPKiteConnect and a boilerplate `CMakeLists.txt` to get started.
 
 ### Build examples and tests:
 ```bash
