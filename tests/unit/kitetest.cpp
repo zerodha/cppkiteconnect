@@ -80,7 +80,7 @@ TEST(kiteTest, loginURLTest) {
 
 TEST(kiteTest, generateSessionTest) {
 
-    std::ifstream jsonFile("../../tests/mock_responses/generate_session.json");
+    std::ifstream jsonFile("../../tests/mock_custom/generate_session.json");
     ASSERT_TRUE(jsonFile);
     rj::IStreamWrapper jsonFWrap(jsonFile);
 
@@ -171,34 +171,34 @@ TEST(kiteTest, getMarginsTest1) {
 
     // Expected values
     EXPECT_EQ(margins.equity.enabled, true);
-    EXPECT_DOUBLE_EQ(margins.equity.net, 15481.524);
+    EXPECT_DOUBLE_EQ(margins.equity.net, 99725.050000000017);
 
     EXPECT_DOUBLE_EQ(margins.equity.available.adHocMargin, 0);
-    EXPECT_DOUBLE_EQ(margins.equity.available.cash, 9929.024);
-    EXPECT_DOUBLE_EQ(margins.equity.available.collateral, 5554.5);
+    EXPECT_DOUBLE_EQ(margins.equity.available.cash, 245431.60000000001);
+    EXPECT_DOUBLE_EQ(margins.equity.available.collateral, 0);
     EXPECT_DOUBLE_EQ(margins.equity.available.intradayPayin, 0);
 
-    EXPECT_DOUBLE_EQ(margins.equity.used.debits, 2);
-    EXPECT_DOUBLE_EQ(margins.equity.used.exposure, 0);
-    EXPECT_DOUBLE_EQ(margins.equity.used.M2MRealised, -2);
+    EXPECT_DOUBLE_EQ(margins.equity.used.debits, 145706.54999999999);
+    EXPECT_DOUBLE_EQ(margins.equity.used.exposure, 38981.25);
+    EXPECT_DOUBLE_EQ(margins.equity.used.M2MRealised, 761.70000000000005);
     EXPECT_DOUBLE_EQ(margins.equity.used.M2MUnrealised, 0);
     EXPECT_DOUBLE_EQ(margins.equity.used.optionPremium, 0);
     EXPECT_DOUBLE_EQ(margins.equity.used.payout, 0);
-    EXPECT_DOUBLE_EQ(margins.equity.used.span, 0);
+    EXPECT_DOUBLE_EQ(margins.equity.used.span, 101989);
     EXPECT_DOUBLE_EQ(margins.equity.used.holdingSales, 0);
     EXPECT_DOUBLE_EQ(margins.equity.used.turnover, 0);
 
     EXPECT_EQ(margins.commodity.enabled, true);
-    EXPECT_DOUBLE_EQ(margins.commodity.net, 29675.93);
+    EXPECT_DOUBLE_EQ(margins.commodity.net, 100661.7);
 
     EXPECT_DOUBLE_EQ(margins.commodity.available.adHocMargin, 0);
-    EXPECT_DOUBLE_EQ(margins.commodity.available.cash, 29249.93);
+    EXPECT_DOUBLE_EQ(margins.commodity.available.cash, 100661.7);
     EXPECT_DOUBLE_EQ(margins.commodity.available.collateral, 0);
     EXPECT_DOUBLE_EQ(margins.commodity.available.intradayPayin, 0);
 
-    EXPECT_DOUBLE_EQ(margins.commodity.used.debits, -426);
+    EXPECT_DOUBLE_EQ(margins.commodity.used.debits, 0);
     EXPECT_DOUBLE_EQ(margins.commodity.used.exposure, 0);
-    EXPECT_DOUBLE_EQ(margins.commodity.used.M2MRealised, 426);
+    EXPECT_DOUBLE_EQ(margins.commodity.used.M2MRealised, 0);
     EXPECT_DOUBLE_EQ(margins.commodity.used.M2MUnrealised, 0);
     EXPECT_DOUBLE_EQ(margins.commodity.used.optionPremium, 0);
     EXPECT_DOUBLE_EQ(margins.commodity.used.payout, 0);
@@ -224,20 +224,20 @@ TEST(kiteTest, getMarginsTest2) {
 
     // Expected values
     EXPECT_EQ(margins.enabled, true);
-    EXPECT_DOUBLE_EQ(margins.net, 15481.524);
+    EXPECT_DOUBLE_EQ(margins.net, 99725.050000000017);
 
     EXPECT_DOUBLE_EQ(margins.available.adHocMargin, 0);
-    EXPECT_DOUBLE_EQ(margins.available.cash, 9929.024);
-    EXPECT_DOUBLE_EQ(margins.available.collateral, 5554.5);
+    EXPECT_DOUBLE_EQ(margins.available.cash, 245431.60000000001);
+    EXPECT_DOUBLE_EQ(margins.available.collateral, 0);
     EXPECT_DOUBLE_EQ(margins.available.intradayPayin, 0);
 
-    EXPECT_DOUBLE_EQ(margins.used.debits, 2);
-    EXPECT_DOUBLE_EQ(margins.used.exposure, 0);
-    EXPECT_DOUBLE_EQ(margins.used.M2MRealised, -2);
+    EXPECT_DOUBLE_EQ(margins.used.debits, 145706.54999999999);
+    EXPECT_DOUBLE_EQ(margins.used.exposure, 38981.25);
+    EXPECT_DOUBLE_EQ(margins.used.M2MRealised, 761.70000000000005);
     EXPECT_DOUBLE_EQ(margins.used.M2MUnrealised, 0);
     EXPECT_DOUBLE_EQ(margins.used.optionPremium, 0);
     EXPECT_DOUBLE_EQ(margins.used.payout, 0);
-    EXPECT_DOUBLE_EQ(margins.used.span, 0);
+    EXPECT_DOUBLE_EQ(margins.used.span, 101989);
     EXPECT_DOUBLE_EQ(margins.used.holdingSales, 0);
     EXPECT_DOUBLE_EQ(margins.used.turnover, 0);
 }
@@ -332,210 +332,36 @@ TEST(kiteTest, ordersTest) {
     std::vector<kc::order> Orders = Kite.orders();
 
     // Expected values
-    ASSERT_THAT(Orders.size(), 7);
+    ASSERT_THAT(Orders.size(), 5);
 
     kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
-    EXPECT_EQ(order1.placedBy, "DA0017");
-    EXPECT_EQ(order1.orderID, "171228000850038");
-    EXPECT_EQ(order1.exchangeOrderID, "211736200053802");
+    EXPECT_EQ(order1.placedBy, "XXXXXX");
+    EXPECT_EQ(order1.orderID, "100000000000000");
+    EXPECT_EQ(order1.exchangeOrderID, "200000000000000");
     EXPECT_EQ(order1.parentOrderID, "");
-    EXPECT_EQ(order1.status, "COMPLETE");
+    EXPECT_EQ(order1.status, "CANCELLED");
     EXPECT_EQ(order1.statusMessage, "");
-    EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:39:14");
-    EXPECT_EQ(order1.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order1.exchangeTimestamp, "2017-12-28 11:39:14");
+    EXPECT_EQ(order1.orderTimestamp, "2021-05-31 09:18:57");
+    EXPECT_EQ(order1.exchangeUpdateTimestamp, "2021-05-31 09:18:58");
+    EXPECT_EQ(order1.exchangeTimestamp, "2021-05-31 09:15:38");
     EXPECT_EQ(order1.rejectedBy, "");
     EXPECT_EQ(order1.variety, "regular");
-    EXPECT_EQ(order1.exchange, "MCX");
-    EXPECT_EQ(order1.tradingSymbol, "GOLDGUINEA17DECFUT");
-    EXPECT_EQ(order1.instrumentToken, 53505799);
+    EXPECT_EQ(order1.exchange, "CDS");
+    EXPECT_EQ(order1.tradingSymbol, "USDINR21JUNFUT");
+    EXPECT_EQ(order1.instrumentToken, 412675);
     EXPECT_EQ(order1.orderType, "LIMIT");
-    EXPECT_EQ(order1.transactionType, "SELL");
+    EXPECT_EQ(order1.transactionType, "BUY");
     EXPECT_EQ(order1.validity, "DAY");
     EXPECT_EQ(order1.product, "NRML");
-    EXPECT_EQ(order1.quantity, 3);
+    EXPECT_EQ(order1.quantity, 1);
     EXPECT_EQ(order1.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order1.price, 23337);
+    EXPECT_DOUBLE_EQ(order1.price, 72);
     EXPECT_DOUBLE_EQ(order1.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order1.averagePrice, 23337);
-    EXPECT_EQ(order1.filledQuantity, 3);
-    EXPECT_EQ(order1.pendingQuantity, 0);
-    EXPECT_EQ(order1.cancelledQuantity, 0);
-
-    kc::order order2 = Orders[1];
-    EXPECT_EQ(order2.accountID, "");
-    EXPECT_EQ(order2.placedBy, "DA0017");
-    EXPECT_EQ(order2.orderID, "171228000912853");
-    EXPECT_EQ(order2.exchangeOrderID, "1300000002730006");
-    EXPECT_EQ(order2.parentOrderID, "");
-    EXPECT_EQ(order2.status, "COMPLETE");
-    EXPECT_EQ(order2.statusMessage, "");
-    EXPECT_EQ(order2.orderTimestamp, "2017-12-28 12:09:31");
-    EXPECT_EQ(order2.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order2.exchangeTimestamp, "2017-12-28 12:00:28");
-    EXPECT_EQ(order2.rejectedBy, "");
-    EXPECT_EQ(order2.variety, "co");
-    EXPECT_EQ(order2.exchange, "NSE");
-    EXPECT_EQ(order2.tradingSymbol, "SBIN");
-    EXPECT_EQ(order2.instrumentToken, 779521);
-    EXPECT_EQ(order2.orderType, "LIMIT");
-    EXPECT_EQ(order2.transactionType, "BUY");
-    EXPECT_EQ(order2.validity, "DAY");
-    EXPECT_EQ(order2.product, "CO");
-    EXPECT_EQ(order2.quantity, 1);
-    EXPECT_EQ(order2.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order2.price, 311);
-    EXPECT_DOUBLE_EQ(order2.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order2.averagePrice, 311);
-    EXPECT_EQ(order2.filledQuantity, 1);
-    EXPECT_EQ(order2.pendingQuantity, 0);
-    EXPECT_EQ(order2.cancelledQuantity, 0);
-
-    kc::order order3 = Orders[2];
-    EXPECT_EQ(order3.accountID, "");
-    EXPECT_EQ(order3.placedBy, "DA0017");
-    EXPECT_EQ(order3.orderID, "171228001116651");
-    EXPECT_EQ(order3.exchangeOrderID, "211736200111089");
-    EXPECT_EQ(order3.parentOrderID, "");
-    EXPECT_EQ(order3.status, "COMPLETE");
-    EXPECT_EQ(order3.statusMessage, "");
-    EXPECT_EQ(order3.orderTimestamp, "2017-12-28 13:08:49");
-    EXPECT_EQ(order3.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order3.exchangeTimestamp, "2017-12-28 13:08:49");
-    EXPECT_EQ(order3.rejectedBy, "");
-    EXPECT_EQ(order3.variety, "regular");
-    EXPECT_EQ(order3.exchange, "MCX");
-    EXPECT_EQ(order3.tradingSymbol, "GOLDGUINEA17DECFUT");
-    EXPECT_EQ(order3.instrumentToken, 53505799);
-    EXPECT_EQ(order3.orderType, "LIMIT");
-    EXPECT_EQ(order3.transactionType, "BUY");
-    EXPECT_EQ(order3.validity, "DAY");
-    EXPECT_EQ(order3.product, "NRML");
-    EXPECT_EQ(order3.quantity, 1);
-    EXPECT_EQ(order3.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order3.price, 23388);
-    EXPECT_DOUBLE_EQ(order3.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order3.averagePrice, 23388);
-    EXPECT_EQ(order3.filledQuantity, 1);
-    EXPECT_EQ(order3.pendingQuantity, 0);
-    EXPECT_EQ(order3.cancelledQuantity, 0);
-
-    kc::order order4 = Orders[3];
-    EXPECT_EQ(order4.accountID, "");
-    EXPECT_EQ(order4.placedBy, "DA0017");
-    EXPECT_EQ(order4.orderID, "171228000912854");
-    EXPECT_EQ(order4.exchangeOrderID, "1300000002730007");
-    EXPECT_EQ(order4.parentOrderID, "171228000912853");
-    EXPECT_EQ(order4.status, "COMPLETE");
-    EXPECT_EQ(order4.statusMessage, "");
-    EXPECT_EQ(order4.orderTimestamp, "2017-12-28 15:00:40");
-    EXPECT_EQ(order4.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order4.exchangeTimestamp, "2017-12-28 15:00:40");
-    EXPECT_EQ(order4.rejectedBy, "");
-    EXPECT_EQ(order4.variety, "co");
-    EXPECT_EQ(order4.exchange, "NSE");
-    EXPECT_EQ(order4.tradingSymbol, "SBIN");
-    EXPECT_EQ(order4.instrumentToken, 779521);
-    EXPECT_EQ(order4.orderType, "LIMIT");
-    EXPECT_EQ(order4.transactionType, "SELL");
-    EXPECT_EQ(order4.validity, "DAY");
-    EXPECT_EQ(order4.product, "CO");
-    EXPECT_EQ(order4.quantity, 1);
-    EXPECT_EQ(order4.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order4.price, 0);
-    EXPECT_DOUBLE_EQ(order4.triggerPrice, 309);
-    EXPECT_DOUBLE_EQ(order4.averagePrice, 309);
-    EXPECT_EQ(order4.filledQuantity, 1);
-    EXPECT_EQ(order4.pendingQuantity, 0);
-    EXPECT_EQ(order4.cancelledQuantity, 0);
-
-    kc::order order5 = Orders[4];
-    EXPECT_EQ(order5.accountID, "");
-    EXPECT_EQ(order5.placedBy, "DA0017");
-    EXPECT_EQ(order5.orderID, "171228001686586");
-    EXPECT_EQ(order5.exchangeOrderID, "211736200181323");
-    EXPECT_EQ(order5.parentOrderID, "");
-    EXPECT_EQ(order5.status, "COMPLETE");
-    EXPECT_EQ(order5.statusMessage, "");
-    EXPECT_EQ(order5.orderTimestamp, "2017-12-28 15:28:56");
-    EXPECT_EQ(order5.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order5.exchangeTimestamp, "2017-12-28 15:28:56");
-    EXPECT_EQ(order5.rejectedBy, "");
-    EXPECT_EQ(order5.variety, "regular");
-    EXPECT_EQ(order5.exchange, "MCX");
-    EXPECT_EQ(order5.tradingSymbol, "GOLDGUINEA17DECFUT");
-    EXPECT_EQ(order5.instrumentToken, 53505799);
-    EXPECT_EQ(order5.orderType, "LIMIT");
-    EXPECT_EQ(order5.transactionType, "SELL");
-    EXPECT_EQ(order5.validity, "DAY");
-    EXPECT_EQ(order5.product, "NRML");
-    EXPECT_EQ(order5.quantity, 1);
-    EXPECT_EQ(order5.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order5.price, 23349);
-    EXPECT_DOUBLE_EQ(order5.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order5.averagePrice, 23349);
-    EXPECT_EQ(order5.filledQuantity, 1);
-    EXPECT_EQ(order5.pendingQuantity, 0);
-    EXPECT_EQ(order5.cancelledQuantity, 0);
-
-    kc::order order6 = Orders[5];
-    EXPECT_EQ(order6.accountID, "");
-    EXPECT_EQ(order6.placedBy, "DA0017");
-    EXPECT_EQ(order6.orderID, "171228001730092");
-    EXPECT_EQ(order6.exchangeOrderID, "211736200297236");
-    EXPECT_EQ(order6.parentOrderID, "");
-    EXPECT_EQ(order6.status, "COMPLETE");
-    EXPECT_EQ(order6.statusMessage, "");
-    EXPECT_EQ(order6.orderTimestamp, "2017-12-28 19:28:27");
-    EXPECT_EQ(order6.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order6.exchangeTimestamp, "2017-12-28 19:28:27");
-    EXPECT_EQ(order6.rejectedBy, "");
-    EXPECT_EQ(order6.variety, "regular");
-    EXPECT_EQ(order6.exchange, "MCX");
-    EXPECT_EQ(order6.tradingSymbol, "LEADMINI17DECFUT");
-    EXPECT_EQ(order6.instrumentToken, 53496327);
-    EXPECT_EQ(order6.orderType, "LIMIT");
-    EXPECT_EQ(order6.transactionType, "BUY");
-    EXPECT_EQ(order6.validity, "DAY");
-    EXPECT_EQ(order6.product, "NRML");
-    EXPECT_EQ(order6.quantity, 1);
-    EXPECT_EQ(order6.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order6.price, 161.05);
-    EXPECT_DOUBLE_EQ(order6.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order6.averagePrice, 161.05);
-    EXPECT_EQ(order6.filledQuantity, 1);
-    EXPECT_EQ(order6.pendingQuantity, 0);
-    EXPECT_EQ(order6.cancelledQuantity, 0);
-
-    kc::order order7 = Orders[6];
-    EXPECT_EQ(order7.accountID, "");
-    EXPECT_EQ(order7.placedBy, "DA0017");
-    EXPECT_EQ(order7.orderID, "171228001731490");
-    EXPECT_EQ(order7.exchangeOrderID, "211736200302177");
-    EXPECT_EQ(order7.parentOrderID, "");
-    EXPECT_EQ(order7.status, "COMPLETE");
-    EXPECT_EQ(order7.statusMessage, "");
-    EXPECT_EQ(order7.orderTimestamp, "2017-12-28 19:37:12");
-    EXPECT_EQ(order7.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order7.exchangeTimestamp, "2017-12-28 19:37:12");
-    EXPECT_EQ(order7.rejectedBy, "");
-    EXPECT_EQ(order7.variety, "regular");
-    EXPECT_EQ(order7.exchange, "MCX");
-    EXPECT_EQ(order7.tradingSymbol, "LEADMINI17DECFUT");
-    EXPECT_EQ(order7.instrumentToken, 53496327);
-    EXPECT_EQ(order7.orderType, "LIMIT");
-    EXPECT_EQ(order7.transactionType, "SELL");
-    EXPECT_EQ(order7.validity, "DAY");
-    EXPECT_EQ(order7.product, "NRML");
-    EXPECT_EQ(order7.quantity, 1);
-    EXPECT_EQ(order7.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order7.price, 161.2);
-    EXPECT_DOUBLE_EQ(order7.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order7.averagePrice, 161.2);
-    EXPECT_EQ(order7.filledQuantity, 1);
-    EXPECT_EQ(order7.pendingQuantity, 0);
-    EXPECT_EQ(order7.cancelledQuantity, 0);
+    EXPECT_DOUBLE_EQ(order1.averagePrice, 0);
+    EXPECT_EQ(order1.filledQuantity, 0);
+    EXPECT_EQ(order1.pendingQuantity, 1);
+    EXPECT_EQ(order1.cancelledQuantity, 1);
 }
 
 TEST(kiteTest, orderHistoryTest) {
@@ -554,210 +380,36 @@ TEST(kiteTest, orderHistoryTest) {
     std::vector<kc::order> Orders = Kite.orderHistory("arg1");
 
     // Expected values
-    ASSERT_THAT(Orders.size(), 7);
+    ASSERT_THAT(Orders.size(), 5);
 
     kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
-    EXPECT_EQ(order1.placedBy, "DA0017");
-    EXPECT_EQ(order1.orderID, "171228000850038");
-    EXPECT_EQ(order1.exchangeOrderID, "211736200053802");
+    EXPECT_EQ(order1.placedBy, "XXXXXX");
+    EXPECT_EQ(order1.orderID, "100000000000000");
+    EXPECT_EQ(order1.exchangeOrderID, "200000000000000");
     EXPECT_EQ(order1.parentOrderID, "");
-    EXPECT_EQ(order1.status, "COMPLETE");
+    EXPECT_EQ(order1.status, "CANCELLED");
     EXPECT_EQ(order1.statusMessage, "");
-    EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:39:14");
-    EXPECT_EQ(order1.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order1.exchangeTimestamp, "2017-12-28 11:39:14");
+    EXPECT_EQ(order1.orderTimestamp, "2021-05-31 09:18:57");
+    EXPECT_EQ(order1.exchangeUpdateTimestamp, "2021-05-31 09:18:58");
+    EXPECT_EQ(order1.exchangeTimestamp, "2021-05-31 09:15:38");
     EXPECT_EQ(order1.rejectedBy, "");
     EXPECT_EQ(order1.variety, "regular");
-    EXPECT_EQ(order1.exchange, "MCX");
-    EXPECT_EQ(order1.tradingSymbol, "GOLDGUINEA17DECFUT");
-    EXPECT_EQ(order1.instrumentToken, 53505799);
+    EXPECT_EQ(order1.exchange, "CDS");
+    EXPECT_EQ(order1.tradingSymbol, "USDINR21JUNFUT");
+    EXPECT_EQ(order1.instrumentToken, 412675);
     EXPECT_EQ(order1.orderType, "LIMIT");
-    EXPECT_EQ(order1.transactionType, "SELL");
+    EXPECT_EQ(order1.transactionType, "BUY");
     EXPECT_EQ(order1.validity, "DAY");
     EXPECT_EQ(order1.product, "NRML");
-    EXPECT_EQ(order1.quantity, 3);
+    EXPECT_EQ(order1.quantity, 1);
     EXPECT_EQ(order1.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order1.price, 23337);
+    EXPECT_DOUBLE_EQ(order1.price, 72);
     EXPECT_DOUBLE_EQ(order1.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order1.averagePrice, 23337);
-    EXPECT_EQ(order1.filledQuantity, 3);
-    EXPECT_EQ(order1.pendingQuantity, 0);
-    EXPECT_EQ(order1.cancelledQuantity, 0);
-
-    kc::order order2 = Orders[1];
-    EXPECT_EQ(order2.accountID, "");
-    EXPECT_EQ(order2.placedBy, "DA0017");
-    EXPECT_EQ(order2.orderID, "171228000912853");
-    EXPECT_EQ(order2.exchangeOrderID, "1300000002730006");
-    EXPECT_EQ(order2.parentOrderID, "");
-    EXPECT_EQ(order2.status, "COMPLETE");
-    EXPECT_EQ(order2.statusMessage, "");
-    EXPECT_EQ(order2.orderTimestamp, "2017-12-28 12:09:31");
-    EXPECT_EQ(order2.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order2.exchangeTimestamp, "2017-12-28 12:00:28");
-    EXPECT_EQ(order2.rejectedBy, "");
-    EXPECT_EQ(order2.variety, "co");
-    EXPECT_EQ(order2.exchange, "NSE");
-    EXPECT_EQ(order2.tradingSymbol, "SBIN");
-    EXPECT_EQ(order2.instrumentToken, 779521);
-    EXPECT_EQ(order2.orderType, "LIMIT");
-    EXPECT_EQ(order2.transactionType, "BUY");
-    EXPECT_EQ(order2.validity, "DAY");
-    EXPECT_EQ(order2.product, "CO");
-    EXPECT_EQ(order2.quantity, 1);
-    EXPECT_EQ(order2.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order2.price, 311);
-    EXPECT_DOUBLE_EQ(order2.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order2.averagePrice, 311);
-    EXPECT_EQ(order2.filledQuantity, 1);
-    EXPECT_EQ(order2.pendingQuantity, 0);
-    EXPECT_EQ(order2.cancelledQuantity, 0);
-
-    kc::order order3 = Orders[2];
-    EXPECT_EQ(order3.accountID, "");
-    EXPECT_EQ(order3.placedBy, "DA0017");
-    EXPECT_EQ(order3.orderID, "171228001116651");
-    EXPECT_EQ(order3.exchangeOrderID, "211736200111089");
-    EXPECT_EQ(order3.parentOrderID, "");
-    EXPECT_EQ(order3.status, "COMPLETE");
-    EXPECT_EQ(order3.statusMessage, "");
-    EXPECT_EQ(order3.orderTimestamp, "2017-12-28 13:08:49");
-    EXPECT_EQ(order3.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order3.exchangeTimestamp, "2017-12-28 13:08:49");
-    EXPECT_EQ(order3.rejectedBy, "");
-    EXPECT_EQ(order3.variety, "regular");
-    EXPECT_EQ(order3.exchange, "MCX");
-    EXPECT_EQ(order3.tradingSymbol, "GOLDGUINEA17DECFUT");
-    EXPECT_EQ(order3.instrumentToken, 53505799);
-    EXPECT_EQ(order3.orderType, "LIMIT");
-    EXPECT_EQ(order3.transactionType, "BUY");
-    EXPECT_EQ(order3.validity, "DAY");
-    EXPECT_EQ(order3.product, "NRML");
-    EXPECT_EQ(order3.quantity, 1);
-    EXPECT_EQ(order3.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order3.price, 23388);
-    EXPECT_DOUBLE_EQ(order3.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order3.averagePrice, 23388);
-    EXPECT_EQ(order3.filledQuantity, 1);
-    EXPECT_EQ(order3.pendingQuantity, 0);
-    EXPECT_EQ(order3.cancelledQuantity, 0);
-
-    kc::order order4 = Orders[3];
-    EXPECT_EQ(order4.accountID, "");
-    EXPECT_EQ(order4.placedBy, "DA0017");
-    EXPECT_EQ(order4.orderID, "171228000912854");
-    EXPECT_EQ(order4.exchangeOrderID, "1300000002730007");
-    EXPECT_EQ(order4.parentOrderID, "171228000912853");
-    EXPECT_EQ(order4.status, "COMPLETE");
-    EXPECT_EQ(order4.statusMessage, "");
-    EXPECT_EQ(order4.orderTimestamp, "2017-12-28 15:00:40");
-    EXPECT_EQ(order4.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order4.exchangeTimestamp, "2017-12-28 15:00:40");
-    EXPECT_EQ(order4.rejectedBy, "");
-    EXPECT_EQ(order4.variety, "co");
-    EXPECT_EQ(order4.exchange, "NSE");
-    EXPECT_EQ(order4.tradingSymbol, "SBIN");
-    EXPECT_EQ(order4.instrumentToken, 779521);
-    EXPECT_EQ(order4.orderType, "LIMIT");
-    EXPECT_EQ(order4.transactionType, "SELL");
-    EXPECT_EQ(order4.validity, "DAY");
-    EXPECT_EQ(order4.product, "CO");
-    EXPECT_EQ(order4.quantity, 1);
-    EXPECT_EQ(order4.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order4.price, 0);
-    EXPECT_DOUBLE_EQ(order4.triggerPrice, 309);
-    EXPECT_DOUBLE_EQ(order4.averagePrice, 309);
-    EXPECT_EQ(order4.filledQuantity, 1);
-    EXPECT_EQ(order4.pendingQuantity, 0);
-    EXPECT_EQ(order4.cancelledQuantity, 0);
-
-    kc::order order5 = Orders[4];
-    EXPECT_EQ(order5.accountID, "");
-    EXPECT_EQ(order5.placedBy, "DA0017");
-    EXPECT_EQ(order5.orderID, "171228001686586");
-    EXPECT_EQ(order5.exchangeOrderID, "211736200181323");
-    EXPECT_EQ(order5.parentOrderID, "");
-    EXPECT_EQ(order5.status, "COMPLETE");
-    EXPECT_EQ(order5.statusMessage, "");
-    EXPECT_EQ(order5.orderTimestamp, "2017-12-28 15:28:56");
-    EXPECT_EQ(order5.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order5.exchangeTimestamp, "2017-12-28 15:28:56");
-    EXPECT_EQ(order5.rejectedBy, "");
-    EXPECT_EQ(order5.variety, "regular");
-    EXPECT_EQ(order5.exchange, "MCX");
-    EXPECT_EQ(order5.tradingSymbol, "GOLDGUINEA17DECFUT");
-    EXPECT_EQ(order5.instrumentToken, 53505799);
-    EXPECT_EQ(order5.orderType, "LIMIT");
-    EXPECT_EQ(order5.transactionType, "SELL");
-    EXPECT_EQ(order5.validity, "DAY");
-    EXPECT_EQ(order5.product, "NRML");
-    EXPECT_EQ(order5.quantity, 1);
-    EXPECT_EQ(order5.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order5.price, 23349);
-    EXPECT_DOUBLE_EQ(order5.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order5.averagePrice, 23349);
-    EXPECT_EQ(order5.filledQuantity, 1);
-    EXPECT_EQ(order5.pendingQuantity, 0);
-    EXPECT_EQ(order5.cancelledQuantity, 0);
-
-    kc::order order6 = Orders[5];
-    EXPECT_EQ(order6.accountID, "");
-    EXPECT_EQ(order6.placedBy, "DA0017");
-    EXPECT_EQ(order6.orderID, "171228001730092");
-    EXPECT_EQ(order6.exchangeOrderID, "211736200297236");
-    EXPECT_EQ(order6.parentOrderID, "");
-    EXPECT_EQ(order6.status, "COMPLETE");
-    EXPECT_EQ(order6.statusMessage, "");
-    EXPECT_EQ(order6.orderTimestamp, "2017-12-28 19:28:27");
-    EXPECT_EQ(order6.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order6.exchangeTimestamp, "2017-12-28 19:28:27");
-    EXPECT_EQ(order6.rejectedBy, "");
-    EXPECT_EQ(order6.variety, "regular");
-    EXPECT_EQ(order6.exchange, "MCX");
-    EXPECT_EQ(order6.tradingSymbol, "LEADMINI17DECFUT");
-    EXPECT_EQ(order6.instrumentToken, 53496327);
-    EXPECT_EQ(order6.orderType, "LIMIT");
-    EXPECT_EQ(order6.transactionType, "BUY");
-    EXPECT_EQ(order6.validity, "DAY");
-    EXPECT_EQ(order6.product, "NRML");
-    EXPECT_EQ(order6.quantity, 1);
-    EXPECT_EQ(order6.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order6.price, 161.05);
-    EXPECT_DOUBLE_EQ(order6.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order6.averagePrice, 161.05);
-    EXPECT_EQ(order6.filledQuantity, 1);
-    EXPECT_EQ(order6.pendingQuantity, 0);
-    EXPECT_EQ(order6.cancelledQuantity, 0);
-
-    kc::order order7 = Orders[6];
-    EXPECT_EQ(order7.accountID, "");
-    EXPECT_EQ(order7.placedBy, "DA0017");
-    EXPECT_EQ(order7.orderID, "171228001731490");
-    EXPECT_EQ(order7.exchangeOrderID, "211736200302177");
-    EXPECT_EQ(order7.parentOrderID, "");
-    EXPECT_EQ(order7.status, "COMPLETE");
-    EXPECT_EQ(order7.statusMessage, "");
-    EXPECT_EQ(order7.orderTimestamp, "2017-12-28 19:37:12");
-    EXPECT_EQ(order7.exchangeUpdateTimestamp, "");
-    EXPECT_EQ(order7.exchangeTimestamp, "2017-12-28 19:37:12");
-    EXPECT_EQ(order7.rejectedBy, "");
-    EXPECT_EQ(order7.variety, "regular");
-    EXPECT_EQ(order7.exchange, "MCX");
-    EXPECT_EQ(order7.tradingSymbol, "LEADMINI17DECFUT");
-    EXPECT_EQ(order7.instrumentToken, 53496327);
-    EXPECT_EQ(order7.orderType, "LIMIT");
-    EXPECT_EQ(order7.transactionType, "SELL");
-    EXPECT_EQ(order7.validity, "DAY");
-    EXPECT_EQ(order7.product, "NRML");
-    EXPECT_EQ(order7.quantity, 1);
-    EXPECT_EQ(order7.disclosedQuantity, 0);
-    EXPECT_DOUBLE_EQ(order7.price, 161.2);
-    EXPECT_DOUBLE_EQ(order7.triggerPrice, 0);
-    EXPECT_DOUBLE_EQ(order7.averagePrice, 161.2);
-    EXPECT_EQ(order7.filledQuantity, 1);
-    EXPECT_EQ(order7.pendingQuantity, 0);
-    EXPECT_EQ(order7.cancelledQuantity, 0);
+    EXPECT_DOUBLE_EQ(order1.averagePrice, 0);
+    EXPECT_EQ(order1.filledQuantity, 0);
+    EXPECT_EQ(order1.pendingQuantity, 1);
+    EXPECT_EQ(order1.cancelledQuantity, 1);
 }
 
 TEST(kiteTest, tradesTest) {
@@ -776,18 +428,18 @@ TEST(kiteTest, tradesTest) {
     std::vector<kc::trade> Trades = Kite.trades();
 
     // Expected values
-    ASSERT_EQ(Trades.size(), 1);
+    ASSERT_EQ(Trades.size(), 4);
 
     kc::trade trade1 = Trades[0];
-    EXPECT_DOUBLE_EQ(trade1.averagePrice, 310.7);
+    EXPECT_DOUBLE_EQ(trade1.averagePrice, 420.64999999999998);
     EXPECT_EQ(trade1.exchange, "NSE");
-    EXPECT_EQ(trade1.exchangeOrderID, "1300000001887410");
-    EXPECT_EQ(trade1.exchangeTimestamp, "2017-12-29 12:02:05");
+    EXPECT_EQ(trade1.exchangeOrderID, "300000000000000");
+    EXPECT_EQ(trade1.exchangeTimestamp, "2021-05-31 09:16:39");
     EXPECT_EQ(trade1.InstrumentToken, 779521);
-    EXPECT_EQ(trade1.orderID, "171229000724687");
+    EXPECT_EQ(trade1.orderID, "200000000000000");
     EXPECT_EQ(trade1.product, "CNC");
     EXPECT_DOUBLE_EQ(trade1.quantity, 1);
-    EXPECT_EQ(trade1.tradeID, "75894751");
+    EXPECT_EQ(trade1.tradeID, "10000000");
     EXPECT_EQ(trade1.tradingSymbol, "SBIN");
     EXPECT_EQ(trade1.transactionType, "BUY");
 }
@@ -811,16 +463,16 @@ TEST(kiteTest, orderTradesTest) {
     ASSERT_EQ(Trades.size(), 1);
 
     kc::trade trade1 = Trades[0];
-    EXPECT_DOUBLE_EQ(trade1.averagePrice, 310.7);
-    EXPECT_EQ(trade1.exchange, "NSE");
-    EXPECT_EQ(trade1.exchangeOrderID, "1300000001887410");
-    EXPECT_EQ(trade1.exchangeTimestamp, "2017-12-29 12:02:05");
-    EXPECT_EQ(trade1.InstrumentToken, 779521);
-    EXPECT_EQ(trade1.orderID, "171229000724687");
-    EXPECT_EQ(trade1.product, "CNC");
+    EXPECT_DOUBLE_EQ(trade1.averagePrice, 4852);
+    EXPECT_EQ(trade1.exchange, "MCX");
+    EXPECT_EQ(trade1.exchangeOrderID, "300000000000000");
+    EXPECT_EQ(trade1.exchangeTimestamp, "2021-05-31 16:00:36");
+    EXPECT_EQ(trade1.InstrumentToken, 58424839);
+    EXPECT_EQ(trade1.orderID, "200000000000000");
+    EXPECT_EQ(trade1.product, "NRML");
     EXPECT_DOUBLE_EQ(trade1.quantity, 1);
-    EXPECT_EQ(trade1.tradeID, "75894751");
-    EXPECT_EQ(trade1.tradingSymbol, "SBIN");
+    EXPECT_EQ(trade1.tradeID, "10000000");
+    EXPECT_EQ(trade1.tradingSymbol, "GOLDPETAL21JUNFUT");
     EXPECT_EQ(trade1.transactionType, "BUY");
 }
 
@@ -1000,13 +652,13 @@ TEST(kiteTest, holdingsTest) {
     std::vector<kc::holding> Holdings = Kite.holdings();
 
     // Expected values
-    ASSERT_EQ(Holdings.size(), 3);
+    ASSERT_EQ(Holdings.size(), 19);
 
     kc::holding holding1 = Holdings[0];
-    EXPECT_EQ(holding1.tradingsymbol, "BENGALASM");
+    EXPECT_EQ(holding1.tradingsymbol, "AXTEL");
     EXPECT_EQ(holding1.exchange, "BSE");
-    EXPECT_EQ(holding1.instrumentToken, 136472324);
-    EXPECT_EQ(holding1.ISIN, "INE083K01017");
+    EXPECT_EQ(holding1.instrumentToken, 134105604);
+    EXPECT_EQ(holding1.ISIN, "INE767C01012");
     EXPECT_EQ(holding1.product, "CNC");
     EXPECT_DOUBLE_EQ(holding1.price, 0);
     EXPECT_EQ(holding1.quantity, 1);
@@ -1014,50 +666,12 @@ TEST(kiteTest, holdingsTest) {
     EXPECT_EQ(holding1.realisedQuantity, 1);
     EXPECT_EQ(holding1.collateralQuantity, 0);
     EXPECT_EQ(holding1.collateralType, "");
-    EXPECT_DOUBLE_EQ(holding1.averagePrice, 1150);
-    EXPECT_DOUBLE_EQ(holding1.lastPrice, 2620);
-    EXPECT_DOUBLE_EQ(holding1.closePrice, 2751.1);
-    EXPECT_DOUBLE_EQ(holding1.PnL, 1470);
-    EXPECT_DOUBLE_EQ(holding1.dayChange, -131.0999999999999);
-    EXPECT_DOUBLE_EQ(holding1.dayChangePercentage, -4.7653665806404675);
-
-    kc::holding holding2 = Holdings[1];
-    EXPECT_EQ(holding2.tradingsymbol, "CONFIPET");
-    EXPECT_EQ(holding2.exchange, "BSE");
-    EXPECT_EQ(holding2.instrumentToken, 134868228);
-    EXPECT_EQ(holding2.ISIN, "INE552D01024");
-    EXPECT_EQ(holding2.product, "CNC");
-    EXPECT_DOUBLE_EQ(holding2.price, 0);
-    EXPECT_EQ(holding2.quantity, 1);
-    EXPECT_EQ(holding2.t1Quantity, 0);
-    EXPECT_EQ(holding2.realisedQuantity, 1);
-    EXPECT_EQ(holding2.collateralQuantity, 0);
-    EXPECT_EQ(holding2.collateralType, "");
-    EXPECT_DOUBLE_EQ(holding2.averagePrice, 5.89);
-    EXPECT_DOUBLE_EQ(holding2.lastPrice, 31.35);
-    EXPECT_DOUBLE_EQ(holding2.closePrice, 31.5);
-    EXPECT_DOUBLE_EQ(holding2.PnL, 25.46);
-    EXPECT_DOUBLE_EQ(holding2.dayChange, -0.14999999999999858);
-    EXPECT_DOUBLE_EQ(holding2.dayChangePercentage, -0.4761904761904716);
-
-    kc::holding holding3 = Holdings[2];
-    EXPECT_EQ(holding3.tradingsymbol, "IPOWER");
-    EXPECT_EQ(holding3.exchange, "BSE");
-    EXPECT_EQ(holding3.instrumentToken, 131175684);
-    EXPECT_EQ(holding3.ISIN, "INE468F01010");
-    EXPECT_EQ(holding3.product, "CNC");
-    EXPECT_DOUBLE_EQ(holding3.price, 0);
-    EXPECT_EQ(holding3.quantity, 1);
-    EXPECT_EQ(holding3.t1Quantity, 0);
-    EXPECT_EQ(holding3.realisedQuantity, 1);
-    EXPECT_EQ(holding3.collateralQuantity, 0);
-    EXPECT_EQ(holding3.collateralType, "");
-    EXPECT_DOUBLE_EQ(holding3.averagePrice, 0);
-    EXPECT_DOUBLE_EQ(holding3.lastPrice, 1.95);
-    EXPECT_DOUBLE_EQ(holding3.closePrice, 0);
-    EXPECT_DOUBLE_EQ(holding3.PnL, 1.95);
-    EXPECT_DOUBLE_EQ(holding3.dayChange, 0);
-    EXPECT_DOUBLE_EQ(holding3.dayChangePercentage, 0);
+    EXPECT_DOUBLE_EQ(holding1.averagePrice, 261.5);
+    EXPECT_DOUBLE_EQ(holding1.lastPrice, 313);
+    EXPECT_DOUBLE_EQ(holding1.closePrice, 308.8);
+    EXPECT_DOUBLE_EQ(holding1.PnL, 51.5);
+    EXPECT_DOUBLE_EQ(holding1.dayChange, 4.1999999999999886);
+    EXPECT_DOUBLE_EQ(holding1.dayChangePercentage, 1.3601036269430016);
 }
 
 TEST(kiteTest, getPositionsTest) {
@@ -1268,7 +882,7 @@ TEST(kiteTest, getPositionsTest) {
 
 TEST(kiteTest, convertPositionTest) {
 
-    std::ifstream jsonFile("../../tests/mock_responses/convert_position.json");
+    std::ifstream jsonFile("../../tests/mock_custom/convert_position.json");
     ASSERT_TRUE(jsonFile);
     rj::IStreamWrapper jsonFWrap(jsonFile);
 
@@ -1305,19 +919,19 @@ TEST(kiteTest, getQuoteTest) {
     kc::quote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
-    EXPECT_EQ(Quote.timestamp, "2018-01-12 10:40:29");
-    EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.8);
-    EXPECT_EQ(Quote.lastQuantity, 55);
-    EXPECT_EQ(Quote.lastTradeTime, "2018-01-12 10:40:28");
-    EXPECT_EQ(Quote.averagePrice, 1077.03);
-    EXPECT_EQ(Quote.volume, 1368065);
-    EXPECT_EQ(Quote.buyQuantity, 240020);
-    EXPECT_EQ(Quote.sellQuantity, 509481);
+    EXPECT_EQ(Quote.timestamp, "2021-06-08 15:45:56");
+    EXPECT_DOUBLE_EQ(Quote.lastPrice, 1412.95);
+    EXPECT_EQ(Quote.lastQuantity, 5);
+    EXPECT_EQ(Quote.lastTradeTime, "2021-06-08 15:45:52");
+    EXPECT_EQ(Quote.averagePrice, 1412.47);
+    EXPECT_EQ(Quote.volume, 7360198);
+    EXPECT_EQ(Quote.buyQuantity, 0);
+    EXPECT_EQ(Quote.sellQuantity, 5191);
 
-    EXPECT_EQ(Quote.OHLC.open, 1085.8);
-    EXPECT_EQ(Quote.OHLC.high, 1085.9);
-    EXPECT_EQ(Quote.OHLC.low, 1070.9);
-    EXPECT_EQ(Quote.OHLC.close, 1075.8);
+    EXPECT_EQ(Quote.OHLC.open, 1396);
+    EXPECT_EQ(Quote.OHLC.high, 1421.75);
+    EXPECT_EQ(Quote.OHLC.low, 1395.55);
+    EXPECT_EQ(Quote.OHLC.close, 1389.65);
 
     EXPECT_DOUBLE_EQ(Quote.netChange, 0);
     EXPECT_DOUBLE_EQ(Quote.OI, 0);
@@ -1325,38 +939,38 @@ TEST(kiteTest, getQuoteTest) {
     EXPECT_DOUBLE_EQ(Quote.OIDayLow, 0);
 
     ASSERT_EQ(Quote.marketDepth.buy.size(), 5);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[0].price, 1074.8);
-    EXPECT_EQ(Quote.marketDepth.buy[0].quantity, 35);
-    EXPECT_EQ(Quote.marketDepth.buy[0].orders, 1);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[1].price, 1074.65);
-    EXPECT_EQ(Quote.marketDepth.buy[1].quantity, 5);
-    EXPECT_EQ(Quote.marketDepth.buy[1].orders, 1);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[2].price, 1074.6);
-    EXPECT_EQ(Quote.marketDepth.buy[2].quantity, 14);
-    EXPECT_EQ(Quote.marketDepth.buy[2].orders, 1);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[3].price, 1074.5);
-    EXPECT_EQ(Quote.marketDepth.buy[3].quantity, 1529);
-    EXPECT_EQ(Quote.marketDepth.buy[3].orders, 3);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[4].price, 1074.45);
-    EXPECT_EQ(Quote.marketDepth.buy[4].quantity, 139);
-    EXPECT_EQ(Quote.marketDepth.buy[4].orders, 1);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[0].price, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[0].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[0].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[1].price, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[1].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[1].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[2].price, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[2].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[2].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[3].price, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[3].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[3].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.buy[4].price, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[4].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.buy[4].orders, 0);
 
     ASSERT_EQ(Quote.marketDepth.sell.size(), 5);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[0].price, 1074.85);
-    EXPECT_EQ(Quote.marketDepth.sell[0].quantity, 32);
-    EXPECT_EQ(Quote.marketDepth.sell[0].orders, 1);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[1].price, 1075);
-    EXPECT_EQ(Quote.marketDepth.sell[1].quantity, 1264);
-    EXPECT_EQ(Quote.marketDepth.sell[1].orders, 18);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[2].price, 1075.1);
-    EXPECT_EQ(Quote.marketDepth.sell[2].quantity, 14);
-    EXPECT_EQ(Quote.marketDepth.sell[2].orders, 1);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[3].price, 1075.2);
-    EXPECT_EQ(Quote.marketDepth.sell[3].quantity, 600);
-    EXPECT_EQ(Quote.marketDepth.sell[3].orders, 1);
-    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[4].price, 1075.25);
-    EXPECT_EQ(Quote.marketDepth.sell[4].quantity, 22);
-    EXPECT_EQ(Quote.marketDepth.sell[4].orders, 2);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[0].price, 1412.95);
+    EXPECT_EQ(Quote.marketDepth.sell[0].quantity, 5191);
+    EXPECT_EQ(Quote.marketDepth.sell[0].orders, 13);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[1].price, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[1].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[1].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[2].price, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[2].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[2].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[3].price, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[3].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[3].orders, 0);
+    EXPECT_DOUBLE_EQ(Quote.marketDepth.sell[4].price, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[4].quantity, 0);
+    EXPECT_EQ(Quote.marketDepth.sell[4].orders, 0);
 }
 
 TEST(kiteTest, getOHLCTest) {
@@ -1427,7 +1041,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     std::vector<kc::historicalData> data = Kite.getHistoricalData(0, "arg1", "arg2", "arg3", "arg4");
 
     // Expected values
-    ASSERT_EQ(data.size(), 3);
+    ASSERT_EQ(data.size(), 3000);
 
     kc::historicalData data1 = data[0];
     EXPECT_EQ(data1.datetime, "2017-12-15T09:15:00+0530");
@@ -1497,66 +1111,66 @@ TEST(kiteTest, cancelMFOrderTest) {
     EXPECT_EQ(orderID, "123457");
 }
 
-TEST(kiteTest, getMFOrdersTest) {
+// TEST(kiteTest, getMFOrdersTest) {
 
-    std::ifstream jsonFile("../../tests/mock_responses/mf_orders.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+//     std::ifstream jsonFile("../../tests/mock_responses/mf_orders.json");
+//     ASSERT_TRUE(jsonFile);
+//     rj::IStreamWrapper jsonFWrap(jsonFile);
 
-    mockKite Kite;
+//     mockKite Kite;
 
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+//     EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+//         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
+//                                       const std::vector<std::pair<string, string>>& bodyParams = {},
+//                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFOrder> orders = Kite.getMFOrders();
+//     std::vector<kc::MFOrder> orders = Kite.getMFOrders();
 
-    // Expected values
-    ASSERT_EQ(orders.size(), 2);
+//     // Expected values
+//     ASSERT_EQ(orders.size(), 2);
 
-    kc::MFOrder order1 = orders[0];
-    EXPECT_EQ(order1.orderID, "867688079445476");
-    EXPECT_EQ(order1.exchangeOrderID, "");
-    EXPECT_EQ(order1.tradingsymbol, "INF174K01LS2");
-    EXPECT_EQ(order1.status, "CANCELLED");
-    EXPECT_EQ(order1.statusMessage, "");
-    EXPECT_EQ(order1.folio, "");
-    EXPECT_EQ(order1.fund, "Kotak Select Focus Fund - Direct Plan");
-    EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:44");
-    EXPECT_EQ(order1.exchangeTimestamp, "");
-    EXPECT_EQ(order1.settlementID, "");
-    EXPECT_EQ(order1.transactionType, "BUY");
-    EXPECT_EQ(order1.variety, "regular");
-    EXPECT_EQ(order1.purchaseType, "FRESH");
-    EXPECT_EQ(order1.quantity, 0);
-    EXPECT_DOUBLE_EQ(order1.amount, 5000);
-    EXPECT_DOUBLE_EQ(order1.lastPrice, 35.135);
-    EXPECT_DOUBLE_EQ(order1.averagePrice, 0);
-    EXPECT_EQ(order1.placedBy, "DA0017");
-    EXPECT_EQ(order1.tag, "");
+//     kc::MFOrder order1 = orders[0];
+//     EXPECT_EQ(order1.orderID, "867688079445476");
+//     EXPECT_EQ(order1.exchangeOrderID, "");
+//     EXPECT_EQ(order1.tradingsymbol, "INF174K01LS2");
+//     EXPECT_EQ(order1.status, "CANCELLED");
+//     EXPECT_EQ(order1.statusMessage, "");
+//     EXPECT_EQ(order1.folio, "");
+//     EXPECT_EQ(order1.fund, "Kotak Select Focus Fund - Direct Plan");
+//     EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:44");
+//     EXPECT_EQ(order1.exchangeTimestamp, "");
+//     EXPECT_EQ(order1.settlementID, "");
+//     EXPECT_EQ(order1.transactionType, "BUY");
+//     EXPECT_EQ(order1.variety, "regular");
+//     EXPECT_EQ(order1.purchaseType, "FRESH");
+//     EXPECT_EQ(order1.quantity, 0);
+//     EXPECT_DOUBLE_EQ(order1.amount, 5000);
+//     EXPECT_DOUBLE_EQ(order1.lastPrice, 35.135);
+//     EXPECT_DOUBLE_EQ(order1.averagePrice, 0);
+//     EXPECT_EQ(order1.placedBy, "DA0017");
+//     EXPECT_EQ(order1.tag, "");
 
-    kc::MFOrder order2 = orders[1];
-    EXPECT_EQ(order2.orderID, "396109826218232");
-    EXPECT_EQ(order2.exchangeOrderID, "");
-    EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
-    EXPECT_EQ(order2.status, "CANCELLED");
-    EXPECT_EQ(order2.statusMessage, "");
-    EXPECT_EQ(order2.folio, "");
-    EXPECT_EQ(order2.fund, "Kotak Select Focus Fund - Direct Plan");
-    EXPECT_EQ(order2.orderTimestamp, "2017-12-28 11:40");
-    EXPECT_EQ(order2.exchangeTimestamp, "");
-    EXPECT_EQ(order2.settlementID, "");
-    EXPECT_EQ(order2.transactionType, "BUY");
-    EXPECT_EQ(order2.variety, "regular");
-    EXPECT_EQ(order2.purchaseType, "FRESH");
-    EXPECT_EQ(order2.quantity, 0);
-    EXPECT_DOUBLE_EQ(order2.amount, 5000);
-    EXPECT_DOUBLE_EQ(order2.lastPrice, 35.135);
-    EXPECT_DOUBLE_EQ(order2.averagePrice, 0);
-    EXPECT_EQ(order2.placedBy, "DA0017");
-    EXPECT_EQ(order2.tag, "");
-}
+//     kc::MFOrder order2 = orders[1];
+//     EXPECT_EQ(order2.orderID, "396109826218232");
+//     EXPECT_EQ(order2.exchangeOrderID, "");
+//     EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
+//     EXPECT_EQ(order2.status, "CANCELLED");
+//     EXPECT_EQ(order2.statusMessage, "");
+//     EXPECT_EQ(order2.folio, "");
+//     EXPECT_EQ(order2.fund, "Kotak Select Focus Fund - Direct Plan");
+//     EXPECT_EQ(order2.orderTimestamp, "2017-12-28 11:40");
+//     EXPECT_EQ(order2.exchangeTimestamp, "");
+//     EXPECT_EQ(order2.settlementID, "");
+//     EXPECT_EQ(order2.transactionType, "BUY");
+//     EXPECT_EQ(order2.variety, "regular");
+//     EXPECT_EQ(order2.purchaseType, "FRESH");
+//     EXPECT_EQ(order2.quantity, 0);
+//     EXPECT_DOUBLE_EQ(order2.amount, 5000);
+//     EXPECT_DOUBLE_EQ(order2.lastPrice, 35.135);
+//     EXPECT_DOUBLE_EQ(order2.averagePrice, 0);
+//     EXPECT_EQ(order2.placedBy, "DA0017");
+//     EXPECT_EQ(order2.tag, "");
+// }
 
 TEST(kiteTest, getMFOrderTest) {
 
@@ -1574,14 +1188,14 @@ TEST(kiteTest, getMFOrderTest) {
     kc::MFOrder order = Kite.getMFOrder("arg1");
 
     // Expected values
-    EXPECT_EQ(order.orderID, "460687158435713");
+    EXPECT_EQ(order.orderID, "2b6ad4b7-c84e-4c76-b459-f3a8994184f1");
     EXPECT_EQ(order.exchangeOrderID, "");
-    EXPECT_EQ(order.tradingsymbol, "INF174K01LS2");
-    EXPECT_EQ(order.status, "CANCELLED");
-    EXPECT_EQ(order.statusMessage, "");
+    EXPECT_EQ(order.tradingsymbol, "INF761K01EE1");
+    EXPECT_EQ(order.status, "OPEN");
+    EXPECT_EQ(order.statusMessage, "Insufficient fund. 1/5");
     EXPECT_EQ(order.folio, "");
-    EXPECT_EQ(order.fund, "Kotak Select Focus Fund - Direct Plan");
-    EXPECT_EQ(order.orderTimestamp, "2017-12-29 11:44");
+    EXPECT_EQ(order.fund, "BOI AXA Arbitrage Fund - Direct Plan");
+    EXPECT_EQ(order.orderTimestamp, "2021-06-29 12:20:28");
     EXPECT_EQ(order.exchangeTimestamp, "");
     EXPECT_EQ(order.settlementID, "");
     EXPECT_EQ(order.transactionType, "BUY");
@@ -1589,9 +1203,9 @@ TEST(kiteTest, getMFOrderTest) {
     EXPECT_EQ(order.purchaseType, "FRESH");
     EXPECT_EQ(order.quantity, 0);
     EXPECT_DOUBLE_EQ(order.amount, 5000);
-    EXPECT_DOUBLE_EQ(order.lastPrice, 35.135);
+    EXPECT_DOUBLE_EQ(order.lastPrice, 10.432399999999999);
     EXPECT_DOUBLE_EQ(order.averagePrice, 0);
-    EXPECT_EQ(order.placedBy, "DA0017");
+    EXPECT_EQ(order.placedBy, "ZV8062");
     EXPECT_EQ(order.tag, "");
 }
 
@@ -1737,23 +1351,23 @@ TEST(kiteTest, getSIPsTest) {
     std::vector<kc::MFSIP> SIPs = Kite.getSIPs();
 
     // Expected values
-    ASSERT_EQ(SIPs.size(), 1);
+    ASSERT_EQ(SIPs.size(), 5);
 
     kc::MFSIP sip1 = SIPs[0];
-    EXPECT_EQ(sip1.ID, "1234");
-    EXPECT_EQ(sip1.tradingsymbol, "INF090I01239");
-    EXPECT_EQ(sip1.fundName, "Franklin India Prima Plus");
-    EXPECT_EQ(sip1.dividendType, "growth");
+    EXPECT_EQ(sip1.ID, "892741486820670");
+    EXPECT_EQ(sip1.tradingsymbol, "INF209K01VD7");
+    EXPECT_EQ(sip1.fundName, "Aditya Birla Sun Life Liquid Fund - Direct Plan");
+    EXPECT_EQ(sip1.dividendType, "idcw");
     EXPECT_EQ(sip1.transactionType, "BUY");
     EXPECT_EQ(sip1.status, "ACTIVE");
-    EXPECT_EQ(sip1.created, "2016-01-01 13:00:00");
-    EXPECT_EQ(sip1.frequency, "monthly");
-    EXPECT_DOUBLE_EQ(sip1.instalmentAmount, 1000);
+    EXPECT_EQ(sip1.created, "2021-05-05 05:56:27");
+    EXPECT_EQ(sip1.frequency, "weekly");
+    EXPECT_DOUBLE_EQ(sip1.instalmentAmount, 500);
     EXPECT_EQ(sip1.instalments, -1);
-    EXPECT_EQ(sip1.lastInstalment, "2017-07-05 07:33:32");
+    EXPECT_EQ(sip1.lastInstalment, "2021-05-05 05:56:27");
     EXPECT_EQ(sip1.pendingInstalments, -1);
-    EXPECT_EQ(sip1.instalmentDay, 5);
-    EXPECT_EQ(sip1.tag, "");
+    EXPECT_EQ(sip1.instalmentDay, 0);
+    EXPECT_EQ(sip1.tag, "coiniossip");
 }
 
 TEST(kiteTest, getSIPTest) {
@@ -1772,20 +1386,20 @@ TEST(kiteTest, getSIPTest) {
     kc::MFSIP sip = Kite.getSIP("arg1");
 
     // Expected values
-    EXPECT_EQ(sip.ID, "1234");
-    EXPECT_EQ(sip.tradingsymbol, "INF090I01239");
-    EXPECT_EQ(sip.fundName, "Franklin India Prima Plus");
-    EXPECT_EQ(sip.dividendType, "growth");
+    EXPECT_EQ(sip.ID, "846479755969168");
+    EXPECT_EQ(sip.tradingsymbol, "INF179K01VY8");
+    EXPECT_EQ(sip.fundName, "HDFC Balanced Advantage Fund - Direct Plan");
+    EXPECT_EQ(sip.dividendType, "idcw");
     EXPECT_EQ(sip.transactionType, "BUY");
     EXPECT_EQ(sip.status, "ACTIVE");
-    EXPECT_EQ(sip.created, "2016-01-01 13:00:00");
+    EXPECT_EQ(sip.created, "2021-05-22 10:45:29");
     EXPECT_EQ(sip.frequency, "monthly");
     EXPECT_DOUBLE_EQ(sip.instalmentAmount, 1000);
-    EXPECT_EQ(sip.instalments, -1);
-    EXPECT_EQ(sip.lastInstalment, "2017-07-05 07:33:32");
-    EXPECT_EQ(sip.pendingInstalments, -1);
-    EXPECT_EQ(sip.instalmentDay, 5);
-    EXPECT_EQ(sip.tag, "");
+    EXPECT_EQ(sip.instalments, 9999);
+    EXPECT_EQ(sip.lastInstalment, "2021-06-10 08:37:11.273142");
+    EXPECT_EQ(sip.pendingInstalments, 9998);
+    EXPECT_EQ(sip.instalmentDay, 10);
+    EXPECT_EQ(sip.tag, "coinandroidsip");
 }
 
 // Order margins tests
@@ -1839,7 +1453,7 @@ TEST(kiteTest, getInstrumentsTest) {
     std::vector<kc::instrument> instruments = Kite.getInstruments();
 
     // Expected values
-    ASSERT_EQ(instruments.size(), 2);
+    ASSERT_EQ(instruments.size(), 99);
 
     kc::instrument instrument1 = instruments[0];
     EXPECT_EQ(instrument1.instrumentToken, 3813889);
@@ -1883,7 +1497,7 @@ TEST(kiteTest, getMFInstrumentsTest) {
     std::vector<kc::MFInstrument> instruments = Kite.getMFInstruments();
 
     // Expected values
-    ASSERT_EQ(instruments.size(), 2);
+    ASSERT_EQ(instruments.size(), 99);
 
     kc::MFInstrument instrument1 = instruments[0];
     EXPECT_EQ(instrument1.tradingsymbol, "INF209K01157");
