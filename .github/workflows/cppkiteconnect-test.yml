@@ -16,7 +16,7 @@ jobs:
       # Matrix of configs to test
       matrix:
         config:
-          - { name: ubuntu, os: ubuntu-latest }
+          - {name: ubuntu, os: ubuntu-latest}
           #TODO - { name: macOS, os: macos-latest }
           #TODO - { name: windows, os: windows-latest }
 
@@ -36,6 +36,5 @@ jobs:
           sudo apt update && sudo apt -y install libssl-dev zlib1g-dev git g++ build-essential cmake googletest google-mock libgtest-dev libgmock-dev doxygen
           git clone https://github.com/hoytech/uWebSockets.git
           cd uWebSockets && make && sudo make install && cd ..
-          git clone https://github.com/zerodha/cppkiteconnect.git
-          cd cppkiteconnect && mkdir build && cd build
+          mkdir build && cd build
           cmake .. && make && make test ARGS="-V"
