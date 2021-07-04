@@ -12,20 +12,15 @@
 - [Documentation](https://github.com/zerodha/cppkiteconnect#documentation)
 - [License](https://github.com/zerodha/cppkiteconnect#license)
 
-
-
-
 ## Overview
 
-The official C++ client for communicating with the Kite Connect API. 
+The official C++ client for communicating with the [Kite Connect API](https://kite.trade/). 
 
-kitepp is a header only library that wraps around Zerodha's REST API, Websockets saving you the hassle of directly communicating with API and provides an easy to use, modern C++ interface.
-
-Kite Connect is a set of REST-like APIs that expose many capabilities required to build a complete investment and trading platform. Execute orders in real time, manage user portfolio, stream live market data (WebSockets), and more, with the simple HTTP API collection.
+CPPKiteConnect is a header-only library that wraps around Zerodha's KiteConnect REST API and WebSockets API. It saves you the hassle of directly communicating with the APIs and provides an easy to use, native, modern C++ interface.
 
 ## Dependencies
 
-kitepp has following dependancies:
+CPPKiteConnect has following dependancies:
 - [OpenSSL (devel)](https://github.com/openssl/openssl "OpenSSL")
 - [uWebSockets v0.14 (devel)](https://github.com/uNetworking/uWebSockets/tree/v0.14) and [it's dependancies](https://github.com/hoytech/uWebSockets/blob/master/docs/Misc.-details.md#dependencies).
 - [googletest (devel)]() and [googlemock (devel)]() are required for running tests.
@@ -41,7 +36,7 @@ kitepp has following dependancies:
 
 ### Others & uWS v0.14
 
-kitepp saves you the hassle of finding dependencies and provides convenient cmake target to download source packages as tarballs. 
+CPPKiteConnect saves you the hassle of manually downloading dependencies and provides convenient cmake target to download source packages as tarballs. 
 
 - To download dependencies (including uWS v0.14): `cmake .` in `deps` directory.
 
@@ -49,9 +44,9 @@ Alternatively and preferably, use package managers provided by your OS. Unless y
 
 ## Building & Installation
 
-kitepp is a header-only C++ library. Just copy the `include` folder to system or project's include path.
+CPPKiteConnect is a header-only C++ library. Just copy the `include` folder to system or project's include path.
 
-Refer to [this](https://github.com/bhumitattarde/kiteppex) repository to see a project using kitepp and a boilerplate `CMakeLists.txt` to get started.
+Refer to [this](https://github.com/bhumitattarde/kiteppex) repository to see a project using CPPKiteConnect and a boilerplate `CMakeLists.txt` to get started.
 
 ### Build examples and tests:
 ```bash
@@ -59,6 +54,9 @@ mkdir build && cd build
 cmake .. 
 make
 ```
+
+If `cmake` cannot find your `uWS` library, try providing it manually to `cmake` like `cmake .. -DUWS_LIB=/path/to/uWS.so`. Note that this will 
+build the library but some tests won't be run.
 
 ### Run tests:
 `make && make test ARGS='-V'`
@@ -173,7 +171,7 @@ These and other more extensive examples as well as their `cmake` build files for
 ## Documentation
 
 - [Kite Connect HTTP API documentation](https://kite.trade/docs/connect/v3/)
-- [kitepp reference documentation](https://kite.trade/docs/cppkiteconnect/)
+- [CPPKiteConnect reference documentation](https://kite.trade/docs/cppkiteconnect/)
 
 ## License
 
