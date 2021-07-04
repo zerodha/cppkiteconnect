@@ -1,0 +1,62 @@
+{
+	"status": "success",
+	"data": [
+		{
+			"tradingsymbol": "BENGALASM",
+			"exchange": "BSE",
+			"instrument_token": 136472324,
+			"isin": "INE083K01017",
+			"product": "CNC",
+			"price": 0,
+			"quantity": 1,
+			"t1_quantity": 0,
+			"realised_quantity": 1,
+			"collateral_quantity": 0,
+			"collateral_type": "",
+			"average_price": 1150,
+			"last_price": 2620,
+			"close_price": 2751.1,
+			"pnl": 1470,
+			"day_change": -131.0999999999999,
+			"day_change_percentage": -4.7653665806404675
+		},
+		{
+			"tradingsymbol": "CONFIPET",
+			"exchange": "BSE",
+			"instrument_token": 134868228,
+			"isin": "INE552D01024",
+			"product": "CNC",
+			"price": 0,
+			"quantity": 1,
+			"t1_quantity": 0,
+			"realised_quantity": 1,
+			"collateral_quantity": 0,
+			"collateral_type": "",
+			"average_price": 5.89,
+			"last_price": 31.35,
+			"close_price": 31.5,
+			"pnl": 25.46,
+			"day_change": -0.14999999999999858,
+			"day_change_percentage": -0.4761904761904716
+		},
+		{
+			"tradingsymbol": "IPOWER",
+			"exchange": "BSE",
+			"instrument_token": 131175684,
+			"isin": "INE468F01010",
+			"product": "CNC",
+			"price": 0,
+			"quantity": 1,
+			"t1_quantity": 0,
+			"realised_quantity": 1,
+			"collateral_quantity": 0,
+			"collateral_type": "",
+			"average_price": 0,
+			"last_price": 1.95,
+			"close_price": 0,
+			"pnl": 1.95,
+			"day_change": 0,
+			"day_change_percentage": 0
+		}
+	]
+}

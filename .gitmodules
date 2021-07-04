@@ -1,3 +1,0 @@
-[submodule "tests/mock_responses"]
-	path = tests/mock_responses
-	url = https://github.com/zerodha/kiteconnect-mocks

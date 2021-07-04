@@ -1,0 +1,3 @@
+instrument_token,exchange_token,tradingsymbol,name,last_price,expiry,strike,tick_size,lot_size,instrument_type,segment,exchange
+3813889,14898,CENTRALBK-BE,CENTRAL BANK OF INDIA,0.0,,0.0,0.05,1,EQ,NSE,NSE
+4645121,18145,EMMBI-BL,EMMBI INDUSTRIES,0.0,,0.0,0.05,1,EQ,NSE,NSE
