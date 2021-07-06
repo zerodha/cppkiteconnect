@@ -20,10 +20,10 @@ endif()
 endfunction(downloadFile)
 
 #Download uWS v0.14
-downloadFile(   "https://github.com/uNetworking/uWebSockets/archive/v0.14.8.tar.gz"
-                "${CMAKE_SOURCE_DIR}/deps/uWebSocketsv-0.14.8.tar.gz"
+downloadFile(   "https://api.github.com/repos/hoytech/uWebSockets/tarball/master"
+                "${CMAKE_SOURCE_DIR}/deps/uWebSockets.tar.gz"
                 SHA256
-                663a22b521c8258e215e34e01c7fcdbbd500296aab2c31d36857228424bb7675
+                40ecedbdd2fb5b6f69f06e8830e9139dc290c3125d1eb1f3449b9fd9277b50c8
             )
 
 #Download GTest
