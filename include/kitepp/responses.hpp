@@ -814,7 +814,7 @@ struct MFOrder {
     string transactionType;
     string variety;
     string purchaseType;
-    int quantity = 0;
+    double quantity = 0;
     double amount = 0.0;
     double lastPrice = 0.0;
     double averagePrice = 0.0;

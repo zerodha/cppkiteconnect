@@ -1111,66 +1111,66 @@ TEST(kiteTest, cancelMFOrderTest) {
     EXPECT_EQ(orderID, "123457");
 }
 
-// TEST(kiteTest, getMFOrdersTest) {
+TEST(kiteTest, getMFOrdersTest) {
 
-//     std::ifstream jsonFile("../../tests/mock_responses/mf_orders.json");
-//     ASSERT_TRUE(jsonFile);
-//     rj::IStreamWrapper jsonFWrap(jsonFile);
+    std::ifstream jsonFile("../../tests/mock_responses/mf_orders.json");
+    ASSERT_TRUE(jsonFile);
+    rj::IStreamWrapper jsonFWrap(jsonFile);
 
-//     mockKite Kite;
+    mockKite Kite;
 
-//     EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-//         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-//                                       const std::vector<std::pair<string, string>>& bodyParams = {},
-//                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
+    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
+        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
+                                      const std::vector<std::pair<string, string>>& bodyParams = {},
+                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-//     std::vector<kc::MFOrder> orders = Kite.getMFOrders();
+    std::vector<kc::MFOrder> orders = Kite.getMFOrders();
 
-//     // Expected values
-//     ASSERT_EQ(orders.size(), 2);
+    // Expected values
+    ASSERT_EQ(orders.size(), 5);
 
-//     kc::MFOrder order1 = orders[0];
-//     EXPECT_EQ(order1.orderID, "867688079445476");
-//     EXPECT_EQ(order1.exchangeOrderID, "");
-//     EXPECT_EQ(order1.tradingsymbol, "INF174K01LS2");
-//     EXPECT_EQ(order1.status, "CANCELLED");
-//     EXPECT_EQ(order1.statusMessage, "");
-//     EXPECT_EQ(order1.folio, "");
-//     EXPECT_EQ(order1.fund, "Kotak Select Focus Fund - Direct Plan");
-//     EXPECT_EQ(order1.orderTimestamp, "2017-12-28 11:44");
-//     EXPECT_EQ(order1.exchangeTimestamp, "");
-//     EXPECT_EQ(order1.settlementID, "");
-//     EXPECT_EQ(order1.transactionType, "BUY");
-//     EXPECT_EQ(order1.variety, "regular");
-//     EXPECT_EQ(order1.purchaseType, "FRESH");
-//     EXPECT_EQ(order1.quantity, 0);
-//     EXPECT_DOUBLE_EQ(order1.amount, 5000);
-//     EXPECT_DOUBLE_EQ(order1.lastPrice, 35.135);
-//     EXPECT_DOUBLE_EQ(order1.averagePrice, 0);
-//     EXPECT_EQ(order1.placedBy, "DA0017");
-//     EXPECT_EQ(order1.tag, "");
+    kc::MFOrder order1 = orders[0];
+    EXPECT_EQ(order1.orderID, "271989e0-a64e-4cf3-b4e4-afb8f38dd203");
+    EXPECT_EQ(order1.exchangeOrderID, "254657127");
+    EXPECT_EQ(order1.tradingsymbol, "INF179K01VY8");
+    EXPECT_EQ(order1.status, "REJECTED");
+    EXPECT_EQ(order1.statusMessage, "AMC SIP: Insufficient balance.");
+    EXPECT_EQ(order1.folio, "");
+    EXPECT_EQ(order1.fund, "HDFC Balanced Advantage Fund - Direct Plan");
+    EXPECT_EQ(order1.orderTimestamp, "2021-06-30 08:33:07");
+    EXPECT_EQ(order1.exchangeTimestamp, "2021-06-30");
+    EXPECT_EQ(order1.settlementID, "2122061");
+    EXPECT_EQ(order1.transactionType, "BUY");
+    EXPECT_EQ(order1.variety, "amc_sip");
+    EXPECT_EQ(order1.purchaseType, "FRESH");
+    EXPECT_EQ(order1.quantity, 0.0);
+    EXPECT_DOUBLE_EQ(order1.amount, 1000.0);
+    EXPECT_DOUBLE_EQ(order1.lastPrice, 30.6800);
+    EXPECT_DOUBLE_EQ(order1.averagePrice, 0.0);
+    EXPECT_EQ(order1.placedBy, "ZV8062");
+    EXPECT_EQ(order1.tag, "");
 
-//     kc::MFOrder order2 = orders[1];
-//     EXPECT_EQ(order2.orderID, "396109826218232");
-//     EXPECT_EQ(order2.exchangeOrderID, "");
-//     EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
-//     EXPECT_EQ(order2.status, "CANCELLED");
-//     EXPECT_EQ(order2.statusMessage, "");
-//     EXPECT_EQ(order2.folio, "");
-//     EXPECT_EQ(order2.fund, "Kotak Select Focus Fund - Direct Plan");
-//     EXPECT_EQ(order2.orderTimestamp, "2017-12-28 11:40");
-//     EXPECT_EQ(order2.exchangeTimestamp, "");
-//     EXPECT_EQ(order2.settlementID, "");
-//     EXPECT_EQ(order2.transactionType, "BUY");
-//     EXPECT_EQ(order2.variety, "regular");
-//     EXPECT_EQ(order2.purchaseType, "FRESH");
-//     EXPECT_EQ(order2.quantity, 0);
-//     EXPECT_DOUBLE_EQ(order2.amount, 5000);
-//     EXPECT_DOUBLE_EQ(order2.lastPrice, 35.135);
-//     EXPECT_DOUBLE_EQ(order2.averagePrice, 0);
-//     EXPECT_EQ(order2.placedBy, "DA0017");
-//     EXPECT_EQ(order2.tag, "");
-// }
+    kc::MFOrder order2 = orders[1];
+    EXPECT_EQ(order2.orderID, "ef7e696c-2fa6-400b-b180-eb25e6a04ccf");
+    EXPECT_EQ(order2.exchangeOrderID, "");
+    EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
+    EXPECT_EQ(order2.status, "REJECTED");
+    EXPECT_EQ(order2.statusMessage, "SIP: Insufficient balance.");
+    EXPECT_EQ(order2.folio, "");
+    EXPECT_EQ(order2.fund, "Kotak Flexicap Fund - Direct Plan");
+    EXPECT_EQ(order2.orderTimestamp, "2021-06-30 01:30:02");
+    EXPECT_EQ(order2.exchangeTimestamp, "");
+    EXPECT_EQ(order2.settlementID, "");
+    EXPECT_EQ(order2.transactionType, "BUY");
+    EXPECT_EQ(order2.variety, "sip");
+    EXPECT_EQ(order2.purchaseType, "ADDITIONAL");
+    EXPECT_EQ(order2.quantity, 0.0);
+    EXPECT_DOUBLE_EQ(order2.amount, 2000.0);
+    EXPECT_DOUBLE_EQ(order2.lastPrice, 52.7980);
+    EXPECT_DOUBLE_EQ(order2.averagePrice, 0.0);
+    EXPECT_EQ(order2.placedBy, "ZV8062");
+    EXPECT_EQ(order2.tag, "coinandroidsip");
+}
 
 TEST(kiteTest, getMFOrderTest) {
 
