@@ -44,7 +44,8 @@ jobs:
         if: startsWith(matrix.config.name, 'macOS')
         run: |
           /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          brew install openssl zlib libuv googletest
+          brew install openssl@1.1 zlib libuv googletest
+          cp /usr/local/opt/openssl@1.1/lib/pkgconfig/*.pc /usr/local/lib/pkgconfig/
           git clone https://github.com/hoytech/uWebSockets.git
           cd uWebSockets && make && sudo make install && cd ..
           mkdir build && cd build
