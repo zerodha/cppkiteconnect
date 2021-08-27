@@ -49,4 +49,4 @@ jobs:
           git clone https://github.com/hoytech/uWebSockets.git
           cd uWebSockets && make && sudo make install && cd ..
           mkdir build && cd build
-          cmake .. && make && make test ARGS="-V"
+          cmake -DOPENSSL_ROOT_DIR=/opt/homebrew/opt/openssl@1.1 .. && make && make test ARGS="-V"
