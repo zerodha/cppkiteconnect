@@ -435,9 +435,22 @@ class kiteWS {
             size_t packetSize = packet.size();
             int32_t instrumentToken = _getNum<int32_t>(packet, 0, 3);
             int segment = instrumentToken & 0xff;
-            double divisor = (segment == _segmentConstants.at("cds")) ? 10000000.0 : 100.0;
-            bool tradable = (segment == _segmentConstants.at("indices")) ? false : true;
 
+            bool tradable = (segment == _segmentConstants.at("indices")) ? false : true;
+            
+            // price divisor based on segment
+            // converts prices of stocks from paise to rupees 
+            double divisor;
+            if (segment == _segmentConstants.at("cds")) {
+                divisor = 10000000.0;
+                
+            } else if (segment == _segmentConstants.at("bsecds")) {
+                divisor = 10000.0;
+            
+            } else {
+                divisor = 100.0;
+            }
+            
             kc::tick Tick;
 
             Tick.isTradable = tradable;
