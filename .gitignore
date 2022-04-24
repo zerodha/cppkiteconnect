@@ -2,6 +2,7 @@
 build/
 
 #VS Code auto generated files
+.cache/
 .clangd/
 .vscode/
 compile_commands.json
