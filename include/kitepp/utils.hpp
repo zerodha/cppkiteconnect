@@ -21,7 +21,7 @@
  *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
  *  SOFTWARE.
-*/
+ */
 #pragma once
 
 #include <string>
@@ -31,7 +31,7 @@ namespace kiteconnect {
 
 using std::string;
 
-std::vector<string> _split(const std::string& text, char sep) {
+inline std::vector<string> _split(const std::string& text, char sep) {
 
     std::vector<std::string> tokens;
     std::size_t start = 0, end = 0;
