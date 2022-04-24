@@ -77,8 +77,10 @@ enum class _methods { GET, POST, PUT, DEL, HEAD };
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
-bool isValid(int num) { return num == DEFAULTINT; };
-bool isValid(double num) { return num == DEFAULTDOUBLE; };
+// ! std::isnan should be used but doing so fails the compilation on Windows
+// ! utilizes a IEEE 754 property that states NaN != NaN, can fail because of compiler optimizations
+bool isValid(int num) { return num == num; };
+bool isValid(double num) { return num == num; };
 
 namespace config {
 
