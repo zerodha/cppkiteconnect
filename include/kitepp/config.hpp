@@ -77,8 +77,8 @@ enum class _methods { GET, POST, PUT, DEL, HEAD };
 
 constexpr int DEFAULTINT = std::numeric_limits<int>::quiet_NaN();
 constexpr double DEFAULTDOUBLE = std::numeric_limits<double>::quiet_NaN();
-bool isValid(int num) { return num == DEFAULTINT; };
-bool isValid(double num) { return num == DEFAULTDOUBLE; };
+inline bool isValid(int num) { return num == DEFAULTINT; };
+inline bool isValid(double num) { return num == DEFAULTDOUBLE; };
 
 namespace config {
 
