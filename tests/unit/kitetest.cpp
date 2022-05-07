@@ -937,7 +937,14 @@ TEST(kiteTest, convertPositionTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    bool result = Kite.convertPosition("arg1", "arg2", "arg3", "arg4", 0, "arg5", "arg6");
+    bool result = Kite.convertPosition(kc::convertPositionParams()
+                                           .Quantity(11)
+                                           .Exchange("BSE")
+                                           .Symbol("INFY")
+                                           .TransactionType("SELL")
+                                           .PositionType("overnight")
+                                           .OldProduct("NRML")
+                                           .NewProduct("MIS"));
 
     // Expected values
     EXPECT_EQ(result, true);

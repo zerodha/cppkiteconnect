@@ -766,17 +766,16 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp convert position
      */
-    bool convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType,
-        int quantity, const string& oldProduct, const string& newProduct) {
+    bool convertPosition(const convertPositionParams& params) {
 
         std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-            { "position_type", posType },
-            { "quantity", std::to_string(quantity) },
-            { "old_product", oldProduct },
-            { "new_product", newProduct },
+            { "exchange", params.exchange },
+            { "tradingsymbol", params.symbol },
+            { "transaction_type", params.transactionType },
+            { "position_type", params.positionType },
+            { "quantity", std::to_string(params.quantity) },
+            { "old_product", params.oldProduct },
+            { "new_product", params.newProduct },
         };
 
         rj::Document res;
