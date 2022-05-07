@@ -65,6 +65,25 @@ struct placeGttParams {
     std::vector<gttParams> gttParamsList;
 };
 
+/// represents parameters required for the `modifyGtt` function
+struct modifyGttParams {
+    GENERATE_FLUENT_METHOD(modifyGttParams, int, triggerId, TriggerId);
+    GENERATE_FLUENT_METHOD(modifyGttParams, double, lastPrice, LastPrice);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const string&, triggerType, TriggerType);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const string&, symbol, Symbol);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const string&, exchange, Exchange);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const std::vector<double>&, triggerValues, TriggerValues);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const std::vector<gttParams>&, gttParamsList, GttParamsList);
+
+    int triggerId;
+    double lastPrice;
+    string triggerType;
+    string symbol;
+    string exchange;
+    std::vector<double> triggerValues;
+    std::vector<gttParams> gttParamsList;
+};
+
 /// GTT represents a single GTT order.
 struct GTT {
     GTT() = default;

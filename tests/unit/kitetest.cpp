@@ -623,7 +623,7 @@ TEST(kiteTest, getGTTTest) {
     EXPECT_DOUBLE_EQ(order.orders[0].price, 1);
 }
 
-TEST(kiteTest, modifyGTTTest) {
+TEST(kiteTest, modifyGttTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/gtt_modify_order.json");
     ASSERT_TRUE(jsonFile);
@@ -636,7 +636,24 @@ TEST(kiteTest, modifyGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    int orderID = Kite.modifyGtt(0, "arg1", "arg2", "arg3", {}, 0, {});
+    // clang-format off
+    int orderID = Kite.modifyGtt(
+        kc::modifyGttParams()
+            .TriggerId(11111)
+            .LastPrice(100)
+            .TriggerType("single")
+            .Symbol("TCS")
+            .Exchange("NSE")
+            .TriggerValues({ 111.2 })
+            .GttParamsList(
+                { kc::gttParams()
+                .Quantity(4116)
+                .Price(110)
+                .TransactionType("BUY")
+                .OrderType("LIMIT")
+                .Product("CNC") }
+            ));
+    // clang-format on
 
     // Expected values
     EXPECT_EQ(orderID, 123);
