@@ -27,6 +27,13 @@
 #include <string>
 #include <vector>
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)                                           \
+    returnType& methodName(fieldType arg) {                                                                            \
+        (fieldName) = arg;                                                                                             \
+        return *this;                                                                                                  \
+    };
+
 namespace kiteconnect {
 
 using std::string;

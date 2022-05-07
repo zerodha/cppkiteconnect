@@ -4,6 +4,7 @@
 
 #include "../config.hpp"
 #include "../rjutils.hpp"
+#include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 
@@ -12,13 +13,6 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
-
-// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)                                           \
-    returnType& methodName(fieldType arg) {                                                                            \
-        (fieldName) = arg;                                                                                             \
-        return *this;                                                                                                  \
-    };
 
 /// represents parameters required for the `placeOrder` function
 struct placeOrderParams {
@@ -175,7 +169,5 @@ struct trade {
     string tradingSymbol;
     string exchange;
 };
-
-#undef GENERATE_FLUENT_METHOD
 
 } // namespace kiteconnect
