@@ -266,7 +266,7 @@ class kite {
         };
 
         if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
-        if (!params.validity.empty()) { bodyParams.emplace_back("validity", params.validity); }
+        if (isValidArg(params.validity)) { bodyParams.emplace_back("validity", params.validity); }
         if (isValidArg(params.disclosedQuantity)) {
             bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
         }
@@ -278,7 +278,7 @@ class kite {
         if (isValidArg(params.trailingStopLoss)) {
             bodyParams.emplace_back("trailing_stoploss", std::to_string(params.trailingStopLoss));
         }
-        if (!params.tag.empty()) { bodyParams.emplace_back("tag", params.tag); }
+        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); }
 
         rj::Document res;
         _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = params.variety), bodyParams);
