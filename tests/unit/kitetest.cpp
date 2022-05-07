@@ -537,7 +537,7 @@ TEST(kiteTest, getGTTsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::GTT> Orders = Kite.getGTTs();
+    std::vector<kc::GTT> Orders = Kite.getGtts();
 
     // Exptected values
     ASSERT_EQ(Orders.size(), 2);
@@ -601,7 +601,7 @@ TEST(kiteTest, getGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::GTT order = Kite.getGTT(0);
+    kc::GTT order = Kite.getGtt(0);
 
     // Expected values
     EXPECT_EQ(order.ID, 123);
@@ -636,7 +636,7 @@ TEST(kiteTest, modifyGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    int orderID = Kite.modifyGTT(0, "arg1", "arg2", "arg3", {}, 0, {});
+    int orderID = Kite.modifyGtt(0, "arg1", "arg2", "arg3", {}, 0, {});
 
     // Expected values
     EXPECT_EQ(orderID, 123);
@@ -655,7 +655,7 @@ TEST(kiteTest, deleteGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    int orderID = Kite.deleteGTT(0);
+    int orderID = Kite.deleteGtt(0);
 
     // Expected values
     EXPECT_EQ(orderID, 123);

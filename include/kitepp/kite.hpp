@@ -573,7 +573,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get gtts
      */
-    std::vector<GTT> getGTTs() {
+    std::vector<GTT> getGtts() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("gtt"));
@@ -598,7 +598,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get gtt info
      */
-    GTT getGTT(int trigID) {
+    GTT getGtt(int trigID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
@@ -623,7 +623,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modifying a gtt
      */
-    int modifyGTT(int trigID, const string& trigType, const string& symbol, const string& exchange,
+    int modifyGtt(int trigID, const string& trigType, const string& symbol, const string& exchange,
         const std::vector<double>& trigValues, double lastPrice, const std::vector<gttParams>& GttParams) {
 
         // make condition json
@@ -696,7 +696,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp delete a gtt
      */
-    int deleteGTT(int trigID) {
+    int deleteGtt(int trigID) {
 
         rj::Document res;
         _sendReq(res, _methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
