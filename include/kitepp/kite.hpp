@@ -255,32 +255,33 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp placing an order
      */
-    string placeOrder(const string& variety, const string& exchange, const string& symbol, const string& txnType,
-        int quantity, const string& product, const string& orderType, double price = DEFAULTDOUBLE,
-        const string& validity = "", double trigPrice = DEFAULTDOUBLE, double sqOff = DEFAULTDOUBLE,
-        double SL = DEFAULTDOUBLE, double trailSL = DEFAULTDOUBLE, int discQuantity = DEFAULTINT,
-        const string& tag = "") {
-
+    string placeOrder(const placeOrderParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-            { "quantity", std::to_string(quantity) },
-            { "product", product },
-            { "order_type", orderType },
+            { "exchange", params.exchange },
+            { "tradingsymbol", params.symbol },
+            { "transaction_type", params.transactionType },
+            { "quantity", std::to_string(params.quantity) },
+            { "product", params.product },
+            { "order_type", params.orderType },
         };
 
-        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
-        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
-        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!isValid(sqOff)) { bodyParams.emplace_back("squareoff", std::to_string(sqOff)); }
-        if (!isValid(SL)) { bodyParams.emplace_back("stoploss", std::to_string(SL)); }
-        if (!isValid(trailSL)) { bodyParams.emplace_back("trailing_stoploss", std::to_string(trailSL)); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
+        if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
+        if (!params.validity.empty()) { bodyParams.emplace_back("validity", params.validity); }
+        if (isValidArg(params.disclosedQuantity)) {
+            bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
+        }
+        if (isValidArg(params.triggerPrice)) {
+            bodyParams.emplace_back("trigger_price", std::to_string(params.triggerPrice));
+        }
+        if (isValidArg(params.squareOff)) { bodyParams.emplace_back("squareoff", std::to_string(params.squareOff)); }
+        if (isValidArg(params.stopLoss)) { bodyParams.emplace_back("stoploss", std::to_string(params.stopLoss)); }
+        if (isValidArg(params.trailingStopLoss)) {
+            bodyParams.emplace_back("trailing_stoploss", std::to_string(params.trailingStopLoss));
+        }
+        if (!params.tag.empty()) { bodyParams.emplace_back("tag", params.tag); }
 
         rj::Document res;
-        _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = variety), bodyParams);
+        _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = params.variety), bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeOrder)"); };
 
         string rcvdOrdID;

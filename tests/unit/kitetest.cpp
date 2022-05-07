@@ -245,7 +245,6 @@ TEST(kiteTest, getMarginsTest2) {
 // Orders tests
 
 TEST(kiteTest, placeOrderTest) {
-
     std::ifstream jsonFile("../../tests/mock_responses/order_response.json");
     ASSERT_TRUE(jsonFile);
     rj::IStreamWrapper jsonFWrap(jsonFile);
@@ -257,7 +256,16 @@ TEST(kiteTest, placeOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.placeOrder("arg1", "arg2", "arg3", "arg4", 1, "arg6", "arg7");
+    string orderID = Kite.placeOrder(kc::placeOrderParams()
+                                         .Quantity(10)
+                                         .Variety("regular")
+                                         .Exchange("NSE")
+                                         .Symbol("TCS")
+                                         .TransactionType("BUY")
+                                         .Product("NRML")
+                                         .OrderType("MARKET")
+                                         .Validity("day")
+                                         .Tag("order1"));
 
     EXPECT_EQ(orderID, "151220000000000");
 }

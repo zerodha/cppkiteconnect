@@ -39,6 +39,8 @@
 #include "rjutils.hpp"
 #include "utils.hpp"
 
+#include "responses/order.hpp"
+
 namespace kiteconnect {
 
 using std::string;
