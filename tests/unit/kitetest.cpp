@@ -283,7 +283,12 @@ TEST(kiteTest, modifyOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.modifyOrder("arg1", "arg2");
+    // clang-format off
+    string orderID = Kite.modifyOrder(kc::modifyOrderParams()
+                                        .Variety("regular")
+                                        .OrderId("1111111000101010")
+                                        .Quantity(69));
+    // clang-format on
 
     EXPECT_EQ(orderID, "151220000000000");
 }

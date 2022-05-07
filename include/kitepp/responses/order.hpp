@@ -20,6 +20,7 @@ namespace kc = kiteconnect;
         return *this;                                                                                                  \
     };
 
+/// represents parameters required for the `placeOrder` function
 struct placeOrderParams {
     GENERATE_FLUENT_METHOD(placeOrderParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(placeOrderParams, int, disclosedQuantity, DisclosedQuantity);
@@ -52,6 +53,29 @@ struct placeOrderParams {
     string orderType;
     string validity;
     string tag;
+};
+
+/// represents parameters required for the `modifyOrder` function
+struct modifyOrderParams {
+    GENERATE_FLUENT_METHOD(modifyOrderParams, int, quantity, Quantity);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, int, disclosedQuantity, DisclosedQuantity);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, double, price, Price);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, double, triggerPrice, TriggerPrice);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, variety, Variety);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, orderType, OrderType);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, validity, Validity);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, orderId, OrderId);
+    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, parentOrderId, ParentOrderId);
+
+    int quantity = kc::DEFAULTINT;
+    int disclosedQuantity = kc::DEFAULTINT;
+    double price = kc::DEFAULTDOUBLE;
+    double triggerPrice = kc::DEFAULTDOUBLE;
+    string variety;
+    string orderId;
+    string parentOrderId;
+    string orderType;
+    string validity;
 };
 
 /// order represents an individual order response

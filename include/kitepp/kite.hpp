@@ -308,22 +308,25 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modifying an order
      */
-    string modifyOrder(const string& variety, const string& ordID, const string& parentOrdID = "",
-        int quantity = DEFAULTINT, double price = DEFAULTDOUBLE, const string& ordType = "",
-        double trigPrice = DEFAULTDOUBLE, const string& validity = "", int discQuantity = DEFAULTINT) {
+    string modifyOrder(const modifyOrderParams& params) {
 
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!parentOrdID.empty()) { bodyParams.emplace_back("parent_order_id", parentOrdID); }
-        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
-        if (!ordType.empty()) { bodyParams.emplace_back("order_type", ordType); }
-        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
+        if (isValidArg(params.parentOrderId)) { bodyParams.emplace_back("parent_order_id", params.parentOrderId); }
+        if (isValidArg(params.quantity)) { bodyParams.emplace_back("quantity", std::to_string(params.quantity)); }
+        if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
+        if (isValidArg(params.orderType)) { bodyParams.emplace_back("order_type", params.orderType); }
+        if (isValidArg(params.triggerPrice)) {
+            bodyParams.emplace_back("trigger_price", std::to_string(params.triggerPrice));
+        }
+        if (isValidArg(params.validity)) { bodyParams.emplace_back("validity", params.validity); }
+        if (isValidArg(params.disclosedQuantity)) {
+            bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
+        }
 
         rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID),
+        _sendReq(res, _methods::PUT,
+            FMT(_endpoints.at("order.modify"), "variety"_a = params.variety, "order_id"_a = params.orderId),
             bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyOrder)"); };
 
