@@ -502,9 +502,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp placing a gtt
      */
-    int placeGTT(const string& trigType, const string& symbol, const string& exchange,
-        const std::vector<double>& trigValues, double lastPrice, const std::vector<GTTParams>& gttParams) {
-
+    int placeGtt(const placeGttParams& params) {
         // make condition json
         rj::Document condition;
         condition.SetObject();
@@ -513,23 +511,23 @@ class kite {
         rj::Value val; // used for making string values
         rj::Value trigValArr(rj::kArrayType);
 
-        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
+        val.SetString(params.exchange.c_str(), params.exchange.size(), condnAlloc);
         condition.AddMember("exchange", val, condnAlloc);
 
-        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
+        val.SetString(params.symbol.c_str(), params.symbol.size(), condnAlloc);
         condition.AddMember("tradingsymbol", val, condnAlloc);
 
-        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
+        for (const double& i : params.triggerValues) { trigValArr.PushBack(i, condnAlloc); };
         condition.AddMember("trigger_values", trigValArr, condnAlloc);
 
-        condition.AddMember("last_price", lastPrice, condnAlloc);
+        condition.AddMember("last_price", params.lastPrice, condnAlloc);
 
         // make orders json
-        rj::Document params;
-        params.SetArray();
-        auto& paramsAlloc = params.GetAllocator();
+        rj::Document reqParams;
+        reqParams.SetArray();
+        auto& paramsAlloc = reqParams.GetAllocator();
 
-        for (const GTTParams& param : gttParams) {
+        for (const gttParams& param : params.gttParamsList) {
             rj::Value strVal;
             rj::Value tmpVal(rj::kObjectType);
 
@@ -546,18 +544,19 @@ class kite {
 
             tmpVal.AddMember("price", param.price, paramsAlloc);
 
-            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
+            strVal.SetString(params.exchange.c_str(), params.exchange.size(), paramsAlloc);
             tmpVal.AddMember("exchange", strVal, paramsAlloc);
 
-            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
+            strVal.SetString(params.symbol.c_str(), params.symbol.size(), paramsAlloc);
             tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
 
-            params.PushBack(tmpVal, paramsAlloc);
+            reqParams.PushBack(tmpVal, paramsAlloc);
         };
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("gtt.place"),
-            { { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) } });
+            { { "type", params.triggerType }, { "condition", rju::_dump(condition) },
+                { "orders", rju::_dump(reqParams) } });
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeGTT)"); };
 
         int rcvdTrigID = DEFAULTINT;
@@ -625,7 +624,7 @@ class kite {
      * @snippet example2.cpp modifying a gtt
      */
     int modifyGTT(int trigID, const string& trigType, const string& symbol, const string& exchange,
-        const std::vector<double>& trigValues, double lastPrice, const std::vector<GTTParams>& gttParams) {
+        const std::vector<double>& trigValues, double lastPrice, const std::vector<gttParams>& GttParams) {
 
         // make condition json
         rj::Document condition;
@@ -650,7 +649,7 @@ class kite {
         params.SetArray();
         auto& paramsAlloc = params.GetAllocator();
 
-        for (const GTTParams& param : gttParams) {
+        for (const gttParams& param : GttParams) {
             rj::Value strVal;
             rj::Value tmpVal(rj::kObjectType);
 

@@ -491,7 +491,7 @@ TEST(kiteTest, orderTradesTest) {
 
 // GTT tests
 
-TEST(kiteTest, placeGTTTest) {
+TEST(kiteTest, placeGttTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/gtt_place_order.json");
     ASSERT_TRUE(jsonFile);
@@ -503,8 +503,22 @@ TEST(kiteTest, placeGTTTest) {
         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    int orderID = Kite.placeGTT("arg1", "arg2", "arg3", {}, 0.0, {});
+    // clang-format off
+    int orderID = Kite.placeGtt(kc::placeGttParams()
+                                    .LastPrice(100)
+                                    .TriggerType("single")
+                                    .Symbol("TCS")
+                                    .Exchange("NSE")
+                                    .TriggerValues({ 110.2 })
+                                    .GttParamsList({
+                                        kc::gttParams()
+                                        .Quantity(416)
+                                        .Price(111)
+                                        .TransactionType("BUY")
+                                        .OrderType("LIMIT")
+                                        .Product("CNC")
+                                    }));
+    // clang-format on
 
     // Expected value
     EXPECT_EQ(orderID, 123);
