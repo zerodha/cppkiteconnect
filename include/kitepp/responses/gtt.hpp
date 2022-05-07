@@ -42,7 +42,7 @@ struct GTTCondition {
         kc::rjutils::_getIfExists(val, triggerValues, "trigger_values");
     };
 
-    double lastPrice = 0.0;
+    double lastPrice = kc::DEFAULTDOUBLE;
     string exchange;
     string tradingsymbol;
     std::vector<double> triggerValues;
@@ -111,7 +111,7 @@ struct GTT {
         for (auto& v : it->value.GetArray()) { orders.emplace_back(v.GetObject()); };
     };
 
-    int ID = 0;
+    int ID = kc::DEFAULTINT;
     string userID;
     string type;
     string createdAt;
