@@ -13,9 +13,10 @@ using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)                                           \
     returnType& methodName(fieldType arg) {                                                                            \
-        fieldName = arg;                                                                                               \
+        (fieldName) = arg;                                                                                             \
         return *this;                                                                                                  \
     };
 
