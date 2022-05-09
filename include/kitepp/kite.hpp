@@ -858,14 +858,14 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ohlc
      */
-    std::unordered_map<string, OHLCQuote> getOHLC(const std::vector<string>& symbols) {
+    std::unordered_map<string, ohlcQuote> getOHLC(const std::vector<string>& symbols) {
 
         rj::Document res;
         _sendReq(res, _methods::GET,
             FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOHLC)"); };
 
-        std::unordered_map<string, OHLCQuote> quoteMap;
+        std::unordered_map<string, ohlcQuote> quoteMap;
         for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
 
         return quoteMap;
@@ -881,14 +881,14 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ltp
      */
-    std::unordered_map<string, LTPQuote> getLTP(const std::vector<string>& symbols) {
+    std::unordered_map<string, ltpQuote> getLTP(const std::vector<string>& symbols) {
 
         rj::Document res;
         _sendReq(
             res, _methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getLTP)"); };
 
-        std::unordered_map<string, LTPQuote> quoteMap;
+        std::unordered_map<string, ltpQuote> quoteMap;
         for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
 
         return quoteMap;

@@ -1037,11 +1037,11 @@ TEST(kiteTest, getOHLCTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kc::OHLCQuote> quotes = Kite.getOHLC({});
+    std::unordered_map<string, kc::ohlcQuote> quotes = Kite.getOHLC({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::OHLCQuote Quote = quotes["NSE:INFY"];
+    kc::ohlcQuote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1075);
@@ -1064,11 +1064,11 @@ TEST(kiteTest, getLTPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kc::LTPQuote> quotes = Kite.getLTP({});
+    std::unordered_map<string, kc::ltpQuote> quotes = Kite.getLTP({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::LTPQuote Quote = quotes["NSE:INFY"];
+    kc::ltpQuote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);

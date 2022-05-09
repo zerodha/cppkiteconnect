@@ -111,9 +111,9 @@ struct quote {
 };
 
 /// represents a ohlc quote response
-struct OHLCQuote {
-    OHLCQuote() = default;
-    explicit OHLCQuote(const rj::Value::Object& val) { parse(val); };
+struct ohlcQuote {
+    ohlcQuote() = default;
+    explicit ohlcQuote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
         kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
@@ -130,9 +130,9 @@ struct OHLCQuote {
 };
 
 /// represents a ltp quote response
-struct LTPQuote {
-    LTPQuote() = default;
-    explicit LTPQuote(const rj::Value::Object& val) { parse(val); };
+struct ltpQuote {
+    ltpQuote() = default;
+    explicit ltpQuote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
         kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
