@@ -46,7 +46,7 @@
 
 #include "config.hpp"
 #include "kiteppexceptions.hpp"
-#include "responses.hpp"
+#include "responses/responses.hpp"
 #include "rjutils.hpp"
 #include "utils.hpp"
 

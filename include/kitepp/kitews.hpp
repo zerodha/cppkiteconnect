@@ -41,7 +41,7 @@
 
 #include "config.hpp"
 #include "kiteppexceptions.hpp"
-#include "responses.hpp"
+#include "responses/responses.hpp"
 #include "userconstants.hpp" //modes
 
 #include "rapidjson/document.h"
@@ -398,7 +398,7 @@ class kiteWS {
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
 
-        // clang-format off
+// clang-format off
         #ifndef WORDS_BIGENDIAN
         std::reverse(requiredBytes.begin(), requiredBytes.end());
         #endif

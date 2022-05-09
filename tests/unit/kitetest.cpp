@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "kitepp.hpp"
-#include "kitepp/responses.hpp"
+#include "kitepp/responses/responses.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
 

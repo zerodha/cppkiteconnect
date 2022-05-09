@@ -31,7 +31,7 @@
 
 //! [adding kitepp header]
 #include "kitepp.hpp"
-#include "kitepp/responses.hpp"
+#include "kitepp/responses/responses.hpp"
 //! [adding kitepp header]
 
 namespace kc = kiteconnect;
