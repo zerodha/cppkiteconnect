@@ -1562,14 +1562,14 @@ TEST(kiteTest, getMFInstrumentsTest) {
 
     EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
 
-    std::vector<kc::MFInstrument> instruments = Kite.getMfInstruments();
+    std::vector<kc::mfInstrument> instruments = Kite.getMfInstruments();
 
     // Expected values
     ASSERT_EQ(instruments.size(), 99);
 
-    kc::MFInstrument instrument1 = instruments[0];
+    kc::mfInstrument instrument1 = instruments[0];
     EXPECT_EQ(instrument1.tradingsymbol, "INF209K01157");
-    EXPECT_EQ(instrument1.AMC, "BirlaSunLifeMutualFund_MF");
+    EXPECT_EQ(instrument1.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument1.name, "Aditya Birla Sun Life Advantage Fund");
     EXPECT_EQ(instrument1.purchaseAllowed, true);
     EXPECT_EQ(instrument1.redemtpionAllowed, true);
@@ -1585,9 +1585,9 @@ TEST(kiteTest, getMFInstrumentsTest) {
     EXPECT_EQ(instrument1.lastPrice, 106.8);
     EXPECT_EQ(instrument1.lastPriceDate, "2017-11-23");
 
-    kc::MFInstrument instrument2 = instruments[1];
+    kc::mfInstrument instrument2 = instruments[1];
     EXPECT_EQ(instrument2.tradingsymbol, "INF209K01165");
-    EXPECT_EQ(instrument2.AMC, "BirlaSunLifeMutualFund_MF");
+    EXPECT_EQ(instrument2.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument2.name, "Aditya Birla Sun Life Advantage Fund");
     EXPECT_EQ(instrument2.purchaseAllowed, true);
     EXPECT_EQ(instrument2.redemtpionAllowed, true);

@@ -1210,7 +1210,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf instruments
      */
-    std::vector<MFInstrument> getMfInstruments() {
+    std::vector<mfInstrument> getMfInstruments() {
 
         const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
 
