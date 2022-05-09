@@ -1494,13 +1494,13 @@ TEST(kiteTest, getOrderMarginsTest) {
     EXPECT_EQ(ordMargins1.type, "equity");
     EXPECT_EQ(ordMargins1.tradingSymbol, "INFY");
     EXPECT_EQ(ordMargins1.exchange, "NSE");
-    EXPECT_DOUBLE_EQ(ordMargins1.SPAN, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.span, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.exposure, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.optionPremium, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.additional, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.BO, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.bo, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.cash, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.VAR, 961.45);
+    EXPECT_DOUBLE_EQ(ordMargins1.var, 961.45);
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.realised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.unrealised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.total, 961.45);
