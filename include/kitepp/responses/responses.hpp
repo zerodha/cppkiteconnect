@@ -9,3 +9,4 @@
 #include "portfolio.hpp"
 #include "quotes.hpp"
 #include "user.hpp"
+#include "ws.hpp"

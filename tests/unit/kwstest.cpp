@@ -60,15 +60,15 @@ TEST(kWSTest, binaryParsingTest) {
     EXPECT_EQ(tick1.totalSellQuantity, 410173);
     EXPECT_EQ(tick1.volumeTraded, 6065675);
     EXPECT_DOUBLE_EQ(tick1.averageTradePrice, 1290.29);
-    EXPECT_EQ(tick1.OI, 0);
-    EXPECT_EQ(tick1.OIDayHigh, 0);
-    EXPECT_EQ(tick1.OIDayLow, 0);
+    EXPECT_EQ(tick1.oi, 0);
+    EXPECT_EQ(tick1.oiDayHigh, 0);
+    EXPECT_EQ(tick1.oiDayLow, 0);
     EXPECT_DOUBLE_EQ(tick1.netChange, 2.1185441396116693);
 
-    EXPECT_DOUBLE_EQ(tick1.OHLC.open, 1285.5);
-    EXPECT_DOUBLE_EQ(tick1.OHLC.high, 1305.90);
-    EXPECT_DOUBLE_EQ(tick1.OHLC.low, 1275.5);
-    EXPECT_DOUBLE_EQ(tick1.OHLC.close, 1272.1);
+    EXPECT_DOUBLE_EQ(tick1.ohlc.open, 1285.5);
+    EXPECT_DOUBLE_EQ(tick1.ohlc.high, 1305.90);
+    EXPECT_DOUBLE_EQ(tick1.ohlc.low, 1275.5);
+    EXPECT_DOUBLE_EQ(tick1.ohlc.close, 1272.1);
 
     EXPECT_DOUBLE_EQ(tick1.marketDepth.buy[0].price, 1299);
     EXPECT_EQ(tick1.marketDepth.buy[0].quantity, 2098);
@@ -122,15 +122,15 @@ TEST(kWSTest, binaryParsingTest) {
     EXPECT_EQ(tick2.totalSellQuantity, 145876);
     EXPECT_EQ(tick2.volumeTraded, 2261635);
     EXPECT_DOUBLE_EQ(tick2.averageTradePrice, 3188.32);
-    EXPECT_EQ(tick2.OI, 0);
-    EXPECT_EQ(tick2.OIDayHigh, 0);
-    EXPECT_EQ(tick2.OIDayLow, 0);
+    EXPECT_EQ(tick2.oi, 0);
+    EXPECT_EQ(tick2.oiDayHigh, 0);
+    EXPECT_EQ(tick2.oiDayLow, 0);
     EXPECT_DOUBLE_EQ(tick2.netChange, 1.6292214886239578);
 
-    EXPECT_DOUBLE_EQ(tick2.OHLC.open, 3189.5);
-    EXPECT_DOUBLE_EQ(tick2.OHLC.high, 3226);
-    EXPECT_DOUBLE_EQ(tick2.OHLC.low, 3155.15);
-    EXPECT_DOUBLE_EQ(tick2.OHLC.close, 3157.95);
+    EXPECT_DOUBLE_EQ(tick2.ohlc.open, 3189.5);
+    EXPECT_DOUBLE_EQ(tick2.ohlc.high, 3226);
+    EXPECT_DOUBLE_EQ(tick2.ohlc.low, 3155.15);
+    EXPECT_DOUBLE_EQ(tick2.ohlc.close, 3157.95);
 
     EXPECT_DOUBLE_EQ(tick2.marketDepth.buy[0].price, 3209.7);
     EXPECT_EQ(tick2.marketDepth.buy[0].quantity, 1);
