@@ -1141,7 +1141,15 @@ TEST(kiteTest, placeMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.placeMFOrder("arg1", "arg2");
+    // clang-format off
+    string orderID = Kite.placeMFOrder(kc::placeMfOrderParams()
+                                        .Quantity(10)
+                                        .Amount(100)
+                                        .Symbol("INF174K01LS2")
+                                        .Tag("sss")
+                                        .TransactionType("BUY")
+                                    );
+    // clang-format on
 
     // Expected values
     EXPECT_EQ(orderID, "123457");
@@ -1348,7 +1356,12 @@ TEST(kiteTest, placeMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    auto res = Kite.placeMFSIP("arg1", 0.0, 0, "arg4");
+    auto res = Kite.placeMFSIP(kc::placeMfSipParams()
+                                   .Symbol("INF174K01LS2")
+                                   .Amount(900)
+                                   .Frequency("monthly")
+                                   .Installments(-1)
+                                   .InstallmentDay(10));
 
     // Expected values
     EXPECT_EQ(res.first, "123457");
@@ -1368,7 +1381,7 @@ TEST(kiteTest, modifyMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    Kite.modifyMFSIP("arg1");
+    Kite.modifyMFSIP(kc::modifyMfSipParams().SipId("11123").Status("paused"));
 }
 
 TEST(kiteTest, cancelMFSIPTest) {

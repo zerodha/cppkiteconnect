@@ -14,6 +14,57 @@ using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
 
+/// represents parameters required for the `placeMfOrder` function
+struct placeMfOrderParams {
+    GENERATE_FLUENT_METHOD(placeMfOrderParams, int, quantity, Quantity);
+    GENERATE_FLUENT_METHOD(placeMfOrderParams, double, amount, Amount);
+    GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, symbol, Symbol);
+    GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, tag, Tag);
+
+    int quantity = kc::DEFAULTINT;
+    double amount = kc::DEFAULTDOUBLE;
+    string symbol;
+    string transactionType;
+    string tag;
+};
+
+/// represents parameters required for the `placeMfSip` function
+struct placeMfSipParams {
+    GENERATE_FLUENT_METHOD(placeMfSipParams, int, installments, Installments);
+    GENERATE_FLUENT_METHOD(placeMfSipParams, int, installmentDay, InstallmentDay);
+    GENERATE_FLUENT_METHOD(placeMfSipParams, double, amount, Amount);
+    GENERATE_FLUENT_METHOD(placeMfSipParams, double, initialAmount, InitialAmount);
+    GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, symbol, Symbol);
+    GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, frequency, Frequency);
+    GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, tag, Tag);
+
+    int installments = kc::DEFAULTINT;
+    int installmentDay = kc::DEFAULTINT;
+    double amount = kc::DEFAULTDOUBLE;
+    double initialAmount = kc::DEFAULTDOUBLE;
+    string symbol;
+    string frequency;
+    string tag;
+};
+
+/// represents parameters required for the `modifyMfSip` function
+struct modifyMfSipParams {
+    GENERATE_FLUENT_METHOD(modifyMfSipParams, int, installments, Installments);
+    GENERATE_FLUENT_METHOD(modifyMfSipParams, int, installmentDay, InstallmentDay);
+    GENERATE_FLUENT_METHOD(modifyMfSipParams, double, amount, Amount);
+    GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, sipId, SipId);
+    GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, status, Status);
+    GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, frequency, Frequency);
+
+    int installmentDay = kc::DEFAULTINT;
+    int installments = kc::DEFAULTINT;
+    double amount = kc::DEFAULTDOUBLE;
+    string sipId;
+    string status;
+    string frequency;
+};
+
 /// mfOrder represents an individual mutual fund order response
 struct mfOrder {
     mfOrder() = default;

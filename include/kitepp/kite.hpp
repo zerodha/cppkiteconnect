@@ -948,17 +948,15 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf order
      */
-    string placeMFOrder(const string& symbol, const string& txnType, int quantity = DEFAULTINT,
-        double amount = DEFAULTDOUBLE, const string& tag = "") {
-
+    string placeMFOrder(const placeMfOrderParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
+            { "tradingsymbol", params.symbol },
+            { "transaction_type", params.transactionType },
         };
 
-        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
+        if (isValidArg(params.quantity)) { bodyParams.emplace_back("quantity", std::to_string(params.quantity)); }
+        if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
+        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); }
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("mf.order.place"), bodyParams);
@@ -966,7 +964,6 @@ class kite {
 
         string rcvdOrdID;
         rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
         return rcvdOrdID;
     };
 
@@ -1082,19 +1079,21 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf sip order
      */
-    std::pair<string, string> placeMFSIP(const string& symbol, double amount, int installments, const string& freq,
-        double initAmount = DEFAULTDOUBLE, int installDay = DEFAULTINT, const string& tag = "") {
-
+    std::pair<string, string> placeMFSIP(const placeMfSipParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", symbol },
-            { "amount", std::to_string(amount) },
-            { "instalments", std::to_string(installments) },
-            { "frequency", freq },
+            { "tradingsymbol", params.symbol },
+            { "amount", std::to_string(params.amount) },
+            { "instalments", std::to_string(params.installments) },
+            { "frequency", params.frequency },
         };
 
-        if (!isValid(initAmount)) { bodyParams.emplace_back("initial_amount", std::to_string(initAmount)); };
-        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); };
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); };
+        if (isValidArg(params.initialAmount)) {
+            bodyParams.emplace_back("initial_amount", std::to_string(params.initialAmount));
+        };
+        if (isValidArg(params.installmentDay)) {
+            bodyParams.emplace_back("instalment_day", std::to_string(params.installmentDay));
+        };
+        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); };
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
@@ -1104,7 +1103,6 @@ class kite {
         auto it = res.FindMember("data");
         rju::_getIfExists(it->value.GetObject(), rcvdOrdID, "order_id");
         rju::_getIfExists(it->value.GetObject(), rcvdSipID, "sip_id");
-
         return { rcvdOrdID, rcvdSipID };
     };
 
@@ -1123,19 +1121,21 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modify mf sip order
      */
-    void modifyMFSIP(const string& SIPID, double amount = DEFAULTDOUBLE, const string& status = "",
-        int installments = DEFAULTINT, const string& freq = "", int installDay = DEFAULTINT) {
-
+    void modifyMFSIP(const modifyMfSipParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
-        if (!status.empty()) { bodyParams.emplace_back("status", status); }
-        if (!isValid(installments)) { bodyParams.emplace_back("instalments", std::to_string(installments)); }
-        if (!freq.empty()) { bodyParams.emplace_back("frequency", freq); }
-        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
+        if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
+        if (isValidArg(params.status)) { bodyParams.emplace_back("status", params.status); }
+        if (isValidArg(params.installments)) {
+            bodyParams.emplace_back("instalments", std::to_string(params.installments));
+        }
+        if (isValidArg(params.frequency)) { bodyParams.emplace_back("frequency", params.frequency); }
+        if (isValidArg(params.installmentDay)) {
+            bodyParams.emplace_back("instalment_day", std::to_string(params.installmentDay));
+        }
 
         rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
+        _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = params.sipId), bodyParams);
     };
 
     /**
