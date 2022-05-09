@@ -55,13 +55,13 @@ struct historicalData {
         if (val.Size() > OI_IDX) { OI = val[OI_IDX].GetInt(); };
     };
 
+    int volume = kc::DEFAULTINT;
+    int OI = kc::DEFAULTINT;
+    double open = kc::DEFAULTDOUBLE;
+    double high = kc::DEFAULTDOUBLE;
+    double low = kc::DEFAULTDOUBLE;
+    double close = kc::DEFAULTDOUBLE;
     string datetime;
-    double open = 0.0;
-    double high = 0.0;
-    double low = 0.0;
-    double close = 0.0;
-    int volume = 0;
-    int OI = 0;
     static constexpr uint8_t DATETIME_IDX = 0;
     static constexpr uint8_t OPEN_IDX = 1;
     static constexpr uint8_t HIGH_IDX = 2;
