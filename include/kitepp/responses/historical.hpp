@@ -46,13 +46,13 @@ struct historicalData {
 
             throw libException("type wasn't the one expected (expected double) (historicalData)");
         };
-        datetime = val[0].GetString();
-        open = getDouble(val[1]);
-        high = getDouble(val[2]);
-        low = getDouble(val[3]);
-        close = getDouble(val[4]);
-        volume = val[5].GetInt();
-        if (val.Size() > 6) { OI = val[6].GetInt(); };
+        datetime = val[DATETIME_IDX].GetString();
+        open = getDouble(val[OPEN_IDX]);
+        high = getDouble(val[HIGH_IDX]);
+        low = getDouble(val[LOW_IDX]);
+        close = getDouble(val[CLOSE_IDX]);
+        volume = val[VOLUME_IDX].GetInt();
+        if (val.Size() > OI_IDX) { OI = val[OI_IDX].GetInt(); };
     };
 
     string datetime;
@@ -62,5 +62,12 @@ struct historicalData {
     double close = 0.0;
     int volume = 0;
     int OI = 0;
+    static constexpr uint8_t DATETIME_IDX = 0;
+    static constexpr uint8_t OPEN_IDX = 1;
+    static constexpr uint8_t HIGH_IDX = 2;
+    static constexpr uint8_t LOW_IDX = 3;
+    static constexpr uint8_t CLOSE_IDX = 4;
+    static constexpr uint8_t VOLUME_IDX = 5;
+    static constexpr uint8_t OI_IDX = 6;
 };
 } // namespace kiteconnect
