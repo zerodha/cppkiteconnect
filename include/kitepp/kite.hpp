@@ -911,14 +911,12 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get historical data
      */
-    std::vector<historicalData> getHistoricalData(int instrumentTok, const string& from, const string& to,
-        const string& interval, bool continuous = false, bool oi = false) {
-
+    std::vector<historicalData> getHistoricalData(const historicalDataParams& params) {
         rj::Document res;
         _sendReq(res, _methods::GET,
-            FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval,
-                "from"_a = from, "to"_a = to, "continuous"_a = static_cast<int>(continuous),
-                "oi"_a = static_cast<int>(oi)));
+            FMT(_endpoints.at("market.historical"), "instrument_token"_a = params.instrumentToken,
+                "interval"_a = params.interval, "from"_a = params.from, "to"_a = params.to,
+                "continuous"_a = static_cast<int>(params.continuous), "oi"_a = static_cast<int>(params.oi)));
 
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (getHistoricalData)");

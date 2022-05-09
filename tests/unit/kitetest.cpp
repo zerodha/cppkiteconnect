@@ -1089,7 +1089,11 @@ TEST(kiteTest, getHistoricalDataTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::historicalData> data = Kite.getHistoricalData(0, "arg1", "arg2", "arg3", "arg4");
+    std::vector<kc::historicalData> data = Kite.getHistoricalData(kc::historicalDataParams()
+                                                                      .InstrumentToken(5633)
+                                                                      .Interval("minute")
+                                                                      .From("2017-12-15+09:15:00")
+                                                                      .To("2017-12-15+09:20:00"));
 
     // Expected values
     ASSERT_EQ(data.size(), 3000);
