@@ -1037,7 +1037,7 @@ TEST(kiteTest, getOHLCTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kc::ohlcQuote> quotes = Kite.getOHLC({});
+    std::unordered_map<string, kc::ohlcQuote> quotes = Kite.getOhlc({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
@@ -1064,7 +1064,7 @@ TEST(kiteTest, getLTPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kc::ltpQuote> quotes = Kite.getLTP({});
+    std::unordered_map<string, kc::ltpQuote> quotes = Kite.getLtp({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());

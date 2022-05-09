@@ -858,7 +858,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ohlc
      */
-    std::unordered_map<string, ohlcQuote> getOHLC(const std::vector<string>& symbols) {
+    std::unordered_map<string, ohlcQuote> getOhlc(const std::vector<string>& symbols) {
 
         rj::Document res;
         _sendReq(res, _methods::GET,
@@ -881,7 +881,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ltp
      */
-    std::unordered_map<string, ltpQuote> getLTP(const std::vector<string>& symbols) {
+    std::unordered_map<string, ltpQuote> getLtp(const std::vector<string>& symbols) {
 
         rj::Document res;
         _sendReq(
