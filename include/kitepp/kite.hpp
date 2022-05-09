@@ -948,7 +948,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf order
      */
-    string placeMFOrder(const placeMfOrderParams& params) {
+    string placeMfOrder(const placeMfOrderParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
             { "tradingsymbol", params.symbol },
             { "transaction_type", params.transactionType },
@@ -977,7 +977,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancel a mf order
      */
-    string cancelMFOrder(const string& ordID) {
+    string cancelMfOrder(const string& ordID) {
 
         rj::Document res;
         _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
@@ -999,7 +999,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf orders
      */
-    std::vector<mfOrder> getMFOrders() {
+    std::vector<mfOrder> getMfOrders() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.orders"));
@@ -1024,7 +1024,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf order info
      */
-    mfOrder getMFOrder(const string& ordID) {
+    mfOrder getMfOrder(const string& ordID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
@@ -1043,7 +1043,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf holdings
      */
-    std::vector<mfHolding> getMFHoldings() {
+    std::vector<mfHolding> getMfHoldings() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.holdings"));
@@ -1079,7 +1079,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf sip order
      */
-    std::pair<string, string> placeMFSIP(const placeMfSipParams& params) {
+    std::pair<string, string> placeMfSip(const placeMfSipParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
             { "tradingsymbol", params.symbol },
             { "amount", std::to_string(params.amount) },
@@ -1121,7 +1121,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modify mf sip order
      */
-    void modifyMFSIP(const modifyMfSipParams& params) {
+    void modifyMfSip(const modifyMfSipParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {};
 
         if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
@@ -1148,7 +1148,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancel mf sip
      */
-    string cancelMFSIP(const string& SIPID) {
+    string cancelMfSip(const string& SIPID) {
 
         rj::Document res;
         _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
@@ -1168,7 +1168,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sips
      */
-    std::vector<mfSip> getSIPs() {
+    std::vector<mfSip> getSips() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.sips"));
@@ -1193,7 +1193,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sip info
      */
-    mfSip getSIP(const string& SIPID) {
+    mfSip getSip(const string& SIPID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
@@ -1210,7 +1210,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf instruments
      */
-    std::vector<MFInstrument> getMFInstruments() {
+    std::vector<MFInstrument> getMfInstruments() {
 
         const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
 

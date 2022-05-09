@@ -1142,7 +1142,7 @@ TEST(kiteTest, placeMFOrderTest) {
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
     // clang-format off
-    string orderID = Kite.placeMFOrder(kc::placeMfOrderParams()
+    string orderID = Kite.placeMfOrder(kc::placeMfOrderParams()
                                         .Quantity(10)
                                         .Amount(100)
                                         .Symbol("INF174K01LS2")
@@ -1168,7 +1168,7 @@ TEST(kiteTest, cancelMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.cancelMFOrder("arg1");
+    string orderID = Kite.cancelMfOrder("arg1");
 
     // Expected values
     EXPECT_EQ(orderID, "123457");
@@ -1187,7 +1187,7 @@ TEST(kiteTest, getMFOrdersTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::mfOrder> orders = Kite.getMFOrders();
+    std::vector<kc::mfOrder> orders = Kite.getMfOrders();
 
     // Expected values
     ASSERT_EQ(orders.size(), 5);
@@ -1248,7 +1248,7 @@ TEST(kiteTest, getMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::mfOrder order = Kite.getMFOrder("arg1");
+    kc::mfOrder order = Kite.getMfOrder("arg1");
 
     // Expected values
     EXPECT_EQ(order.orderID, "2b6ad4b7-c84e-4c76-b459-f3a8994184f1");
@@ -1285,7 +1285,7 @@ TEST(kiteTest, getMFHoldingsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::mfHolding> Holdings = Kite.getMFHoldings();
+    std::vector<kc::mfHolding> Holdings = Kite.getMfHoldings();
 
     // Expected values
     ASSERT_EQ(Holdings.size(), 5);
@@ -1356,7 +1356,7 @@ TEST(kiteTest, placeMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    auto res = Kite.placeMFSIP(kc::placeMfSipParams()
+    auto res = Kite.placeMfSip(kc::placeMfSipParams()
                                    .Symbol("INF174K01LS2")
                                    .Amount(900)
                                    .Frequency("monthly")
@@ -1381,7 +1381,7 @@ TEST(kiteTest, modifyMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    Kite.modifyMFSIP(kc::modifyMfSipParams().SipId("11123").Status("paused"));
+    Kite.modifyMfSip(kc::modifyMfSipParams().SipId("11123").Status("paused"));
 }
 
 TEST(kiteTest, cancelMFSIPTest) {
@@ -1397,7 +1397,7 @@ TEST(kiteTest, cancelMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string SIPID = Kite.cancelMFSIP("arg1");
+    string SIPID = Kite.cancelMfSip("arg1");
 
     // Expected values
     EXPECT_EQ(SIPID, "123457");
@@ -1416,7 +1416,7 @@ TEST(kiteTest, getSIPsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::mfSip> SIPs = Kite.getSIPs();
+    std::vector<kc::mfSip> SIPs = Kite.getSips();
 
     // Expected values
     ASSERT_EQ(SIPs.size(), 5);
@@ -1451,7 +1451,7 @@ TEST(kiteTest, getSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::mfSip sip = Kite.getSIP("arg1");
+    kc::mfSip sip = Kite.getSip("arg1");
 
     // Expected values
     EXPECT_EQ(sip.ID, "846479755969168");
@@ -1562,7 +1562,7 @@ TEST(kiteTest, getMFInstrumentsTest) {
 
     EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
 
-    std::vector<kc::MFInstrument> instruments = Kite.getMFInstruments();
+    std::vector<kc::MFInstrument> instruments = Kite.getMfInstruments();
 
     // Expected values
     ASSERT_EQ(instruments.size(), 99);
