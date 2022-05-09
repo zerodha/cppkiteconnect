@@ -1179,12 +1179,12 @@ TEST(kiteTest, getMFOrdersTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFOrder> orders = Kite.getMFOrders();
+    std::vector<kc::mfOrder> orders = Kite.getMFOrders();
 
     // Expected values
     ASSERT_EQ(orders.size(), 5);
 
-    kc::MFOrder order1 = orders[0];
+    kc::mfOrder order1 = orders[0];
     EXPECT_EQ(order1.orderID, "271989e0-a64e-4cf3-b4e4-afb8f38dd203");
     EXPECT_EQ(order1.exchangeOrderID, "254657127");
     EXPECT_EQ(order1.tradingsymbol, "INF179K01VY8");
@@ -1205,7 +1205,7 @@ TEST(kiteTest, getMFOrdersTest) {
     EXPECT_EQ(order1.placedBy, "ZV8062");
     EXPECT_EQ(order1.tag, "");
 
-    kc::MFOrder order2 = orders[1];
+    kc::mfOrder order2 = orders[1];
     EXPECT_EQ(order2.orderID, "ef7e696c-2fa6-400b-b180-eb25e6a04ccf");
     EXPECT_EQ(order2.exchangeOrderID, "");
     EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
@@ -1240,7 +1240,7 @@ TEST(kiteTest, getMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::MFOrder order = Kite.getMFOrder("arg1");
+    kc::mfOrder order = Kite.getMFOrder("arg1");
 
     // Expected values
     EXPECT_EQ(order.orderID, "2b6ad4b7-c84e-4c76-b459-f3a8994184f1");
@@ -1277,12 +1277,12 @@ TEST(kiteTest, getMFHoldingsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFHolding> Holdings = Kite.getMFHoldings();
+    std::vector<kc::mfHolding> Holdings = Kite.getMFHoldings();
 
     // Expected values
     ASSERT_EQ(Holdings.size(), 5);
 
-    kc::MFHolding holding1 = Holdings[0];
+    kc::mfHolding holding1 = Holdings[0];
     EXPECT_EQ(holding1.folio, "123123/123");
     EXPECT_EQ(holding1.fund, "Kotak Select Focus Fund - Direct Plan");
     EXPECT_EQ(holding1.tradingsymbol, "INF174K01LS2");
@@ -1292,7 +1292,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding1.lastPriceDate, "2016-11-11");
     EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);
 
-    kc::MFHolding holding2 = Holdings[1];
+    kc::mfHolding holding2 = Holdings[1];
     EXPECT_EQ(holding2.folio, "385080203");
     EXPECT_EQ(holding2.fund, "DSP BlackRock Money Manager Fund");
     EXPECT_EQ(holding2.tradingsymbol, "INF740K01QQ3");
@@ -1302,7 +1302,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding2.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding2.quantity, 0.466);
 
-    kc::MFHolding holding3 = Holdings[2];
+    kc::mfHolding holding3 = Holdings[2];
     EXPECT_EQ(holding3.folio, "1052046771");
     EXPECT_EQ(holding3.fund, "HDFC TaxSaver - Regular Plan");
     EXPECT_EQ(holding3.tradingsymbol, "INF179K01BB8");
@@ -1312,7 +1312,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding3.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);
 
-    kc::MFHolding holding4 = Holdings[3];
+    kc::mfHolding holding4 = Holdings[3];
     EXPECT_EQ(holding4.folio, "91022348426");
     EXPECT_EQ(holding4.fund, "Axis Long Term Equity Fund");
     EXPECT_EQ(holding4.tradingsymbol, "INF846K01131");
@@ -1322,7 +1322,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding4.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding4.quantity, 3526.834);
 
-    kc::MFHolding holding5 = Holdings[4];
+    kc::mfHolding holding5 = Holdings[4];
     EXPECT_EQ(holding5.folio, "488155267386");
     EXPECT_EQ(holding5.fund, "Reliance Money Manager Fund");
     EXPECT_EQ(holding5.tradingsymbol, "INF204K01EY0");
@@ -1403,12 +1403,12 @@ TEST(kiteTest, getSIPsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFSIP> SIPs = Kite.getSIPs();
+    std::vector<kc::mfSip> SIPs = Kite.getSIPs();
 
     // Expected values
     ASSERT_EQ(SIPs.size(), 5);
 
-    kc::MFSIP sip1 = SIPs[0];
+    kc::mfSip sip1 = SIPs[0];
     EXPECT_EQ(sip1.ID, "892741486820670");
     EXPECT_EQ(sip1.tradingsymbol, "INF209K01VD7");
     EXPECT_EQ(sip1.fundName, "Aditya Birla Sun Life Liquid Fund - Direct Plan");
@@ -1438,7 +1438,7 @@ TEST(kiteTest, getSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::MFSIP sip = Kite.getSIP("arg1");
+    kc::mfSip sip = Kite.getSIP("arg1");
 
     // Expected values
     EXPECT_EQ(sip.ID, "846479755969168");

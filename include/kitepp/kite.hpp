@@ -1002,7 +1002,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf orders
      */
-    std::vector<MFOrder> getMFOrders() {
+    std::vector<mfOrder> getMFOrders() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.orders"));
@@ -1011,7 +1011,7 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
 
-        std::vector<MFOrder> ordersVec;
+        std::vector<mfOrder> ordersVec;
         for (auto& i : it->value.GetArray()) { ordersVec.emplace_back(i.GetObject()); }
 
         return ordersVec;
@@ -1027,7 +1027,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf order info
      */
-    MFOrder getMFOrder(const string& ordID) {
+    mfOrder getMFOrder(const string& ordID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
@@ -1035,7 +1035,7 @@ class kite {
             throw libException("Empty data was received where it wasn't expected (cancelMFOrder)");
         };
 
-        return MFOrder(res["data"].GetObject());
+        return mfOrder(res["data"].GetObject());
     };
 
     /**
@@ -1046,7 +1046,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf holdings
      */
-    std::vector<MFHolding> getMFHoldings() {
+    std::vector<mfHolding> getMFHoldings() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.holdings"));
@@ -1057,7 +1057,7 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
 
-        std::vector<MFHolding> holdingsVec;
+        std::vector<mfHolding> holdingsVec;
         for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
 
         return holdingsVec;
@@ -1168,7 +1168,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sips
      */
-    std::vector<MFSIP> getSIPs() {
+    std::vector<mfSip> getSIPs() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.sips"));
@@ -1177,7 +1177,7 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getSIPs)"); };
 
-        std::vector<MFSIP> sipVec;
+        std::vector<mfSip> sipVec;
         for (auto& i : it->value.GetArray()) { sipVec.emplace_back(i.GetObject()); }
 
         return sipVec;
@@ -1193,13 +1193,13 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sip info
      */
-    MFSIP getSIP(const string& SIPID) {
+    mfSip getSIP(const string& SIPID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIP)"); };
 
-        return MFSIP(res["data"].GetObject());
+        return mfSip(res["data"].GetObject());
     };
 
     /**
