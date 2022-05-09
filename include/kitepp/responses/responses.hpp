@@ -5,4 +5,5 @@
 #include "mf.hpp"
 #include "order.hpp"
 #include "portfolio.hpp"
+#include "quotes.hpp"
 #include "user.hpp"
