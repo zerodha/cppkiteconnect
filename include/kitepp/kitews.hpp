@@ -41,7 +41,7 @@
 
 #include "config.hpp"
 #include "kiteppexceptions.hpp"
-#include "responses.hpp"
+#include "responses/responses.hpp"
 #include "userconstants.hpp" //modes
 
 #include "rapidjson/document.h"
@@ -392,7 +392,8 @@ class kiteWS {
     };
 
     // Convert bytesarray(array[start], arrray[end]) to number of type T
-    template <typename T> T _getNum(const std::vector<char>& bytes, size_t start, size_t end) {
+    template <typename T>
+    T _getNum(const std::vector<char>& bytes, size_t start, size_t end) {
 
         T value;
         std::vector<char> requiredBytes(bytes.begin() + start, bytes.begin() + end + 1);
@@ -437,20 +438,20 @@ class kiteWS {
             int segment = instrumentToken & 0xff;
 
             bool tradable = (segment == _segmentConstants.at("indices")) ? false : true;
-            
+
             // price divisor based on segment
-            // converts prices of stocks from paise to rupees 
+            // converts prices of stocks from paise to rupees
             double divisor;
             if (segment == _segmentConstants.at("cds")) {
                 divisor = 10000000.0;
-                
+
             } else if (segment == _segmentConstants.at("bsecds")) {
                 divisor = 10000.0;
-            
+
             } else {
                 divisor = 100.0;
             }
-            
+
             kc::tick Tick;
 
             Tick.isTradable = tradable;
@@ -466,11 +467,10 @@ class kiteWS {
 
                 Tick.mode = (packetSize == 28) ? MODE_QUOTE : MODE_FULL;
                 Tick.lastPrice = _getNum<int32_t>(packet, 4, 7) / divisor;
-                Tick.OHLC.high = _getNum<int32_t>(packet, 8, 11) / divisor;
-                Tick.OHLC.low = _getNum<int32_t>(packet, 12, 15) / divisor;
-                Tick.OHLC.open = _getNum<int32_t>(packet, 16, 19) / divisor;
-                Tick.OHLC.close = _getNum<int32_t>(packet, 20, 23) / divisor;
-                // xTick.netChange = (Tick.lastPrice - Tick.OHLC.close) * 100 / Tick.OHLC.close;
+                Tick.ohlc.high = _getNum<int32_t>(packet, 8, 11) / divisor;
+                Tick.ohlc.low = _getNum<int32_t>(packet, 12, 15) / divisor;
+                Tick.ohlc.open = _getNum<int32_t>(packet, 16, 19) / divisor;
+                Tick.ohlc.close = _getNum<int32_t>(packet, 20, 23) / divisor;
                 Tick.netChange = _getNum<int32_t>(packet, 24, 27) / divisor;
 
                 // parse full mode with timestamp
@@ -486,19 +486,19 @@ class kiteWS {
                 Tick.volumeTraded = _getNum<int32_t>(packet, 16, 19);
                 Tick.totalBuyQuantity = _getNum<int32_t>(packet, 20, 23);
                 Tick.totalSellQuantity = _getNum<int32_t>(packet, 24, 27);
-                Tick.OHLC.open = _getNum<int32_t>(packet, 28, 31) / divisor;
-                Tick.OHLC.high = _getNum<int32_t>(packet, 32, 35) / divisor;
-                Tick.OHLC.low = _getNum<int32_t>(packet, 36, 39) / divisor;
-                Tick.OHLC.close = _getNum<int32_t>(packet, 40, 43) / divisor;
+                Tick.ohlc.open = _getNum<int32_t>(packet, 28, 31) / divisor;
+                Tick.ohlc.high = _getNum<int32_t>(packet, 32, 35) / divisor;
+                Tick.ohlc.low = _getNum<int32_t>(packet, 36, 39) / divisor;
+                Tick.ohlc.close = _getNum<int32_t>(packet, 40, 43) / divisor;
 
-                Tick.netChange = (Tick.lastPrice - Tick.OHLC.close) * 100 / Tick.OHLC.close;
+                Tick.netChange = (Tick.lastPrice - Tick.ohlc.close) * 100 / Tick.ohlc.close;
 
                 // parse full mode
                 if (packetSize == 184) {
                     Tick.lastTradeTime = _getNum<int32_t>(packet, 44, 47);
-                    Tick.OI = _getNum<int32_t>(packet, 48, 51);
-                    Tick.OIDayHigh = _getNum<int32_t>(packet, 52, 55);
-                    Tick.OIDayLow = _getNum<int32_t>(packet, 56, 59);
+                    Tick.oi = _getNum<int32_t>(packet, 48, 51);
+                    Tick.oiDayHigh = _getNum<int32_t>(packet, 52, 55);
+                    Tick.oiDayLow = _getNum<int32_t>(packet, 56, 59);
                     Tick.timestamp = _getNum<int32_t>(packet, 60, 63);
 
                     unsigned int depthStartIdx = 64;
@@ -537,30 +537,6 @@ class kiteWS {
         if (!quoteInstruments.empty()) { setMode(MODE_QUOTE, quoteInstruments); };
         if (!fullInstruments.empty()) { setMode(MODE_FULL, fullInstruments); };
     };
-
-    /*
-    handled by uWS::Group::StartAutoPing() now. Code kept here as fallback.
-    void _pingLoop() {
-
-        while (!_stop) {
-
-            std::cout << "Sending ping..\n";
-            if (isConnected()) { _WS->ping(_pingMessage.data()); };
-            std::this_thread::sleep_for(std::chrono::seconds(_pingInterval));
-
-            if (_enableReconnect) {
-
-                auto tmDiff =
-                    std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - _lastPongTime)
-                        .count();
-
-                if (tmDiff > _maxPongDelay) {
-                    std::cout << FMT("Max pong exceeded.. tmDiff={0}\n", tmDiff);
-                    if (isConnected()) { _WS->close(1006, "ping timed out"); };
-                };
-            };
-        };
-    };*/
 
     void _assignCallbacks() {
 

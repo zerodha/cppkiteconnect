@@ -27,6 +27,13 @@
 #include <string>
 #include <vector>
 
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)                                           \
+    returnType& methodName(fieldType arg) {                                                                            \
+        (fieldName) = arg;                                                                                             \
+        return *this;                                                                                                  \
+    };
+
 namespace kiteconnect {
 
 using std::string;
@@ -45,5 +52,13 @@ inline std::vector<string> _split(const std::string& text, char sep) {
 
     return tokens;
 };
+
+// ! std::isnan should be used but doing so breaks the compilation on Windows
+// ! utilizes a IEEE 754 property that states NaN != NaN, can fail because of compiler optimizations
+// NOLINTNEXTLINE(clang-diagnostic-tautological-compare, misc-redundant-expression)
+inline bool isValidArg(int value) { return value == value; };
+// NOLINTNEXTLINE(clang-diagnostic-tautological-compare, misc-redundant-expression)
+inline bool isValidArg(double value) { return value == value; };
+inline bool isValidArg(const string& value) { return !value.empty(); };
 
 } // namespace kiteconnect

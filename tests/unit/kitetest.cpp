@@ -34,7 +34,7 @@
 #include <vector>
 
 #include "kitepp.hpp"
-#include "kitepp/responses.hpp"
+#include "kitepp/responses/responses.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
 
@@ -245,7 +245,6 @@ TEST(kiteTest, getMarginsTest2) {
 // Orders tests
 
 TEST(kiteTest, placeOrderTest) {
-
     std::ifstream jsonFile("../../tests/mock_responses/order_response.json");
     ASSERT_TRUE(jsonFile);
     rj::IStreamWrapper jsonFWrap(jsonFile);
@@ -257,7 +256,16 @@ TEST(kiteTest, placeOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.placeOrder("arg1", "arg2", "arg3", "arg4", 1, "arg6", "arg7");
+    string orderID = Kite.placeOrder(kc::placeOrderParams()
+                                         .Quantity(10)
+                                         .Variety("regular")
+                                         .Exchange("NSE")
+                                         .Symbol("TCS")
+                                         .TransactionType("BUY")
+                                         .Product("NRML")
+                                         .OrderType("MARKET")
+                                         .Validity("day")
+                                         .Tag("order1"));
 
     EXPECT_EQ(orderID, "151220000000000");
 }
@@ -275,7 +283,12 @@ TEST(kiteTest, modifyOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.modifyOrder("arg1", "arg2");
+    // clang-format off
+    string orderID = Kite.modifyOrder(kc::modifyOrderParams()
+                                        .Variety("regular")
+                                        .OrderId("1111111000101010")
+                                        .Quantity(69));
+    // clang-format on
 
     EXPECT_EQ(orderID, "151220000000000");
 }
@@ -478,7 +491,7 @@ TEST(kiteTest, orderTradesTest) {
 
 // GTT tests
 
-TEST(kiteTest, placeGTTTest) {
+TEST(kiteTest, placeGttTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/gtt_place_order.json");
     ASSERT_TRUE(jsonFile);
@@ -490,8 +503,22 @@ TEST(kiteTest, placeGTTTest) {
         .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    int orderID = Kite.placeGTT("arg1", "arg2", "arg3", {}, 0.0, {});
+    // clang-format off
+    int orderID = Kite.placeGtt(kc::placeGttParams()
+                                    .LastPrice(100)
+                                    .TriggerType("single")
+                                    .Symbol("TCS")
+                                    .Exchange("NSE")
+                                    .TriggerValues({ 110.2 })
+                                    .GttParamsList({
+                                        kc::gttParams()
+                                        .Quantity(416)
+                                        .Price(111)
+                                        .TransactionType("BUY")
+                                        .OrderType("LIMIT")
+                                        .Product("CNC")
+                                    }));
+    // clang-format on
 
     // Expected value
     EXPECT_EQ(orderID, 123);
@@ -510,7 +537,7 @@ TEST(kiteTest, getGTTsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::GTT> Orders = Kite.getGTTs();
+    std::vector<kc::GTT> Orders = Kite.getGtts();
 
     // Exptected values
     ASSERT_EQ(Orders.size(), 2);
@@ -574,7 +601,7 @@ TEST(kiteTest, getGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::GTT order = Kite.getGTT(0);
+    kc::GTT order = Kite.getGtt(0);
 
     // Expected values
     EXPECT_EQ(order.ID, 123);
@@ -596,7 +623,7 @@ TEST(kiteTest, getGTTTest) {
     EXPECT_DOUBLE_EQ(order.orders[0].price, 1);
 }
 
-TEST(kiteTest, modifyGTTTest) {
+TEST(kiteTest, modifyGttTest) {
 
     std::ifstream jsonFile("../../tests/mock_responses/gtt_modify_order.json");
     ASSERT_TRUE(jsonFile);
@@ -609,7 +636,24 @@ TEST(kiteTest, modifyGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    int orderID = Kite.modifyGTT(0, "arg1", "arg2", "arg3", {}, 0, {});
+    // clang-format off
+    int orderID = Kite.modifyGtt(
+        kc::modifyGttParams()
+            .TriggerId(11111)
+            .LastPrice(100)
+            .TriggerType("single")
+            .Symbol("TCS")
+            .Exchange("NSE")
+            .TriggerValues({ 111.2 })
+            .GttParamsList(
+                { kc::gttParams()
+                .Quantity(4116)
+                .Price(110)
+                .TransactionType("BUY")
+                .OrderType("LIMIT")
+                .Product("CNC") }
+            ));
+    // clang-format on
 
     // Expected values
     EXPECT_EQ(orderID, 123);
@@ -628,7 +672,7 @@ TEST(kiteTest, deleteGTTTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    int orderID = Kite.deleteGTT(0);
+    int orderID = Kite.deleteGtt(0);
 
     // Expected values
     EXPECT_EQ(orderID, 123);
@@ -893,7 +937,14 @@ TEST(kiteTest, convertPositionTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    bool result = Kite.convertPosition("arg1", "arg2", "arg3", "arg4", 0, "arg5", "arg6");
+    bool result = Kite.convertPosition(kc::convertPositionParams()
+                                           .Quantity(11)
+                                           .Exchange("BSE")
+                                           .Symbol("INFY")
+                                           .TransactionType("SELL")
+                                           .PositionType("overnight")
+                                           .OldProduct("NRML")
+                                           .NewProduct("MIS"));
 
     // Expected values
     EXPECT_EQ(result, true);
@@ -986,11 +1037,11 @@ TEST(kiteTest, getOHLCTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kc::OHLCQuote> quotes = Kite.getOHLC({});
+    std::unordered_map<string, kc::ohlcQuote> quotes = Kite.getOhlc({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::OHLCQuote Quote = quotes["NSE:INFY"];
+    kc::ohlcQuote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1075);
@@ -1013,11 +1064,11 @@ TEST(kiteTest, getLTPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::unordered_map<string, kc::LTPQuote> quotes = Kite.getLTP({});
+    std::unordered_map<string, kc::ltpQuote> quotes = Kite.getLtp({});
 
     // Expected values
     ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::LTPQuote Quote = quotes["NSE:INFY"];
+    kc::ltpQuote Quote = quotes["NSE:INFY"];
 
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);
@@ -1038,7 +1089,11 @@ TEST(kiteTest, getHistoricalDataTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::historicalData> data = Kite.getHistoricalData(0, "arg1", "arg2", "arg3", "arg4");
+    std::vector<kc::historicalData> data = Kite.getHistoricalData(kc::historicalDataParams()
+                                                                      .InstrumentToken(5633)
+                                                                      .Interval("minute")
+                                                                      .From("2017-12-15+09:15:00")
+                                                                      .To("2017-12-15+09:20:00"));
 
     // Expected values
     ASSERT_EQ(data.size(), 3000);
@@ -1086,7 +1141,15 @@ TEST(kiteTest, placeMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.placeMFOrder("arg1", "arg2");
+    // clang-format off
+    string orderID = Kite.placeMfOrder(kc::placeMfOrderParams()
+                                        .Quantity(10)
+                                        .Amount(100)
+                                        .Symbol("INF174K01LS2")
+                                        .Tag("sss")
+                                        .TransactionType("BUY")
+                                    );
+    // clang-format on
 
     // Expected values
     EXPECT_EQ(orderID, "123457");
@@ -1105,7 +1168,7 @@ TEST(kiteTest, cancelMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string orderID = Kite.cancelMFOrder("arg1");
+    string orderID = Kite.cancelMfOrder("arg1");
 
     // Expected values
     EXPECT_EQ(orderID, "123457");
@@ -1124,12 +1187,12 @@ TEST(kiteTest, getMFOrdersTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFOrder> orders = Kite.getMFOrders();
+    std::vector<kc::mfOrder> orders = Kite.getMfOrders();
 
     // Expected values
     ASSERT_EQ(orders.size(), 5);
 
-    kc::MFOrder order1 = orders[0];
+    kc::mfOrder order1 = orders[0];
     EXPECT_EQ(order1.orderID, "271989e0-a64e-4cf3-b4e4-afb8f38dd203");
     EXPECT_EQ(order1.exchangeOrderID, "254657127");
     EXPECT_EQ(order1.tradingsymbol, "INF179K01VY8");
@@ -1150,7 +1213,7 @@ TEST(kiteTest, getMFOrdersTest) {
     EXPECT_EQ(order1.placedBy, "ZV8062");
     EXPECT_EQ(order1.tag, "");
 
-    kc::MFOrder order2 = orders[1];
+    kc::mfOrder order2 = orders[1];
     EXPECT_EQ(order2.orderID, "ef7e696c-2fa6-400b-b180-eb25e6a04ccf");
     EXPECT_EQ(order2.exchangeOrderID, "");
     EXPECT_EQ(order2.tradingsymbol, "INF174K01LS2");
@@ -1185,7 +1248,7 @@ TEST(kiteTest, getMFOrderTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::MFOrder order = Kite.getMFOrder("arg1");
+    kc::mfOrder order = Kite.getMfOrder("arg1");
 
     // Expected values
     EXPECT_EQ(order.orderID, "2b6ad4b7-c84e-4c76-b459-f3a8994184f1");
@@ -1222,12 +1285,12 @@ TEST(kiteTest, getMFHoldingsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFHolding> Holdings = Kite.getMFHoldings();
+    std::vector<kc::mfHolding> Holdings = Kite.getMfHoldings();
 
     // Expected values
     ASSERT_EQ(Holdings.size(), 5);
 
-    kc::MFHolding holding1 = Holdings[0];
+    kc::mfHolding holding1 = Holdings[0];
     EXPECT_EQ(holding1.folio, "123123/123");
     EXPECT_EQ(holding1.fund, "Kotak Select Focus Fund - Direct Plan");
     EXPECT_EQ(holding1.tradingsymbol, "INF174K01LS2");
@@ -1237,7 +1300,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding1.lastPriceDate, "2016-11-11");
     EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);
 
-    kc::MFHolding holding2 = Holdings[1];
+    kc::mfHolding holding2 = Holdings[1];
     EXPECT_EQ(holding2.folio, "385080203");
     EXPECT_EQ(holding2.fund, "DSP BlackRock Money Manager Fund");
     EXPECT_EQ(holding2.tradingsymbol, "INF740K01QQ3");
@@ -1247,7 +1310,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding2.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding2.quantity, 0.466);
 
-    kc::MFHolding holding3 = Holdings[2];
+    kc::mfHolding holding3 = Holdings[2];
     EXPECT_EQ(holding3.folio, "1052046771");
     EXPECT_EQ(holding3.fund, "HDFC TaxSaver - Regular Plan");
     EXPECT_EQ(holding3.tradingsymbol, "INF179K01BB8");
@@ -1257,7 +1320,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding3.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);
 
-    kc::MFHolding holding4 = Holdings[3];
+    kc::mfHolding holding4 = Holdings[3];
     EXPECT_EQ(holding4.folio, "91022348426");
     EXPECT_EQ(holding4.fund, "Axis Long Term Equity Fund");
     EXPECT_EQ(holding4.tradingsymbol, "INF846K01131");
@@ -1267,7 +1330,7 @@ TEST(kiteTest, getMFHoldingsTest) {
     EXPECT_EQ(holding4.lastPriceDate, "");
     EXPECT_DOUBLE_EQ(holding4.quantity, 3526.834);
 
-    kc::MFHolding holding5 = Holdings[4];
+    kc::mfHolding holding5 = Holdings[4];
     EXPECT_EQ(holding5.folio, "488155267386");
     EXPECT_EQ(holding5.fund, "Reliance Money Manager Fund");
     EXPECT_EQ(holding5.tradingsymbol, "INF204K01EY0");
@@ -1293,7 +1356,12 @@ TEST(kiteTest, placeMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    auto res = Kite.placeMFSIP("arg1", 0.0, 0, "arg4");
+    auto res = Kite.placeMfSip(kc::placeMfSipParams()
+                                   .Symbol("INF174K01LS2")
+                                   .Amount(900)
+                                   .Frequency("monthly")
+                                   .Installments(-1)
+                                   .InstallmentDay(10));
 
     // Expected values
     EXPECT_EQ(res.first, "123457");
@@ -1313,7 +1381,7 @@ TEST(kiteTest, modifyMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    Kite.modifyMFSIP("arg1");
+    Kite.modifyMfSip(kc::modifyMfSipParams().SipId("11123").Status("paused"));
 }
 
 TEST(kiteTest, cancelMFSIPTest) {
@@ -1329,7 +1397,7 @@ TEST(kiteTest, cancelMFSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    string SIPID = Kite.cancelMFSIP("arg1");
+    string SIPID = Kite.cancelMfSip("arg1");
 
     // Expected values
     EXPECT_EQ(SIPID, "123457");
@@ -1348,12 +1416,12 @@ TEST(kiteTest, getSIPsTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    std::vector<kc::MFSIP> SIPs = Kite.getSIPs();
+    std::vector<kc::mfSip> SIPs = Kite.getSips();
 
     // Expected values
     ASSERT_EQ(SIPs.size(), 5);
 
-    kc::MFSIP sip1 = SIPs[0];
+    kc::mfSip sip1 = SIPs[0];
     EXPECT_EQ(sip1.ID, "892741486820670");
     EXPECT_EQ(sip1.tradingsymbol, "INF209K01VD7");
     EXPECT_EQ(sip1.fundName, "Aditya Birla Sun Life Liquid Fund - Direct Plan");
@@ -1383,7 +1451,7 @@ TEST(kiteTest, getSIPTest) {
                                       const std::vector<std::pair<string, string>>& bodyParams = {},
                                       bool isJson = false) { data.ParseStream(jsonFWrap); }));
 
-    kc::MFSIP sip = Kite.getSIP("arg1");
+    kc::mfSip sip = Kite.getSip("arg1");
 
     // Expected values
     EXPECT_EQ(sip.ID, "846479755969168");
@@ -1426,13 +1494,13 @@ TEST(kiteTest, getOrderMarginsTest) {
     EXPECT_EQ(ordMargins1.type, "equity");
     EXPECT_EQ(ordMargins1.tradingSymbol, "INFY");
     EXPECT_EQ(ordMargins1.exchange, "NSE");
-    EXPECT_DOUBLE_EQ(ordMargins1.SPAN, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.span, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.exposure, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.optionPremium, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.additional, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.BO, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.bo, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.cash, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.VAR, 961.45);
+    EXPECT_DOUBLE_EQ(ordMargins1.var, 961.45);
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.realised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.unrealised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.total, 961.45);
@@ -1494,14 +1562,14 @@ TEST(kiteTest, getMFInstrumentsTest) {
 
     EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
 
-    std::vector<kc::MFInstrument> instruments = Kite.getMFInstruments();
+    std::vector<kc::mfInstrument> instruments = Kite.getMfInstruments();
 
     // Expected values
     ASSERT_EQ(instruments.size(), 99);
 
-    kc::MFInstrument instrument1 = instruments[0];
+    kc::mfInstrument instrument1 = instruments[0];
     EXPECT_EQ(instrument1.tradingsymbol, "INF209K01157");
-    EXPECT_EQ(instrument1.AMC, "BirlaSunLifeMutualFund_MF");
+    EXPECT_EQ(instrument1.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument1.name, "Aditya Birla Sun Life Advantage Fund");
     EXPECT_EQ(instrument1.purchaseAllowed, true);
     EXPECT_EQ(instrument1.redemtpionAllowed, true);
@@ -1517,9 +1585,9 @@ TEST(kiteTest, getMFInstrumentsTest) {
     EXPECT_EQ(instrument1.lastPrice, 106.8);
     EXPECT_EQ(instrument1.lastPriceDate, "2017-11-23");
 
-    kc::MFInstrument instrument2 = instruments[1];
+    kc::mfInstrument instrument2 = instruments[1];
     EXPECT_EQ(instrument2.tradingsymbol, "INF209K01165");
-    EXPECT_EQ(instrument2.AMC, "BirlaSunLifeMutualFund_MF");
+    EXPECT_EQ(instrument2.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument2.name, "Aditya Birla Sun Life Advantage Fund");
     EXPECT_EQ(instrument2.purchaseAllowed, true);
     EXPECT_EQ(instrument2.redemtpionAllowed, true);

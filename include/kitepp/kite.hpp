@@ -46,7 +46,7 @@
 
 #include "config.hpp"
 #include "kiteppexceptions.hpp"
-#include "responses.hpp"
+#include "responses/responses.hpp"
 #include "rjutils.hpp"
 #include "utils.hpp"
 
@@ -255,32 +255,33 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp placing an order
      */
-    string placeOrder(const string& variety, const string& exchange, const string& symbol, const string& txnType,
-        int quantity, const string& product, const string& orderType, double price = DEFAULTDOUBLE,
-        const string& validity = "", double trigPrice = DEFAULTDOUBLE, double sqOff = DEFAULTDOUBLE,
-        double SL = DEFAULTDOUBLE, double trailSL = DEFAULTDOUBLE, int discQuantity = DEFAULTINT,
-        const string& tag = "") {
-
+    string placeOrder(const placeOrderParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-            { "quantity", std::to_string(quantity) },
-            { "product", product },
-            { "order_type", orderType },
+            { "exchange", params.exchange },
+            { "tradingsymbol", params.symbol },
+            { "transaction_type", params.transactionType },
+            { "quantity", std::to_string(params.quantity) },
+            { "product", params.product },
+            { "order_type", params.orderType },
         };
 
-        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
-        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
-        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!isValid(sqOff)) { bodyParams.emplace_back("squareoff", std::to_string(sqOff)); }
-        if (!isValid(SL)) { bodyParams.emplace_back("stoploss", std::to_string(SL)); }
-        if (!isValid(trailSL)) { bodyParams.emplace_back("trailing_stoploss", std::to_string(trailSL)); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
+        if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
+        if (isValidArg(params.validity)) { bodyParams.emplace_back("validity", params.validity); }
+        if (isValidArg(params.disclosedQuantity)) {
+            bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
+        }
+        if (isValidArg(params.triggerPrice)) {
+            bodyParams.emplace_back("trigger_price", std::to_string(params.triggerPrice));
+        }
+        if (isValidArg(params.squareOff)) { bodyParams.emplace_back("squareoff", std::to_string(params.squareOff)); }
+        if (isValidArg(params.stopLoss)) { bodyParams.emplace_back("stoploss", std::to_string(params.stopLoss)); }
+        if (isValidArg(params.trailingStopLoss)) {
+            bodyParams.emplace_back("trailing_stoploss", std::to_string(params.trailingStopLoss));
+        }
+        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); }
 
         rj::Document res;
-        _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = variety), bodyParams);
+        _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = params.variety), bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeOrder)"); };
 
         string rcvdOrdID;
@@ -307,22 +308,25 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modifying an order
      */
-    string modifyOrder(const string& variety, const string& ordID, const string& parentOrdID = "",
-        int quantity = DEFAULTINT, double price = DEFAULTDOUBLE, const string& ordType = "",
-        double trigPrice = DEFAULTDOUBLE, const string& validity = "", int discQuantity = DEFAULTINT) {
+    string modifyOrder(const modifyOrderParams& params) {
 
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!parentOrdID.empty()) { bodyParams.emplace_back("parent_order_id", parentOrdID); }
-        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
-        if (!ordType.empty()) { bodyParams.emplace_back("order_type", ordType); }
-        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
+        if (isValidArg(params.parentOrderId)) { bodyParams.emplace_back("parent_order_id", params.parentOrderId); }
+        if (isValidArg(params.quantity)) { bodyParams.emplace_back("quantity", std::to_string(params.quantity)); }
+        if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
+        if (isValidArg(params.orderType)) { bodyParams.emplace_back("order_type", params.orderType); }
+        if (isValidArg(params.triggerPrice)) {
+            bodyParams.emplace_back("trigger_price", std::to_string(params.triggerPrice));
+        }
+        if (isValidArg(params.validity)) { bodyParams.emplace_back("validity", params.validity); }
+        if (isValidArg(params.disclosedQuantity)) {
+            bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
+        }
 
         rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID),
+        _sendReq(res, _methods::PUT,
+            FMT(_endpoints.at("order.modify"), "variety"_a = params.variety, "order_id"_a = params.orderId),
             bodyParams);
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyOrder)"); };
 
@@ -498,9 +502,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp placing a gtt
      */
-    int placeGTT(const string& trigType, const string& symbol, const string& exchange,
-        const std::vector<double>& trigValues, double lastPrice, const std::vector<GTTParams>& gttParams) {
-
+    int placeGtt(const placeGttParams& params) {
         // make condition json
         rj::Document condition;
         condition.SetObject();
@@ -509,23 +511,23 @@ class kite {
         rj::Value val; // used for making string values
         rj::Value trigValArr(rj::kArrayType);
 
-        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
+        val.SetString(params.exchange.c_str(), params.exchange.size(), condnAlloc);
         condition.AddMember("exchange", val, condnAlloc);
 
-        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
+        val.SetString(params.symbol.c_str(), params.symbol.size(), condnAlloc);
         condition.AddMember("tradingsymbol", val, condnAlloc);
 
-        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
+        for (const double& i : params.triggerValues) { trigValArr.PushBack(i, condnAlloc); };
         condition.AddMember("trigger_values", trigValArr, condnAlloc);
 
-        condition.AddMember("last_price", lastPrice, condnAlloc);
+        condition.AddMember("last_price", params.lastPrice, condnAlloc);
 
         // make orders json
-        rj::Document params;
-        params.SetArray();
-        auto& paramsAlloc = params.GetAllocator();
+        rj::Document reqParams;
+        reqParams.SetArray();
+        auto& paramsAlloc = reqParams.GetAllocator();
 
-        for (const GTTParams& param : gttParams) {
+        for (const gttParams& param : params.gttParamsList) {
             rj::Value strVal;
             rj::Value tmpVal(rj::kObjectType);
 
@@ -542,18 +544,19 @@ class kite {
 
             tmpVal.AddMember("price", param.price, paramsAlloc);
 
-            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
+            strVal.SetString(params.exchange.c_str(), params.exchange.size(), paramsAlloc);
             tmpVal.AddMember("exchange", strVal, paramsAlloc);
 
-            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
+            strVal.SetString(params.symbol.c_str(), params.symbol.size(), paramsAlloc);
             tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
 
-            params.PushBack(tmpVal, paramsAlloc);
+            reqParams.PushBack(tmpVal, paramsAlloc);
         };
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("gtt.place"),
-            { { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) } });
+            { { "type", params.triggerType }, { "condition", rju::_dump(condition) },
+                { "orders", rju::_dump(reqParams) } });
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeGTT)"); };
 
         int rcvdTrigID = DEFAULTINT;
@@ -570,7 +573,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get gtts
      */
-    std::vector<GTT> getGTTs() {
+    std::vector<GTT> getGtts() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("gtt"));
@@ -595,7 +598,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get gtt info
      */
-    GTT getGTT(int trigID) {
+    GTT getGtt(int trigID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
@@ -620,9 +623,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modifying a gtt
      */
-    int modifyGTT(int trigID, const string& trigType, const string& symbol, const string& exchange,
-        const std::vector<double>& trigValues, double lastPrice, const std::vector<GTTParams>& gttParams) {
-
+    int modifyGtt(const kc::modifyGttParams& params) {
         // make condition json
         rj::Document condition;
         condition.SetObject();
@@ -630,23 +631,23 @@ class kite {
         rj::Value val;
         rj::Value trigValArr(rj::kArrayType);
 
-        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
+        val.SetString(params.exchange.c_str(), params.exchange.size(), condnAlloc);
         condition.AddMember("exchange", val, condnAlloc);
 
-        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
+        val.SetString(params.symbol.c_str(), params.symbol.size(), condnAlloc);
         condition.AddMember("tradingsymbol", val, condnAlloc);
 
-        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
+        for (const double& i : params.triggerValues) { trigValArr.PushBack(i, condnAlloc); };
         condition.AddMember("trigger_values", trigValArr, condnAlloc);
 
-        condition.AddMember("last_price", lastPrice, condnAlloc);
+        condition.AddMember("last_price", params.lastPrice, condnAlloc);
 
         // make orders json
-        rj::Document params;
-        params.SetArray();
-        auto& paramsAlloc = params.GetAllocator();
+        rj::Document reqParams;
+        reqParams.SetArray();
+        auto& paramsAlloc = reqParams.GetAllocator();
 
-        for (const GTTParams& param : gttParams) {
+        for (const gttParams& param : params.gttParamsList) {
             rj::Value strVal;
             rj::Value tmpVal(rj::kObjectType);
 
@@ -663,18 +664,19 @@ class kite {
 
             tmpVal.AddMember("price", param.price, paramsAlloc);
 
-            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
+            strVal.SetString(params.exchange.c_str(), params.exchange.size(), paramsAlloc);
             tmpVal.AddMember("exchange", strVal, paramsAlloc);
 
-            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
+            strVal.SetString(params.symbol.c_str(), params.symbol.size(), paramsAlloc);
             tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
 
-            params.PushBack(tmpVal, paramsAlloc);
+            reqParams.PushBack(tmpVal, paramsAlloc);
         };
 
         rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
-            { { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) } });
+        _sendReq(res, _methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = params.triggerId),
+            { { "type", params.triggerType }, { "condition", rju::_dump(condition) },
+                { "orders", rju::_dump(reqParams) } });
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyGTT)"); };
 
         int rcvdTrigID = DEFAULTINT;
@@ -693,7 +695,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp delete a gtt
      */
-    int deleteGTT(int trigID) {
+    int deleteGtt(int trigID) {
 
         rj::Document res;
         _sendReq(res, _methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
@@ -764,17 +766,16 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp convert position
      */
-    bool convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType,
-        int quantity, const string& oldProduct, const string& newProduct) {
+    bool convertPosition(const convertPositionParams& params) {
 
         std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-            { "position_type", posType },
-            { "quantity", std::to_string(quantity) },
-            { "old_product", oldProduct },
-            { "new_product", newProduct },
+            { "exchange", params.exchange },
+            { "tradingsymbol", params.symbol },
+            { "transaction_type", params.transactionType },
+            { "position_type", params.positionType },
+            { "quantity", std::to_string(params.quantity) },
+            { "old_product", params.oldProduct },
+            { "new_product", params.newProduct },
         };
 
         rj::Document res;
@@ -857,14 +858,14 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ohlc
      */
-    std::unordered_map<string, OHLCQuote> getOHLC(const std::vector<string>& symbols) {
+    std::unordered_map<string, ohlcQuote> getOhlc(const std::vector<string>& symbols) {
 
         rj::Document res;
         _sendReq(res, _methods::GET,
             FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOHLC)"); };
 
-        std::unordered_map<string, OHLCQuote> quoteMap;
+        std::unordered_map<string, ohlcQuote> quoteMap;
         for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
 
         return quoteMap;
@@ -880,14 +881,14 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ltp
      */
-    std::unordered_map<string, LTPQuote> getLTP(const std::vector<string>& symbols) {
+    std::unordered_map<string, ltpQuote> getLtp(const std::vector<string>& symbols) {
 
         rj::Document res;
         _sendReq(
             res, _methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getLTP)"); };
 
-        std::unordered_map<string, LTPQuote> quoteMap;
+        std::unordered_map<string, ltpQuote> quoteMap;
         for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
 
         return quoteMap;
@@ -910,14 +911,12 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get historical data
      */
-    std::vector<historicalData> getHistoricalData(int instrumentTok, const string& from, const string& to,
-        const string& interval, bool continuous = false, bool oi = false) {
-
+    std::vector<historicalData> getHistoricalData(const historicalDataParams& params) {
         rj::Document res;
         _sendReq(res, _methods::GET,
-            FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval,
-                "from"_a = from, "to"_a = to, "continuous"_a = static_cast<int>(continuous),
-                "oi"_a = static_cast<int>(oi)));
+            FMT(_endpoints.at("market.historical"), "instrument_token"_a = params.instrumentToken,
+                "interval"_a = params.interval, "from"_a = params.from, "to"_a = params.to,
+                "continuous"_a = static_cast<int>(params.continuous), "oi"_a = static_cast<int>(params.oi)));
 
         if (!res.IsObject()) {
             throw libException("Empty data was received where it wasn't expected (getHistoricalData)");
@@ -949,17 +948,15 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf order
      */
-    string placeMFOrder(const string& symbol, const string& txnType, int quantity = DEFAULTINT,
-        double amount = DEFAULTDOUBLE, const string& tag = "") {
-
+    string placeMfOrder(const placeMfOrderParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
+            { "tradingsymbol", params.symbol },
+            { "transaction_type", params.transactionType },
         };
 
-        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
+        if (isValidArg(params.quantity)) { bodyParams.emplace_back("quantity", std::to_string(params.quantity)); }
+        if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
+        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); }
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("mf.order.place"), bodyParams);
@@ -967,7 +964,6 @@ class kite {
 
         string rcvdOrdID;
         rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
         return rcvdOrdID;
     };
 
@@ -981,7 +977,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancel a mf order
      */
-    string cancelMFOrder(const string& ordID) {
+    string cancelMfOrder(const string& ordID) {
 
         rj::Document res;
         _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
@@ -1003,7 +999,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf orders
      */
-    std::vector<MFOrder> getMFOrders() {
+    std::vector<mfOrder> getMfOrders() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.orders"));
@@ -1012,7 +1008,7 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
 
-        std::vector<MFOrder> ordersVec;
+        std::vector<mfOrder> ordersVec;
         for (auto& i : it->value.GetArray()) { ordersVec.emplace_back(i.GetObject()); }
 
         return ordersVec;
@@ -1028,7 +1024,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf order info
      */
-    MFOrder getMFOrder(const string& ordID) {
+    mfOrder getMfOrder(const string& ordID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
@@ -1036,7 +1032,7 @@ class kite {
             throw libException("Empty data was received where it wasn't expected (cancelMFOrder)");
         };
 
-        return MFOrder(res["data"].GetObject());
+        return mfOrder(res["data"].GetObject());
     };
 
     /**
@@ -1047,7 +1043,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf holdings
      */
-    std::vector<MFHolding> getMFHoldings() {
+    std::vector<mfHolding> getMfHoldings() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.holdings"));
@@ -1058,7 +1054,7 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
 
-        std::vector<MFHolding> holdingsVec;
+        std::vector<mfHolding> holdingsVec;
         for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
 
         return holdingsVec;
@@ -1083,19 +1079,21 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf sip order
      */
-    std::pair<string, string> placeMFSIP(const string& symbol, double amount, int installments, const string& freq,
-        double initAmount = DEFAULTDOUBLE, int installDay = DEFAULTINT, const string& tag = "") {
-
+    std::pair<string, string> placeMfSip(const placeMfSipParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", symbol },
-            { "amount", std::to_string(amount) },
-            { "instalments", std::to_string(installments) },
-            { "frequency", freq },
+            { "tradingsymbol", params.symbol },
+            { "amount", std::to_string(params.amount) },
+            { "instalments", std::to_string(params.installments) },
+            { "frequency", params.frequency },
         };
 
-        if (!isValid(initAmount)) { bodyParams.emplace_back("initial_amount", std::to_string(initAmount)); };
-        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); };
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); };
+        if (isValidArg(params.initialAmount)) {
+            bodyParams.emplace_back("initial_amount", std::to_string(params.initialAmount));
+        };
+        if (isValidArg(params.installmentDay)) {
+            bodyParams.emplace_back("instalment_day", std::to_string(params.installmentDay));
+        };
+        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); };
 
         rj::Document res;
         _sendReq(res, _methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
@@ -1105,7 +1103,6 @@ class kite {
         auto it = res.FindMember("data");
         rju::_getIfExists(it->value.GetObject(), rcvdOrdID, "order_id");
         rju::_getIfExists(it->value.GetObject(), rcvdSipID, "sip_id");
-
         return { rcvdOrdID, rcvdSipID };
     };
 
@@ -1124,19 +1121,21 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modify mf sip order
      */
-    void modifyMFSIP(const string& SIPID, double amount = DEFAULTDOUBLE, const string& status = "",
-        int installments = DEFAULTINT, const string& freq = "", int installDay = DEFAULTINT) {
-
+    void modifyMfSip(const modifyMfSipParams& params) {
         std::vector<std::pair<string, string>> bodyParams = {};
 
-        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
-        if (!status.empty()) { bodyParams.emplace_back("status", status); }
-        if (!isValid(installments)) { bodyParams.emplace_back("instalments", std::to_string(installments)); }
-        if (!freq.empty()) { bodyParams.emplace_back("frequency", freq); }
-        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
+        if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
+        if (isValidArg(params.status)) { bodyParams.emplace_back("status", params.status); }
+        if (isValidArg(params.installments)) {
+            bodyParams.emplace_back("instalments", std::to_string(params.installments));
+        }
+        if (isValidArg(params.frequency)) { bodyParams.emplace_back("frequency", params.frequency); }
+        if (isValidArg(params.installmentDay)) {
+            bodyParams.emplace_back("instalment_day", std::to_string(params.installmentDay));
+        }
 
         rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
+        _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = params.sipId), bodyParams);
     };
 
     /**
@@ -1149,7 +1148,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancel mf sip
      */
-    string cancelMFSIP(const string& SIPID) {
+    string cancelMfSip(const string& SIPID) {
 
         rj::Document res;
         _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
@@ -1169,7 +1168,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sips
      */
-    std::vector<MFSIP> getSIPs() {
+    std::vector<mfSip> getSips() {
 
         rj::Document res;
         _sendReq(res, _methods::GET, _endpoints.at("mf.sips"));
@@ -1178,7 +1177,7 @@ class kite {
         auto it = res.FindMember("data");
         if (!(it->value.IsArray())) { throw libException("Array was expected (getSIPs)"); };
 
-        std::vector<MFSIP> sipVec;
+        std::vector<mfSip> sipVec;
         for (auto& i : it->value.GetArray()) { sipVec.emplace_back(i.GetObject()); }
 
         return sipVec;
@@ -1194,13 +1193,13 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sip info
      */
-    MFSIP getSIP(const string& SIPID) {
+    mfSip getSip(const string& SIPID) {
 
         rj::Document res;
         _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
         if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIP)"); };
 
-        return MFSIP(res["data"].GetObject());
+        return mfSip(res["data"].GetObject());
     };
 
     /**
@@ -1211,7 +1210,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf instruments
      */
-    std::vector<MFInstrument> getMFInstruments() {
+    std::vector<mfInstrument> getMfInstruments() {
 
         const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
 
