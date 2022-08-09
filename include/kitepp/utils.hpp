@@ -73,14 +73,33 @@ inline bool isValidArg(const string& value) { return !value.empty(); };
 
 namespace kiteconnect::internal::utils {
 namespace json {
+
+/**
+ * @brief indicates whether a response should be parsed as an object or as an array
+ */
 enum class PARSE_AS : uint8_t
 {
     OBJECT,
     ARRAY
 };
 
+/**
+ * @brief parses a rapidjson document into \a resT
+ *
+ * @tparam resT    the type document should be parsed into.
+ *                 \a resT must have a constructor that accepts \a rapidjson::Document as
+ *                 the sole argument and proceeds to parse it.
+ * @tparam parseAs \a document's underlying data type
+
+ * @param doc rapidjson document to parse
+
+ * @return resT parsed object
+ */
 template <class resT, json::PARSE_AS parseAs>
 resT parse(rj::Document& doc) {
+    static_assert(std::is_constructible<resT, const rj::Value::Object&> {} ||
+                  std::is_constructible<resT, const rj::Value::Array&> {});
+
     if constexpr (parseAs == json::PARSE_AS::OBJECT) {
         if (!doc.IsObject()) { throw libException("invalid object"); };
         return resT(doc["data"].GetObject());
@@ -94,6 +113,9 @@ resT parse(rj::Document& doc) {
 namespace http {
 using paramsT = httplib::Params;
 
+/**
+ * @brief represents http methods
+ */
 enum class METHOD : uint8_t
 {
     GET,
@@ -102,27 +124,51 @@ enum class METHOD : uint8_t
     DEL,
     HEAD
 };
+
+/**
+ * @brief represents http content type header values
+ */
 enum class CONTENT_TYPE : uint8_t
 {
     JSON,
     NON_JSON
 };
+
+/**
+ * @brief represents http status codes
+ *
+ */
 enum class CODE : uint16_t
 { OK = 200 };
 
+/**
+ * @brief represents a http response
+ */
 class response {
   public:
+    /**
+     * @brief construct a new \a response object
+     *
+     * @param Code status code
+     * @param Json json body
+     */
     response(uint16_t Code, const string& Json): code(Code) { parse(Code, Json); };
 
     explicit operator bool() const { return !error; };
 
-    uint16_t code = 0;
-    bool error = false;
-    rjutils::rj::Document data;
-    string errorType = "NoException";
-    string message;
+    uint16_t code = 0;                /// http code
+    bool error = false;               /// true if kite api reported an error (\a status field)
+    rjutils::rj::Document data;       /// parsed body
+    string errorType = "NoException"; /// corresponds to kite api's \a error_type field (if \a error is \a true)
+    string message;                   /// corresponds to kite api's \a message field (if \a error is \a true)
 
   private:
+    /**
+     * @brief parse a json response
+     *
+     * @param code status code
+     * @param json json body
+     */
     void parse(uint16_t code, const string& json) {
         kc::rjutils::_parse(data, json);
         if (code != static_cast<uint16_t>(CODE::OK)) {
@@ -135,14 +181,18 @@ class response {
     };
 };
 
+/**
+ * @brief represents a http request
+ */
 struct request {
-    utils::http::METHOD method;
-    string path;
-    string authToken;
-    paramsT params;
-    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON;
-    string serializedBody;
 
+    /**
+     * @brief send a \a request
+     *
+     * @param client http client
+     *
+     * @return response response
+     */
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     response send(httplib::Client& client) const {
         const httplib::Headers headers = { { "Authorization", authToken } };
@@ -207,6 +257,13 @@ struct request {
 
         return { code, data };
     };
+
+    utils::http::METHOD method;                        /// http method
+    string path;                                       /// request path
+    string authToken;                                  /// \a Authorization header string
+    paramsT params;                                    /// form url encoded data
+    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type
+    string serializedBody;                             /// serialized body (if sending data as json)
 };
 } // namespace http
 } // namespace kiteconnect::internal::utils

@@ -1508,6 +1508,16 @@ class kite {
         return "";
     };
 
+    /**
+     * @brief make a call to kite api
+     *
+     * @tparam resT     type corresponding to service response
+     * @tparam resBodyT response body data type
+     *
+     * @param service    kite service to call
+     * @param bodyParams url encoded data to send (if any)
+     * @return resT response
+     */
     template <class resT, utils::json::PARSE_AS resBodyT>
     resT callApi(const string& service, const utils::http::paramsT& bodyParams = {}) {
         const endpointInfo endpoint = endpoints.at(service);
