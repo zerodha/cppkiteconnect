@@ -26,6 +26,7 @@
 
 #include <algorithm> //for_each
 #include <array>
+#include <cstdint>
 #include <iostream> //debug
 #include <limits>   //nan
 #include <sstream>
@@ -56,6 +57,7 @@ using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace rju = kc::rjutils;
+namespace utils = kc::internal::utils;
 using kc::_methods;
 using kc::DEFAULTDOUBLE;
 using kc::DEFAULTINT;
@@ -81,7 +83,9 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp initializing kite
      */
-    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {};
+    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {
+        _httpClient.set_default_headers({ { "X-Kite-Version", _kiteVersion } });
+    };
 
     virtual ~kite() {};
 
@@ -124,20 +128,12 @@ class kite {
      * @snippet example2.cpp obtaining access token
      */
     userSession generateSession(const string& requestToken, const string& apiSecret) {
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("api.token"),
-            {
-                { "api_key", _apiKey },
-                { "request_token", requestToken },
-                { "checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret) },
-            });
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (generateSession())");
-        };
-
-        return userSession(res["data"].GetObject());
+        return callApi<userSession, utils::json::PARSE_AS::OBJECT>(
+            "api.token", {
+                             { "api_key", _apiKey },
+                             { "request_token", requestToken },
+                             { "checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret) },
+                         });
     };
 
     /**
@@ -183,14 +179,7 @@ class kite {
      * @snippet example2.cpp get user profile
      *
      */
-    userProfile profile() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("user.profile"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (profile())"); };
-
-        return userProfile(res["data"].GetObject());
-    };
+    userProfile profile() { return callApi<userProfile, utils::json::PARSE_AS::OBJECT>("user.profile"); };
 
     /**
      * @brief Get margins for all segments
@@ -1366,6 +1355,19 @@ class kite {
         { "order.margins", "/margins/orders" },
     };
 
+    struct endpointInfo {
+        utils::http::METHOD method;
+        string path;
+        utils::http::CONTENT_TYPE contentType = utils::http::CONTENT_TYPE::NON_JSON;
+    };
+
+    const std::unordered_map<string, endpointInfo> endpoints {
+        // api
+        { "api.token", { utils::http::METHOD::POST, "/session/token" } },
+        // user
+        { "user.profile", { utils::http::METHOD::GET, "/user/profile" } },
+    };
+
     httplib::Client _httpClient;
 
     // methods:
@@ -1506,6 +1508,16 @@ class kite {
         return "";
     };
 
-}; // namespace kitepp
+    template <class resT, utils::json::PARSE_AS resBodyT>
+    resT callApi(const string& service, const utils::http::paramsT& bodyParams = {}) {
+        const endpointInfo endpoint = endpoints.at(service);
+        utils::http::response res =
+            utils::http::request { endpoint.method, endpoint.path, _getAuthStr(), bodyParams, endpoint.contentType }
+                .send(_httpClient);
+
+        if (!res) { kiteconnect::_throwException(res.errorType, res.code, res.message); }
+        return utils::json::parse<resT, resBodyT>(res.data);
+    }
+};
 
 } // namespace kiteconnect
