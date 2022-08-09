@@ -53,6 +53,7 @@ inline bool _parse(rj::Document& dom, const string& str) {
     return true;
 };
 
+// TODO use templates
 inline bool _getIfExists(const rj::Value::Object& val, string& out, const char* name) {
 
     auto it = val.FindMember(name);
