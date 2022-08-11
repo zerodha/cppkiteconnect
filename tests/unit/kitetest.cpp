@@ -24,31 +24,39 @@
  */
 
 #include <fstream>
-#include <gmock/gmock-actions.h>
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include <ios>
 #include <iterator>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "kitepp.hpp"
-#include "kitepp/responses/responses.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/istreamwrapper.h"
+#include <gmock/gmock-actions.h>
+#include <gmock/gmock-function-mocker.h>
+#include <gmock/gmock-generated-function-mockers.h>
+#include <gmock/gmock-spec-builders.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include "./kitepp.hpp"
+#include "utils.hpp"
 
 using std::string;
 using ::testing::_;
+using ::testing::ByMove;
+using ::testing::Return;
+using ::testing::StrictMock;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 // Mocks
 
 class mockKite : public kc::kite {
 
   public:
-    mockKite(): kite("apiKey123") {};
+    mockKite(): kite(kc::test::API_KEY) {};
 
     MOCK_METHOD(void, _sendReq,
         (rj::Document & data, const kc::_methods& mtd, const string& endpoint,
@@ -63,37 +71,34 @@ class mockKite : public kc::kite {
 TEST(kiteTest, constructorTest) {
 
     mockKite Kite;
-    const string APIKey_expected = "apiKey123";
+    const string APIKey_expected = "Uz7Mdn29ZGya31a";
 
     EXPECT_EQ(Kite.getAPIKey(), APIKey_expected);
 };
 
-// User tests
+// user
 
 TEST(kiteTest, loginURLTest) {
 
     mockKite Kite;
-    const string loginURL_expected = "https://kite.zerodha.com/connect/login?v=3&api_key=apiKey123";
+    const string loginURL_expected = "https://kite.zerodha.com/connect/login?v=3&api_key=Uz7Mdn29ZGya31a";
 
     EXPECT_EQ(Kite.loginURL(), loginURL_expected);
 };
 
 TEST(kiteTest, generateSessionTest) {
+    string json = kc::test::readFile("../../tests/mock_custom/generate_session.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/session/token" },
+                          utils::http::paramsT {
+                              { "api_key", "Uz7Mdn29ZGya31a" },
+                              { "request_token", "qKLeSUycwFEvWGw" },
+                              { "checksum", "ac90aa6cafb2bab90a172d38f70c66cbc1d96601852123530459fcabbc487d4f" },
+                          }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, json))));
 
-    std::ifstream jsonFile("../../tests/mock_custom/generate_session.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
-
-    mockKite Kite;
-
-    // We need to pass an lambda instead of directly modifying the argument because rapidjson::Document objcect's copy
-    // constructor is deleted and setArgumentRefree<> copies the object passed internally
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, "/session/token", _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    kc::userSession session = Kite.generateSession("arg1", "arg2");
+    kc::userSession session = Kite.generateSession(kc::test::REQUEST_TOKEN, kc::test::API_SECRET);
 
     // Expected values
     EXPECT_EQ(session.profile.userID, "XX000");
@@ -126,17 +131,12 @@ TEST(kiteTest, invalidateSessionTest) {
 };
 
 TEST(kiteTest, profile) {
-
-    std::ifstream jsonFile("../../tests/mock_responses/profile.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
-
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+    string json = kc::test::readFile("../../tests/mock_responses/profile.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(
+        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" }, utils::http::paramsT {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, json))));
 
     kc::userProfile profile = Kite.profile();
 

@@ -83,6 +83,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp initializing kite
      */
+    // TODO make str const&
     explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {
         _httpClient.set_default_headers({ { "X-Kite-Version", _kiteVersion } });
     };
@@ -1355,13 +1356,7 @@ class kite {
         { "order.margins", "/margins/orders" },
     };
 
-    struct endpointInfo {
-        utils::http::METHOD method;
-        string path;
-        utils::http::CONTENT_TYPE contentType = utils::http::CONTENT_TYPE::NON_JSON;
-    };
-
-    const std::unordered_map<string, endpointInfo> endpoints {
+    const std::unordered_map<string, utils::http::endpoint> endpoints {
         // api
         { "api.token", { utils::http::METHOD::POST, "/session/token" } },
         // user
@@ -1508,6 +1503,30 @@ class kite {
         return "";
     };
 
+  protected:
+// GMock requires mock methods to be virtual (hi-perf dep injection is not possible here ಥ﹏ಥ).
+// Macro used to eliminate vptr overhead.
+#ifdef KITE_UNIT_TEST
+    virtual utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body) {
+        return utils::http::request { endpoint.method, endpoint.path, _getAuthStr(), body, endpoint.contentType }.send(
+            _httpClient);
+    };
+#else
+
+    /**
+     * \brief send a http request with the context used by \a kite
+     *
+     * \param endpoint request endpoint
+     * \param body     body of the request (sent as form url encoded)
+     *
+     * \return utils::http::response response received
+     */
+    utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body) {
+        return utils::http::request { endpoint.method, endpoint.path, _getAuthStr(), body, endpoint.contentType }.send(
+            _httpClient);
+    };
+#endif
+
     /**
      * @brief make a call to kite api
      *
@@ -1515,16 +1534,12 @@ class kite {
      * @tparam resBodyT response body data type
      *
      * @param service    kite service to call
-     * @param bodyParams url encoded data to send (if any)
+     * @param body       url encoded data to send (if any)
      * @return resT response
      */
     template <class resT, utils::json::PARSE_AS resBodyT>
-    resT callApi(const string& service, const utils::http::paramsT& bodyParams = {}) {
-        const endpointInfo endpoint = endpoints.at(service);
-        utils::http::response res =
-            utils::http::request { endpoint.method, endpoint.path, _getAuthStr(), bodyParams, endpoint.contentType }
-                .send(_httpClient);
-
+    resT callApi(const string& service, const utils::http::paramsT& body = {}) {
+        utils::http::response res = sendReq(endpoints.at(service), body);
         if (!res) { kiteconnect::_throwException(res.errorType, res.code, res.message); }
         return utils::json::parse<resT, resBodyT>(res.data);
     }

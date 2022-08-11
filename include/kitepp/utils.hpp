@@ -74,9 +74,7 @@ inline bool isValidArg(const string& value) { return !value.empty(); };
 namespace kiteconnect::internal::utils {
 namespace json {
 
-/**
- * @brief indicates whether a response should be parsed as an object or as an array
- */
+/// @brief indicates whether a response should be parsed as an object or as an array
 enum class PARSE_AS : uint8_t
 {
     OBJECT,
@@ -111,11 +109,15 @@ resT parse(rj::Document& doc) {
 } // namespace json
 
 namespace http {
+
 using paramsT = httplib::Params;
 
-/**
- * @brief represents http methods
- */
+/// @brief represents http status codes
+namespace code {
+constexpr uint16_t OK = 200;
+} // namespace code
+
+/// @brief represents http methods
 enum class METHOD : uint8_t
 {
     GET,
@@ -125,25 +127,32 @@ enum class METHOD : uint8_t
     HEAD
 };
 
-/**
- * @brief represents http content type header values
- */
+/// @brief represents http content type header values
 enum class CONTENT_TYPE : uint8_t
 {
     JSON,
     NON_JSON
 };
 
-/**
- * @brief represents http status codes
- *
- */
-enum class CODE : uint16_t
-{ OK = 200 };
+/// @brief represents a REST endpoint
+struct endpoint {
+    METHOD method;                                     /// http method
+    string path;                                       /// endpoint path
+    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type expected
 
-/**
- * @brief represents a http response
- */
+    /**
+     * @brief compares two \a endpoint objects
+     *
+     * @param lhs \a endpoint to compare
+     * @return true if the objects are equal
+     * @return false if the objects are not equal
+     */
+    bool operator==(const endpoint& lhs) const {
+        return lhs.method == this->method && lhs.path == this->path && lhs.contentType == this->contentType;
+    }
+};
+
+/// @brief represents a http response
 class response {
   public:
     /**
@@ -171,7 +180,7 @@ class response {
      */
     void parse(uint16_t code, const string& json) {
         kc::rjutils::_parse(data, json);
-        if (code != static_cast<uint16_t>(CODE::OK)) {
+        if (code != static_cast<uint16_t>(code::OK)) {
             string status;
             kc::rjutils::_getIfExists(data, status, "status");
             kc::rjutils::_getIfExists(data, errorType, "error_type");
@@ -181,9 +190,7 @@ class response {
     };
 };
 
-/**
- * @brief represents a http request
- */
+/// @brief represents a http request
 struct request {
 
     /**
@@ -212,7 +219,7 @@ struct request {
                 break;
             case utils::http::METHOD::POST:
                 if (contentType != CONTENT_TYPE::JSON) {
-                    if (auto res = client.Post(path.c_str(), headers, params)) {
+                    if (auto res = client.Post(path.c_str(), headers, body)) {
                         code = res->status;
                         data = res->body;
                     } else {
@@ -229,7 +236,7 @@ struct request {
                 break;
             case utils::http::METHOD::PUT:
                 if (contentType != CONTENT_TYPE::JSON) {
-                    if (auto res = client.Put(path.c_str(), headers, params)) {
+                    if (auto res = client.Put(path.c_str(), headers, body)) {
                         code = res->status;
                         data = res->body;
                     } else {
@@ -261,7 +268,7 @@ struct request {
     utils::http::METHOD method;                        /// http method
     string path;                                       /// request path
     string authToken;                                  /// \a Authorization header string
-    paramsT params;                                    /// form url encoded data
+    paramsT body;                                      /// request body (sent as form encoded)
     CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type
     string serializedBody;                             /// serialized body (if sending data as json)
 };
