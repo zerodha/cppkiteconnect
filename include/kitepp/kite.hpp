@@ -128,14 +128,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp obtaining access token
      */
-    userSession generateSession(const string& requestToken, const string& apiSecret) {
-        return callApi<userSession, utils::json::PARSE_AS::OBJECT>(
-            "api.token", {
-                             { "api_key", _apiKey },
-                             { "request_token", requestToken },
-                             { "checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret) },
-                         });
-    };
+    userSession generateSession(const string& requestToken, const string& apiSecret);
 
     /**
      * @brief Set the Access Token
@@ -178,9 +171,8 @@ class kite {
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get user profile
-     *
      */
-    userProfile profile() { return callApi<userProfile, utils::json::PARSE_AS::OBJECT>("user.profile"); };
+    userProfile profile();
 
     /**
      * @brief Get margins for all segments
@@ -1367,6 +1359,7 @@ class kite {
 
     // methods:
 
+    // TODO unit test this? or rather make into a var
     string _getAuthStr() const { return FMT("token {0}:{1}", _apiKey, _accessToken); };
 
     static string _encodeSymbolsList(const std::vector<string>& symbols) {
@@ -1504,15 +1497,9 @@ class kite {
     };
 
   protected:
-// GMock requires mock methods to be virtual (hi-perf dep injection is not possible here ಥ﹏ಥ).
-// Macro used to eliminate vptr overhead.
 #ifdef KITE_UNIT_TEST
-    virtual utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body) {
-        return utils::http::request { endpoint.method, endpoint.path, _getAuthStr(), body, endpoint.contentType }.send(
-            _httpClient);
-    };
+    virtual utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body);
 #else
-
     /**
      * \brief send a http request with the context used by \a kite
      *
@@ -1521,10 +1508,7 @@ class kite {
      *
      * \return utils::http::response response received
      */
-    utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body) {
-        return utils::http::request { endpoint.method, endpoint.path, _getAuthStr(), body, endpoint.contentType }.send(
-            _httpClient);
-    };
+    utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body);
 #endif
 
     /**
@@ -1538,11 +1522,7 @@ class kite {
      * @return resT response
      */
     template <class resT, utils::json::PARSE_AS resBodyT>
-    resT callApi(const string& service, const utils::http::paramsT& body = {}) {
-        utils::http::response res = sendReq(endpoints.at(service), body);
-        if (!res) { kiteconnect::_throwException(res.errorType, res.code, res.message); }
-        return utils::json::parse<resT, resBodyT>(res.data);
-    }
+    resT callApi(const string& service, const utils::http::paramsT& body = {});
 };
 
 } // namespace kiteconnect
