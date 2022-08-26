@@ -182,14 +182,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get margins
      */
-    allMargins getMargins() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("user.margins"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMargins())"); };
-
-        return allMargins(res["data"].GetObject());
-    };
+    allMargins getMargins();
 
     /**
      * @brief Get margins for a particular segment
@@ -200,16 +193,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get margins
      */
-    margins getMargins(const string& segment) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("user.margins.segment"), "segment"_a = segment));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getMargins(segment))");
-        };
-
-        return margins(res["data"].GetObject());
-    };
+    margins getMargins(const string& segment);
 
     // orders:
 
@@ -1283,12 +1267,6 @@ class kite {
         // api
         { "api.token", "/session/token" },
         { "api.token.invalidate", "/session/token?api_key={api_key}&access_token={access_token}" },
-        // x{"api.token.renew", "/session/refresh_token"},
-
-        // user
-        { "user.profile", "/user/profile" },
-        { "user.margins", "/user/margins" },
-        { "user.margins.segment", "/user/margins/{segment}" },
 
         // orders
         { "orders", "/orders" },
@@ -1353,6 +1331,8 @@ class kite {
         { "api.token", { utils::http::METHOD::POST, "/session/token" } },
         // user
         { "user.profile", { utils::http::METHOD::GET, "/user/profile" } },
+        { "user.margins", { utils::http::METHOD::GET, "/user/margins" } },
+        { "user.margins.segment", { utils::http::METHOD::GET, "/user/margins/{0}" } },
     };
 
     httplib::Client _httpClient;

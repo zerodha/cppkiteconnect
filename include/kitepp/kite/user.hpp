@@ -15,4 +15,10 @@ inline userSession kite::generateSession(const string& requestToken, const strin
 
 inline userProfile kite::profile() { return callApi<userProfile, utils::json::PARSE_AS::OBJECT>("user.profile"); };
 
+inline allMargins kite::getMargins() { return callApi<allMargins, utils::json::PARSE_AS::OBJECT>("user.margins"); };
+
+inline margins kite::getMargins(const string& segment) {
+    return callApi<margins, utils::json::PARSE_AS::OBJECT>("user.margins.segment", {}, { segment });
+};
+
 } // namespace kiteconnect

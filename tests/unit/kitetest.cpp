@@ -87,7 +87,7 @@ TEST(kiteTest, loginURLTest) {
 };
 
 TEST(kiteTest, generateSessionTest) {
-    string json = kc::test::readFile("../../tests/mock_custom/generate_session.json");
+    const string JSON = kc::test::readFile("../../tests/mock_custom/generate_session.json");
     StrictMock<kc::test::mockKite2> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/session/token" },
                           utils::http::paramsT {
@@ -97,7 +97,7 @@ TEST(kiteTest, generateSessionTest) {
                           },
                           utils::fmtArgsT {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, json))));
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     kc::userSession session = Kite.generateSession(kc::test::REQUEST_TOKEN, kc::test::API_SECRET);
 
@@ -132,12 +132,12 @@ TEST(kiteTest, invalidateSessionTest) {
 };
 
 TEST(kiteTest, profile) {
-    string json = kc::test::readFile("../../tests/mock_responses/profile.json");
+    const string JSON = kc::test::readFile("../../tests/mock_responses/profile.json");
     StrictMock<kc::test::mockKite2> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" },
                           utils::http::paramsT {}, utils::fmtArgsT {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, json))));
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     kc::userProfile profile = Kite.profile();
 
@@ -155,18 +155,13 @@ TEST(kiteTest, profile) {
     EXPECT_EQ(profile.meta.dematConsent, "physical");
 };
 
-TEST(kiteTest, getMarginsTest1) {
-
-    std::ifstream jsonFile("../../tests/mock_responses/margins.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
-
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
+TEST(kiteTest, getMarginsTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/margins.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins" },
+                          utils::http::paramsT {}, utils::fmtArgsT {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     kc::allMargins margins = Kite.getMargins();
 
@@ -208,20 +203,17 @@ TEST(kiteTest, getMarginsTest1) {
     EXPECT_DOUBLE_EQ(margins.commodity.used.turnover, 0);
 }
 
-TEST(kiteTest, getMarginsTest2) {
+TEST(kiteTest, getMarginsSegmentTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/margins_equity.json");
+    const string SEGMENT = "equity";
 
-    std::ifstream jsonFile("../../tests/mock_responses/margins_equity.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins/{0}" },
+                          utils::http::paramsT {}, utils::fmtArgsT { SEGMENT }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    kc::margins margins = Kite.getMargins("equity");
+    kc::margins margins = Kite.getMargins(SEGMENT);
 
     // Expected values
     EXPECT_EQ(margins.enabled, true);
