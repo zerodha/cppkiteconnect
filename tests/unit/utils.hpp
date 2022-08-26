@@ -22,7 +22,8 @@ class mockKite2 : public kc::kite {
   public:
     mockKite2(): kite(kc::test::API_KEY) {};
     MOCK_METHOD(utils::http::response, sendReq,
-        (const utils::http::endpoint& endpoint, const utils::http::paramsT& body), (override));
+        (const utils::http::endpoint& endpoint, const utils::http::paramsT& body, const utils::fmtArgsT& fmtArgs),
+        (override));
 };
 
 inline string readFile(const string& path) {

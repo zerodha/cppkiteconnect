@@ -72,6 +72,9 @@ inline bool isValidArg(const string& value) { return !value.empty(); };
 } // namespace kiteconnect
 
 namespace kiteconnect::internal::utils {
+//! init_list doesn't have compare operator & gmock needs it
+using fmtArgsT = std::vector<string>;
+
 namespace json {
 
 /// @brief indicates whether a response should be parsed as an object or as an array
@@ -136,20 +139,40 @@ enum class CONTENT_TYPE : uint8_t
 
 /// @brief represents a REST endpoint
 struct endpoint {
-    METHOD method;                                     /// http method
-    string path;                                       /// endpoint path
-    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type expected
-
     /**
      * @brief compares two \a endpoint objects
      *
      * @param lhs \a endpoint to compare
+     *
      * @return true if the objects are equal
      * @return false if the objects are not equal
      */
     bool operator==(const endpoint& lhs) const {
-        return lhs.method == this->method && lhs.path == this->path && lhs.contentType == this->contentType;
+        return lhs.method == this->method && lhs.Path.Path == this->Path.Path && lhs.contentType == this->contentType;
     }
+
+    METHOD method = METHOD::GET; /// http method
+    struct path {
+
+        /**
+         * @brief get formatted path
+         *
+         * @param FmtArgs formatting arguments required
+         *
+         * @return string formatted path
+         */
+        string operator()(const fmtArgsT& fmtArgs = {}) const {
+            if (fmtArgs.empty()) {
+                fmt::dynamic_format_arg_store<fmt::format_context> store;
+                for (const auto& arg : fmtArgs) { store.push_back(arg); };
+                return fmt::vformat(Path, store);
+            };
+            return Path;
+        };
+
+        string Path;
+    } Path;                                            /// represents an endpoint path
+    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type expected
 };
 
 /// @brief represents a http response

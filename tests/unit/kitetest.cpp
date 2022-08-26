@@ -94,7 +94,8 @@ TEST(kiteTest, generateSessionTest) {
                               { "api_key", "Uz7Mdn29ZGya31a" },
                               { "request_token", "qKLeSUycwFEvWGw" },
                               { "checksum", "ac90aa6cafb2bab90a172d38f70c66cbc1d96601852123530459fcabbc487d4f" },
-                          }))
+                          },
+                          utils::fmtArgsT {}))
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, json))));
 
@@ -133,8 +134,8 @@ TEST(kiteTest, invalidateSessionTest) {
 TEST(kiteTest, profile) {
     string json = kc::test::readFile("../../tests/mock_responses/profile.json");
     StrictMock<kc::test::mockKite2> Kite;
-    EXPECT_CALL(
-        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" }, utils::http::paramsT {}))
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" },
+                          utils::http::paramsT {}, utils::fmtArgsT {}))
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, json))));
 

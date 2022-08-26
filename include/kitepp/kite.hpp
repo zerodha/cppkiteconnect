@@ -1498,7 +1498,8 @@ class kite {
 
   protected:
 #ifdef KITE_UNIT_TEST
-    virtual utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body);
+    virtual utils::http::response sendReq(
+        const utils::http::endpoint& endpoint, const utils::http::paramsT& body, const utils::fmtArgsT& fmtArgs);
 #else
     /**
      * \brief send a http request with the context used by \a kite
@@ -1508,7 +1509,8 @@ class kite {
      *
      * \return utils::http::response response received
      */
-    utils::http::response sendReq(const utils::http::endpoint& endpoint, const utils::http::paramsT& body);
+    utils::http::response sendReq(
+        const utils::http::endpoint& endpoint, const utils::http::paramsT& body, const utils::fmtArgsT& fmtArgs);
 #endif
 
     /**
@@ -1522,7 +1524,7 @@ class kite {
      * @return resT response
      */
     template <class resT, utils::json::PARSE_AS resBodyT>
-    resT callApi(const string& service, const utils::http::paramsT& body = {});
+    resT callApi(const string& service, const utils::http::paramsT& body = {}, const utils::fmtArgsT& fmtArgs = {});
 };
 
 } // namespace kiteconnect
