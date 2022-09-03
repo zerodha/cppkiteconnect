@@ -27,6 +27,7 @@
 #include <algorithm> //for_each
 #include <array>
 #include <cstdint>
+#include <functional>
 #include <iostream> //debug
 #include <limits>   //nan
 #include <sstream>
@@ -155,12 +156,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp invalidate session
      */
-    void invalidateSession() {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL,
-            FMT(_endpoints.at("api.token.invalidate"), "api_key"_a = _apiKey, "access_token"_a = _accessToken));
-    };
+    bool invalidateSession();
 
     // user:
 
@@ -1329,6 +1325,7 @@ class kite {
     const std::unordered_map<string, utils::http::endpoint> endpoints {
         // api
         { "api.token", { utils::http::METHOD::POST, "/session/token" } },
+        { "api.token.invalidate", { utils::http::METHOD::DEL, "/session/token?api_key={0}&access_token={1}" } },
         // user
         { "user.profile", { utils::http::METHOD::GET, "/user/profile" } },
         { "user.margins", { utils::http::METHOD::GET, "/user/margins" } },
@@ -1479,7 +1476,7 @@ class kite {
   protected:
 #ifdef KITE_UNIT_TEST
     virtual utils::http::response sendReq(
-        const utils::http::endpoint& endpoint, const utils::http::paramsT& body, const utils::fmtArgsT& fmtArgs);
+        const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #else
     /**
      * \brief send a http request with the context used by \a kite
@@ -1490,21 +1487,26 @@ class kite {
      * \return utils::http::response response received
      */
     utils::http::response sendReq(
-        const utils::http::endpoint& endpoint, const utils::http::paramsT& body, const utils::fmtArgsT& fmtArgs);
+        const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #endif
 
     /**
      * @brief make a call to kite api
      *
-     * @tparam resT     type corresponding to service response
-     * @tparam resBodyT response body data type
+     * @tparam Res             type corresponding to service response
+     * @tparam Data            type of `data` field
+     * @tparam UseCustomParser whether custom parser should be used for parsing response
      *
-     * @param service    kite service to call
-     * @param body       url encoded data to send (if any)
-     * @return resT response
+     * @param service      kite service to call
+     * @param body         url encoded data to send (if any)
+     * @param fmtArgs      url formatting arguments (if any)
+     * @param customParser custom parser for parsing the response
+     *
+     * @return Res response
      */
-    template <class resT, utils::json::PARSE_AS resBodyT>
-    resT callApi(const string& service, const utils::http::paramsT& body = {}, const utils::fmtArgsT& fmtArgs = {});
+    template <class Res, class Data, bool UseCustomParser = false>
+    inline Res callApi(const string& service, const utils::http::Params& body = {}, const utils::FmtArgs& fmtArgs = {},
+        utils::json::CustomParser<Res, Data, UseCustomParser> customParser = {});
 };
 
 } // namespace kiteconnect

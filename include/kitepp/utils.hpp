@@ -26,11 +26,13 @@
 
 #include <cstdint>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 #include "config.hpp"
 #include "cpp-httplib/httplib.h"
 #include "kiteppexceptions.hpp"
+#include "rapidjson/encodings.h"
 #include "rjutils.hpp"
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -73,54 +75,60 @@ inline bool isValidArg(const string& value) { return !value.empty(); };
 
 namespace kiteconnect::internal::utils {
 //! init_list doesn't have compare operator & gmock needs it
-using fmtArgsT = std::vector<string>;
+using FmtArgs = std::vector<string>;
 
 namespace json {
 
-/// @brief indicates whether a response should be parsed as an object or as an array
-enum class PARSE_AS : uint8_t
-{
-    OBJECT,
-    ARRAY
-};
+using JsonObject = rj::GenericValue<rj::UTF8<>>::Object;
+using JsonArray = rj::GenericValue<rj::UTF8<>>::Array;
+template <class Res>
+using CustomObjectParser = std::function<Res(JsonObject&)>;
+template <class Res>
+using CustomArrayParser = std::function<Res(JsonArray&)>;
+template <class Res, class Data, bool UseCustomParser>
+using CustomParser =
+    std::conditional_t<std::is_same_v<Data, JsonObject>, const CustomObjectParser<Res>&, const CustomArrayParser<Res>&>;
 
-/**
- * @brief parses a rapidjson document into \a resT
- *
- * @tparam resT    the type document should be parsed into.
- *                 \a resT must have a constructor that accepts \a rapidjson::Document as
- *                 the sole argument and proceeds to parse it.
- * @tparam parseAs \a document's underlying data type
+inline JsonObject extractObject(rj::Document& doc) {
+    if (!doc.IsObject()) { throw libException("invalid object"); };
+    return doc["data"].GetObject();
+}
 
- * @param doc rapidjson document to parse
+inline JsonArray extractArray(rj::Document& doc) {
+    if (!doc.IsArray()) { throw libException("invalid array"); };
+    return doc["data"].GetArray();
+}
 
- * @return resT parsed object
- */
-template <class resT, json::PARSE_AS parseAs>
-resT parse(rj::Document& doc) {
-    static_assert(std::is_constructible<resT, const rj::Value::Object&> {} ||
-                  std::is_constructible<resT, const rj::Value::Array&> {});
-
-    if constexpr (parseAs == json::PARSE_AS::OBJECT) {
-        if (!doc.IsObject()) { throw libException("invalid object"); };
-        return resT(doc["data"].GetObject());
-    } else if constexpr (parseAs == json::PARSE_AS::ARRAY) {
-        if (!doc.IsArray()) { throw libException("invalid array"); };
-        return resT(doc["data"].GetArray());
+template <class Res, class Data, bool UseCustomParser>
+Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customParser) {
+    if constexpr (std::is_same_v<Data, JsonObject>) {
+        auto object = extractObject(doc);
+        if constexpr (UseCustomParser) {
+            return customParser(object);
+        } else {
+            static_assert(std::is_constructible_v<Res, JsonObject>, "Res should be constructable using JsonObject");
+            return Res(object);
+        }
+    } else if constexpr (std::is_same_v<Data, JsonArray>) {
+        auto array = extractArray(doc);
+        if constexpr (UseCustomParser) {
+            return customParser(array);
+        } else {
+            static_assert(std::is_constructible_v<Res, JsonArray>, "Res should be constructable using JsonArray");
+            return Res(array);
+        }
     }
 }
 } // namespace json
 
 namespace http {
 
-using paramsT = httplib::Params;
+using Params = httplib::Params;
 
-/// @brief represents http status codes
 namespace code {
 constexpr uint16_t OK = 200;
 } // namespace code
 
-/// @brief represents http methods
 enum class METHOD : uint8_t
 {
     GET,
@@ -130,23 +138,13 @@ enum class METHOD : uint8_t
     HEAD
 };
 
-/// @brief represents http content type header values
 enum class CONTENT_TYPE : uint8_t
 {
     JSON,
     NON_JSON
 };
 
-/// @brief represents a REST endpoint
 struct endpoint {
-    /**
-     * @brief compares two \a endpoint objects
-     *
-     * @param lhs \a endpoint to compare
-     *
-     * @return true if the objects are equal
-     * @return false if the objects are not equal
-     */
     bool operator==(const endpoint& lhs) const {
         return lhs.method == this->method && lhs.Path.Path == this->Path.Path && lhs.contentType == this->contentType;
     }
@@ -154,14 +152,7 @@ struct endpoint {
     METHOD method = METHOD::GET; /// http method
     struct path {
 
-        /**
-         * @brief get formatted path
-         *
-         * @param FmtArgs formatting arguments required
-         *
-         * @return string formatted path
-         */
-        string operator()(const fmtArgsT& fmtArgs = {}) const {
+        string operator()(const FmtArgs& fmtArgs = {}) const {
             if (fmtArgs.empty()) {
                 fmt::dynamic_format_arg_store<fmt::format_context> store;
                 for (const auto& arg : fmtArgs) { store.push_back(arg); };
@@ -175,15 +166,8 @@ struct endpoint {
     CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type expected
 };
 
-/// @brief represents a http response
 class response {
   public:
-    /**
-     * @brief construct a new \a response object
-     *
-     * @param Code status code
-     * @param Json json body
-     */
     response(uint16_t Code, const string& Json): code(Code) { parse(Code, Json); };
 
     explicit operator bool() const { return !error; };
@@ -195,12 +179,6 @@ class response {
     string message;                   /// corresponds to kite api's \a message field (if \a error is \a true)
 
   private:
-    /**
-     * @brief parse a json response
-     *
-     * @param code status code
-     * @param json json body
-     */
     void parse(uint16_t code, const string& json) {
         kc::rjutils::_parse(data, json);
         if (code != static_cast<uint16_t>(code::OK)) {
@@ -213,16 +191,8 @@ class response {
     };
 };
 
-/// @brief represents a http request
 struct request {
 
-    /**
-     * @brief send a \a request
-     *
-     * @param client http client
-     *
-     * @return response response
-     */
     // NOLINTNEXTLINE(readability-function-cognitive-complexity)
     response send(httplib::Client& client) const {
         const httplib::Headers headers = { { "Authorization", authToken } };
@@ -288,12 +258,12 @@ struct request {
         return { code, data };
     };
 
-    utils::http::METHOD method;                        /// http method
-    string path;                                       /// request path
-    string authToken;                                  /// \a Authorization header string
-    paramsT body;                                      /// request body (sent as form encoded)
-    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type
-    string serializedBody;                             /// serialized body (if sending data as json)
+    utils::http::METHOD method;
+    string path;
+    string authToken;
+    Params body;
+    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON;
+    string serializedBody;
 };
 } // namespace http
 } // namespace kiteconnect::internal::utils

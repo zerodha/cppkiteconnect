@@ -90,12 +90,12 @@ TEST(kiteTest, generateSessionTest) {
     const string JSON = kc::test::readFile("../../tests/mock_custom/generate_session.json");
     StrictMock<kc::test::mockKite2> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/session/token" },
-                          utils::http::paramsT {
+                          utils::http::Params {
                               { "api_key", "Uz7Mdn29ZGya31a" },
                               { "request_token", "qKLeSUycwFEvWGw" },
                               { "checksum", "ac90aa6cafb2bab90a172d38f70c66cbc1d96601852123530459fcabbc487d4f" },
                           },
-                          utils::fmtArgsT {}))
+                          utils::FmtArgs {}))
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
@@ -123,19 +123,25 @@ TEST(kiteTest, generateSessionTest) {
 };
 
 TEST(kiteTest, invalidateSessionTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_custom/invalidate_session.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    Kite.setAccessToken(kc::test::ACCESS_TOKEN);
 
-    mockKite Kite;
+    EXPECT_CALL(
+        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/session/token?api_key={0}&access_token={1}" },
+                  utils::http::Params {}, utils::FmtArgs { kc::test::API_KEY, kc::test::ACCESS_TOKEN }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _)).WillOnce(::testing::Return());
-
-    Kite.invalidateSession();
+    const bool result = Kite.invalidateSession();
+    EXPECT_EQ(result, true);
 };
 
 TEST(kiteTest, profile) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/profile.json");
     StrictMock<kc::test::mockKite2> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" },
-                          utils::http::paramsT {}, utils::fmtArgsT {}))
+                          utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
@@ -159,7 +165,7 @@ TEST(kiteTest, getMarginsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/margins.json");
     StrictMock<kc::test::mockKite2> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins" },
-                          utils::http::paramsT {}, utils::fmtArgsT {}))
+                          utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
@@ -209,7 +215,7 @@ TEST(kiteTest, getMarginsSegmentTest) {
 
     StrictMock<kc::test::mockKite2> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins/{0}" },
-                          utils::http::paramsT {}, utils::fmtArgsT { SEGMENT }))
+                          utils::http::Params {}, utils::FmtArgs { SEGMENT }))
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 

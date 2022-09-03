@@ -16,13 +16,14 @@ namespace utils = kc::internal::utils;
 inline const string API_KEY = "Uz7Mdn29ZGya31a";
 inline const string REQUEST_TOKEN = "qKLeSUycwFEvWGw";
 inline const string API_SECRET = "kqykYBBhGEwPziq";
+inline const string ACCESS_TOKEN = "rqykYBfhGEsPziq";
 // NOLINTEND(cert-err58-cpp)
 
 class mockKite2 : public kc::kite {
   public:
     mockKite2(): kite(kc::test::API_KEY) {};
     MOCK_METHOD(utils::http::response, sendReq,
-        (const utils::http::endpoint& endpoint, const utils::http::paramsT& body, const utils::fmtArgsT& fmtArgs),
+        (const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs),
         (override));
 };
 
