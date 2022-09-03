@@ -100,14 +100,14 @@ class kite {
      *
      * @param arg The string that should be set as API key
      */
-    void setAPIKey(const string& arg) { _apiKey = arg; };
+    void setAPIKey(const string& arg);
 
     /**
      * @brief Fetch current API key
      *
      * @return string
      */
-    string getAPIKey() const { return _apiKey; };
+    string getAPIKey() const;
 
     /**
      * @brief Get the remote login url to which a user should be redirected to initiate the login flow.
@@ -117,7 +117,24 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp obtaining login url
      */
-    string loginURL() const { return FMT(_loginURLFmt, "api_key"_a = _apiKey); };
+    string loginURL() const;
+
+    /**
+     * @brief Set the Access Token
+     *
+     * @param arg the string you want to set as access token
+     *
+     * @paragraph ex1 Example
+     * @snippet example2.cpp settting access token
+     */
+    void setAccessToken(const string& arg);
+
+    /**
+     * @brief Get the Access Token set currently
+     *
+     * @return string
+     */
+    string getAccessToken() const;
 
     /**
      * @brief Generate user session details like `access_token`
@@ -130,23 +147,6 @@ class kite {
      * @snippet example2.cpp obtaining access token
      */
     userSession generateSession(const string& requestToken, const string& apiSecret);
-
-    /**
-     * @brief Set the Access Token
-     *
-     * @param arg the string you want to set as access token
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp settting access token
-     */
-    void setAccessToken(const string& arg) { _accessToken = arg; };
-
-    /**
-     * @brief Get the Access Token set currently
-     *
-     * @return string
-     */
-    string getAccessToken() const { return _accessToken; };
 
     /**
      * @brief This call invalidates the access_token and destroys the API session. After this, the user should be sent

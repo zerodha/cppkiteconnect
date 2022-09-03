@@ -79,11 +79,11 @@ TEST(kiteTest, constructorTest) {
 // user
 
 TEST(kiteTest, loginURLTest) {
-
     mockKite Kite;
-    const string loginURL_expected = "https://kite.zerodha.com/connect/login?v=3&api_key=Uz7Mdn29ZGya31a";
+    const string LOGIN_URL_EXPECTED = "https://kite.zerodha.com/connect/login?v=3&api_key=Uz7Mdn29ZGya31a";
+    const string LOGIN_URL = Kite.loginURL();
 
-    EXPECT_EQ(Kite.loginURL(), loginURL_expected);
+    EXPECT_EQ(LOGIN_URL, LOGIN_URL_EXPECTED);
 };
 
 TEST(kiteTest, generateSessionTest) {
@@ -133,8 +133,8 @@ TEST(kiteTest, invalidateSessionTest) {
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const bool result = Kite.invalidateSession();
-    EXPECT_EQ(result, true);
+    const bool RESULT = Kite.invalidateSession();
+    EXPECT_EQ(RESULT, true);
 };
 
 TEST(kiteTest, profile) {
