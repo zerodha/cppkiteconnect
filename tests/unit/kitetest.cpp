@@ -244,109 +244,122 @@ TEST(kiteTest, getMarginsSegmentTest) {
 // Orders tests
 
 TEST(kiteTest, placeOrderTest) {
-    std::ifstream jsonFile("../../tests/mock_responses/order_response.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const int QUANTITY = 10;
+    const string VARIETY = "regular";
+    const string EXCHANGE = "NSE";
+    const string SYMBOL = "TCS";
+    const string TRANSACTION_TYPE = "BUY";
+    const string PRODUCT = "NRML";
+    const string ORDER_TYPE = "MARKET";
+    const string VALIDITY = "day";
+    const string TAG = "order1";
+    const auto PLACE_ORDER_PARAMS = kc::placeOrderParams()
+                                        .Quantity(QUANTITY)
+                                        .Variety(VARIETY)
+                                        .Exchange(EXCHANGE)
+                                        .Symbol(SYMBOL)
+                                        .TransactionType(TRANSACTION_TYPE)
+                                        .Product(PRODUCT)
+                                        .OrderType(ORDER_TYPE)
+                                        .Validity(VALIDITY)
+                                        .Tag(TAG);
+    const string EXPECTED_ORDER_ID = "151220000000000";
 
-    mockKite Kite;
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/orders/{0}" },
+                          utils::http::Params {
+                              { "exchange", EXCHANGE },
+                              { "order_type", ORDER_TYPE },
+                              { "product", PRODUCT },
+                              { "tradingsymbol", SYMBOL },
+                              { "transaction_type", TRANSACTION_TYPE },
+                              { "tag", TAG },
+                              { "validity", VALIDITY },
+                              { "quantity", std::to_string(QUANTITY) },
+                          },
+                          utils::FmtArgs { VARIETY }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+    const string orderID = Kite.placeOrder(PLACE_ORDER_PARAMS);
 
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    string orderID = Kite.placeOrder(kc::placeOrderParams()
-                                         .Quantity(10)
-                                         .Variety("regular")
-                                         .Exchange("NSE")
-                                         .Symbol("TCS")
-                                         .TransactionType("BUY")
-                                         .Product("NRML")
-                                         .OrderType("MARKET")
-                                         .Validity("day")
-                                         .Tag("order1"));
-
-    EXPECT_EQ(orderID, "151220000000000");
+    EXPECT_EQ(orderID, EXPECTED_ORDER_ID);
 }
 
 TEST(kiteTest, modifyOrderTest) {
-
-    std::ifstream jsonFile("../../tests/mock_responses/order_response.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
-
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::PUT, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
+    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const int QUANTITY = 11;
+    const string VARIETY = "regular";
+    const string ORDER_ID = "151220000000000";
+    const string VALIDITY = "IOC";
     // clang-format off
-    string orderID = Kite.modifyOrder(kc::modifyOrderParams()
-                                        .Variety("regular")
-                                        .OrderId("1111111000101010")
-                                        .Quantity(69));
+    const auto MODIFY_ORDER_PARAMS = kc::modifyOrderParams()
+                                         .Quantity(QUANTITY)
+                                         .Variety(VARIETY)
+                                         .Validity(VALIDITY)
+                                         .OrderId(ORDER_ID);
     // clang-format on
+    const string EXPECTED_ORDER_ID = "151220000000000";
 
-    EXPECT_EQ(orderID, "151220000000000");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/orders/{0}/{1}" },
+                          utils::http::Params {
+                              { "validity", VALIDITY },
+                              { "quantity", std::to_string(QUANTITY) },
+                          },
+                          utils::FmtArgs { VARIETY, ORDER_ID }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+    const string RECEIVED_ORDER_ID = Kite.modifyOrder(MODIFY_ORDER_PARAMS);
+
+    EXPECT_EQ(RECEIVED_ORDER_ID, "151220000000000");
 }
 
 TEST(kiteTest, cancelOrderTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const string VARIETY = "regular";
+    const string ORDER_ID = "151220000000000";
+    const string EXPECTED_ORDER_ID = "151220000000000";
 
-    std::ifstream jsonFile("../../tests/mock_responses/order_response.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/orders/{0}/{1}" },
+                          utils::http::Params {}, utils::FmtArgs { VARIETY, ORDER_ID }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+    const string RECEIVED_ORDER_ID = Kite.cancelOrder(VARIETY, ORDER_ID);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    string orderID = Kite.cancelOrder("arg1", "arg2");
-
-    EXPECT_EQ(orderID, "151220000000000");
+    EXPECT_EQ(RECEIVED_ORDER_ID, "151220000000000");
 }
 
 TEST(kiteTest, exitOrderTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const string VARIETY = "bo";
+    const string ORDER_ID = "151220000000000";
+    const string PARENT_ORDER_ID = "151220000000001";
+    const string EXPECTED_ORDER_ID = "151220000000000";
 
-    std::ifstream jsonFile("../../tests/mock_responses/order_response.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/orders/{0}/{1}?parent_order_id={1}" },
+                          utils::http::Params {}, utils::FmtArgs { VARIETY, ORDER_ID, PARENT_ORDER_ID }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+    const string RECEIVED_ORDER_ID = Kite.exitOrder(VARIETY, ORDER_ID, PARENT_ORDER_ID);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::DEL, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    string orderID = Kite.exitOrder("arg1", "arg2");
-
-    EXPECT_EQ(orderID, "151220000000000");
+    EXPECT_EQ(RECEIVED_ORDER_ID, "151220000000000");
 }
 
 TEST(kiteTest, ordersTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/orders.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders" }, utils::http::Params {},
+                          utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/orders.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::vector<kc::order> Orders = Kite.orders();
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::order> Orders = Kite.orders();
-
-    // Expected values
     ASSERT_THAT(Orders.size(), 5);
-
-    kc::order order1 = Orders[0];
+    const kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
     EXPECT_EQ(order1.placedBy, "XXXXXX");
     EXPECT_EQ(order1.orderID, "100000000000000");
@@ -377,24 +390,18 @@ TEST(kiteTest, ordersTest) {
 }
 
 TEST(kiteTest, orderHistoryTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/orders.json");
+    const string ORDER_ID = "100000000000000";
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders/{0}" }, utils::http::Params {},
+                          utils::FmtArgs { ORDER_ID }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/orders.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::vector<kc::order> Orders = Kite.orderHistory(ORDER_ID);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::order> Orders = Kite.orderHistory("arg1");
-
-    // Expected values
     ASSERT_THAT(Orders.size(), 5);
-
-    kc::order order1 = Orders[0];
+    const kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
     EXPECT_EQ(order1.placedBy, "XXXXXX");
     EXPECT_EQ(order1.orderID, "100000000000000");
@@ -425,24 +432,17 @@ TEST(kiteTest, orderHistoryTest) {
 }
 
 TEST(kiteTest, tradesTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/trades.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/trades" }, utils::http::Params {},
+                          utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/trades.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::vector<kc::trade> Trades = Kite.trades();
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::trade> Trades = Kite.trades();
-
-    // Expected values
     ASSERT_EQ(Trades.size(), 4);
-
-    kc::trade trade1 = Trades[0];
+    const kc::trade trade1 = Trades[0];
     EXPECT_DOUBLE_EQ(trade1.averagePrice, 420.64999999999998);
     EXPECT_EQ(trade1.exchange, "NSE");
     EXPECT_EQ(trade1.exchangeOrderID, "300000000000000");
@@ -457,24 +457,18 @@ TEST(kiteTest, tradesTest) {
 }
 
 TEST(kiteTest, orderTradesTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/order_trades.json");
+    const string ORDER_ID = "100000000000000";
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders/{0}/trades" },
+                          utils::http::Params {}, utils::FmtArgs { ORDER_ID }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/order_trades.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::vector<kc::trade> Trades = Kite.orderTrades(ORDER_ID);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::trade> Trades = Kite.orderTrades("arg1");
-
-    // Expected values
     ASSERT_EQ(Trades.size(), 1);
-
-    kc::trade trade1 = Trades[0];
+    const kc::trade trade1 = Trades[0];
     EXPECT_DOUBLE_EQ(trade1.averagePrice, 4852);
     EXPECT_EQ(trade1.exchange, "MCX");
     EXPECT_EQ(trade1.exchangeOrderID, "300000000000000");

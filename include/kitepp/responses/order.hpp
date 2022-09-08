@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "../config.hpp"
@@ -32,21 +33,21 @@ struct placeOrderParams {
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, validity, Validity);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, tag, Tag);
 
-    int quantity = kc::DEFAULTINT;
-    int disclosedQuantity = kc::DEFAULTINT;
-    double price = kc::DEFAULTDOUBLE;
-    double triggerPrice = kc::DEFAULTDOUBLE;
-    double squareOff = kc::DEFAULTDOUBLE;
-    double stopLoss = kc::DEFAULTDOUBLE;
-    double trailingStopLoss = kc::DEFAULTDOUBLE;
+    int quantity;
+    std::optional<int> disclosedQuantity;
+    std::optional<int> price;
+    std::optional<double> triggerPrice;
+    std::optional<double> squareOff;
+    std::optional<double> stopLoss;
+    std::optional<double> trailingStopLoss;
     string variety;
     string exchange;
     string symbol;
     string transactionType;
     string product;
     string orderType;
-    string validity;
-    string tag;
+    std::optional<string> validity;
+    std::optional<string> tag;
 };
 
 /// represents parameters required for the `modifyOrder` function
@@ -61,15 +62,15 @@ struct modifyOrderParams {
     GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, orderId, OrderId);
     GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, parentOrderId, ParentOrderId);
 
-    int quantity = kc::DEFAULTINT;
-    int disclosedQuantity = kc::DEFAULTINT;
-    double price = kc::DEFAULTDOUBLE;
-    double triggerPrice = kc::DEFAULTDOUBLE;
+    std::optional<int> quantity;
+    std::optional<int> disclosedQuantity;
+    std::optional<double> price;
+    std::optional<double> triggerPrice;
     string variety;
     string orderId;
-    string parentOrderId;
-    string orderType;
-    string validity;
+    std::optional<string> parentOrderId;
+    std::optional<string> orderType;
+    std::optional<string> validity;
 };
 
 /// order represents an individual order response
@@ -107,15 +108,15 @@ struct order {
         kc::rjutils::_getIfExists(val, cancelledQuantity, "cancelled_quantity");
     };
 
-    int instrumentToken = kc::DEFAULTINT;
-    int quantity = kc::DEFAULTINT;
-    int disclosedQuantity = kc::DEFAULTINT;
-    int filledQuantity = kc::DEFAULTINT;
-    int pendingQuantity = kc::DEFAULTINT;
-    int cancelledQuantity = kc::DEFAULTINT;
-    double price = kc::DEFAULTDOUBLE;
-    double triggerPrice = kc::DEFAULTDOUBLE;
-    double averagePrice = kc::DEFAULTDOUBLE;
+    int instrumentToken = -1;
+    int quantity = -1;
+    int disclosedQuantity = -1;
+    int filledQuantity = -1;
+    int pendingQuantity = -1;
+    int cancelledQuantity = -1;
+    double price = -1.0;
+    double triggerPrice = -1.0;
+    double averagePrice = -1.0;
     string accountID;
     string placedBy;
     string orderID;
@@ -156,9 +157,9 @@ struct trade {
         kc::rjutils::_getIfExists(val, InstrumentToken, "instrument_token");
     };
 
-    int InstrumentToken = kc::DEFAULTINT;
-    double averagePrice = kc::DEFAULTDOUBLE;
-    double quantity = kc::DEFAULTDOUBLE;
+    int InstrumentToken = -1;
+    double averagePrice = -1.0;
+    double quantity = -1.0;
     string tradeID;
     string product;
     string fillTimestamp;

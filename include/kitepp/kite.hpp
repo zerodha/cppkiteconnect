@@ -217,40 +217,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp placing an order
      */
-    string placeOrder(const placeOrderParams& params) {
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", params.exchange },
-            { "tradingsymbol", params.symbol },
-            { "transaction_type", params.transactionType },
-            { "quantity", std::to_string(params.quantity) },
-            { "product", params.product },
-            { "order_type", params.orderType },
-        };
-
-        if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
-        if (isValidArg(params.validity)) { bodyParams.emplace_back("validity", params.validity); }
-        if (isValidArg(params.disclosedQuantity)) {
-            bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
-        }
-        if (isValidArg(params.triggerPrice)) {
-            bodyParams.emplace_back("trigger_price", std::to_string(params.triggerPrice));
-        }
-        if (isValidArg(params.squareOff)) { bodyParams.emplace_back("squareoff", std::to_string(params.squareOff)); }
-        if (isValidArg(params.stopLoss)) { bodyParams.emplace_back("stoploss", std::to_string(params.stopLoss)); }
-        if (isValidArg(params.trailingStopLoss)) {
-            bodyParams.emplace_back("trailing_stoploss", std::to_string(params.trailingStopLoss));
-        }
-        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); }
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = params.variety), bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
+    string placeOrder(const placeOrderParams& params);
 
     /**
      * @brief modify an order
@@ -270,33 +237,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modifying an order
      */
-    string modifyOrder(const modifyOrderParams& params) {
-
-        std::vector<std::pair<string, string>> bodyParams = {};
-
-        if (isValidArg(params.parentOrderId)) { bodyParams.emplace_back("parent_order_id", params.parentOrderId); }
-        if (isValidArg(params.quantity)) { bodyParams.emplace_back("quantity", std::to_string(params.quantity)); }
-        if (isValidArg(params.price)) { bodyParams.emplace_back("price", std::to_string(params.price)); }
-        if (isValidArg(params.orderType)) { bodyParams.emplace_back("order_type", params.orderType); }
-        if (isValidArg(params.triggerPrice)) {
-            bodyParams.emplace_back("trigger_price", std::to_string(params.triggerPrice));
-        }
-        if (isValidArg(params.validity)) { bodyParams.emplace_back("validity", params.validity); }
-        if (isValidArg(params.disclosedQuantity)) {
-            bodyParams.emplace_back("disclosed_quantity", std::to_string(params.disclosedQuantity));
-        }
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT,
-            FMT(_endpoints.at("order.modify"), "variety"_a = params.variety, "order_id"_a = params.orderId),
-            bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
+    string modifyOrder(const modifyOrderParams& params);
 
     /**
      * @brief cancel an order
@@ -310,21 +251,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancelling an order
      */
-    string cancelOrder(const string& variety, const string& ordID, const string& parentOrdID = "") {
-
-        rj::Document res;
-        (variety == "bo") ? _sendReq(res, _methods::DEL,
-                                FMT(_endpoints.at("order.cancel.bo"), "variety"_a = variety, "order_id"_a = ordID,
-                                    "parent_order_id"_a = parentOrdID)) :
-                            _sendReq(res, _methods::DEL,
-                                FMT(_endpoints.at("order.cancel"), "variety"_a = variety, "order_id"_a = ordID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
+    string cancelOrder(const string& variety, const string& orderId, const string& parentOrderId = "");
 
     /**
      * @brief exit an order
@@ -338,10 +265,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp exiting an order
      */
-    string exitOrder(const string& variety, const string& ordID, const string& parentOrdID = "") {
-
-        return cancelOrder(variety, ordID, parentOrdID);
-    };
+    string exitOrder(const string& variety, const string& orderId, const string& parentOrderId = "");
 
     /**
      * @brief get list of orders
@@ -351,21 +275,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get orders
      */
-    std::vector<order> orders() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("orders"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orders())"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (orders())"); };
-
-        std::vector<order> orderVec;
-        for (auto& i : it->value.GetArray()) { orderVec.emplace_back(i.GetObject()); }
-
-        return orderVec;
-    };
+    std::vector<order> orders();
 
     /**
      * @brief get history of an order
@@ -377,23 +287,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get order history
      */
-    std::vector<order> orderHistory(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("order.info"), "order_id"_a = ordID));
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (orderHistory())");
-        };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (orderHistory())"); };
-
-        std::vector<order> orderVec;
-        for (auto& i : it->value.GetArray()) { orderVec.emplace_back(i.GetObject()); }
-
-        return orderVec;
-    };
+    std::vector<order> orderHistory(const string& orderId);
 
     /**
      * @brief get list of trades
@@ -403,21 +297,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get trades
      */
-    std::vector<trade> trades() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("trades"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (trades())"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (trades())"); };
-
-        std::vector<trade> tradeVec;
-        for (auto& i : it->value.GetArray()) { tradeVec.emplace_back(i.GetObject()); }
-
-        return tradeVec;
-    };
+    std::vector<trade> trades();
 
     /**
      * @brief get the list of trades executed for a particular order.
@@ -429,23 +309,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get order trades
      */
-    std::vector<trade> orderTrades(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("order.trades"), "order_id"_a = ordID));
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (orderTrades())");
-        };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (orderTrades())"); };
-
-        std::vector<trade> tradeVec;
-        for (auto& i : it->value.GetArray()) { tradeVec.emplace_back(i.GetObject()); }
-
-        return tradeVec;
-    };
+    std::vector<trade> orderTrades(const string& orderId);
 
     // gtt:
 
@@ -1260,21 +1124,6 @@ class kite {
     const string _rootURL = "https://api.kite.trade";
     const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
     const std::unordered_map<string, string> _endpoints = {
-        // api
-        { "api.token", "/session/token" },
-        { "api.token.invalidate", "/session/token?api_key={api_key}&access_token={access_token}" },
-
-        // orders
-        { "orders", "/orders" },
-        { "trades", "/trades" },
-
-        { "order.info", "/orders/{order_id}" },
-        { "order.place", "/orders/{variety}" },
-        { "order.modify", "/orders/{variety}/{order_id}" },
-        { "order.cancel", "/orders/{variety}/{order_id}" },
-        { "order.cancel.bo", "/orders/{variety}/{order_id}?parent_order_id={parent_order_id}" },
-        { "order.trades", "/orders/{order_id}/trades" },
-
         // portfolio
         { "portfolio.positions", "/portfolio/positions" },
         { "portfolio.holdings", "/portfolio/holdings" },
@@ -1330,6 +1179,15 @@ class kite {
         { "user.profile", { utils::http::METHOD::GET, "/user/profile" } },
         { "user.margins", { utils::http::METHOD::GET, "/user/margins" } },
         { "user.margins.segment", { utils::http::METHOD::GET, "/user/margins/{0}" } },
+        // order
+        { "order.info", { utils::http::METHOD::GET, "/orders/{0}" } },
+        { "order.place", { utils::http::METHOD::POST, "/orders/{0}" } },
+        { "order.modify", { utils::http::METHOD::PUT, "/orders/{0}/{1}" } },
+        { "order.cancel", { utils::http::METHOD::DEL, "/orders/{0}/{1}" } },
+        { "order.cancel.bo", { utils::http::METHOD::DEL, "/orders/{0}/{1}?parent_order_id={1}" } },
+        { "order.trades", { utils::http::METHOD::GET, "/orders/{0}/trades" } },
+        { "orders", { utils::http::METHOD::GET, "/orders" } },
+        { "trades", { utils::http::METHOD::GET, "/trades" } },
     };
 
     httplib::Client _httpClient;
