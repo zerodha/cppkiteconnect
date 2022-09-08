@@ -25,6 +25,8 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <vector>
@@ -90,13 +92,15 @@ using CustomParser =
     std::conditional_t<std::is_same_v<Data, JsonObject>, const CustomObjectParser<Res>&, const CustomArrayParser<Res>&>;
 
 inline JsonObject extractObject(rj::Document& doc) {
-    if (!doc.IsObject()) { throw libException("invalid object"); };
-    return doc["data"].GetObject();
+    try {
+        return doc["data"].GetObject();
+    } catch (const std::exception& ex) { throw libException("invalid body"); }
 }
 
 inline JsonArray extractArray(rj::Document& doc) {
-    if (!doc.IsArray()) { throw libException("invalid array"); };
-    return doc["data"].GetArray();
+    try {
+        return doc["data"].GetArray();
+    } catch (const std::exception& ex) { throw libException("invalid body"); }
 }
 
 template <class Res, class Data, bool UseCustomParser>
@@ -149,7 +153,7 @@ struct endpoint {
         return lhs.method == this->method && lhs.Path.Path == this->Path.Path && lhs.contentType == this->contentType;
     }
 
-    METHOD method = METHOD::GET; /// http method
+    METHOD method = METHOD::GET;
     struct path {
 
         string operator()(const FmtArgs& fmtArgs = {}) const {
@@ -162,8 +166,8 @@ struct endpoint {
         };
 
         string Path;
-    } Path;                                            /// represents an endpoint path
-    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON; /// content type expected
+    } Path;
+    CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON;
 };
 
 class response {
@@ -266,4 +270,24 @@ struct request {
     string serializedBody;
 };
 } // namespace http
+
+template <typename>
+struct isOptional : std::false_type {};
+template <typename T>
+struct isOptional<std::optional<T>> : std::true_type {};
+
+template <class Param>
+void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
+    static_assert(isOptional<std::decay_t<Param>>::value, "Param must be std::optional");
+    if (param.has_value()) {
+        string fieldValue;
+        if constexpr (!std::is_same_v<typename Param::value_type, string>) {
+            fieldValue = std::to_string(param.value());
+        } else {
+            fieldValue = param.value();
+        }
+        if (param.has_value()) { bodyParams.emplace(fieldName, fieldValue); }
+    }
+};
+
 } // namespace kiteconnect::internal::utils
