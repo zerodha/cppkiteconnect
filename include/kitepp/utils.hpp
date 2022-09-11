@@ -34,7 +34,9 @@
 #include "config.hpp"
 #include "cpp-httplib/httplib.h"
 #include "kiteppexceptions.hpp"
+#include "rapidjson/document.h"
 #include "rapidjson/encodings.h"
+#include "rapidjson/rapidjson.h"
 #include "rjutils.hpp"
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
@@ -90,6 +92,8 @@ using CustomArrayParser = std::function<Res(JsonArray&)>;
 template <class Res, class Data, bool UseCustomParser>
 using CustomParser =
     std::conditional_t<std::is_same_v<Data, JsonObject>, const CustomObjectParser<Res>&, const CustomArrayParser<Res>&>;
+template <class T>
+using JsonEncoder = std::function<void(const T&, rj::Value&)>;
 
 inline JsonObject extractObject(rj::Document& doc) {
     try {
@@ -123,6 +127,74 @@ Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customPars
         }
     }
 }
+
+template <class T>
+class json {
+  public:
+    json() {
+        if constexpr (std::is_same_v<T, JsonObject>) {
+            dom.SetObject();
+        } else {
+            dom.StartArray();
+        }
+    };
+
+    template <class Value>
+    void field(const string& name, const Value& value, rj::Value* docOverride = nullptr) {
+        auto& allocater = dom.GetAllocator();
+
+        if constexpr (std::is_same_v<std::decay_t<Value>, string>) {
+            buffer.SetString(value.c_str(), value.size(), allocater);
+        } else if constexpr (std::is_integral_v<std::decay_t<Value>>) {
+            buffer.SetInt64(value);
+        } else if constexpr (std::is_floating_point_v<std::decay_t<Value>>) {
+            buffer.SetDouble(value);
+        };
+
+        if (docOverride == nullptr) {
+            dom.AddMember(rj::Value(name.c_str(), allocater).Move(), buffer, allocater);
+        } else {
+            docOverride->AddMember(rj::Value(name.c_str(), allocater).Move(), buffer, allocater);
+        }
+    }
+
+    template <class Value>
+    void field(const string& name, const std::vector<Value>& values, const JsonEncoder<Value>& encode = {}) {
+        auto& allocater = dom.GetAllocator();
+        rj::Value arrayBuffer(rj::kArrayType);
+        for (const auto& i : values) {
+            if constexpr (std::is_fundamental_v<std::decay_t<Value>>) {
+                arrayBuffer.PushBack(i, allocater);
+            } else {
+                rj::Value objectBuffer(rj::kObjectType);
+                encode(i, objectBuffer);
+                arrayBuffer.PushBack(objectBuffer, allocater);
+            }
+        };
+
+        if constexpr (std::is_same_v<T, JsonObject>) {
+            dom.AddMember(rj::Value(name.c_str(), dom.GetAllocator()).Move(), arrayBuffer, allocater);
+        } else {
+            dom.Swap(arrayBuffer);
+        }
+    }
+
+    template <class Value>
+    void array(const std::vector<Value>& values, const JsonEncoder<Value>& encode = {}) {
+        field("", values, encode);
+    }
+
+    string serialize() {
+        rj::StringBuffer strBuffer;
+        rj::Writer<rj::StringBuffer> writer(strBuffer);
+        dom.Accept(writer);
+        return strBuffer.GetString();
+    }
+
+  private:
+    rj::Document dom;
+    rj::Value buffer;
+};
 } // namespace json
 
 namespace http {
