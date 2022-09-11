@@ -328,68 +328,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp placing a gtt
      */
-    int placeGtt(const placeGttParams& params) {
-        // make condition json
-        rj::Document condition;
-        condition.SetObject();
-        auto& condnAlloc = condition.GetAllocator();
-
-        rj::Value val; // used for making string values
-        rj::Value trigValArr(rj::kArrayType);
-
-        val.SetString(params.exchange.c_str(), params.exchange.size(), condnAlloc);
-        condition.AddMember("exchange", val, condnAlloc);
-
-        val.SetString(params.symbol.c_str(), params.symbol.size(), condnAlloc);
-        condition.AddMember("tradingsymbol", val, condnAlloc);
-
-        for (const double& i : params.triggerValues) { trigValArr.PushBack(i, condnAlloc); };
-        condition.AddMember("trigger_values", trigValArr, condnAlloc);
-
-        condition.AddMember("last_price", params.lastPrice, condnAlloc);
-
-        // make orders json
-        rj::Document reqParams;
-        reqParams.SetArray();
-        auto& paramsAlloc = reqParams.GetAllocator();
-
-        for (const gttParams& param : params.gttParamsList) {
-            rj::Value strVal;
-            rj::Value tmpVal(rj::kObjectType);
-
-            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), paramsAlloc);
-            tmpVal.AddMember("transaction_type", strVal, paramsAlloc);
-
-            tmpVal.AddMember("quantity", param.quantity, paramsAlloc);
-
-            strVal.SetString(param.orderType.c_str(), param.orderType.size(), paramsAlloc);
-            tmpVal.AddMember("order_type", strVal, paramsAlloc);
-
-            strVal.SetString(param.product.c_str(), param.product.size(), paramsAlloc);
-            tmpVal.AddMember("product", strVal, paramsAlloc);
-
-            tmpVal.AddMember("price", param.price, paramsAlloc);
-
-            strVal.SetString(params.exchange.c_str(), params.exchange.size(), paramsAlloc);
-            tmpVal.AddMember("exchange", strVal, paramsAlloc);
-
-            strVal.SetString(params.symbol.c_str(), params.symbol.size(), paramsAlloc);
-            tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
-
-            reqParams.PushBack(tmpVal, paramsAlloc);
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("gtt.place"),
-            { { "type", params.triggerType }, { "condition", rju::_dump(condition) },
-                { "orders", rju::_dump(reqParams) } });
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeGTT)"); };
-
-        int rcvdTrigID = DEFAULTINT;
-        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
-
-        return rcvdTrigID;
-    };
+    int placeGtt(const placeGttParams& params);
 
     /**
      * @brief get list of GTTs
@@ -399,21 +338,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get gtts
      */
-    std::vector<GTT> getGtts() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("gtt"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTTs)"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (getGTTs())"); };
-
-        std::vector<GTT> gttVec;
-        for (auto& i : it->value.GetArray()) { gttVec.emplace_back(i.GetObject()); }
-
-        return gttVec;
-    };
+    std::vector<GTT> triggers();
 
     /**
      * @brief get details of a GTT
@@ -424,14 +349,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get gtt info
      */
-    GTT getGtt(int trigID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTT)"); };
-
-        return GTT(res["data"].GetObject());
-    };
+    GTT getGtt(int triggerId);
 
     /**
      * @brief
@@ -449,67 +367,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modifying a gtt
      */
-    int modifyGtt(const kc::modifyGttParams& params) {
-        // make condition json
-        rj::Document condition;
-        condition.SetObject();
-        auto& condnAlloc = condition.GetAllocator();
-        rj::Value val;
-        rj::Value trigValArr(rj::kArrayType);
-
-        val.SetString(params.exchange.c_str(), params.exchange.size(), condnAlloc);
-        condition.AddMember("exchange", val, condnAlloc);
-
-        val.SetString(params.symbol.c_str(), params.symbol.size(), condnAlloc);
-        condition.AddMember("tradingsymbol", val, condnAlloc);
-
-        for (const double& i : params.triggerValues) { trigValArr.PushBack(i, condnAlloc); };
-        condition.AddMember("trigger_values", trigValArr, condnAlloc);
-
-        condition.AddMember("last_price", params.lastPrice, condnAlloc);
-
-        // make orders json
-        rj::Document reqParams;
-        reqParams.SetArray();
-        auto& paramsAlloc = reqParams.GetAllocator();
-
-        for (const gttParams& param : params.gttParamsList) {
-            rj::Value strVal;
-            rj::Value tmpVal(rj::kObjectType);
-
-            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), paramsAlloc);
-            tmpVal.AddMember("transaction_type", strVal, paramsAlloc);
-
-            tmpVal.AddMember("quantity", param.quantity, paramsAlloc);
-
-            strVal.SetString(param.orderType.c_str(), param.orderType.size(), paramsAlloc);
-            tmpVal.AddMember("order_type", strVal, paramsAlloc);
-
-            strVal.SetString(param.product.c_str(), param.product.size(), paramsAlloc);
-            tmpVal.AddMember("product", strVal, paramsAlloc);
-
-            tmpVal.AddMember("price", param.price, paramsAlloc);
-
-            strVal.SetString(params.exchange.c_str(), params.exchange.size(), paramsAlloc);
-            tmpVal.AddMember("exchange", strVal, paramsAlloc);
-
-            strVal.SetString(params.symbol.c_str(), params.symbol.size(), paramsAlloc);
-            tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
-
-            reqParams.PushBack(tmpVal, paramsAlloc);
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = params.triggerId),
-            { { "type", params.triggerType }, { "condition", rju::_dump(condition) },
-                { "orders", rju::_dump(reqParams) } });
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyGTT)"); };
-
-        int rcvdTrigID = DEFAULTINT;
-        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
-
-        return rcvdTrigID;
-    };
+    int modifyGtt(const kc::modifyGttParams& params);
 
     /**
      * @brief delete a GTT order.
@@ -521,17 +379,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp delete a gtt
      */
-    int deleteGtt(int trigID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (deleteGTT)"); };
-
-        int rcvdTrigID = DEFAULTINT;
-        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
-
-        return rcvdTrigID;
-    };
+    int deleteGtt(int triggerId);
 
     // portfolio:
 
@@ -1188,6 +1036,12 @@ class kite {
         { "order.trades", { utils::http::METHOD::GET, "/orders/{0}/trades" } },
         { "orders", { utils::http::METHOD::GET, "/orders" } },
         { "trades", { utils::http::METHOD::GET, "/trades" } },
+        // gtt
+        { "gtt", { utils::http::METHOD::GET, "/gtt/triggers" } },
+        { "gtt.place", { utils::http::METHOD::POST, "/gtt/triggers" } },
+        { "gtt.info", { utils::http::METHOD::GET, "/gtt/triggers/{0}" } },
+        { "gtt.modify", { utils::http::METHOD::PUT, "/gtt/triggers/{0}" } },
+        { "gtt.delete", { utils::http::METHOD::DEL, "/gtt/triggers/{0}" } },
     };
 
     httplib::Client _httpClient;

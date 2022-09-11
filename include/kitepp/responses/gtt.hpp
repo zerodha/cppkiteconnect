@@ -18,7 +18,7 @@ namespace kc = kiteconnect;
 /// represents parameters of a single gtt
 struct gttParams {
     GENERATE_FLUENT_METHOD(gttParams, int, quantity, Quantity);
-    GENERATE_FLUENT_METHOD(gttParams, int, price, Price);
+    GENERATE_FLUENT_METHOD(gttParams, double, price, Price);
     GENERATE_FLUENT_METHOD(gttParams, const string&, transactionType, TransactionType);
     GENERATE_FLUENT_METHOD(gttParams, const string&, orderType, OrderType);
     GENERATE_FLUENT_METHOD(gttParams, const string&, product, Product);
