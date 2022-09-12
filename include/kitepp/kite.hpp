@@ -391,21 +391,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get holdings
      */
-    std::vector<holding> holdings() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("portfolio.holdings"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (holdings)"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (holdinga)"); };
-
-        std::vector<holding> holdingsVec;
-        for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
-
-        return holdingsVec;
-    };
+    std::vector<holding> holdings();
 
     /**
      * @brief get positions
@@ -415,14 +401,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get positions
      */
-    positions getPositions() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("portfolio.positions"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getPositions)"); };
-
-        return positions(res["data"].GetObject());
-    };
+    positions getPositions();
 
     /**
      * @brief Modify an open position's product type.
@@ -440,32 +419,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp convert position
      */
-    bool convertPosition(const convertPositionParams& params) {
-
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", params.exchange },
-            { "tradingsymbol", params.symbol },
-            { "transaction_type", params.transactionType },
-            { "position_type", params.positionType },
-            { "quantity", std::to_string(params.quantity) },
-            { "old_product", params.oldProduct },
-            { "new_product", params.newProduct },
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (convertPosition)");
-        };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsBool()) {
-            throw libException("data type wasn't the one expected. Expected bool (convertPosition)");
-        };
-
-        return it->value.GetBool();
-    };
+    bool convertPosition(const convertPositionParams& params);
 
     // quotes and instruments:
 
@@ -836,26 +790,7 @@ class kite {
     const string _rootURL = "https://api.kite.trade";
     const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
     const std::unordered_map<string, string> _endpoints = {
-        // portfolio
-        { "portfolio.positions", "/portfolio/positions" },
-        { "portfolio.holdings", "/portfolio/holdings" },
-        { "portfolio.positions.convert", "/portfolio/positions" },
-
-        // MF api endpoints
-        { "mf.orders", "/mf/orders" },
-        { "mf.order.info", "/mf/orders/{order_id}" },
-        { "mf.order.place", "/mf/orders" },
-        { "mf.order.cancel", "/mf/orders/{order_id}" },
-
-        { "mf.sips", "/mf/sips" },
-        { "mf.sip.info", "/mf/sips/{sip_id}" },
-        { "mf.sip.place", "/mf/sips" },
-        { "mf.sip.modify", "/mf/sips/{sip_id}" },
-        { "mf.sip.cancel", "/mf/sips/{sip_id}" },
-
-        { "mf.holdings", "/mf/holdings" },
         { "mf.instruments", "/mf/instruments" },
-
         // market endpoints
         { "market.instruments.all", "/instruments" },
         { "market.instruments", "/instruments/{exchange}" },
@@ -863,21 +798,9 @@ class kite {
         { "market.historical", "/instruments/historical/{instrument_token}/"
                                "{interval}?from={from}&to={to}&continuous={continuous}&oi={oi}" },
         { "market.trigger_range", "/instruments/trigger_range/{transaction_type}" },
-
-        // x{"market.quote", "/quote"},
-        // x{"market.quote.ohlc", "/quote/ohlc"},
-        // x{"market.quote.ltp", "/quote/ltp"},
-
         { "market.quote", "/quote?{symbols_list}" },
         { "market.quote.ohlc", "/quote/ohlc?{symbols_list}" },
         { "market.quote.ltp", "/quote/ltp?{symbols_list}" },
-
-        // GTT endpoints
-        { "gtt", "/gtt/triggers" },
-        { "gtt.place", "/gtt/triggers" },
-        { "gtt.info", "/gtt/triggers/{trigger_id}" },
-        { "gtt.modify", "/gtt/triggers/{trigger_id}" },
-        { "gtt.delete", "/gtt/triggers/{trigger_id}" },
 
         // Margin computation endpoints
         { "order.margins", "/margins/orders" },
@@ -918,6 +841,10 @@ class kite {
         { "mf.sip.place", { utils::http::METHOD::POST, "/mf/sips" } },
         { "mf.sip.modify", { utils::http::METHOD::PUT, "/mf/sips/{0}" } },
         { "mf.sip.cancel", { utils::http::METHOD::DEL, "/mf/sips/{0}" } },
+        // portfolio
+        { "portfolio.holdings", { utils::http::METHOD::GET, "/portfolio/holdings" } },
+        { "portfolio.positions", { utils::http::METHOD::GET, "/portfolio/positions" } },
+        { "portfolio.positions.convert", { utils::http::METHOD::PUT, "/portfolio/positions" } },
     };
 
     httplib::Client _httpClient;

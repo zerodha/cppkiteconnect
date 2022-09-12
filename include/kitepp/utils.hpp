@@ -107,6 +107,12 @@ inline JsonArray extractArray(rj::Document& doc) {
     } catch (const std::exception& ex) { throw libException("invalid body"); }
 }
 
+inline bool extractBool(rj::Document& doc) {
+    try {
+        return doc["data"].GetBool();
+    } catch (const std::exception& ex) { throw libException("invalid body"); }
+}
+
 template <class Res, class Data, bool UseCustomParser>
 Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customParser) {
     if constexpr (std::is_same_v<Data, JsonObject>) {
@@ -125,6 +131,9 @@ Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customPars
             static_assert(std::is_constructible_v<Res, JsonArray>, "Res should be constructable using JsonArray");
             return Res(array);
         }
+    } else if constexpr (std::is_same_v<Data, bool>) {
+        static_assert(std::is_same_v<Res, bool>, "Res needs to be bool if Data is bool");
+        return extractBool(doc);
     }
 }
 

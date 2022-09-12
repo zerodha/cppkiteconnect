@@ -539,7 +539,7 @@ TEST(kiteTest, getGTTsTest) {
         .Times(1)
         .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::vector<kc::GTT> Triggers = Kite.triggers();
+    const std::vector<kc::GTT> Triggers = Kite.triggers();
 
     ASSERT_EQ(Triggers.size(), 2);
     kc::GTT order1 = Triggers[0];
@@ -680,24 +680,17 @@ TEST(kiteTest, deleteGTTTest) {
 // Market tests
 
 TEST(kiteTest, holdingsTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/holdings.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/holdings" },
+                          utils::http::Params {}, utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/holdings.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::vector<kc::holding> HOLDINGS = Kite.holdings();
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::holding> Holdings = Kite.holdings();
-
-    // Expected values
-    ASSERT_EQ(Holdings.size(), 19);
-
-    kc::holding holding1 = Holdings[0];
+    ASSERT_EQ(HOLDINGS.size(), 19);
+    kc::holding holding1 = HOLDINGS[0];
     EXPECT_EQ(holding1.tradingsymbol, "AXTEL");
     EXPECT_EQ(holding1.exchange, "BSE");
     EXPECT_EQ(holding1.instrumentToken, 134105604);
@@ -718,25 +711,18 @@ TEST(kiteTest, holdingsTest) {
 }
 
 TEST(kiteTest, getPositionsTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/positions.json");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/positions" },
+                          utils::http::Params {}, utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/positions.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const kc::positions POSITIONS = Kite.getPositions();
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    kc::positions Positions = Kite.getPositions();
-
-    // Expected values
-    ASSERT_EQ(Positions.net.size(), 3);
-    ASSERT_EQ(Positions.day.size(), 3);
-
-    kc::position netPosition1 = Positions.net[0];
+    ASSERT_EQ(POSITIONS.net.size(), 3);
+    ASSERT_EQ(POSITIONS.day.size(), 3);
+    kc::position netPosition1 = POSITIONS.net[0];
     EXPECT_EQ(netPosition1.tradingsymbol, "LEADMINI17DECFUT");
     EXPECT_EQ(netPosition1.exchange, "MCX");
     EXPECT_EQ(netPosition1.instrumentToken, 53496327);
@@ -767,7 +753,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(netPosition1.daySellPrice, 0);
     EXPECT_DOUBLE_EQ(netPosition1.daySellValue, 0);
 
-    kc::position netPosition2 = Positions.net[1];
+    kc::position netPosition2 = POSITIONS.net[1];
     EXPECT_EQ(netPosition2.tradingsymbol, "GOLDGUINEA17DECFUT");
     EXPECT_EQ(netPosition2.exchange, "MCX");
     EXPECT_EQ(netPosition2.instrumentToken, 53505799);
@@ -798,7 +784,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(netPosition2.daySellPrice, 23340);
     EXPECT_DOUBLE_EQ(netPosition2.daySellValue, 93360);
 
-    kc::position netPosition3 = Positions.net[2];
+    kc::position netPosition3 = POSITIONS.net[2];
     EXPECT_EQ(netPosition3.tradingsymbol, "SBIN");
     EXPECT_EQ(netPosition3.exchange, "NSE");
     EXPECT_EQ(netPosition3.instrumentToken, 779521);
@@ -829,7 +815,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(netPosition3.daySellPrice, 309);
     EXPECT_DOUBLE_EQ(netPosition3.daySellValue, 309);
 
-    kc::position dayPosition1 = Positions.day[0];
+    kc::position dayPosition1 = POSITIONS.day[0];
     EXPECT_EQ(dayPosition1.tradingsymbol, "GOLDGUINEA17DECFUT");
     EXPECT_EQ(dayPosition1.exchange, "MCX");
     EXPECT_EQ(dayPosition1.instrumentToken, 53505799);
@@ -860,7 +846,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(dayPosition1.daySellPrice, 23340);
     EXPECT_DOUBLE_EQ(dayPosition1.daySellValue, 93360);
 
-    kc::position dayPosition2 = Positions.day[1];
+    kc::position dayPosition2 = POSITIONS.day[1];
     EXPECT_EQ(dayPosition2.tradingsymbol, "LEADMINI17DECFUT");
     EXPECT_EQ(dayPosition2.exchange, "MCX");
     EXPECT_EQ(dayPosition2.instrumentToken, 53496327);
@@ -891,7 +877,7 @@ TEST(kiteTest, getPositionsTest) {
     EXPECT_DOUBLE_EQ(dayPosition2.daySellPrice, 0);
     EXPECT_DOUBLE_EQ(dayPosition2.daySellValue, 0);
 
-    kc::position dayPosition3 = Positions.day[2];
+    kc::position dayPosition3 = POSITIONS.day[2];
     EXPECT_EQ(dayPosition3.tradingsymbol, "SBIN");
     EXPECT_EQ(dayPosition3.exchange, "NSE");
     EXPECT_EQ(dayPosition3.instrumentToken, 779521);
@@ -924,29 +910,40 @@ TEST(kiteTest, getPositionsTest) {
 }
 
 TEST(kiteTest, convertPositionTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_custom/convert_position.json");
+    constexpr int QUNATITY = 11;
+    const string EXCHANGE = "BSE";
+    const string SYMBOL = "INFY";
+    const string TRANSACTION_TYPE = "SELL";
+    const string POSITION_TYPE = "overnight";
+    const string OLD_PRODUCT = "NRML";
+    const string NEW_PRODUCT = "MIS";
+    constexpr bool EXPECTED_RESULT = true;
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/portfolio/positions" },
+                          utils::http::Params {
+                              { "quantity", std::to_string(QUNATITY) },
+                              { "tradingsymbol", SYMBOL },
+                              { "transaction_type", TRANSACTION_TYPE },
+                              { "position_type", POSITION_TYPE },
+                              { "exchange", EXCHANGE },
+                              { "old_product", OLD_PRODUCT },
+                              { "new_product", NEW_PRODUCT },
+                          },
+                          utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_custom/convert_position.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const bool RESULT = Kite.convertPosition(kc::convertPositionParams()
+                                                 .Quantity(QUNATITY)
+                                                 .Exchange(EXCHANGE)
+                                                 .Symbol(SYMBOL)
+                                                 .TransactionType(TRANSACTION_TYPE)
+                                                 .PositionType(POSITION_TYPE)
+                                                 .OldProduct(OLD_PRODUCT)
+                                                 .NewProduct(NEW_PRODUCT));
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::PUT, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    bool result = Kite.convertPosition(kc::convertPositionParams()
-                                           .Quantity(11)
-                                           .Exchange("BSE")
-                                           .Symbol("INFY")
-                                           .TransactionType("SELL")
-                                           .PositionType("overnight")
-                                           .OldProduct("NRML")
-                                           .NewProduct("MIS"));
-
-    // Expected values
-    EXPECT_EQ(result, true);
+    EXPECT_EQ(RESULT, EXPECTED_RESULT);
 }
 
 TEST(kiteTest, getQuoteTest) {
