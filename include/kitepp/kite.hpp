@@ -622,24 +622,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf order
      */
-    string placeMfOrder(const placeMfOrderParams& params) {
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", params.symbol },
-            { "transaction_type", params.transactionType },
-        };
-
-        if (isValidArg(params.quantity)) { bodyParams.emplace_back("quantity", std::to_string(params.quantity)); }
-        if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
-        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); }
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("mf.order.place"), bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-        return rcvdOrdID;
-    };
+    string placeMfOrder(const placeMfOrderParams& params);
 
     /**
      * @brief cancel a mutual fund order
@@ -651,19 +634,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancel a mf order
      */
-    string cancelMfOrder(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (cancelMFOrder)");
-        };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
+    string cancelMfOrder(const string& orderId);
 
     /**
      * @brief get all mutual fund orders
@@ -673,20 +644,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf orders
      */
-    std::vector<mfOrder> getMfOrders() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("mf.orders"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFOrders)"); };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
-
-        std::vector<mfOrder> ordersVec;
-        for (auto& i : it->value.GetArray()) { ordersVec.emplace_back(i.GetObject()); }
-
-        return ordersVec;
-    };
+    std::vector<mfOrder> getMfOrders();
 
     /**
      * @brief get details of a mutual fund order
@@ -698,16 +656,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf order info
      */
-    mfOrder getMfOrder(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (cancelMFOrder)");
-        };
-
-        return mfOrder(res["data"].GetObject());
-    };
+    mfOrder getMfOrder(const string& orderId);
 
     /**
      * @brief get mutual fund holdings
@@ -717,22 +666,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf holdings
      */
-    std::vector<mfHolding> getMfHoldings() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("mf.holdings"));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getMFHoldings)");
-        };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
-
-        std::vector<mfHolding> holdingsVec;
-        for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
-
-        return holdingsVec;
-    };
+    std::vector<mfHolding> getMfHoldings();
 
     // SIP:
 
@@ -753,32 +687,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp place mf sip order
      */
-    std::pair<string, string> placeMfSip(const placeMfSipParams& params) {
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", params.symbol },
-            { "amount", std::to_string(params.amount) },
-            { "instalments", std::to_string(params.installments) },
-            { "frequency", params.frequency },
-        };
-
-        if (isValidArg(params.initialAmount)) {
-            bodyParams.emplace_back("initial_amount", std::to_string(params.initialAmount));
-        };
-        if (isValidArg(params.installmentDay)) {
-            bodyParams.emplace_back("instalment_day", std::to_string(params.installmentDay));
-        };
-        if (isValidArg(params.tag)) { bodyParams.emplace_back("tag", params.tag); };
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
-
-        string rcvdOrdID, rcvdSipID;
-        auto it = res.FindMember("data");
-        rju::_getIfExists(it->value.GetObject(), rcvdOrdID, "order_id");
-        rju::_getIfExists(it->value.GetObject(), rcvdSipID, "sip_id");
-        return { rcvdOrdID, rcvdSipID };
-    };
+    placeMfSipResponse placeMfSip(const placeMfSipParams& params);
 
     /**
      * @brief modify a MF SIP order
@@ -795,22 +704,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp modify mf sip order
      */
-    void modifyMfSip(const modifyMfSipParams& params) {
-        std::vector<std::pair<string, string>> bodyParams = {};
-
-        if (isValidArg(params.amount)) { bodyParams.emplace_back("amount", std::to_string(params.amount)); }
-        if (isValidArg(params.status)) { bodyParams.emplace_back("status", params.status); }
-        if (isValidArg(params.installments)) {
-            bodyParams.emplace_back("instalments", std::to_string(params.installments));
-        }
-        if (isValidArg(params.frequency)) { bodyParams.emplace_back("frequency", params.frequency); }
-        if (isValidArg(params.installmentDay)) {
-            bodyParams.emplace_back("instalment_day", std::to_string(params.installmentDay));
-        }
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = params.sipId), bodyParams);
-    };
+    string modifyMfSip(const modifyMfSipParams& params);
 
     /**
      * @brief cancel a MF SIP
@@ -822,17 +716,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancel mf sip
      */
-    string cancelMfSip(const string& SIPID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
-
-        string rcvdSipID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
-
-        return rcvdSipID;
-    };
+    string cancelMfSip(const string& sipId);
 
     /**
      * @brief get list of SIPs
@@ -842,20 +726,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sips
      */
-    std::vector<mfSip> getSips() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("mf.sips"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIPs)"); };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getSIPs)"); };
-
-        std::vector<mfSip> sipVec;
-        for (auto& i : it->value.GetArray()) { sipVec.emplace_back(i.GetObject()); }
-
-        return sipVec;
-    };
+    std::vector<mfSip> getSips();
 
     /**
      * @brief get details of a SIP
@@ -867,14 +738,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get sip info
      */
-    mfSip getSip(const string& SIPID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIP)"); };
-
-        return mfSip(res["data"].GetObject());
-    };
+    mfSip getSip(const string& sipId);
 
     /**
      * @brief Get list of mutual fund instruments
@@ -1042,6 +906,18 @@ class kite {
         { "gtt.info", { utils::http::METHOD::GET, "/gtt/triggers/{0}" } },
         { "gtt.modify", { utils::http::METHOD::PUT, "/gtt/triggers/{0}" } },
         { "gtt.delete", { utils::http::METHOD::DEL, "/gtt/triggers/{0}" } },
+        // mf
+        { "mf.orders", { utils::http::METHOD::GET, "/mf/orders" } },
+        { "mf.order.info", { utils::http::METHOD::GET, "/mf/orders/{0}" } },
+        { "mf.order.place", { utils::http::METHOD::POST, "/mf/orders" } },
+        { "mf.order.cancel", { utils::http::METHOD::DEL, "/mf/orders/{0}" } },
+        { "mf.holdings", { utils::http::METHOD::GET, "/mf/holdings" } },
+        { "mf.instruments", { utils::http::METHOD::GET, "/mf/instruments" } },
+        { "mf.sips", { utils::http::METHOD::GET, "/mf/sips" } },
+        { "mf.sip.info", { utils::http::METHOD::GET, "/mf/sips/{0}" } },
+        { "mf.sip.place", { utils::http::METHOD::POST, "/mf/sips" } },
+        { "mf.sip.modify", { utils::http::METHOD::PUT, "/mf/sips/{0}" } },
+        { "mf.sip.cancel", { utils::http::METHOD::DEL, "/mf/sips/{0}" } },
     };
 
     httplib::Client _httpClient;

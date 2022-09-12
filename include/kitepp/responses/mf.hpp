@@ -22,11 +22,11 @@ struct placeMfOrderParams {
     GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, transactionType, TransactionType);
     GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, tag, Tag);
 
-    int quantity = kc::DEFAULTINT;
-    double amount = kc::DEFAULTDOUBLE;
+    std::optional<int> quantity;
+    std::optional<double> amount;
     string symbol;
     string transactionType;
-    string tag;
+    std::optional<string> tag;
 };
 
 /// represents parameters required for the `placeMfSip` function
@@ -39,13 +39,27 @@ struct placeMfSipParams {
     GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, frequency, Frequency);
     GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, tag, Tag);
 
-    int installments = kc::DEFAULTINT;
-    int installmentDay = kc::DEFAULTINT;
-    double amount = kc::DEFAULTDOUBLE;
-    double initialAmount = kc::DEFAULTDOUBLE;
+    int installments;
+    std::optional<int> installmentDay;
+    double amount;
+    std::optional<double> initialAmount;
     string symbol;
     string frequency;
-    string tag;
+    std::optional<string> tag;
+};
+
+/// represents response returned by the `placeMfSip` method
+struct placeMfSipResponse {
+    placeMfSipResponse() = default;
+    explicit placeMfSipResponse(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+        kc::rjutils::_getIfExists(val, orderId, "order_id");
+        kc::rjutils::_getIfExists(val, sipId, "sip_id");
+    };
+
+    string orderId;
+    string sipId;
 };
 
 /// represents parameters required for the `modifyMfSip` function
@@ -57,12 +71,12 @@ struct modifyMfSipParams {
     GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, status, Status);
     GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, frequency, Frequency);
 
-    int installmentDay = kc::DEFAULTINT;
-    int installments = kc::DEFAULTINT;
-    double amount = kc::DEFAULTDOUBLE;
+    std::optional<int> installmentDay;
+    std::optional<int> installments;
+    std::optional<double> amount;
     string sipId;
-    string status;
-    string frequency;
+    std::optional<string> status;
+    std::optional<string> frequency;
 };
 
 /// mfOrder represents an individual mutual fund order response
@@ -92,10 +106,10 @@ struct mfOrder {
         kc::rjutils::_getIfExists(val, tag, "tag");
     };
 
-    double quantity = kc::DEFAULTDOUBLE;
-    double amount = kc::DEFAULTDOUBLE;
-    double lastPrice = kc::DEFAULTDOUBLE;
-    double averagePrice = kc::DEFAULTDOUBLE;
+    double quantity = -1;
+    double amount = -1;
+    double lastPrice = -1;
+    double averagePrice = -1;
     string orderID;
     string exchangeOrderID;
     string tradingsymbol;
@@ -130,10 +144,10 @@ struct mfHolding {
         kc::rjutils::_getIfExists(val, quantity, "quantity");
     };
 
-    double averagePrice = kc::DEFAULTDOUBLE;
-    double lastPrice = kc::DEFAULTDOUBLE;
-    double Pnl = kc::DEFAULTDOUBLE;
-    double quantity = kc::DEFAULTDOUBLE;
+    double averagePrice = -1;
+    double lastPrice = -1;
+    double Pnl = -1;
+    double quantity = -1;
     string folio;
     string fund;
     string tradingsymbol;
@@ -166,12 +180,12 @@ struct mfSip {
         kc::rjutils::_getIfExists(val, tag, "tag");
     };
 
-    int pendingInstalments = kc::DEFAULTINT;
-    int instalmentDay = kc::DEFAULTINT;
-    int completedInstalments = kc::DEFAULTINT;
-    int instalments = kc::DEFAULTINT;
-    double instalmentAmount = kc::DEFAULTDOUBLE;
-    double triggerPrice = kc::DEFAULTDOUBLE;
+    int pendingInstalments = -1;
+    int instalmentDay = -1;
+    int completedInstalments = -1;
+    int instalments = -1;
+    double instalmentAmount = -1;
+    double triggerPrice = -1;
     string ID;
     string tradingsymbol;
     string fundName;
