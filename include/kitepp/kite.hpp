@@ -463,18 +463,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get quote
      */
-    std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols) {
-
-        rj::Document res;
-        _sendReq(
-            res, _methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a = _encodeSymbolsList(symbols)));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getQuote)"); };
-
-        std::unordered_map<string, quote> quoteMap;
-        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
-
-        return quoteMap;
-    };
+    std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols);
 
     /**
      * @brief Retrieve OHLC for list of instruments
@@ -486,18 +475,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ohlc
      */
-    std::unordered_map<string, ohlcQuote> getOhlc(const std::vector<string>& symbols) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET,
-            FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOHLC)"); };
-
-        std::unordered_map<string, ohlcQuote> quoteMap;
-        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
-
-        return quoteMap;
-    };
+    std::unordered_map<string, ohlcQuote> getOhlc(const std::vector<string>& symbols);
 
     /**
      * @brief Retrieve last price for list of instruments
@@ -509,18 +487,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get ltp
      */
-    std::unordered_map<string, ltpQuote> getLtp(const std::vector<string>& symbols) {
-
-        rj::Document res;
-        _sendReq(
-            res, _methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getLTP)"); };
-
-        std::unordered_map<string, ltpQuote> quoteMap;
-        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
-
-        return quoteMap;
-    };
+    std::unordered_map<string, ltpQuote> getLtp(const std::vector<string>& symbols);
 
     // historical:
 
@@ -539,25 +506,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get historical data
      */
-    std::vector<historicalData> getHistoricalData(const historicalDataParams& params) {
-        rj::Document res;
-        _sendReq(res, _methods::GET,
-            FMT(_endpoints.at("market.historical"), "instrument_token"_a = params.instrumentToken,
-                "interval"_a = params.interval, "from"_a = params.from, "to"_a = params.to,
-                "continuous"_a = static_cast<int>(params.continuous), "oi"_a = static_cast<int>(params.oi)));
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getHistoricalData)");
-        };
-
-        auto it = res.FindMember("data")->value.FindMember("candles");
-        if (!it->value.IsArray()) { throw libException("Array was expected (trades())"); };
-
-        std::vector<historicalData> dataVec;
-        for (auto& i : it->value.GetArray()) { dataVec.emplace_back(i.GetArray()); };
-
-        return dataVec;
-    };
+    std::vector<historicalData> getHistoricalData(const historicalDataParams& params);
 
     // MF:
 
@@ -845,6 +794,16 @@ class kite {
         { "portfolio.holdings", { utils::http::METHOD::GET, "/portfolio/holdings" } },
         { "portfolio.positions", { utils::http::METHOD::GET, "/portfolio/positions" } },
         { "portfolio.positions.convert", { utils::http::METHOD::PUT, "/portfolio/positions" } },
+        // market endpoints
+        { "market.instruments.all", { utils::http::METHOD::GET, "/instruments" } },
+        { "market.instruments", { utils::http::METHOD::GET, "/instruments/{0}" } },
+        { "market.margins", { utils::http::METHOD::GET, "/margins/{0}" } },
+        { "market.historical", { utils::http::METHOD::GET, "/instruments/historical/{0}/"
+                                                           "{1}?from={2}&to={3}&continuous={4}&oi={5}" } },
+        { "market.trigger_range", { utils::http::METHOD::GET, "/instruments/trigger_range/{9}" } },
+        { "market.quote", { utils::http::METHOD::GET, "/quote?{0}" } },
+        { "market.quote.ohlc", { utils::http::METHOD::GET, "/quote/ohlc?{0}" } },
+        { "market.quote.ltp", { utils::http::METHOD::GET, "/quote/ltp?{0}" } },
     };
 
     httplib::Client _httpClient;
@@ -855,15 +814,9 @@ class kite {
     string _getAuthStr() const { return FMT("token {0}:{1}", _apiKey, _accessToken); };
 
     static string _encodeSymbolsList(const std::vector<string>& symbols) {
-
         string str;
-
-        for (const auto& symbol : symbols) {
-            //! could cause problems because there will be extra `&` after last query. can be solved by scraping the
-            //! last char of string after the for loop, if necessary
-            str.append(FMT("i={0}&", symbol));
-        };
-
+        for (const auto& symbol : symbols) { str.append(FMT("i={0}&", symbol)); };
+        if (!str.empty()) { str.pop_back(); };
         return str;
     }
 

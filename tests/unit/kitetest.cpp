@@ -677,7 +677,7 @@ TEST(kiteTest, deleteGTTTest) {
     EXPECT_EQ(RECEIVED_TRIGGER_ID, EXPECTED_TRIGGER_ID);
 }
 
-// Market tests
+// portfolio
 
 TEST(kiteTest, holdingsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/holdings.json");
@@ -946,25 +946,20 @@ TEST(kiteTest, convertPositionTest) {
     EXPECT_EQ(RESULT, EXPECTED_RESULT);
 }
 
+// market
+
 TEST(kiteTest, getQuoteTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/quote.json");
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote?{0}" }, utils::http::Params {},
+                          utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/quote.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::unordered_map<string, kc::quote> QUOTES = Kite.getQuote(SYMBOLS);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::unordered_map<string, kc::quote> quotes = Kite.getQuote({});
-
-    // Expected values
-    ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::quote Quote = quotes["NSE:INFY"];
-
+    kc::quote Quote = QUOTES.at("NSE:INFY");
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_EQ(Quote.timestamp, "2021-06-08 15:45:56");
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1412.95);
@@ -1021,24 +1016,17 @@ TEST(kiteTest, getQuoteTest) {
 }
 
 TEST(kiteTest, getOHLCTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/ohlc.json");
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ohlc?{0}" },
+                          utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/ohlc.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::unordered_map<string, kc::ohlcQuote> QUOTES = Kite.getOhlc(SYMBOLS);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::unordered_map<string, kc::ohlcQuote> quotes = Kite.getOhlc({});
-
-    // Expected values
-    ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::ohlcQuote Quote = quotes["NSE:INFY"];
-
+    kc::ohlcQuote Quote = QUOTES.at("NSE:INFY");
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1075);
     EXPECT_DOUBLE_EQ(Quote.OHLC.open, 1085.8);
@@ -1048,53 +1036,41 @@ TEST(kiteTest, getOHLCTest) {
 }
 
 TEST(kiteTest, getLTPTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/ltp.json");
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ltp?{0}" },
+                          utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/ltp.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::unordered_map<string, kc::ltpQuote> QUOTES = Kite.getLtp(SYMBOLS);
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::unordered_map<string, kc::ltpQuote> quotes = Kite.getLtp({});
-
-    // Expected values
-    ASSERT_NE(quotes.find("NSE:INFY"), quotes.end());
-    kc::ltpQuote Quote = quotes["NSE:INFY"];
-
+    kc::ltpQuote Quote = QUOTES.at("NSE:INFY");
     EXPECT_EQ(Quote.instrumentToken, 408065);
     EXPECT_DOUBLE_EQ(Quote.lastPrice, 1074.35);
 }
 
-// Historical data tests
-
 TEST(kiteTest, getHistoricalDataTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/historical_minute.json");
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    constexpr int INSTRUMENT_TOKEN = 5633;
+    const string INTERVAL = "minute";
+    const string FROM = "2017-12-15+09:15:00";
+    const string TO = "2017-12-15+09:20:00";
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                    "/instruments/historical/{0}/{1}?from={2}&to={3}&continuous={4}&oi={5}" },
+            utils::http::Params {}, utils::FmtArgs { std::to_string(INSTRUMENT_TOKEN), INTERVAL, FROM, TO, "0", "0" }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    std::ifstream jsonFile("../../tests/mock_responses/historical_minute.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    const std::vector<kc::historicalData> DATA = Kite.getHistoricalData(
+        kc::historicalDataParams().InstrumentToken(INSTRUMENT_TOKEN).Interval(INTERVAL).From(FROM).To(TO));
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::GET, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::historicalData> data = Kite.getHistoricalData(kc::historicalDataParams()
-                                                                      .InstrumentToken(5633)
-                                                                      .Interval("minute")
-                                                                      .From("2017-12-15+09:15:00")
-                                                                      .To("2017-12-15+09:20:00"));
-
-    // Expected values
-    ASSERT_EQ(data.size(), 3000);
-
-    kc::historicalData data1 = data[0];
+    ASSERT_EQ(DATA.size(), 3000);
+    kc::historicalData data1 = DATA[0];
     EXPECT_EQ(data1.datetime, "2017-12-15T09:15:00+0530");
     EXPECT_DOUBLE_EQ(data1.open, 1704.5);
     EXPECT_DOUBLE_EQ(data1.high, 1705);
@@ -1103,7 +1079,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_EQ(data1.volume, 2499);
     EXPECT_DOUBLE_EQ(data1.OI, 0);
 
-    kc::historicalData data2 = data[1];
+    kc::historicalData data2 = DATA[1];
     EXPECT_EQ(data2.datetime, "2017-12-15T09:16:00+0530");
     EXPECT_DOUBLE_EQ(data2.open, 1702);
     EXPECT_DOUBLE_EQ(data2.high, 1702);
@@ -1112,7 +1088,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_EQ(data2.volume, 1271);
     EXPECT_DOUBLE_EQ(data2.OI, 0);
 
-    kc::historicalData data3 = data[2];
+    kc::historicalData data3 = DATA[2];
     EXPECT_EQ(data3.datetime, "2017-12-15T09:17:00+0530");
     EXPECT_DOUBLE_EQ(data3.open, 1698.15);
     EXPECT_DOUBLE_EQ(data3.high, 1700.25);
@@ -1122,7 +1098,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_DOUBLE_EQ(data3.OI, 0);
 }
 
-// MF tests
+// mf
 
 TEST(kiteTest, placeMFOrderTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_order_response.json");
