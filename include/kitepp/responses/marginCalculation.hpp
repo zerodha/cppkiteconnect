@@ -4,6 +4,7 @@
 
 #include "../config.hpp"
 #include "../rjutils.hpp"
+#include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 
@@ -17,9 +18,19 @@ namespace kc = kiteconnect;
 struct orderMarginsParams {
     orderMarginsParams() = default;
 
-    double quantity = kc::DEFAULTDOUBLE;
-    double price = kc::DEFAULTDOUBLE;
-    double triggerPrice = kc::DEFAULTDOUBLE;
+    GENERATE_FLUENT_METHOD(orderMarginsParams, double, quantity, Quantity);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, double, price, Price);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, double, triggerPrice, TriggerPrice);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, exchange, Exchange);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, tradingsymbol, Tradingsymbol);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, variety, Variety);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, product, Product);
+    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, orderType, OrderType);
+
+    double quantity = 0;
+    double price = 0;
+    double triggerPrice = 0;
     string exchange;
     string tradingsymbol;
     string transactionType;
@@ -52,14 +63,14 @@ struct orderMargins {
         kc::rjutils::_getIfExists(val, total, "total");
     };
 
-    double span = kc::DEFAULTDOUBLE;
-    double exposure = kc::DEFAULTDOUBLE;
-    double optionPremium = kc::DEFAULTDOUBLE;
-    double additional = kc::DEFAULTDOUBLE;
-    double bo = kc::DEFAULTDOUBLE;
-    double cash = kc::DEFAULTDOUBLE;
-    double var = kc::DEFAULTDOUBLE;
-    double total = kc::DEFAULTDOUBLE;
+    double span = -1;
+    double exposure = -1;
+    double optionPremium = -1;
+    double additional = -1;
+    double bo = -1;
+    double cash = -1;
+    double var = -1;
+    double total = -1;
     string type;
     string tradingSymbol;
     string exchange;
@@ -72,8 +83,8 @@ struct orderMargins {
             kc::rjutils::_getIfExists(val, unrealised, "unrealised");
         };
 
-        double realised = kc::DEFAULTDOUBLE;
-        double unrealised = kc::DEFAULTDOUBLE;
+        double realised = -1;
+        double unrealised = -1;
     } pnl;
 };
 

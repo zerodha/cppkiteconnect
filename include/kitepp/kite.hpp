@@ -679,55 +679,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get order margins
      */
-    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params) {
-
-        rj::Document req;
-        req.SetArray();
-        auto& reqAlloc = req.GetAllocator();
-
-        for (const auto& param : params) {
-            rj::Value paramVal(rj::kObjectType);
-            rj::Value strVal; // used for making string values
-
-            strVal.SetString(param.exchange.c_str(), param.exchange.size(), reqAlloc);
-            paramVal.AddMember("exchange", strVal, reqAlloc);
-
-            strVal.SetString(param.tradingsymbol.c_str(), param.tradingsymbol.size(), reqAlloc);
-            paramVal.AddMember("tradingsymbol", strVal, reqAlloc);
-
-            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), reqAlloc);
-            paramVal.AddMember("transaction_type", strVal, reqAlloc);
-
-            strVal.SetString(param.variety.c_str(), param.variety.size(), reqAlloc);
-            paramVal.AddMember("variety", strVal, reqAlloc);
-
-            strVal.SetString(param.product.c_str(), param.product.size(), reqAlloc);
-            paramVal.AddMember("product", strVal, reqAlloc);
-
-            strVal.SetString(param.orderType.c_str(), param.orderType.size(), reqAlloc);
-            paramVal.AddMember("order_type", strVal, reqAlloc);
-
-            paramVal.AddMember("quantity", param.quantity, reqAlloc);
-            paramVal.AddMember("price", param.price, reqAlloc);
-            paramVal.AddMember("trigger_price", param.triggerPrice, reqAlloc);
-
-            req.PushBack(paramVal, reqAlloc);
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("order.margins"), { { "", rju::_dump(req) } }, true);
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getOrderMargis)");
-        };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getOrderMargis)"); };
-
-        std::vector<orderMargins> marginsVec;
-        for (auto& i : it->value.GetArray()) { marginsVec.emplace_back(i.GetObject()); }
-
-        return marginsVec;
-    };
+    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params);
 
   private:
     // member variables:
@@ -772,6 +724,7 @@ class kite {
         { "order.trades", { utils::http::METHOD::GET, "/orders/{0}/trades" } },
         { "orders", { utils::http::METHOD::GET, "/orders" } },
         { "trades", { utils::http::METHOD::GET, "/trades" } },
+        { "order.margins", { utils::http::METHOD::POST, "/margins/orders", utils::http::CONTENT_TYPE::JSON } },
         // gtt
         { "gtt", { utils::http::METHOD::GET, "/gtt/triggers" } },
         { "gtt.place", { utils::http::METHOD::POST, "/gtt/triggers" } },

@@ -1423,27 +1423,40 @@ TEST(kiteTest, getSIPTest) {
     EXPECT_EQ(sip.tag, "coinandroidsip");
 }
 
-// Order margins tests
-
 TEST(kiteTest, getOrderMarginsTest) {
+    const string JSON = kc::test::readFile("../../tests/mock_responses/order_margins.json");
+    constexpr double QUANTITY = 1;
+    constexpr double PRICE = 0;
+    constexpr double TRIGGER_PRICE = 0;
+    const string EXCHANGE = "NSE";
+    const string TRADINGSYMBOL = "INFY";
+    const string TRANSACTION_TYPE = "BUY";
+    const string VARIETY = "regular";
+    const string PRODUCT = "CNC";
+    const string ORDER_TYPE = "MARKET";
 
-    std::ifstream jsonFile("../../tests/mock_responses/order_margins.json");
-    ASSERT_TRUE(jsonFile);
-    rj::IStreamWrapper jsonFWrap(jsonFile);
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/margins/orders", utils::http::CONTENT_TYPE::JSON },
+            utils::http::Params { { "",
+                R"([{"exchange":"NSE","tradingsymbol":"INFY","transaction_type":"BUY","variety":"regular","product":"CNC","order_type":"MARKET","quantity":1.0,"price":0.0,"trigger_price":0.0}])" } },
+            utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    mockKite Kite;
+    const std::vector<kc::orderMargins> MARGINS = Kite.getOrderMargins({ kc::orderMarginsParams()
+                                                                             .Quantity(QUANTITY)
+                                                                             .Price(PRICE)
+                                                                             .TriggerPrice(TRIGGER_PRICE)
+                                                                             .Exchange(EXCHANGE)
+                                                                             .Tradingsymbol(TRADINGSYMBOL)
+                                                                             .TransactionType(TRANSACTION_TYPE)
+                                                                             .Variety(VARIETY)
+                                                                             .Product(PRODUCT)
+                                                                             .OrderType(ORDER_TYPE) });
 
-    EXPECT_CALL(Kite, _sendReq(_, kc::_methods::POST, _, _, _))
-        .WillOnce(testing::Invoke([&jsonFWrap](rj::Document& data, const kc::_methods& mtd, const string& endpoint,
-                                      const std::vector<std::pair<string, string>>& bodyParams = {},
-                                      bool isJson = false) { data.ParseStream(jsonFWrap); }));
-
-    std::vector<kc::orderMargins> ordMargins = Kite.getOrderMargins({});
-
-    // Expected values
-    ASSERT_EQ(ordMargins.size(), 1);
-
-    kc::orderMargins ordMargins1 = ordMargins[0];
+    ASSERT_EQ(MARGINS.size(), 1);
+    kc::orderMargins ordMargins1 = MARGINS[0];
     EXPECT_EQ(ordMargins1.type, "equity");
     EXPECT_EQ(ordMargins1.tradingSymbol, "INFY");
     EXPECT_EQ(ordMargins1.exchange, "NSE");
