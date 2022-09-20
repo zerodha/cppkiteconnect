@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../kite.hpp"
+#include "../rjutils.hpp"
 #include "../utils.hpp"
 
 namespace kiteconnect {
@@ -30,7 +31,7 @@ inline string kite::placeOrder(const placeOrderParams& params) {
     return callApi<string, utils::json::JsonObject, true>(
         "order.place", bodyParams, { params.variety }, [](utils::json::JsonObject& data) {
             string orderId;
-            rju::_getIfExists(data, orderId, "order_id");
+            rjutils::_getIfExists(data, orderId, "order_id");
             return orderId;
         });
 };
@@ -49,7 +50,7 @@ inline string kite::modifyOrder(const modifyOrderParams& params) {
     return callApi<string, utils::json::JsonObject, true>(
         "order.modify", bodyParams, { params.variety, params.orderId }, [](utils::json::JsonObject& data) {
             string orderId;
-            rju::_getIfExists(data, orderId, "order_id");
+            rjutils::_getIfExists(data, orderId, "order_id");
             return orderId;
         });
 };
@@ -66,7 +67,7 @@ inline string kite::cancelOrder(const string& variety, const string& orderId, co
     };
     return callApi<string, utils::json::JsonObject, true>(endpoint, {}, fmtArgs, [](utils::json::JsonObject& data) {
         string orderId;
-        rju::_getIfExists(data, orderId, "order_id");
+        rjutils::_getIfExists(data, orderId, "order_id");
         return orderId;
     });
 };

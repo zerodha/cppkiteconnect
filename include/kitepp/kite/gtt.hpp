@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../kite.hpp"
+#include "../rjutils.hpp"
 #include "../utils.hpp"
 
 namespace kiteconnect {
@@ -45,7 +46,7 @@ inline int kite::placeGtt(const placeGttParams& params) {
 
     return callApi<int, utils::json::JsonObject, true>("gtt.place", reqParams, {}, [](utils::json::JsonObject& data) {
         int triggerId = -1;
-        rju::_getIfExists(data, triggerId, "trigger_id");
+        rjutils::_getIfExists(data, triggerId, "trigger_id");
         return triggerId;
     });
 };
@@ -72,7 +73,7 @@ inline int kite::modifyGtt(const kc::modifyGttParams& params) {
     return callApi<int, utils::json::JsonObject, true>(
         "gtt.modify", reqParams, { std::to_string(params.triggerId) }, [](utils::json::JsonObject& data) {
             int triggerId = -1;
-            rju::_getIfExists(data, triggerId, "trigger_id");
+            rjutils::_getIfExists(data, triggerId, "trigger_id");
             return triggerId;
         });
 };
@@ -81,7 +82,7 @@ inline int kite::deleteGtt(int triggerId) {
     return callApi<int, utils::json::JsonObject, true>(
         "gtt.delete", {}, { std::to_string(triggerId) }, [](utils::json::JsonObject& data) {
             int triggerId = -1;
-            rju::_getIfExists(data, triggerId, "trigger_id");
+            rjutils::_getIfExists(data, triggerId, "trigger_id");
             return triggerId;
         });
 };

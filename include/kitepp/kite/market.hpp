@@ -9,7 +9,7 @@
 namespace kiteconnect {
 inline std::unordered_map<string, quote> kite::getQuote(const std::vector<string>& symbols) {
     return callApi<std::unordered_map<string, quote>, utils::json::JsonObject, true>(
-        "market.quote", {}, { _encodeSymbolsList(symbols) }, [](utils::json::JsonObject& data) {
+        "market.quote", {}, { encodeSymbolsList(symbols) }, [](utils::json::JsonObject& data) {
             std::unordered_map<string, quote> Quotes;
             for (auto& i : data) { Quotes.emplace(i.name.GetString(), i.value.GetObject()); };
             return Quotes;
@@ -18,7 +18,7 @@ inline std::unordered_map<string, quote> kite::getQuote(const std::vector<string
 
 inline std::unordered_map<string, ohlcQuote> kite::getOhlc(const std::vector<string>& symbols) {
     return callApi<std::unordered_map<string, ohlcQuote>, utils::json::JsonObject, true>(
-        "market.quote.ohlc", {}, { _encodeSymbolsList(symbols) }, [](utils::json::JsonObject& data) {
+        "market.quote.ohlc", {}, { encodeSymbolsList(symbols) }, [](utils::json::JsonObject& data) {
             std::unordered_map<string, ohlcQuote> Quotes;
             for (auto& i : data) { Quotes.emplace(i.name.GetString(), i.value.GetObject()); };
             return Quotes;
@@ -27,7 +27,7 @@ inline std::unordered_map<string, ohlcQuote> kite::getOhlc(const std::vector<str
 
 inline std::unordered_map<string, ltpQuote> kite::getLtp(const std::vector<string>& symbols) {
     return callApi<std::unordered_map<string, ltpQuote>, utils::json::JsonObject, true>(
-        "market.quote.ltp", {}, { _encodeSymbolsList(symbols) }, [](utils::json::JsonObject& data) {
+        "market.quote.ltp", {}, { encodeSymbolsList(symbols) }, [](utils::json::JsonObject& data) {
             std::unordered_map<string, ltpQuote> Quotes;
             for (auto& i : data) { Quotes.emplace(i.name.GetString(), i.value.GetObject()); };
             return Quotes;

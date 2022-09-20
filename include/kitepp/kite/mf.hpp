@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../kite.hpp"
+#include "../rjutils.hpp"
 #include "../utils.hpp"
 
 namespace kiteconnect {
@@ -21,7 +22,7 @@ inline string kite::placeMfOrder(const placeMfOrderParams& params) {
     return callApi<string, utils::json::JsonObject, true>(
         "mf.order.place", bodyParams, {}, [](utils::json::JsonObject& data) {
             string orderId;
-            rju::_getIfExists(data, orderId, "order_id");
+            rjutils::_getIfExists(data, orderId, "order_id");
             return orderId;
         });
 };
@@ -30,7 +31,7 @@ inline string kite::cancelMfOrder(const string& orderId) {
     return callApi<string, utils::json::JsonObject, true>(
         "mf.order.cancel", {}, { orderId }, [](utils::json::JsonObject& data) {
             string orderId;
-            rju::_getIfExists(data, orderId, "order_id");
+            rjutils::_getIfExists(data, orderId, "order_id");
             return orderId;
         });
 };
@@ -85,7 +86,7 @@ inline string kite::modifyMfSip(const modifyMfSipParams& params) {
     return callApi<string, utils::json::JsonObject, true>(
         "mf.sip.modify", bodyParams, { params.sipId }, [](utils::json::JsonObject& data) {
             string orderId;
-            rju::_getIfExists(data, orderId, "order_id");
+            rjutils::_getIfExists(data, orderId, "order_id");
             return orderId;
         });
 };
@@ -94,7 +95,7 @@ inline string kite::cancelMfSip(const string& sipId) {
     return callApi<string, utils::json::JsonObject, true>(
         "mf.sip.cancel", {}, { sipId }, [](utils::json::JsonObject& data) {
             string sipId;
-            rju::_getIfExists(data, sipId, "sip_id");
+            rjutils::_getIfExists(data, sipId, "sip_id");
             return sipId;
         });
 };

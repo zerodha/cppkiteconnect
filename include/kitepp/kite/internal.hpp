@@ -8,17 +8,26 @@
 
 namespace kiteconnect {
 
+inline string kite::getAuth() const { return authorization; }
+
+inline string kite::encodeSymbolsList(const std::vector<string>& symbols) {
+    string str;
+    for (const auto& symbol : symbols) { str.append(FMT("i={0}&", symbol)); };
+    if (!str.empty()) { str.pop_back(); };
+    return str;
+}
+
 // GMock requires mock methods to be virtual (hi-perf dep injection is not possible here ಥ﹏ಥ).
 // Macro used to eliminate vptr overhead.
 inline utils::http::response kite::sendReq(
     const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs) {
     if (endpoint.contentType == utils::http::CONTENT_TYPE::JSON) {
-        return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), _getAuthStr(), body,
-            endpoint.contentType, body.begin()->second }
-            .send(_httpClient);
+        return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), getAuth(), body, endpoint.contentType,
+            body.begin()->second }
+            .send(client);
     }
-    return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), _getAuthStr(), body, endpoint.contentType }
-        .send(_httpClient);
+    return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), getAuth(), body, endpoint.contentType }.send(
+        client);
 };
 
 template <class Res, class Data, bool UseCustomParser>

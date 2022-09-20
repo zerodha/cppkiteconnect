@@ -43,52 +43,31 @@
 #include "utils.hpp"
 
 using std::string;
-using ::testing::_;
 using ::testing::ByMove;
 using ::testing::Return;
 using ::testing::StrictMock;
-namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-// Mocks
+TEST(kiteTest, constructorTest) {
+    StrictMock<kc::test::mockKite> Kite;
+    const string API_KEY = "Uz7Mdn29ZGya31a";
 
-class mockKite : public kc::kite {
-
-  public:
-    mockKite(): kite(kc::test::API_KEY) {};
-
-    MOCK_METHOD(void, _sendReq,
-        (rj::Document & data, const kc::_methods& mtd, const string& endpoint,
-            (const std::vector<std::pair<string, string>>) &bodyParams, bool isJson),
-        (override));
-
-    MOCK_METHOD(string, _sendInstrumentsReq, (const string& endpoint), (override));
+    EXPECT_EQ(Kite.getApiKey(), API_KEY);
 };
 
-// Constructor tests
+TEST(kiteTest, loginURLTest) {
+    StrictMock<kc::test::mockKite> Kite;
+    const string LOGIN_URL = "https://kite.zerodha.com/connect/login?v=3&api_key=Uz7Mdn29ZGya31a";
 
-TEST(kiteTest, constructorTest) {
-
-    mockKite Kite;
-    const string APIKey_expected = "Uz7Mdn29ZGya31a";
-
-    EXPECT_EQ(Kite.getAPIKey(), APIKey_expected);
+    EXPECT_EQ(Kite.loginURL(), LOGIN_URL);
 };
 
 // user
 
-TEST(kiteTest, loginURLTest) {
-    mockKite Kite;
-    const string LOGIN_URL_EXPECTED = "https://kite.zerodha.com/connect/login?v=3&api_key=Uz7Mdn29ZGya31a";
-    const string LOGIN_URL = Kite.loginURL();
-
-    EXPECT_EQ(LOGIN_URL, LOGIN_URL_EXPECTED);
-};
-
 TEST(kiteTest, generateSessionTest) {
     const string JSON = kc::test::readFile("../../tests/mock_custom/generate_session.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/session/token" },
                           utils::http::Params {
                               { "api_key", "Uz7Mdn29ZGya31a" },
@@ -124,7 +103,7 @@ TEST(kiteTest, generateSessionTest) {
 
 TEST(kiteTest, invalidateSessionTest) {
     const string JSON = kc::test::readFile("../../tests/mock_custom/invalidate_session.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     Kite.setAccessToken(kc::test::ACCESS_TOKEN);
 
     EXPECT_CALL(
@@ -139,7 +118,7 @@ TEST(kiteTest, invalidateSessionTest) {
 
 TEST(kiteTest, profile) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/profile.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
@@ -163,7 +142,7 @@ TEST(kiteTest, profile) {
 
 TEST(kiteTest, getMarginsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/margins.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
@@ -213,7 +192,7 @@ TEST(kiteTest, getMarginsSegmentTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/margins_equity.json");
     const string SEGMENT = "equity";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins/{0}" },
                           utils::http::Params {}, utils::FmtArgs { SEGMENT }))
         .Times(1)
@@ -266,7 +245,7 @@ TEST(kiteTest, placeOrderTest) {
                                         .Tag(TAG);
     const string EXPECTED_ORDER_ID = "151220000000000";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/orders/{0}" },
                           utils::http::Params {
                               { "exchange", EXCHANGE },
@@ -301,7 +280,7 @@ TEST(kiteTest, modifyOrderTest) {
     // clang-format on
     const string EXPECTED_ORDER_ID = "151220000000000";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/orders/{0}/{1}" },
                           utils::http::Params {
                               { "validity", VALIDITY },
@@ -321,7 +300,7 @@ TEST(kiteTest, cancelOrderTest) {
     const string ORDER_ID = "151220000000000";
     const string EXPECTED_ORDER_ID = "151220000000000";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/orders/{0}/{1}" },
                           utils::http::Params {}, utils::FmtArgs { VARIETY, ORDER_ID }))
         .Times(1)
@@ -338,7 +317,7 @@ TEST(kiteTest, exitOrderTest) {
     const string PARENT_ORDER_ID = "151220000000001";
     const string EXPECTED_ORDER_ID = "151220000000000";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/orders/{0}/{1}?parent_order_id={1}" },
                           utils::http::Params {}, utils::FmtArgs { VARIETY, ORDER_ID, PARENT_ORDER_ID }))
         .Times(1)
@@ -350,7 +329,7 @@ TEST(kiteTest, exitOrderTest) {
 
 TEST(kiteTest, ordersTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/orders.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders" }, utils::http::Params {},
                           utils::FmtArgs {}))
         .Times(1)
@@ -392,7 +371,7 @@ TEST(kiteTest, ordersTest) {
 TEST(kiteTest, orderHistoryTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/orders.json");
     const string ORDER_ID = "100000000000000";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders/{0}" }, utils::http::Params {},
                           utils::FmtArgs { ORDER_ID }))
         .Times(1)
@@ -433,7 +412,7 @@ TEST(kiteTest, orderHistoryTest) {
 
 TEST(kiteTest, tradesTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/trades.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/trades" }, utils::http::Params {},
                           utils::FmtArgs {}))
         .Times(1)
@@ -459,7 +438,7 @@ TEST(kiteTest, tradesTest) {
 TEST(kiteTest, orderTradesTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/order_trades.json");
     const string ORDER_ID = "100000000000000";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders/{0}/trades" },
                           utils::http::Params {}, utils::FmtArgs { ORDER_ID }))
         .Times(1)
@@ -497,7 +476,7 @@ TEST(kiteTest, placeGttTest) {
     const string GTT_PARAM1_ORDER_TYPE = "LIMIT";
     const string GTT_PARAM1_PRODUCT = "CNC";
     constexpr int EXPECTED_TRIGGER_ID = 123;
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/gtt/triggers" },
             utils::http::Params {
@@ -533,7 +512,7 @@ TEST(kiteTest, placeGttTest) {
 
 TEST(kiteTest, getGTTsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_get_orders.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/gtt/triggers" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
@@ -591,7 +570,7 @@ TEST(kiteTest, getGTTsTest) {
 TEST(kiteTest, getGTTTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_get_order.json");
     constexpr int TRIGGER_ID = 123;
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/gtt/triggers/{0}" },
                           utils::http::Params {}, utils::FmtArgs { std::to_string(TRIGGER_ID) }))
         .Times(1)
@@ -631,7 +610,7 @@ TEST(kiteTest, modifyGttTest) {
     const string GTT_PARAM1_PRODUCT = "CNC";
     constexpr int TRIGGER_ID = 123;
     constexpr int EXPECTED_TRIGGER_ID = 123;
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/gtt/triggers/{0}" },
             utils::http::Params {
@@ -666,7 +645,7 @@ TEST(kiteTest, deleteGTTTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_delete_order.json");
     constexpr int TRIGGER_ID = 123;
     constexpr int EXPECTED_TRIGGER_ID = 123;
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/gtt/triggers/{0}" },
                           utils::http::Params {}, utils::FmtArgs { std::to_string(TRIGGER_ID) }))
         .Times(1)
@@ -681,7 +660,7 @@ TEST(kiteTest, deleteGTTTest) {
 
 TEST(kiteTest, holdingsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/holdings.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/holdings" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
@@ -712,7 +691,7 @@ TEST(kiteTest, holdingsTest) {
 
 TEST(kiteTest, getPositionsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/positions.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/positions" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
@@ -919,7 +898,7 @@ TEST(kiteTest, convertPositionTest) {
     const string OLD_PRODUCT = "NRML";
     const string NEW_PRODUCT = "MIS";
     constexpr bool EXPECTED_RESULT = true;
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/portfolio/positions" },
                           utils::http::Params {
                               { "quantity", std::to_string(QUNATITY) },
@@ -951,7 +930,7 @@ TEST(kiteTest, convertPositionTest) {
 TEST(kiteTest, getQuoteTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/quote.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote?{0}" }, utils::http::Params {},
                           utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
         .Times(1)
@@ -1018,7 +997,7 @@ TEST(kiteTest, getQuoteTest) {
 TEST(kiteTest, getOHLCTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/ohlc.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ohlc?{0}" },
                           utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
         .Times(1)
@@ -1038,7 +1017,7 @@ TEST(kiteTest, getOHLCTest) {
 TEST(kiteTest, getLTPTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/ltp.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ltp?{0}" },
                           utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
         .Times(1)
@@ -1058,7 +1037,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     const string INTERVAL = "minute";
     const string FROM = "2017-12-15+09:15:00";
     const string TO = "2017-12-15+09:20:00";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::GET,
                     "/instruments/historical/{0}/{1}?from={2}&to={3}&continuous={4}&oi={5}" },
@@ -1108,7 +1087,7 @@ TEST(kiteTest, placeMFOrderTest) {
     constexpr double AMOUNT = 1000;
     const string EXPECTED_ORDER_ID = "123457";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/mf/orders" },
                           utils::http::Params {
                               { "tradingsymbol", SYMBOL },
@@ -1137,7 +1116,7 @@ TEST(kiteTest, cancelMFOrderTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_order_response.json");
     const string ORDER_ID = "123457";
     const string EXPECTED_ORDER_ID = "123457";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/mf/orders/{0}" },
                           utils::http::Params {}, utils::FmtArgs { ORDER_ID }))
         .Times(1)
@@ -1150,7 +1129,7 @@ TEST(kiteTest, cancelMFOrderTest) {
 
 TEST(kiteTest, getMFOrdersTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_orders.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/orders" }, utils::http::Params {},
                           utils::FmtArgs {}))
         .Times(1)
@@ -1204,7 +1183,7 @@ TEST(kiteTest, getMFOrdersTest) {
 TEST(kiteTest, getMFOrderTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_orders_info.json");
     const string ORDER_ID = "2b6ad4b7-c84e-4c76-b459-f3a8994184f1";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/orders/{0}" },
                           utils::http::Params {}, utils::FmtArgs { ORDER_ID }))
         .Times(1)
@@ -1235,7 +1214,7 @@ TEST(kiteTest, getMFOrderTest) {
 
 TEST(kiteTest, getMFHoldingsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_holdings.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/holdings" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
@@ -1305,7 +1284,7 @@ TEST(kiteTest, placeMFSIPTest) {
     const string TAG = "randomtag";
     const string ORDER_ID = "123457";
     const string SIP_ID = "123457";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/mf/sips" },
                           utils::http::Params {
                               { "tradingsymbol", SYMBOL },
@@ -1338,7 +1317,7 @@ TEST(kiteTest, modifyMFSIPTest) {
     const string FREQUENCY = "monthly";
     const string EXPECTED_SIP_ID = "123457";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/mf/sips/{0}" },
                           utils::http::Params {
                               { "amount", std::to_string(AMOUNT) },
@@ -1359,7 +1338,7 @@ TEST(kiteTest, cancelMFSIPTest) {
     const string SIP_ID = "123457";
     const string EXPECTED_SIP_ID = "123457";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/mf/sips/{0}" },
                           utils::http::Params {}, utils::FmtArgs { SIP_ID }))
         .Times(1)
@@ -1372,7 +1351,7 @@ TEST(kiteTest, cancelMFSIPTest) {
 
 TEST(kiteTest, getSIPsTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_sips.json");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/sips" }, utils::http::Params {},
                           utils::FmtArgs {}))
         .Times(1)
@@ -1400,7 +1379,7 @@ TEST(kiteTest, getSIPsTest) {
 TEST(kiteTest, getSIPTest) {
     const string JSON = kc::test::readFile("../../tests/mock_responses/mf_sip_info.json");
     const string SIP_ID = "123457";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/sips/{0}" },
                           utils::http::Params {}, utils::FmtArgs { SIP_ID }))
         .Times(1)
@@ -1435,7 +1414,7 @@ TEST(kiteTest, getOrderMarginsTest) {
     const string PRODUCT = "CNC";
     const string ORDER_TYPE = "MARKET";
 
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/margins/orders", utils::http::CONTENT_TYPE::JSON },
             utils::http::Params { { "",
@@ -1476,7 +1455,7 @@ TEST(kiteTest, getOrderMarginsTest) {
 
 TEST(kiteTest, getInstrumentsTest) {
     const string CSV = kc::test::readFile("../../tests/mock_responses/instruments_all.csv");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments", utils::http::CONTENT_TYPE::NON_JSON },
             utils::http::Params {}, utils::FmtArgs {}))
@@ -1518,7 +1497,7 @@ TEST(kiteTest, getInstrumentsTest) {
 TEST(kiteTest, getInstrumentsExchangeTest) {
     const string CSV = kc::test::readFile("../../tests/mock_responses/instruments_all.csv");
     const string EXCHANGE = "NSE";
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments/{0}",
                                   utils::http::CONTENT_TYPE::NON_JSON },
                           utils::http::Params {}, utils::FmtArgs { EXCHANGE }))
@@ -1559,7 +1538,7 @@ TEST(kiteTest, getInstrumentsExchangeTest) {
 
 TEST(kiteTest, getMFInstrumentsTest) {
     const string CSV = kc::test::readFile("../../tests/mock_responses/mf_instruments.csv");
-    StrictMock<kc::test::mockKite2> Kite;
+    StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/instruments",
                                   utils::http::CONTENT_TYPE::NON_JSON },
                           utils::http::Params {}, utils::FmtArgs {}))

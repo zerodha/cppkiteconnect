@@ -24,46 +24,23 @@
  */
 #pragma once
 
-#include <algorithm> //for_each
-#include <array>
 #include <cstdint>
 #include <functional>
-#include <iostream> //debug
-#include <limits>   //nan
-#include <sstream>
 #include <string>
-#include <tuple>
 #include <unordered_map>
-#include <utility> //pair<>
 #include <vector>
 
-#include "PicoSHA2/picosha2.h"
 #include "cpp-httplib/httplib.h"
 
-#include "rapidjson/document.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
-
 #include "config.hpp"
-#include "kiteppexceptions.hpp"
 #include "responses/responses.hpp"
-#include "rjutils.hpp"
 #include "utils.hpp"
 
 namespace kiteconnect {
 
 using std::string;
-namespace rj = rapidjson;
 namespace kc = kiteconnect;
-namespace rju = kc::rjutils;
 namespace utils = kc::internal::utils;
-using kc::_methods;
-using kc::DEFAULTDOUBLE;
-using kc::DEFAULTINT;
-using kc::isValid;
-using kc::libException;
 
 /**
  * @brief Used for accessing REST interface provided by Kite API.
@@ -72,10 +49,6 @@ using kc::libException;
 class kite {
 
   public:
-    // member variables:
-
-    // constructors and destructor:
-
     /**
      * @brief Construct a new kite object
      *
@@ -84,30 +57,23 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp initializing kite
      */
-    // TODO make str const&
-    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {
-        _httpClient.set_default_headers({ { "X-Kite-Version", _kiteVersion } });
-    };
+    explicit kite(string apikey);
 
-    virtual ~kite() {};
-
-    // methods:
-
-    // api:
+    // api
 
     /**
      * @brief Set the API key
      *
      * @param arg The string that should be set as API key
      */
-    void setAPIKey(const string& arg);
+    void setApiKey(const string& arg);
 
     /**
      * @brief Fetch current API key
      *
      * @return string
      */
-    string getAPIKey() const;
+    string getApiKey() const;
 
     /**
      * @brief Get the remote login url to which a user should be redirected to initiate the login flow.
@@ -158,7 +124,7 @@ class kite {
      */
     bool invalidateSession();
 
-    // user:
+    // user
 
     /**
      * @brief returns user profile
@@ -191,7 +157,7 @@ class kite {
      */
     margins getMargins(const string& segment);
 
-    // orders:
+    // orders
 
     /**
      * @brief place an order.
@@ -311,7 +277,7 @@ class kite {
      */
     std::vector<trade> orderTrades(const string& orderId);
 
-    // gtt:
+    // gtt
 
     /**
      * @brief place GTT order
@@ -381,7 +347,7 @@ class kite {
      */
     int deleteGtt(int triggerId);
 
-    // portfolio:
+    // portfolio
 
     /**
      * @brief get holdings
@@ -421,7 +387,7 @@ class kite {
      */
     bool convertPosition(const convertPositionParams& params);
 
-    // quotes and instruments:
+    // market
 
     /**
      * @brief Retrieve the list of market instruments available to trade.
@@ -473,8 +439,6 @@ class kite {
      */
     std::unordered_map<string, ltpQuote> getLtp(const std::vector<string>& symbols);
 
-    // historical:
-
     /**
      * @brief Retrieve historical data (candles) for an instrument
      *
@@ -492,7 +456,19 @@ class kite {
      */
     std::vector<historicalData> getHistoricalData(const historicalDataParams& params);
 
-    // MF:
+    /**
+     * @brief get various margins required for orders
+     *
+     * @param params
+     *
+     * @return std::vector<orderMargins>
+     *
+     * @paragraph ex1 Example
+     * @snippet example2.cpp get order margins
+     */
+    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params);
+
+    // MF
 
     /**
      * @brief place a mutual fund order
@@ -554,8 +530,6 @@ class kite {
      * @snippet example2.cpp get mf holdings
      */
     std::vector<mfHolding> getMfHoldings();
-
-    // SIP:
 
     /**
      * @brief place MF SIP
@@ -637,44 +611,18 @@ class kite {
      */
     std::vector<mfInstrument> getMfInstruments();
 
-    /**
-     * @brief get various margins required for orders
-     *
-     * @param params
-     *
-     * @return std::vector<orderMargins>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order margins
-     */
-    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params);
-
   private:
-    // member variables:
+    static string encodeSymbolsList(const std::vector<string>& symbols);
 
-    string _apiKey = "";
-    string _accessToken = "";
+    string getAuth() const;
 
-    const string _kiteVersion = "3";
-    const string _rootURL = "https://api.kite.trade";
-    const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
-    const std::unordered_map<string, string> _endpoints = {
-        { "mf.instruments", "/mf/instruments" },
-        // market endpoints
-        { "market.instruments.all", "/instruments" },
-        { "market.instruments", "/instruments/{exchange}" },
-        { "market.margins", "/margins/{segment}" },
-        { "market.historical", "/instruments/historical/{instrument_token}/"
-                               "{interval}?from={from}&to={to}&continuous={continuous}&oi={oi}" },
-        { "market.trigger_range", "/instruments/trigger_range/{transaction_type}" },
-        { "market.quote", "/quote?{symbols_list}" },
-        { "market.quote.ohlc", "/quote/ohlc?{symbols_list}" },
-        { "market.quote.ltp", "/quote/ltp?{symbols_list}" },
+    template <class Res, class Data, bool UseCustomParser = false>
+    inline Res callApi(const string& service, const utils::http::Params& body = {}, const utils::FmtArgs& fmtArgs = {},
+        utils::json::CustomParser<Res, Data, UseCustomParser> customParser = {});
 
-        // Margin computation endpoints
-        { "order.margins", "/margins/orders" },
-    };
-
+    const string version = "3";
+    const string root = "https://api.kite.trade";
+    const string loginUrlFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
     const std::unordered_map<string, utils::http::endpoint> endpoints {
         // api
         { "api.token", { utils::http::METHOD::POST, "/session/token" } },
@@ -726,141 +674,10 @@ class kite {
         { "market.quote.ohlc", { utils::http::METHOD::GET, "/quote/ohlc?{0}" } },
         { "market.quote.ltp", { utils::http::METHOD::GET, "/quote/ltp?{0}" } },
     };
-
-    httplib::Client _httpClient;
-
-    // methods:
-
-    // TODO unit test this? or rather make into a var
-    string _getAuthStr() const { return FMT("token {0}:{1}", _apiKey, _accessToken); };
-
-    static string _encodeSymbolsList(const std::vector<string>& symbols) {
-        string str;
-        for (const auto& symbol : symbols) { str.append(FMT("i={0}&", symbol)); };
-        if (!str.empty()) { str.pop_back(); };
-        return str;
-    }
-
-    // GMock requires mock methods to be virtual
-    virtual void _sendReq(rj::Document& data, const _methods& mtd, const string& endpoint,
-        const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
-
-        /*
-        If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of
-        bodyParam's first pair with first element being empty string. see orderMargins() function
-        */
-
-        // create request
-        const httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };
-        httplib::Params params;
-        int code = 0;
-        string dataRcvd;
-
-        // this code can obviously be shortened but return type of client.Get() etc. doesn't have a default constructor,
-        // which means we cannot init an instance and assign to it later
-        if (mtd == _methods::GET) {
-            if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
-                code = res->status;
-                dataRcvd = res->body;
-            } else {
-                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-            };
-        } else if (mtd == _methods::POST) {
-            if (!isJson) {
-                for (const auto& i : bodyParams) { params.emplace(i.first, i.second); };
-                if (auto res = _httpClient.Post(endpoint.c_str(), headers, params)) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            } else {
-                if (auto res = _httpClient.Post(endpoint.c_str(), headers, bodyParams[0].second, "application/json")) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            };
-        } else if (mtd == _methods::PUT) {
-            if (!isJson) {
-                for (const auto& i : bodyParams) { params.emplace(i.first, i.second); };
-
-                if (auto res = _httpClient.Put(endpoint.c_str(), headers, params)) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            } else {
-                if (auto res = _httpClient.Put(endpoint.c_str(), headers, bodyParams[0].second, "application/json")) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            };
-
-        } else if (mtd == _methods::DEL) {
-            if (auto res = _httpClient.Delete(endpoint.c_str(), headers)) {
-                code = res->status;
-                dataRcvd = res->body;
-            } else {
-                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-            };
-        };
-
-        //?std::cout << dataRcvd << std::endl;
-
-        if (!dataRcvd.empty()) {
-            rju::_parse(data, dataRcvd);
-            if (code != 200) {
-                string excpStr;
-                string message;
-
-                try {
-                    if (!rju::_getIfExists(data, excpStr, "error_type")) { excpStr = "NoException"; };
-                    rju::_getIfExists(data, message, "message");
-
-                } catch (const std::exception& e) {
-                    throw libException(FMT("{0} was thrown while extracting excpStr({1}) and message({2}) (_sendReq)",
-                        e.what(), excpStr, message));
-                };
-
-                kc::_throwException(excpStr, code, message);
-            };
-        } else {
-            // sets the document to a non-object entity on failure. array was chosen because no kite method returns
-            // `data` field with an array
-            data.Parse("[]");
-        };
-    };
-
-    // GMock requires mock methods to be virtual
-    virtual string _sendInstrumentsReq(const string& endpoint) {
-
-        // create request and send req
-        httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };
-        int code = 0;
-        string dataRcvd;
-
-        if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
-            code = res->status;
-            if (code == 200) { dataRcvd = res->body; };
-        } else {
-            throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-        };
-
-        // get data
-        if (!dataRcvd.empty()) {
-            if (code == 200) { return dataRcvd; }
-            kc::_throwException("NoException", code, "");
-        } else {
-            return "";
-        };
-
-        return "";
-    };
+    string key;
+    string token;
+    string authorization;
+    httplib::Client client;
 
   protected:
 #ifdef KITE_UNIT_TEST
@@ -878,24 +695,6 @@ class kite {
     utils::http::response sendReq(
         const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #endif
-
-    /**
-     * @brief make a call to kite api
-     *
-     * @tparam Res             type corresponding to service response
-     * @tparam Data            type of `data` field
-     * @tparam UseCustomParser whether custom parser should be used for parsing response
-     *
-     * @param service      kite service to call
-     * @param body         url encoded data to send (if any)
-     * @param fmtArgs      url formatting arguments (if any)
-     * @param customParser custom parser for parsing the response
-     *
-     * @return Res response
-     */
-    template <class Res, class Data, bool UseCustomParser = false>
-    inline Res callApi(const string& service, const utils::http::Params& body = {}, const utils::FmtArgs& fmtArgs = {},
-        utils::json::CustomParser<Res, Data, UseCustomParser> customParser = {});
 };
 
 } // namespace kiteconnect
