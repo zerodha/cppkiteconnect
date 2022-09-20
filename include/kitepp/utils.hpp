@@ -95,6 +95,7 @@ using CustomParser =
 template <class T>
 using JsonEncoder = std::function<void(const T&, rj::Value&)>;
 
+// FIXME templatize extract* methods
 inline JsonObject extractObject(rj::Document& doc) {
     try {
         return doc["data"].GetObject();
@@ -253,7 +254,7 @@ struct endpoint {
 
 class response {
   public:
-    response(uint16_t Code, const string& Json): code(Code) { parse(Code, Json); };
+    response(uint16_t Code, const string& body, bool json = true): code(Code) { parse(Code, body, json); };
 
     explicit operator bool() const { return !error; };
 
@@ -262,17 +263,23 @@ class response {
     rjutils::rj::Document data;       /// parsed body
     string errorType = "NoException"; /// corresponds to kite api's \a error_type field (if \a error is \a true)
     string message;                   /// corresponds to kite api's \a message field (if \a error is \a true)
+    string rawBody;                   /// raw body, set in case of non-json response
 
   private:
-    void parse(uint16_t code, const string& json) {
-        kc::rjutils::_parse(data, json);
-        if (code != static_cast<uint16_t>(code::OK)) {
-            string status;
-            kc::rjutils::_getIfExists(data, status, "status");
-            kc::rjutils::_getIfExists(data, errorType, "error_type");
-            kc::rjutils::_getIfExists(data, message, "message");
-            if (status != "success") { error = true; };
-        };
+    void parse(uint16_t code, const string& body, bool json) {
+        if (json) {
+            kc::rjutils::_parse(data, body);
+            if (code != static_cast<uint16_t>(code::OK)) {
+                string status;
+                kc::rjutils::_getIfExists(data, status, "status");
+                kc::rjutils::_getIfExists(data, errorType, "error_type");
+                kc::rjutils::_getIfExists(data, message, "message");
+                if (status != "success") { error = true; };
+            };
+        } else {
+            if (code != static_cast<uint16_t>(code::OK)) { error = true; };
+            rawBody = body;
+        }
     };
 };
 
@@ -340,7 +347,7 @@ struct request {
             default: throw libException("unsupported http method");
         };
 
-        return { code, data };
+        return { code, data, contentType == CONTENT_TYPE::JSON };
     };
 
     utils::http::METHOD method;
@@ -369,6 +376,21 @@ void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
         }
         if (param.has_value()) { bodyParams.emplace(fieldName, fieldValue); }
     }
+};
+
+inline std::vector<string> parseInstruments(const std::string& data) {
+    constexpr char seperator = '\n';
+    std::size_t start = 0;
+    std::size_t end = 0;
+    std::vector<std::string> tokens;
+    while ((end = data.find(seperator, start)) != std::string::npos) {
+        string token = data.substr(start, end - start - 1);
+        tokens.emplace_back(token);
+        start = end + 1;
+    };
+    // remove headers
+    tokens.erase(tokens.begin());
+    return tokens;
 };
 
 } // namespace kiteconnect::internal::utils

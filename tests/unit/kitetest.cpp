@@ -1475,21 +1475,18 @@ TEST(kiteTest, getOrderMarginsTest) {
 // Instruments tests
 
 TEST(kiteTest, getInstrumentsTest) {
+    const string CSV = kc::test::readFile("../../tests/mock_responses/instruments_all.csv");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments", utils::http::CONTENT_TYPE::NON_JSON },
+            utils::http::Params {}, utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
 
-    std::ifstream csvFile("../../tests/mock_responses/instruments_all.csv");
-    ASSERT_TRUE(csvFile);
-    string csv(std::istreambuf_iterator<char> { csvFile }, {});
+    std::vector<kc::instrument> INSTRUMENTS = Kite.getInstruments();
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
-
-    std::vector<kc::instrument> instruments = Kite.getInstruments();
-
-    // Expected values
-    ASSERT_EQ(instruments.size(), 99);
-
-    kc::instrument instrument1 = instruments[0];
+    ASSERT_EQ(INSTRUMENTS.size(), 99);
+    kc::instrument instrument1 = INSTRUMENTS[0];
     EXPECT_EQ(instrument1.instrumentToken, 3813889);
     EXPECT_EQ(instrument1.exchangeToken, 14898);
     EXPECT_EQ(instrument1.tradingsymbol, "CENTRALBK-BE");
@@ -1503,7 +1500,49 @@ TEST(kiteTest, getInstrumentsTest) {
     EXPECT_EQ(instrument1.segment, "NSE");
     EXPECT_EQ(instrument1.exchange, "NSE");
 
-    kc::instrument instrument2 = instruments[1];
+    kc::instrument instrument2 = INSTRUMENTS[1];
+    EXPECT_EQ(instrument2.instrumentToken, 4645121);
+    EXPECT_EQ(instrument2.exchangeToken, 18145);
+    EXPECT_EQ(instrument2.tradingsymbol, "EMMBI-BL");
+    EXPECT_EQ(instrument2.name, "EMMBI INDUSTRIES");
+    EXPECT_DOUBLE_EQ(instrument2.lastPrice, 0.0);
+    EXPECT_EQ(instrument2.expiry, "");
+    EXPECT_DOUBLE_EQ(instrument2.strikePrice, 0.0);
+    EXPECT_DOUBLE_EQ(instrument2.tickSize, 0.05);
+    EXPECT_DOUBLE_EQ(instrument2.lotSize, 1);
+    EXPECT_EQ(instrument2.instrumentType, "EQ");
+    EXPECT_EQ(instrument2.segment, "NSE");
+    EXPECT_EQ(instrument2.exchange, "NSE");
+}
+
+TEST(kiteTest, getInstrumentsExchangeTest) {
+    const string CSV = kc::test::readFile("../../tests/mock_responses/instruments_all.csv");
+    const string EXCHANGE = "NSE";
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments/{0}",
+                                  utils::http::CONTENT_TYPE::NON_JSON },
+                          utils::http::Params {}, utils::FmtArgs { EXCHANGE }))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
+
+    std::vector<kc::instrument> INSTRUMENTS = Kite.getInstruments(EXCHANGE);
+
+    ASSERT_EQ(INSTRUMENTS.size(), 99);
+    kc::instrument instrument1 = INSTRUMENTS[0];
+    EXPECT_EQ(instrument1.instrumentToken, 3813889);
+    EXPECT_EQ(instrument1.exchangeToken, 14898);
+    EXPECT_EQ(instrument1.tradingsymbol, "CENTRALBK-BE");
+    EXPECT_EQ(instrument1.name, "CENTRAL BANK OF INDIA");
+    EXPECT_DOUBLE_EQ(instrument1.lastPrice, 0.0);
+    EXPECT_EQ(instrument1.expiry, "");
+    EXPECT_DOUBLE_EQ(instrument1.strikePrice, 0.0);
+    EXPECT_DOUBLE_EQ(instrument1.tickSize, 0.05);
+    EXPECT_DOUBLE_EQ(instrument1.lotSize, 1);
+    EXPECT_EQ(instrument1.instrumentType, "EQ");
+    EXPECT_EQ(instrument1.segment, "NSE");
+    EXPECT_EQ(instrument1.exchange, "NSE");
+
+    kc::instrument instrument2 = INSTRUMENTS[1];
     EXPECT_EQ(instrument2.instrumentToken, 4645121);
     EXPECT_EQ(instrument2.exchangeToken, 18145);
     EXPECT_EQ(instrument2.tradingsymbol, "EMMBI-BL");
@@ -1519,21 +1558,18 @@ TEST(kiteTest, getInstrumentsTest) {
 }
 
 TEST(kiteTest, getMFInstrumentsTest) {
+    const string CSV = kc::test::readFile("../../tests/mock_responses/mf_instruments.csv");
+    StrictMock<kc::test::mockKite2> Kite;
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/instruments",
+                                  utils::http::CONTENT_TYPE::NON_JSON },
+                          utils::http::Params {}, utils::FmtArgs {}))
+        .Times(1)
+        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
 
-    std::ifstream csvFile("../../tests/mock_responses/mf_instruments.csv");
-    ASSERT_TRUE(csvFile);
-    string csv(std::istreambuf_iterator<char> { csvFile }, {});
+    const std::vector<kc::mfInstrument> INSTRUMENTS = Kite.getMfInstruments();
 
-    mockKite Kite;
-
-    EXPECT_CALL(Kite, _sendInstrumentsReq(_)).WillOnce(testing::Return(csv));
-
-    std::vector<kc::mfInstrument> instruments = Kite.getMfInstruments();
-
-    // Expected values
-    ASSERT_EQ(instruments.size(), 99);
-
-    kc::mfInstrument instrument1 = instruments[0];
+    ASSERT_EQ(INSTRUMENTS.size(), 99);
+    kc::mfInstrument instrument1 = INSTRUMENTS[0];
     EXPECT_EQ(instrument1.tradingsymbol, "INF209K01157");
     EXPECT_EQ(instrument1.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument1.name, "Aditya Birla Sun Life Advantage Fund");
@@ -1551,7 +1587,7 @@ TEST(kiteTest, getMFInstrumentsTest) {
     EXPECT_EQ(instrument1.lastPrice, 106.8);
     EXPECT_EQ(instrument1.lastPriceDate, "2017-11-23");
 
-    kc::mfInstrument instrument2 = instruments[1];
+    kc::mfInstrument instrument2 = INSTRUMENTS[1];
     EXPECT_EQ(instrument2.tradingsymbol, "INF209K01165");
     EXPECT_EQ(instrument2.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument2.name, "Aditya Birla Sun Life Advantage Fund");

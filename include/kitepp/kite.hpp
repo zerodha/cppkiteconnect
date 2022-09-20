@@ -435,23 +435,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get instruments
      */
-    std::vector<instrument> getInstruments(const string& exchange = "") {
-
-        const string rcvdData =
-            (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
-                                 _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
-        if (rcvdData.empty()) { return {}; };
-
-        std::vector<string> tokens = kc::_split(rcvdData, '\n');
-        tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
-
-        for (auto& tok : tokens) {
-            // sent data has \r\n as delimiter and _split only removes \n. pop_back() to remove that \r
-            tok.pop_back();
-        };
-
-        return { ++tokens.begin(), tokens.end() }; //++ to skip first iteration (headers)
-    };
+    std::vector<instrument> getInstruments(const string& exchange = "");
 
     /**
      * @brief Retrieve quote for list of instruments
@@ -651,23 +635,7 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get mf instruments
      */
-    std::vector<mfInstrument> getMfInstruments() {
-
-        const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
-
-        if (rcvdData.empty()) { return {}; };
-        std::vector<string> tokens = kc::_split(rcvdData, '\n');
-        tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
-
-        for (auto& tok : tokens) {
-            // sent data has \r\n as delimiter and _split only removes \n. pop_back() to remove that \r
-            tok.pop_back();
-        };
-
-        return { ++tokens.begin(), tokens.end() }; //++ to skip first iteration (headers)
-    };
-
-    // others:
+    std::vector<mfInstrument> getMfInstruments();
 
     /**
      * @brief get various margins required for orders

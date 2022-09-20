@@ -45,4 +45,21 @@ inline std::vector<historicalData> kite::getHistoricalData(const historicalDataP
             return candles;
         });
 };
+
+inline std::vector<instrument> kite::getInstruments(const string& exchange) {
+    utils::FmtArgs fmtArgs = {};
+    utils::http::endpoint endpoint;
+    if (exchange.empty()) {
+        endpoint = endpoints.at("market.instruments.all");
+    } else {
+        endpoint = endpoints.at("market.instruments");
+        fmtArgs.emplace_back(exchange);
+    }
+    const auto response = sendReq(endpoint, {}, fmtArgs);
+    if (!response) { return {}; };
+
+    std::vector<string> instruments = utils::parseInstruments(response.rawBody);
+    return { instruments.begin(), instruments.end() };
+};
+
 }; // namespace kiteconnect

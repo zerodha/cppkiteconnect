@@ -112,4 +112,12 @@ inline mfSip kite::getSip(const string& sipId) {
     return callApi<mfSip, utils::json::JsonObject>("mf.sip.info", {}, { sipId });
 };
 
+inline std::vector<mfInstrument> kite::getMfInstruments() {
+    const auto response = sendReq(endpoints.at("mf.instruments"), {}, {});
+    if (!response) { return {}; };
+
+    std::vector<string> instruments = utils::parseInstruments(response.rawBody);
+    return { instruments.begin(), instruments.end() };
+};
+
 } // namespace kiteconnect
