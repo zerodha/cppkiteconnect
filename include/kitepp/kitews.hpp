@@ -474,7 +474,7 @@ class kiteWS {
                 Tick.netChange = _getNum<int32_t>(packet, 24, 27) / divisor;
 
                 // parse full mode with timestamp
-                if (packetSize == 32) { Tick.timestamp = _getNum<int32_t>(packet, 28, 33); }
+                if (packetSize == 32) { Tick.timestamp = _getNum<int32_t>(packet, 28, 31); }
 
             } else if (packetSize == 44 || packetSize == 184) {
                 // Quote and full mode
