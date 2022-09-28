@@ -33,6 +33,7 @@
 #include <string>
 
 namespace kiteconnect {
+// NOLINTBEGIN(cert-err58-cpp)
 
 using std::string;
 
@@ -98,4 +99,5 @@ const string MODE_LTP = "ltp";
 const string MODE_QUOTE = "quote";
 const string MODE_FULL = "full";
 
+// NOLINTEND(cert-err58-cpp)
 } // namespace kiteconnect
