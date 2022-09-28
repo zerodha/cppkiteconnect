@@ -4,7 +4,6 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -14,6 +13,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 /// represents parameters required for the `placeOrder` function
 struct placeOrderParams {
@@ -79,33 +79,33 @@ struct order {
     explicit order(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, accountID, "account_id");
-        kc::rjutils::_getIfExists(val, placedBy, "placed_by");
-        kc::rjutils::_getIfExists(val, orderID, "order_id");
-        kc::rjutils::_getIfExists(val, exchangeOrderID, "exchange_order_id");
-        kc::rjutils::_getIfExists(val, parentOrderID, "parent_order_id");
-        kc::rjutils::_getIfExists(val, status, "status");
-        kc::rjutils::_getIfExists(val, statusMessage, "status_message");
-        kc::rjutils::_getIfExists(val, orderTimestamp, "order_timestamp");
-        kc::rjutils::_getIfExists(val, exchangeUpdateTimestamp, "exchange_update_timestamp");
-        kc::rjutils::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        kc::rjutils::_getIfExists(val, rejectedBy, "rejected_by");
-        kc::rjutils::_getIfExists(val, variety, "variety");
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, tradingSymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
-        kc::rjutils::_getIfExists(val, orderType, "order_type");
-        kc::rjutils::_getIfExists(val, transactionType, "transaction_type");
-        kc::rjutils::_getIfExists(val, validity, "validity");
-        kc::rjutils::_getIfExists(val, product, "product");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, disclosedQuantity, "disclosed_quantity");
-        kc::rjutils::_getIfExists(val, price, "price");
-        kc::rjutils::_getIfExists(val, triggerPrice, "trigger_price");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, filledQuantity, "filled_quantity");
-        kc::rjutils::_getIfExists(val, pendingQuantity, "pending_quantity");
-        kc::rjutils::_getIfExists(val, cancelledQuantity, "cancelled_quantity");
+        accountID = utils::json::get<string>(val, "account_id");
+        placedBy = utils::json::get<string>(val, "placed_by");
+        orderID = utils::json::get<string>(val, "order_id");
+        exchangeOrderID = utils::json::get<string>(val, "exchange_order_id");
+        parentOrderID = utils::json::get<string>(val, "parent_order_id");
+        status = utils::json::get<string>(val, "status");
+        statusMessage = utils::json::get<string>(val, "status_message");
+        orderTimestamp = utils::json::get<string>(val, "order_timestamp");
+        exchangeUpdateTimestamp = utils::json::get<string>(val, "exchange_update_timestamp");
+        exchangeTimestamp = utils::json::get<string>(val, "exchange_timestamp");
+        rejectedBy = utils::json::get<string>(val, "rejected_by");
+        variety = utils::json::get<string>(val, "variety");
+        exchange = utils::json::get<string>(val, "exchange");
+        tradingSymbol = utils::json::get<string>(val, "tradingsymbol");
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        orderType = utils::json::get<string>(val, "order_type");
+        transactionType = utils::json::get<string>(val, "transaction_type");
+        validity = utils::json::get<string>(val, "validity");
+        product = utils::json::get<string>(val, "product");
+        quantity = utils::json::get<int>(val, "quantity");
+        disclosedQuantity = utils::json::get<int>(val, "disclosed_quantity");
+        price = utils::json::get<double>(val, "price");
+        triggerPrice = utils::json::get<double>(val, "trigger_price");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        filledQuantity = utils::json::get<int>(val, "filled_quantity");
+        pendingQuantity = utils::json::get<int>(val, "pending_quantity");
+        cancelledQuantity = utils::json::get<int>(val, "cancelled_quantity");
     };
 
     int instrumentToken = -1;
@@ -143,21 +143,21 @@ struct trade {
     explicit trade(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, tradeID, "trade_id");
-        kc::rjutils::_getIfExists(val, product, "product");
-        kc::rjutils::_getIfExists(val, fillTimestamp, "fill_timestamp");
-        kc::rjutils::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        kc::rjutils::_getIfExists(val, exchangeOrderID, "exchange_order_id");
-        kc::rjutils::_getIfExists(val, orderID, "order_id");
-        kc::rjutils::_getIfExists(val, transactionType, "transaction_type");
-        kc::rjutils::_getIfExists(val, tradingSymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, InstrumentToken, "instrument_token");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        quantity = utils::json::get<double>(val, "quantity");
+        tradeID = utils::json::get<string>(val, "trade_id");
+        product = utils::json::get<string>(val, "product");
+        fillTimestamp = utils::json::get<string>(val, "fill_timestamp");
+        exchangeTimestamp = utils::json::get<string>(val, "exchange_timestamp");
+        exchangeOrderID = utils::json::get<string>(val, "exchange_order_id");
+        orderID = utils::json::get<string>(val, "order_id");
+        transactionType = utils::json::get<string>(val, "transaction_type");
+        tradingSymbol = utils::json::get<string>(val, "tradingsymbol");
+        exchange = utils::json::get<string>(val, "exchange");
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
     };
 
-    int InstrumentToken = -1;
+    int instrumentToken = -1;
     double averagePrice = -1.0;
     double quantity = -1.0;
     string tradeID;

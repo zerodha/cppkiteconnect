@@ -426,7 +426,7 @@ TEST(kiteTest, tradesTest) {
     EXPECT_EQ(trade1.exchange, "NSE");
     EXPECT_EQ(trade1.exchangeOrderID, "300000000000000");
     EXPECT_EQ(trade1.exchangeTimestamp, "2021-05-31 09:16:39");
-    EXPECT_EQ(trade1.InstrumentToken, 779521);
+    EXPECT_EQ(trade1.instrumentToken, 779521);
     EXPECT_EQ(trade1.orderID, "200000000000000");
     EXPECT_EQ(trade1.product, "CNC");
     EXPECT_DOUBLE_EQ(trade1.quantity, 1);
@@ -452,7 +452,7 @@ TEST(kiteTest, orderTradesTest) {
     EXPECT_EQ(trade1.exchange, "MCX");
     EXPECT_EQ(trade1.exchangeOrderID, "300000000000000");
     EXPECT_EQ(trade1.exchangeTimestamp, "2021-05-31 16:00:36");
-    EXPECT_EQ(trade1.InstrumentToken, 58424839);
+    EXPECT_EQ(trade1.instrumentToken, 58424839);
     EXPECT_EQ(trade1.orderID, "200000000000000");
     EXPECT_EQ(trade1.product, "NRML");
     EXPECT_DOUBLE_EQ(trade1.quantity, 1);
@@ -1056,7 +1056,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_DOUBLE_EQ(data1.low, 1699.25);
     EXPECT_DOUBLE_EQ(data1.close, 1702.8);
     EXPECT_EQ(data1.volume, 2499);
-    EXPECT_DOUBLE_EQ(data1.OI, 0);
+    EXPECT_DOUBLE_EQ(data1.OI, -1);
 
     kc::historicalData data2 = DATA[1];
     EXPECT_EQ(data2.datetime, "2017-12-15T09:16:00+0530");
@@ -1065,7 +1065,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_DOUBLE_EQ(data2.low, 1698.15);
     EXPECT_DOUBLE_EQ(data2.close, 1698.15);
     EXPECT_EQ(data2.volume, 1271);
-    EXPECT_DOUBLE_EQ(data2.OI, 0);
+    EXPECT_DOUBLE_EQ(data2.OI, -1);
 
     kc::historicalData data3 = DATA[2];
     EXPECT_EQ(data3.datetime, "2017-12-15T09:17:00+0530");
@@ -1074,7 +1074,7 @@ TEST(kiteTest, getHistoricalDataTest) {
     EXPECT_DOUBLE_EQ(data3.low, 1698);
     EXPECT_DOUBLE_EQ(data3.close, 1699.25);
     EXPECT_EQ(data3.volume, 831);
-    EXPECT_DOUBLE_EQ(data3.OI, 0);
+    EXPECT_DOUBLE_EQ(data3.OI, -1);
 }
 
 // mf

@@ -43,11 +43,11 @@
 #include "kiteppexceptions.hpp"
 #include "responses/responses.hpp"
 #include "userconstants.hpp" //modes
+#include "utils.hpp"
 
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/writer.h"
-#include "rjutils.hpp"
 #include <uWS/uWS.h>
 
 namespace kiteconnect {
@@ -58,7 +58,6 @@ static_assert(std::numeric_limits<double>::is_iec559, "Requires IEEE 754 floatin
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
-namespace rju = kc::rjutils;
 
 /**
  * @brief Used for accessing websocket interface of Kite API.
@@ -236,7 +235,7 @@ class kiteWS {
         for (const int tok : instrumentToks) { toksArr.PushBack(tok, reqAlloc); }
         req.AddMember("v", toksArr, reqAlloc);
 
-        string reqStr = rju::_dump(req);
+        string reqStr = utils::json::dump(req);
         if (isConnected()) {
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = ""; };
@@ -264,7 +263,7 @@ class kiteWS {
         for (const int tok : instrumentToks) { toksArr.PushBack(tok, reqAlloc); }
         req.AddMember("v", toksArr, reqAlloc);
 
-        string reqStr = rju::_dump(req);
+        string reqStr = utils::json::dump(req);
         if (isConnected()) {
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) {
@@ -300,7 +299,7 @@ class kiteWS {
         valArr.PushBack(toksArr, reqAlloc);
         req.AddMember("v", valArr, reqAlloc);
 
-        string reqStr = rju::_dump(req);
+        string reqStr = utils::json::dump(req);
         if (isConnected()) {
             _WS->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
             for (const int tok : instrumentToks) { _subbedInstruments[tok] = mode; };
@@ -379,11 +378,10 @@ class kiteWS {
     void _processTextMessage(char* message, size_t length) {
 
         rj::Document res;
-        rju::_parse(res, string(message, length));
+        utils::json::parse(res, string(message, length));
         if (!res.IsObject()) { throw libException("Expected a JSON object"); };
 
-        string type;
-        rju::_getIfExists(res, type, "type");
+        auto type = utils::json::get<string>(res, "type");
         if (type.empty()) { throw kc::libException(FMT("Cannot recognize websocket message type {0}", type)); }
 
         if (type == "order" && onOrderUpdate) { onOrderUpdate(this, kc::postback(res["data"].GetObject())); }

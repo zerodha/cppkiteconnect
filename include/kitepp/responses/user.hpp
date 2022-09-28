@@ -3,7 +3,7 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
+#include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
 
@@ -12,6 +12,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 /// represents a user's profile
 struct userProfile {
@@ -19,20 +20,18 @@ struct userProfile {
     explicit userProfile(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, userID, "user_id");
-        kc::rjutils::_getIfExists(val, userName, "user_name");
-        kc::rjutils::_getIfExists(val, userShortName, "user_shortname");
-        kc::rjutils::_getIfExists(val, avatarURL, "avatar_url");
-        kc::rjutils::_getIfExists(val, userType, "user_type");
-        kc::rjutils::_getIfExists(val, email, "email");
-        kc::rjutils::_getIfExists(val, broker, "broker");
-        kc::rjutils::_getIfExists(val, products, "products");
-        kc::rjutils::_getIfExists(val, orderTypes, "order_types");
-        kc::rjutils::_getIfExists(val, exchanges, "exchanges");
+        userID = utils::json::get<string>(val, "user_id");
+        userName = utils::json::get<string>(val, "user_name");
+        userShortName = utils::json::get<string>(val, "user_shortname");
+        avatarURL = utils::json::get<string>(val, "avatar_url");
+        userType = utils::json::get<string>(val, "user_type");
+        email = utils::json::get<string>(val, "email");
+        broker = utils::json::get<string>(val, "broker");
+        products = utils::json::get<std::vector<string>>(val, "products");
+        orderTypes = utils::json::get<std::vector<string>>(val, "order_types");
+        exchanges = utils::json::get<std::vector<string>>(val, "exchanges");
 
-        rj::Value metaVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, metaVal, "meta", kc::rjutils::_RJValueType::Object);
-        meta.parse(metaVal.GetObject());
+        meta = utils::json::get<utils::json::JsonObject, Meta>(val, "meta");
     };
 
     string userID;
@@ -49,7 +48,7 @@ struct userProfile {
         Meta() = default;
         explicit Meta(const rj::Value::Object& val) { parse(val); };
 
-        void parse(const rj::Value::Object& val) { kc::rjutils::_getIfExists(val, dematConsent, "demat_consent"); }
+        void parse(const rj::Value::Object& val) { dematConsent = utils::json::get<string>(val, "demat_consent"); }
 
         string dematConsent;
     } meta;
@@ -61,9 +60,9 @@ struct userTokens {
     explicit userTokens(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, userID, "user_id");
-        kc::rjutils::_getIfExists(val, accessToken, "access_token");
-        kc::rjutils::_getIfExists(val, refreshToken, "refresh_token");
+        userID = utils::json::get<string>(val, "user_id");
+        accessToken = utils::json::get<string>(val, "access_token");
+        refreshToken = utils::json::get<string>(val, "refresh_token");
     };
 
     string userID;
@@ -79,9 +78,9 @@ struct userSession {
     void parse(const rj::Value::Object& val) {
         profile.parse(val);
         tokens.parse(val);
-        kc::rjutils::_getIfExists(val, apiKey, "api_key");
-        kc::rjutils::_getIfExists(val, publicToken, "public_token");
-        kc::rjutils::_getIfExists(val, loginTime, "login_time");
+        apiKey = utils::json::get<string>(val, "api_key");
+        publicToken = utils::json::get<string>(val, "public_token");
+        loginTime = utils::json::get<string>(val, "login_time");
     };
 
     string apiKey;
@@ -97,16 +96,16 @@ struct availableMargins {
     explicit availableMargins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, adHocMargin, "adhoc_margin");
-        kc::rjutils::_getIfExists(val, cash, "cash");
-        kc::rjutils::_getIfExists(val, collateral, "collateral");
-        kc::rjutils::_getIfExists(val, intradayPayin, "intraday_payin");
+        adHocMargin = utils::json::get<double>(val, "adhoc_margin");
+        cash = utils::json::get<double>(val, "cash");
+        collateral = utils::json::get<double>(val, "collateral");
+        intradayPayin = utils::json::get<double>(val, "intraday_payin");
     };
 
-    double adHocMargin = kc::DEFAULTDOUBLE;
-    double cash = kc::DEFAULTDOUBLE;
-    double collateral = kc::DEFAULTDOUBLE;
-    double intradayPayin = kc::DEFAULTDOUBLE;
+    double adHocMargin = -1;
+    double cash = -1;
+    double collateral = -1;
+    double intradayPayin = -1;
 };
 
 /// represents used margins from margins response for a single segment
@@ -115,26 +114,26 @@ struct usedMargins {
     explicit usedMargins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, debits, "debits");
-        kc::rjutils::_getIfExists(val, exposure, "exposure");
-        kc::rjutils::_getIfExists(val, M2MRealised, "m2m_realised");
-        kc::rjutils::_getIfExists(val, M2MUnrealised, "m2m_unrealised");
-        kc::rjutils::_getIfExists(val, optionPremium, "option_premium");
-        kc::rjutils::_getIfExists(val, payout, "payout");
-        kc::rjutils::_getIfExists(val, span, "span");
-        kc::rjutils::_getIfExists(val, holdingSales, "holding_sales");
-        kc::rjutils::_getIfExists(val, turnover, "turnover");
+        debits = utils::json::get<double>(val, "debits");
+        exposure = utils::json::get<double>(val, "exposure");
+        M2MRealised = utils::json::get<double>(val, "m2m_realised");
+        M2MUnrealised = utils::json::get<double>(val, "m2m_unrealised");
+        optionPremium = utils::json::get<double>(val, "option_premium");
+        payout = utils::json::get<double>(val, "payout");
+        span = utils::json::get<double>(val, "span");
+        holdingSales = utils::json::get<double>(val, "holding_sales");
+        turnover = utils::json::get<double>(val, "turnover");
     };
 
-    double debits = kc::DEFAULTDOUBLE;
-    double exposure = kc::DEFAULTDOUBLE;
-    double M2MRealised = kc::DEFAULTDOUBLE;
-    double M2MUnrealised = kc::DEFAULTDOUBLE;
-    double optionPremium = kc::DEFAULTDOUBLE;
-    double payout = kc::DEFAULTDOUBLE;
-    double span = kc::DEFAULTDOUBLE;
-    double holdingSales = kc::DEFAULTDOUBLE;
-    double turnover = kc::DEFAULTDOUBLE;
+    double debits = -1;
+    double exposure = -1;
+    double M2MRealised = -1;
+    double M2MUnrealised = -1;
+    double optionPremium = -1;
+    double payout = -1;
+    double span = -1;
+    double holdingSales = -1;
+    double turnover = -1;
 };
 
 /// represents user margins for a segment
@@ -143,17 +142,13 @@ struct margins {
     explicit margins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, enabled, "enabled");
-        kc::rjutils::_getIfExists(val, net, "net");
-        rj::Value avlVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, avlVal, "available", kc::rjutils::_RJValueType::Object);
-        rj::Value usedVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, usedVal, "utilised", kc::rjutils::_RJValueType::Object);
-        available.parse(avlVal.GetObject());
-        used.parse(usedVal.GetObject());
+        enabled = utils::json::get<bool>(val, "enabled");
+        net = utils::json::get<double>(val, "net");
+        available = utils::json::get<utils::json::JsonObject, availableMargins>(val, "available");
+        used = utils::json::get<utils::json::JsonObject, usedMargins>(val, "utilised");
     };
 
-    double net = kc::DEFAULTDOUBLE;
+    double net = -1;
     bool enabled = false;
     availableMargins available;
     usedMargins used;
@@ -165,12 +160,8 @@ struct allMargins {
     explicit allMargins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        rj::Value eqVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, eqVal, "equity", kc::rjutils::_RJValueType::Object);
-        equity.parse(eqVal.GetObject());
-        rj::Value cmVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, cmVal, "commodity", kc::rjutils::_RJValueType::Object);
-        commodity.parse(cmVal.GetObject());
+        equity = utils::json::get<utils::json::JsonObject, margins>(val, "equity");
+        commodity = utils::json::get<utils::json::JsonObject, margins>(val, "commodity");
     };
 
     margins equity;

@@ -4,7 +4,6 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -14,36 +13,37 @@ namespace kiteconnect {
 using std::string;
 namespace kc = kiteconnect;
 namespace rj = rapidjson;
+namespace utils = kc::internal::utils;
 
 /// represents a single entry in market depth returned by kWS
 struct depthWS {
-    int16_t orders = kc::DEFAULTINT;
-    int32_t quantity = kc::DEFAULTINT;
-    double price = kc::DEFAULTDOUBLE;
+    int16_t orders = -1;
+    int32_t quantity = -1;
+    double price = -1;
 };
 
 /// represents a single tick returned by kWS
 struct tick {
-    int32_t instrumentToken = kc::DEFAULTINT;
-    int32_t timestamp = kc::DEFAULTINT;
-    int32_t lastTradeTime = kc::DEFAULTINT;
-    int32_t lastTradedQuantity = kc::DEFAULTINT;
-    int32_t totalBuyQuantity = kc::DEFAULTINT;
-    int32_t totalSellQuantity = kc::DEFAULTINT;
-    int32_t volumeTraded = kc::DEFAULTINT;
-    int32_t oi = kc::DEFAULTINT;
-    int32_t oiDayHigh = kc::DEFAULTINT;
-    int32_t oiDayLow = kc::DEFAULTINT;
+    int32_t instrumentToken = -1;
+    int32_t timestamp = -1;
+    int32_t lastTradeTime = -1;
+    int32_t lastTradedQuantity = -1;
+    int32_t totalBuyQuantity = -1;
+    int32_t totalSellQuantity = -1;
+    int32_t volumeTraded = -1;
+    int32_t oi = -1;
+    int32_t oiDayHigh = -1;
+    int32_t oiDayLow = -1;
     string mode;
-    double lastPrice = kc::DEFAULTDOUBLE;
-    double averageTradePrice = kc::DEFAULTDOUBLE;
-    double netChange = kc::DEFAULTDOUBLE;
+    double lastPrice = -1;
+    double averageTradePrice = -1;
+    double netChange = -1;
     bool isTradable;
     struct OHLC {
-        double open = kc::DEFAULTDOUBLE;
-        double high = kc::DEFAULTDOUBLE;
-        double low = kc::DEFAULTDOUBLE;
-        double close = kc::DEFAULTDOUBLE;
+        double open = -1;
+        double high = -1;
+        double low = -1;
+        double close = -1;
     } ohlc;
     struct m_depth {
         std::vector<depthWS> buy;
@@ -57,35 +57,35 @@ struct postback {
     explicit postback(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, orderId, "order_id");
-        kc::rjutils::_getIfExists(val, exchangeOrderId, "exchange_order_id");
-        kc::rjutils::_getIfExists(val, placedBy, "placed_by");
-        kc::rjutils::_getIfExists(val, status, "status");
-        kc::rjutils::_getIfExists(val, statusMessage, "status_message");
-        kc::rjutils::_getIfExists(val, tradingSymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, orderType, "order_type");
-        kc::rjutils::_getIfExists(val, transactionType, "transaction_type");
-        kc::rjutils::_getIfExists(val, validity, "validity");
-        kc::rjutils::_getIfExists(val, product, "product");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, price, "price");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, filledQuantity, "filled_quantity");
-        kc::rjutils::_getIfExists(val, unfilledQuantity, "unfilled_quantity");
-        kc::rjutils::_getIfExists(val, triggerPrice, "trigger_price");
-        kc::rjutils::_getIfExists(val, userId, "user_id");
-        kc::rjutils::_getIfExists(val, orderTimestamp, "order_timestamp");
-        kc::rjutils::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        kc::rjutils::_getIfExists(val, checksum, "checksum");
+        orderId = utils::json::get<string>(val, "order_id");
+        exchangeOrderId = utils::json::get<string>(val, "exchange_order_id");
+        placedBy = utils::json::get<string>(val, "placed_by");
+        status = utils::json::get<string>(val, "status");
+        statusMessage = utils::json::get<string>(val, "status_message");
+        tradingSymbol = utils::json::get<string>(val, "tradingsymbol");
+        exchange = utils::json::get<string>(val, "exchange");
+        orderType = utils::json::get<string>(val, "order_type");
+        transactionType = utils::json::get<string>(val, "transaction_type");
+        validity = utils::json::get<string>(val, "validity");
+        product = utils::json::get<string>(val, "product");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        price = utils::json::get<double>(val, "price");
+        quantity = utils::json::get<int>(val, "quantity");
+        filledQuantity = utils::json::get<int>(val, "filled_quantity");
+        unfilledQuantity = utils::json::get<int>(val, "unfilled_quantity");
+        triggerPrice = utils::json::get<double>(val, "trigger_price");
+        userId = utils::json::get<string>(val, "user_id");
+        orderTimestamp = utils::json::get<string>(val, "order_timestamp");
+        exchangeTimestamp = utils::json::get<string>(val, "exchange_timestamp");
+        checksum = utils::json::get<string>(val, "checksum");
     };
 
-    int quantity = kc::DEFAULTINT;
-    int filledQuantity = kc::DEFAULTINT;
-    int unfilledQuantity = kc::DEFAULTINT;
-    double averagePrice = kc::DEFAULTDOUBLE;
-    double price = kc::DEFAULTDOUBLE;
-    double triggerPrice = kc::DEFAULTDOUBLE;
+    int quantity = -1;
+    int filledQuantity = -1;
+    int unfilledQuantity = -1;
+    double averagePrice = -1;
+    double price = -1;
+    double triggerPrice = -1;
     string orderId;
     string exchangeOrderId;
     string placedBy;

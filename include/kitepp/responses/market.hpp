@@ -3,7 +3,6 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -13,6 +12,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 /// contains OHLC information of a security
 struct ohlc {
@@ -20,16 +20,16 @@ struct ohlc {
     explicit ohlc(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, open, "open");
-        kc::rjutils::_getIfExists(val, high, "high");
-        kc::rjutils::_getIfExists(val, low, "low");
-        kc::rjutils::_getIfExists(val, close, "close");
+        open = utils::json::get<double>(val, "open");
+        high = utils::json::get<double>(val, "high");
+        low = utils::json::get<double>(val, "low");
+        close = utils::json::get<double>(val, "close");
     };
 
-    double open = kc::DEFAULTDOUBLE;
-    double high = kc::DEFAULTDOUBLE;
-    double low = kc::DEFAULTDOUBLE;
-    double close = kc::DEFAULTDOUBLE;
+    double open = -1;
+    double high = -1;
+    double low = -1;
+    double close = -1;
 };
 
 /// represents market depth
@@ -38,14 +38,14 @@ struct depth {
     explicit depth(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, price, "price");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, orders, "orders");
+        price = utils::json::get<double>(val, "price");
+        quantity = utils::json::get<int>(val, "quantity");
+        orders = utils::json::get<int>(val, "orders");
     };
 
-    int quantity = kc::DEFAULTINT;
+    int quantity = -1;
     int orders = 0;
-    double price = kc::DEFAULTDOUBLE;
+    double price = -1;
 };
 
 /// represents a full quote response
@@ -54,60 +54,57 @@ struct quote {
     explicit quote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
-        kc::rjutils::_getIfExists(val, timestamp, "timestamp");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-        kc::rjutils::_getIfExists(val, lastQuantity, "last_quantity");
-        kc::rjutils::_getIfExists(val, lastTradeTime, "last_trade_time");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, volume, "volume");
-        kc::rjutils::_getIfExists(val, buyQuantity, "buy_quantity");
-        kc::rjutils::_getIfExists(val, sellQuantity, "sell_quantity");
-
-        rj::Value ohlcVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, ohlcVal, "ohlc", kc::rjutils::_RJValueType::Object);
-        OHLC.parse(ohlcVal.GetObject());
-
-        kc::rjutils::_getIfExists(val, netChange, "net_change");
-        kc::rjutils::_getIfExists(val, OI, "oi");
-        kc::rjutils::_getIfExists(val, OIDayHigh, "oi_day_high");
-        kc::rjutils::_getIfExists(val, OIDayLow, "oi_day_low");
-        kc::rjutils::_getIfExists(val, lowerCircuitLimit, "lower_circuit_limit");
-        kc::rjutils::_getIfExists(val, upperCircuitLimit, "upper_circuit_limit");
-
-        rj::Value tmpVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, tmpVal, "depth", kc::rjutils::_RJValueType::Object);
-        auto depthVal = tmpVal.GetObject();
-
-        rj::Value buyDepthVal(rj::kArrayType);
-        kc::rjutils::_getIfExists(depthVal, buyDepthVal, "buy", kc::rjutils::_RJValueType::Array);
-        for (auto& i : buyDepthVal.GetArray()) { marketDepth.buy.emplace_back(i.GetObject()); };
-
-        rj::Value sellDepthVal(rj::kArrayType);
-        kc::rjutils::_getIfExists(depthVal, sellDepthVal, "sell", kc::rjutils::_RJValueType::Array);
-        for (auto& i : sellDepthVal.GetArray()) { marketDepth.sell.emplace_back(i.GetObject()); };
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        timestamp = utils::json::get<string>(val, "timestamp");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        lastQuantity = utils::json::get<int>(val, "last_quantity");
+        lastTradeTime = utils::json::get<string>(val, "last_trade_time");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        volume = utils::json::get<int>(val, "volume");
+        buyQuantity = utils::json::get<int>(val, "buy_quantity");
+        sellQuantity = utils::json::get<int>(val, "sell_quantity");
+        OHLC = utils::json::get<utils::json::JsonObject, ohlc>(val, "ohlc");
+        netChange = utils::json::get<double>(val, "net_change");
+        OI = utils::json::get<double>(val, "oi");
+        OIDayHigh = utils::json::get<double>(val, "oi_day_high");
+        OIDayLow = utils::json::get<double>(val, "oi_day_low");
+        lowerCircuitLimit = utils::json::get<double>(val, "lower_circuit_limit");
+        upperCircuitLimit = utils::json::get<double>(val, "upper_circuit_limit");
+        marketDepth = utils::json::get<utils::json::JsonObject, mDepth>(val, "depth");
     };
 
-    int instrumentToken = kc::DEFAULTINT;
-    int lastQuantity = kc::DEFAULTINT;
-    int volume = kc::DEFAULTINT;
-    int buyQuantity = kc::DEFAULTINT;
-    int sellQuantity = kc::DEFAULTINT;
-    double lastPrice = kc::DEFAULTDOUBLE;
-    double averagePrice = kc::DEFAULTDOUBLE;
-    double netChange = kc::DEFAULTDOUBLE;
-    double OI = kc::DEFAULTDOUBLE;
-    double OIDayHigh = kc::DEFAULTDOUBLE;
-    double OIDayLow = kc::DEFAULTDOUBLE;
-    double lowerCircuitLimit = kc::DEFAULTDOUBLE;
-    double upperCircuitLimit = kc::DEFAULTDOUBLE;
+    int instrumentToken = -1;
+    int lastQuantity = -1;
+    int volume = -1;
+    int buyQuantity = -1;
+    int sellQuantity = -1;
+    double lastPrice = -1;
+    double averagePrice = -1;
+    double netChange = -1;
+    double OI = -1;
+    double OIDayHigh = -1;
+    double OIDayLow = -1;
+    double lowerCircuitLimit = -1;
+    double upperCircuitLimit = -1;
     string timestamp;
     string lastTradeTime;
     ohlc OHLC;
     struct mDepth {
+        mDepth() = default;
+        explicit mDepth(const rj::Value::Object& val) { parse(val); };
+
+        void parse(const rj::Value::Object& val) {
+            rj::Value buyDepthVal(rj::kArrayType);
+            utils::json::get<utils::json::JsonArray>(val, buyDepthVal, "buy");
+            for (auto& i : buyDepthVal.GetArray()) { buy.emplace_back(i.GetObject()); };
+
+            rj::Value sellDepthVal(rj::kArrayType);
+            utils::json::get<utils::json::JsonArray>(val, sellDepthVal, "sell");
+            for (auto& i : sellDepthVal.GetArray()) { sell.emplace_back(i.GetObject()); };
+        }
+
         std::vector<depth> buy;
         std::vector<depth> sell;
-
     } marketDepth;
 };
 
@@ -117,16 +114,13 @@ struct ohlcQuote {
     explicit ohlcQuote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-
-        rj::Value ohlcVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, ohlcVal, "ohlc", kc::rjutils::_RJValueType::Object);
-        OHLC.parse(ohlcVal.GetObject());
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        OHLC = utils::json::get<utils::json::JsonObject, ohlc>(val, "ohlc");
     };
 
-    int instrumentToken = kc::DEFAULTINT;
-    double lastPrice = kc::DEFAULTDOUBLE;
+    int instrumentToken = -1;
+    double lastPrice = -1;
     ohlc OHLC;
 };
 
@@ -136,12 +130,12 @@ struct ltpQuote {
     explicit ltpQuote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        lastPrice = utils::json::get<double>(val, "last_price");
     };
 
-    int instrumentToken = kc::DEFAULTINT;
-    double lastPrice = kc::DEFAULTDOUBLE;
+    int instrumentToken = -1;
+    double lastPrice = -1;
 };
 
 /// represents parameters required for the `getHistoricalData` function
@@ -153,7 +147,7 @@ struct historicalDataParams {
     GENERATE_FLUENT_METHOD(historicalDataParams, const string&, to, To);
     GENERATE_FLUENT_METHOD(historicalDataParams, const string&, interval, Interval);
 
-    int instrumentToken = kc::DEFAULTINT;
+    int instrumentToken = -1;
     bool continuous = false;
     bool oi = false;
     string from;
@@ -167,14 +161,11 @@ struct historicalData {
     explicit historicalData(const rj::Value::Array& val) { parse(val); };
 
     void parse(const rj::Value::Array& val) {
-        /// in case returned number doesn't have decimal point.
-        /// Directly calling GetDouble() will cause error if number
-        /// doesn't have decimal.
+        // if the sent value doesn't have a floating point (this time), GetDouble() will throw error
         static auto getDouble = [](rj::Value& val) -> double {
             if (val.IsDouble()) { return val.GetDouble(); };
             if (val.IsInt()) { return val.GetInt(); };
-
-            throw libException("type wasn't the one expected (expected double) (historicalData)");
+            throw libException("type isn't double");
         };
         datetime = val[DATETIME_IDX].GetString();
         open = getDouble(val[OPEN_IDX]);
@@ -185,12 +176,12 @@ struct historicalData {
         if (val.Size() > OI_IDX) { OI = val[OI_IDX].GetInt(); };
     };
 
-    int volume = kc::DEFAULTINT;
-    int OI = kc::DEFAULTINT;
-    double open = kc::DEFAULTDOUBLE;
-    double high = kc::DEFAULTDOUBLE;
-    double low = kc::DEFAULTDOUBLE;
-    double close = kc::DEFAULTDOUBLE;
+    int volume = -1;
+    int OI = -1;
+    double open = -1;
+    double high = -1;
+    double low = -1;
+    double close = -1;
     string datetime;
     static constexpr uint8_t DATETIME_IDX = 0;
     static constexpr uint8_t OPEN_IDX = 1;
@@ -232,22 +223,18 @@ struct orderMargins {
     explicit orderMargins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, type, "type");
-        kc::rjutils::_getIfExists(val, tradingSymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, span, "span");
-        kc::rjutils::_getIfExists(val, exposure, "exposure");
-        kc::rjutils::_getIfExists(val, optionPremium, "option_premium");
-        kc::rjutils::_getIfExists(val, additional, "additional");
-        kc::rjutils::_getIfExists(val, bo, "bo");
-        kc::rjutils::_getIfExists(val, cash, "cash");
-        kc::rjutils::_getIfExists(val, var, "var");
-
-        rj::Value pnlVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, pnlVal, "pnl", kc::rjutils::_RJValueType::Object);
-        pnl.parse(pnlVal.GetObject());
-
-        kc::rjutils::_getIfExists(val, total, "total");
+        type = utils::json::get<string>(val, "type");
+        tradingSymbol = utils::json::get<string>(val, "tradingsymbol");
+        exchange = utils::json::get<string>(val, "exchange");
+        span = utils::json::get<double>(val, "span");
+        exposure = utils::json::get<double>(val, "exposure");
+        optionPremium = utils::json::get<double>(val, "option_premium");
+        additional = utils::json::get<double>(val, "additional");
+        bo = utils::json::get<double>(val, "bo");
+        cash = utils::json::get<double>(val, "cash");
+        var = utils::json::get<double>(val, "var");
+        pnl = utils::json::get<utils::json::JsonObject, PNL>(val, "pnl");
+        total = utils::json::get<double>(val, "total");
     };
 
     double span = -1;
@@ -266,8 +253,8 @@ struct orderMargins {
         explicit PNL(const rj::Value::Object& val) { parse(val); };
 
         void parse(const rj::Value::Object& val) {
-            kc::rjutils::_getIfExists(val, realised, "realised");
-            kc::rjutils::_getIfExists(val, unrealised, "unrealised");
+            realised = utils::json::get<double>(val, "realised");
+            unrealised = utils::json::get<double>(val, "unrealised");
         };
 
         double realised = -1;
@@ -299,12 +286,12 @@ struct instrument {
         exchange = tokens[EXCHANGE_IDX];
     };
 
-    int instrumentToken = kc::DEFAULTINT;
-    int exchangeToken = kc::DEFAULTINT;
-    double lastPrice = kc::DEFAULTDOUBLE;
-    double strikePrice = kc::DEFAULTDOUBLE;
-    double tickSize = kc::DEFAULTDOUBLE;
-    double lotSize = kc::DEFAULTDOUBLE;
+    int instrumentToken = -1;
+    int exchangeToken = -1;
+    double lastPrice = -1;
+    double strikePrice = -1;
+    double tickSize = -1;
+    double lotSize = -1;
     string tradingsymbol;
     string name;
     string expiry;

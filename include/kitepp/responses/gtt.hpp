@@ -3,7 +3,6 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 #include "order.hpp"
 #include "rapidjson/document.h"
@@ -14,6 +13,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 /// represents parameters of a single gtt
 struct gttParams {
@@ -23,8 +23,8 @@ struct gttParams {
     GENERATE_FLUENT_METHOD(gttParams, const string&, orderType, OrderType);
     GENERATE_FLUENT_METHOD(gttParams, const string&, product, Product);
 
-    int quantity = kc::DEFAULTINT;
-    double price = kc::DEFAULTDOUBLE;
+    int quantity = -1;
+    double price = -1;
     string transactionType;
     string orderType;
     string product;
@@ -36,13 +36,13 @@ struct GTTCondition {
     explicit GTTCondition(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, tradingsymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-        kc::rjutils::_getIfExists(val, triggerValues, "trigger_values");
+        exchange = utils::json::get<string>(val, "exchange");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        triggerValues = utils::json::get<std::vector<double>>(val, "trigger_values");
     };
 
-    double lastPrice = kc::DEFAULTDOUBLE;
+    double lastPrice = -1;
     string exchange;
     string tradingsymbol;
     std::vector<double> triggerValues;
@@ -57,7 +57,7 @@ struct placeGttParams {
     GENERATE_FLUENT_METHOD(placeGttParams, const std::vector<double>&, triggerValues, TriggerValues);
     GENERATE_FLUENT_METHOD(placeGttParams, const std::vector<gttParams>&, gttParamsList, GttParamsList);
 
-    double lastPrice = kc::DEFAULTDOUBLE;
+    double lastPrice = -1;
     string triggerType;
     string symbol;
     string exchange;
@@ -90,28 +90,21 @@ struct GTT {
     explicit GTT(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, ID, "id");
-        kc::rjutils::_getIfExists(val, userID, "user_id");
-        kc::rjutils::_getIfExists(val, type, "type");
-        kc::rjutils::_getIfExists(val, createdAt, "created_at");
-        kc::rjutils::_getIfExists(val, updatedAt, "updated_at");
-        kc::rjutils::_getIfExists(val, expiresAt, "expires_at");
-        kc::rjutils::_getIfExists(val, status, "status");
+        ID = utils::json::get<int>(val, "id");
+        userID = utils::json::get<string>(val, "user_id");
+        type = utils::json::get<string>(val, "type");
+        createdAt = utils::json::get<string>(val, "created_at");
+        updatedAt = utils::json::get<string>(val, "updated_at");
+        expiresAt = utils::json::get<string>(val, "expires_at");
+        status = utils::json::get<string>(val, "status");
+        condition = utils::json::get<utils::json::JsonObject, GTTCondition>(val, "condition");
 
-        rj::Value condnVal(rj::kObjectType);
-        kc::rjutils::_getIfExists(val, condnVal, "condition", kc::rjutils::_RJValueType::Object);
-        condition.parse(condnVal.GetObject());
-
-        auto it = val.FindMember("orders");
-        if (it == val.MemberEnd()) { throw libException("Expected value wasn't found (GTT)"); };
-        if (!it->value.IsArray()) {
-            throw libException("Expected value's type wasn't the one expected. Expected Array");
-        };
-
-        for (auto& v : it->value.GetArray()) { orders.emplace_back(v.GetObject()); };
+        rj::Value ordersBuffer(rj::kArrayType);
+        utils::json::get<utils::json::JsonArray>(val, ordersBuffer, "orders");
+        for (auto& v : ordersBuffer.GetArray()) { orders.emplace_back(v.GetObject()); };
     };
 
-    int ID = kc::DEFAULTINT;
+    int ID = -1;
     string userID;
     string type;
     string createdAt;

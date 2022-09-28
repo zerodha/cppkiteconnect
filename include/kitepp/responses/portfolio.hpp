@@ -3,7 +3,6 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -13,6 +12,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 /// respresents an individual holding
 struct holding {
@@ -20,23 +20,23 @@ struct holding {
     explicit holding(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, tradingsymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
-        kc::rjutils::_getIfExists(val, ISIN, "isin");
-        kc::rjutils::_getIfExists(val, product, "product");
-        kc::rjutils::_getIfExists(val, price, "price");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, t1Quantity, "t1_quantity");
-        kc::rjutils::_getIfExists(val, realisedQuantity, "realised_quantity");
-        kc::rjutils::_getIfExists(val, collateralQuantity, "collateral_quantity");
-        kc::rjutils::_getIfExists(val, collateralType, "collateral_type");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-        kc::rjutils::_getIfExists(val, closePrice, "close_price");
-        kc::rjutils::_getIfExists(val, PnL, "pnl");
-        kc::rjutils::_getIfExists(val, dayChange, "day_change");
-        kc::rjutils::_getIfExists(val, dayChangePercentage, "day_change_percentage");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
+        exchange = utils::json::get<string>(val, "exchange");
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        ISIN = utils::json::get<string>(val, "isin");
+        product = utils::json::get<string>(val, "product");
+        price = utils::json::get<double>(val, "price");
+        quantity = utils::json::get<int>(val, "quantity");
+        t1Quantity = utils::json::get<int>(val, "t1_quantity");
+        realisedQuantity = utils::json::get<int>(val, "realised_quantity");
+        collateralQuantity = utils::json::get<int>(val, "collateral_quantity");
+        collateralType = utils::json::get<string>(val, "collateral_type");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        closePrice = utils::json::get<double>(val, "close_price");
+        PnL = utils::json::get<double>(val, "pnl");
+        dayChange = utils::json::get<double>(val, "day_change");
+        dayChangePercentage = utils::json::get<double>(val, "day_change_percentage");
     };
 
     int instrumentToken = -1;
@@ -64,35 +64,35 @@ struct position {
     explicit position(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, tradingsymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, exchange, "exchange");
-        kc::rjutils::_getIfExists(val, instrumentToken, "instrument_token");
-        kc::rjutils::_getIfExists(val, product, "product");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, overnightQuantity, "overnight_quantity");
-        kc::rjutils::_getIfExists(val, multiplier, "multiplier");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, closePrice, "close_price");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-        kc::rjutils::_getIfExists(val, value, "value");
-        kc::rjutils::_getIfExists(val, PnL, "pnl");
-        kc::rjutils::_getIfExists(val, M2M, "m2m");
-        kc::rjutils::_getIfExists(val, unrealised, "unrealised");
-        kc::rjutils::_getIfExists(val, realised, "realised");
-        kc::rjutils::_getIfExists(val, buyQuantity, "buy_quantity");
-        kc::rjutils::_getIfExists(val, buyPrice, "buy_price");
-        kc::rjutils::_getIfExists(val, buyValue, "buy_value");
-        kc::rjutils::_getIfExists(val, buyM2MValue, "buy_m2m");
-        kc::rjutils::_getIfExists(val, sellQuantity, "sell_quantity");
-        kc::rjutils::_getIfExists(val, sellPrice, "sell_price");
-        kc::rjutils::_getIfExists(val, sellValue, "sell_value");
-        kc::rjutils::_getIfExists(val, sellM2MValue, "sell_m2m");
-        kc::rjutils::_getIfExists(val, dayBuyQuantity, "day_buy_quantity");
-        kc::rjutils::_getIfExists(val, dayBuyPrice, "day_buy_price");
-        kc::rjutils::_getIfExists(val, dayBuyValue, "day_buy_value");
-        kc::rjutils::_getIfExists(val, daySellQuantity, "day_sell_quantity");
-        kc::rjutils::_getIfExists(val, daySellPrice, "day_sell_price");
-        kc::rjutils::_getIfExists(val, daySellValue, "day_sell_value");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
+        exchange = utils::json::get<string>(val, "exchange");
+        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        product = utils::json::get<string>(val, "product");
+        quantity = utils::json::get<int>(val, "quantity");
+        overnightQuantity = utils::json::get<int>(val, "overnight_quantity");
+        multiplier = utils::json::get<double>(val, "multiplier");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        closePrice = utils::json::get<double>(val, "close_price");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        value = utils::json::get<double>(val, "value");
+        PnL = utils::json::get<double>(val, "pnl");
+        M2M = utils::json::get<double>(val, "m2m");
+        unrealised = utils::json::get<double>(val, "unrealised");
+        realised = utils::json::get<double>(val, "realised");
+        buyQuantity = utils::json::get<int>(val, "buy_quantity");
+        buyPrice = utils::json::get<double>(val, "buy_price");
+        buyValue = utils::json::get<double>(val, "buy_value");
+        buyM2MValue = utils::json::get<double>(val, "buy_m2m");
+        sellQuantity = utils::json::get<int>(val, "sell_quantity");
+        sellPrice = utils::json::get<double>(val, "sell_price");
+        sellValue = utils::json::get<double>(val, "sell_value");
+        sellM2MValue = utils::json::get<double>(val, "sell_m2m");
+        dayBuyQuantity = utils::json::get<int>(val, "day_buy_quantity");
+        dayBuyPrice = utils::json::get<double>(val, "day_buy_price");
+        dayBuyValue = utils::json::get<double>(val, "day_buy_value");
+        daySellQuantity = utils::json::get<int>(val, "day_sell_quantity");
+        daySellPrice = utils::json::get<double>(val, "day_sell_price");
+        daySellValue = utils::json::get<double>(val, "day_sell_value");
     };
 
     int instrumentToken = -1;
@@ -133,11 +133,11 @@ struct positions {
 
     void parse(const rj::Value::Object& val) {
         rj::Value netVal(rj::kArrayType);
-        kc::rjutils::_getIfExists(val, netVal, "net", kc::rjutils::_RJValueType::Array);
+        utils::json::get<utils::json::JsonArray>(val, netVal, "net");
         for (auto& i : netVal.GetArray()) { net.emplace_back(i.GetObject()); };
 
         rj::Value dayVal(rj::kArrayType);
-        kc::rjutils::_getIfExists(val, dayVal, "day", kc::rjutils::_RJValueType::Array);
+        utils::json::get<utils::json::JsonArray>(val, dayVal, "day");
         for (auto& i : dayVal.GetArray()) { day.emplace_back(i.GetObject()); };
     };
 

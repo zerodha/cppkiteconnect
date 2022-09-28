@@ -32,12 +32,15 @@
 #include <vector>
 
 #include "config.hpp"
-#include "cpp-httplib/httplib.h"
 #include "kiteppexceptions.hpp"
+
+#include "cpp-httplib/httplib.h"
+
 #include "rapidjson/document.h"
 #include "rapidjson/encodings.h"
 #include "rapidjson/rapidjson.h"
-#include "rjutils.hpp"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)                                           \
@@ -80,6 +83,15 @@ inline bool isValidArg(const string& value) { return !value.empty(); };
 namespace kiteconnect::internal::utils {
 //! init_list doesn't have compare operator & gmock needs it
 using FmtArgs = std::vector<string>;
+template <typename>
+struct isOptional : std::false_type {};
+template <typename T>
+struct isOptional<std::optional<T>> : std::true_type {};
+
+template <typename>
+struct isVector : std::false_type {};
+template <typename T>
+struct isVector<std::vector<T>> : std::true_type {};
 
 namespace json {
 
@@ -114,6 +126,121 @@ inline bool extractBool(rj::Document& doc) {
     } catch (const std::exception& ex) { throw libException("invalid body"); }
 }
 
+template <class Output, class Document = rj::Value::Object>
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+inline Output get(const Document& val, const char* name) {
+    static const auto exceptionString = [&name](const string& type) {
+        return FMT("type of {0} not is not {1}", name, type);
+    };
+
+    auto it = val.FindMember(name);
+    if (it != val.MemberEnd()) {
+        if constexpr (!isVector<Output>::value) {
+            if constexpr (std::is_same_v<std::decay_t<Output>, string>) {
+                if (it->value.IsString()) { return it->value.GetString(); };
+                if (it->value.IsNull()) { return ""; };
+                throw libException(exceptionString("string"));
+            } else if constexpr (std::is_same_v<std::decay_t<Output>, double>) {
+                if (it->value.IsDouble()) { return it->value.GetDouble(); };
+                // if the sent value doesn't have a floating point (this time), GetDouble() will throw error
+                if (it->value.IsInt()) { return it->value.GetInt(); };
+                throw libException(exceptionString("double"));
+            } else if constexpr (std::is_same_v<std::decay_t<Output>, int>) {
+                if (it->value.IsInt()) { return it->value.GetInt(); };
+                throw libException(exceptionString("int"));
+            } else if constexpr (std::is_same_v<std::decay_t<Output>, bool>) {
+                if (it->value.IsBool()) { return it->value.GetBool(); };
+                throw libException(exceptionString("bool"));
+            } else {
+                throw libException("type not supported");
+            }
+        } else {
+            if (it->value.IsArray()) {
+                Output out;
+                for (const auto& v : it->value.GetArray()) {
+                    if constexpr (std::is_same_v<std::decay_t<typename Output::value_type>, string>) {
+                        (v.IsString()) ? out.emplace_back(v.GetString()) :
+                                         throw libException(exceptionString("string"));
+                    } else if constexpr (std::is_same_v<std::decay_t<typename Output::value_type>, double>) {
+                        if (v.IsDouble()) {
+                            out.emplace_back(v.GetDouble());
+                            continue;
+                        };
+                        // if the sent value doesn't have a floating point (this time), GetDouble() will throw error
+                        if (v.IsInt()) {
+                            out.emplace_back(v.GetInt());
+                            continue;
+                        };
+                        throw libException(exceptionString("array of doubles"));
+                    } else {
+                        throw libException("type not supported");
+                    }
+                }
+                return out;
+            };
+            throw libException(exceptionString("array"));
+        }
+    } else {
+        return {};
+    }
+};
+
+template <class Val, class Output>
+Output get(const rj::Value::Object& val, const char* name) {
+    static const auto exceptionString = [&name](const string& type) {
+        return FMT("type of {0} not is not {1}", name, type);
+    };
+
+    auto it = val.FindMember(name);
+    if constexpr (std::is_same_v<Val, JsonObject>) {
+        // ! static assert
+        rj::Value out(rj::kObjectType);
+        if (it != val.MemberEnd()) {
+            if (it->value.IsObject()) { return Output(it->value.GetObject()); };
+            throw libException(exceptionString("object"));
+        };
+        return {};
+    } else if constexpr (std::is_same_v<Val, JsonArray>) {
+        // ! static assert
+        rj::Value out(rj::kArrayType);
+        if (it != val.MemberEnd()) {
+            if (it->value.IsArray()) { return Output(it->value.GetArray()); };
+            throw libException(exceptionString("array"));
+        };
+        return {};
+    };
+    return {};
+};
+
+template <class Val>
+bool get(const rj::Value::Object& val, rj::Value& out, const char* name) {
+    static const auto exceptionString = [&name](const string& type) {
+        return FMT("type of {0} not is not {1}", name, type);
+    };
+
+    auto it = val.FindMember(name);
+    if constexpr (std::is_same_v<Val, JsonObject>) {
+        if (it != val.MemberEnd()) {
+            if (it->value.IsObject()) {
+                out = it->value.GetObject();
+                return true;
+            };
+            throw libException(exceptionString("object"));
+        };
+        return false;
+    } else if constexpr (std::is_same_v<Val, JsonArray>) {
+        if (it != val.MemberEnd()) {
+            if (it->value.IsArray()) {
+                out = it->value.GetArray();
+                return true;
+            };
+            throw libException(exceptionString("array"));
+        };
+        return false;
+    };
+    return false;
+};
+
 template <class Res, class Data, bool UseCustomParser>
 Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customParser) {
     if constexpr (std::is_same_v<Data, JsonObject>) {
@@ -136,6 +263,19 @@ Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customPars
         static_assert(std::is_same_v<Res, bool>, "Res needs to be bool if Data is bool");
         return extractBool(doc);
     }
+}
+
+inline bool parse(rj::Document& dom, const string& str) {
+    rj::ParseResult result = dom.Parse(str.c_str());
+    if (result == nullptr) { throw libException(FMT("failed to parse json string: {0}", str)); };
+    return true;
+};
+
+inline string dump(rj::Document& dom) {
+    rj::StringBuffer buffer;
+    rj::Writer<rj::StringBuffer> writer(buffer);
+    dom.Accept(writer);
+    return buffer.GetString();
 }
 
 template <class T>
@@ -260,7 +400,7 @@ class response {
 
     uint16_t code = 0;                /// http code
     bool error = false;               /// true if kite api reported an error (\a status field)
-    rjutils::rj::Document data;       /// parsed body
+    rj::Document data;                /// parsed body
     string errorType = "NoException"; /// corresponds to kite api's \a error_type field (if \a error is \a true)
     string message;                   /// corresponds to kite api's \a message field (if \a error is \a true)
     string rawBody;                   /// raw body, set in case of non-json response
@@ -268,12 +408,12 @@ class response {
   private:
     void parse(uint16_t code, const string& body, bool json) {
         if (json) {
-            kc::rjutils::_parse(data, body);
+            json::parse(data, body);
             if (code != static_cast<uint16_t>(code::OK)) {
                 string status;
-                kc::rjutils::_getIfExists(data, status, "status");
-                kc::rjutils::_getIfExists(data, errorType, "error_type");
-                kc::rjutils::_getIfExists(data, message, "message");
+                status = utils::json::get<string, rj::Document>(data, "status");
+                errorType = utils::json::get<string, rj::Document>(data, "error_type");
+                message = utils::json::get<string, rj::Document>(data, "message");
                 if (status != "success") { error = true; };
             };
         } else {
@@ -358,11 +498,6 @@ struct request {
     string serializedBody;
 };
 } // namespace http
-
-template <typename>
-struct isOptional : std::false_type {};
-template <typename T>
-struct isOptional<std::optional<T>> : std::true_type {};
 
 template <class Param>
 void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {

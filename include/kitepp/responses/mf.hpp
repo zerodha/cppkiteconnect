@@ -3,7 +3,6 @@
 #include <string>
 
 #include "../config.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -13,6 +12,7 @@ namespace kiteconnect {
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
+namespace utils = kc::internal::utils;
 
 /// represents parameters required for the `placeMfOrder` function
 struct placeMfOrderParams {
@@ -54,8 +54,8 @@ struct placeMfSipResponse {
     explicit placeMfSipResponse(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, orderId, "order_id");
-        kc::rjutils::_getIfExists(val, sipId, "sip_id");
+        orderId = utils::json::get<string>(val, "order_id");
+        sipId = utils::json::get<string>(val, "sip_id");
     };
 
     string orderId;
@@ -85,25 +85,25 @@ struct mfOrder {
     explicit mfOrder(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, orderID, "order_id");
-        kc::rjutils::_getIfExists(val, exchangeOrderID, "exchange_order_id");
-        kc::rjutils::_getIfExists(val, tradingsymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, status, "status");
-        kc::rjutils::_getIfExists(val, statusMessage, "status_message");
-        kc::rjutils::_getIfExists(val, folio, "folio");
-        kc::rjutils::_getIfExists(val, fund, "fund");
-        kc::rjutils::_getIfExists(val, orderTimestamp, "order_timestamp");
-        kc::rjutils::_getIfExists(val, exchangeTimestamp, "exchange_timestamp");
-        kc::rjutils::_getIfExists(val, settlementID, "settlement_id");
-        kc::rjutils::_getIfExists(val, transactionType, "transaction_type");
-        kc::rjutils::_getIfExists(val, variety, "variety");
-        kc::rjutils::_getIfExists(val, purchaseType, "purchase_type");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
-        kc::rjutils::_getIfExists(val, amount, "amount");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, placedBy, "placed_by");
-        kc::rjutils::_getIfExists(val, tag, "tag");
+        orderID = utils::json::get<string>(val, "order_id");
+        exchangeOrderID = utils::json::get<string>(val, "exchange_order_id");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
+        status = utils::json::get<string>(val, "status");
+        statusMessage = utils::json::get<string>(val, "status_message");
+        folio = utils::json::get<string>(val, "folio");
+        fund = utils::json::get<string>(val, "fund");
+        orderTimestamp = utils::json::get<string>(val, "order_timestamp");
+        exchangeTimestamp = utils::json::get<string>(val, "exchange_timestamp");
+        settlementID = utils::json::get<string>(val, "settlement_id");
+        transactionType = utils::json::get<string>(val, "transaction_type");
+        variety = utils::json::get<string>(val, "variety");
+        purchaseType = utils::json::get<string>(val, "purchase_type");
+        quantity = utils::json::get<double>(val, "quantity");
+        amount = utils::json::get<double>(val, "amount");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        placedBy = utils::json::get<string>(val, "placed_by");
+        tag = utils::json::get<string>(val, "tag");
     };
 
     double quantity = -1;
@@ -134,14 +134,14 @@ struct mfHolding {
     explicit mfHolding(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, folio, "folio");
-        kc::rjutils::_getIfExists(val, fund, "fund");
-        kc::rjutils::_getIfExists(val, tradingsymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, averagePrice, "average_price");
-        kc::rjutils::_getIfExists(val, lastPrice, "last_price");
-        kc::rjutils::_getIfExists(val, lastPriceDate, "last_price_date");
-        kc::rjutils::_getIfExists(val, Pnl, "pnl");
-        kc::rjutils::_getIfExists(val, quantity, "quantity");
+        folio = utils::json::get<string>(val, "folio");
+        fund = utils::json::get<string>(val, "fund");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
+        averagePrice = utils::json::get<double>(val, "average_price");
+        lastPrice = utils::json::get<double>(val, "last_price");
+        lastPriceDate = utils::json::get<string>(val, "last_price_date");
+        Pnl = utils::json::get<double>(val, "pnl");
+        quantity = utils::json::get<double>(val, "quantity");
     };
 
     double averagePrice = -1;
@@ -160,24 +160,24 @@ struct mfSip {
     explicit mfSip(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        kc::rjutils::_getIfExists(val, ID, "sip_id");
-        kc::rjutils::_getIfExists(val, tradingsymbol, "tradingsymbol");
-        kc::rjutils::_getIfExists(val, fundName, "fund");
-        kc::rjutils::_getIfExists(val, dividendType, "dividend_type");
-        kc::rjutils::_getIfExists(val, transactionType, "transaction_type");
-        kc::rjutils::_getIfExists(val, status, "status");
-        kc::rjutils::_getIfExists(val, SIPType, "sip_type");
-        kc::rjutils::_getIfExists(val, created, "created");
-        kc::rjutils::_getIfExists(val, frequency, "frequency");
-        kc::rjutils::_getIfExists(val, instalmentAmount, "instalment_amount");
-        kc::rjutils::_getIfExists(val, instalments, "instalments");
-        kc::rjutils::_getIfExists(val, lastInstalment, "last_instalment");
-        kc::rjutils::_getIfExists(val, pendingInstalments, "pending_instalments");
-        kc::rjutils::_getIfExists(val, instalmentDay, "instalment_day");
-        kc::rjutils::_getIfExists(val, completedInstalments, "completed_instalments");
-        kc::rjutils::_getIfExists(val, nextInstalment, "next_instalment");
-        kc::rjutils::_getIfExists(val, triggerPrice, "trigger_price");
-        kc::rjutils::_getIfExists(val, tag, "tag");
+        ID = utils::json::get<string>(val, "sip_id");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
+        fundName = utils::json::get<string>(val, "fund");
+        dividendType = utils::json::get<string>(val, "dividend_type");
+        transactionType = utils::json::get<string>(val, "transaction_type");
+        status = utils::json::get<string>(val, "status");
+        SIPType = utils::json::get<string>(val, "sip_type");
+        created = utils::json::get<string>(val, "created");
+        frequency = utils::json::get<string>(val, "frequency");
+        instalmentAmount = utils::json::get<double>(val, "instalment_amount");
+        instalments = utils::json::get<int>(val, "instalments");
+        lastInstalment = utils::json::get<string>(val, "last_instalment");
+        pendingInstalments = utils::json::get<int>(val, "pending_instalments");
+        instalmentDay = utils::json::get<int>(val, "instalment_day");
+        completedInstalments = utils::json::get<int>(val, "completed_instalments");
+        nextInstalment = utils::json::get<string>(val, "next_instalment");
+        triggerPrice = utils::json::get<double>(val, "trigger_price");
+        tag = utils::json::get<string>(val, "tag");
     };
 
     int pendingInstalments = -1;

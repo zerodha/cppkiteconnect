@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../kite.hpp"
-#include "../rjutils.hpp"
 #include "../utils.hpp"
 
 namespace kiteconnect {
@@ -28,12 +27,8 @@ inline string kite::placeOrder(const placeOrderParams& params) {
     utils::addParam(bodyParams, params.trailingStopLoss, "trailing_stoploss");
     utils::addParam(bodyParams, params.tag, "tag");
 
-    return callApi<string, utils::json::JsonObject, true>(
-        "order.place", bodyParams, { params.variety }, [](utils::json::JsonObject& data) {
-            string orderId;
-            rjutils::_getIfExists(data, orderId, "order_id");
-            return orderId;
-        });
+    return callApi<string, utils::json::JsonObject, true>("order.place", bodyParams, { params.variety },
+        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
 };
 
 inline string kite::modifyOrder(const modifyOrderParams& params) {
@@ -47,12 +42,9 @@ inline string kite::modifyOrder(const modifyOrderParams& params) {
     utils::addParam(bodyParams, params.validity, "validity");
     utils::addParam(bodyParams, params.disclosedQuantity, "disclosed_quantity");
 
-    return callApi<string, utils::json::JsonObject, true>(
-        "order.modify", bodyParams, { params.variety, params.orderId }, [](utils::json::JsonObject& data) {
-            string orderId;
-            rjutils::_getIfExists(data, orderId, "order_id");
-            return orderId;
-        });
+    return callApi<string, utils::json::JsonObject, true>("order.modify", bodyParams,
+        { params.variety, params.orderId },
+        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
 };
 
 inline string kite::cancelOrder(const string& variety, const string& orderId, const string& parentOrderID) {
@@ -65,11 +57,8 @@ inline string kite::cancelOrder(const string& variety, const string& orderId, co
         endpoint = "order.cancel";
         fmtArgs = { variety, orderId };
     };
-    return callApi<string, utils::json::JsonObject, true>(endpoint, {}, fmtArgs, [](utils::json::JsonObject& data) {
-        string orderId;
-        rjutils::_getIfExists(data, orderId, "order_id");
-        return orderId;
-    });
+    return callApi<string, utils::json::JsonObject, true>(endpoint, {}, fmtArgs,
+        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
 };
 
 inline string kite::exitOrder(const string& variety, const string& orderId, const string& parentOrderId) {
