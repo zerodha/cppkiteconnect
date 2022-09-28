@@ -228,11 +228,11 @@ struct mfInstrument {
         lastPriceDate = tokens[LAST_PRICE_DATE_IDX];
     };
 
-    double minimumPurchaseAmount = kc::DEFAULTDOUBLE;
-    double purchaseAmountMultiplier = kc::DEFAULTDOUBLE;
-    double minimumAdditionalPurchaseAmount = kc::DEFAULTDOUBLE;
-    double minimumRedemptionQuantity = kc::DEFAULTDOUBLE;
-    double redemptionQuantityMultiplier = kc::DEFAULTDOUBLE;
+    double minimumPurchaseAmount = -1;
+    double purchaseAmountMultiplier = -1;
+    double minimumAdditionalPurchaseAmount = -1;
+    double minimumRedemptionQuantity = -1;
+    double redemptionQuantityMultiplier = -1;
     double lastPrice = kc::DEFAULTDOUBLE;
     bool purchaseAllowed = false;
     bool redemtpionAllowed = false;

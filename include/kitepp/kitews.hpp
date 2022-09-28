@@ -40,7 +40,7 @@
 #include <vector>
 
 #include "config.hpp"
-#include "kiteppexceptions.hpp"
+#include "exceptions.hpp"
 #include "responses/responses.hpp"
 #include "userconstants.hpp" //modes
 #include "utils.hpp"

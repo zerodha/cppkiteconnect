@@ -32,7 +32,7 @@
 #include <vector>
 
 #include "config.hpp"
-#include "kiteppexceptions.hpp"
+#include "exceptions.hpp"
 
 #include "cpp-httplib/httplib.h"
 
@@ -53,7 +53,6 @@ namespace kiteconnect {
 
 using std::string;
 namespace rj = rapidjson;
-namespace kc = kiteconnect;
 
 inline std::vector<string> _split(const std::string& text, char sep) {
 

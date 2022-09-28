@@ -34,7 +34,7 @@ template <class Res, class Data, bool UseCustomParser>
 inline Res kite::callApi(const string& service, const utils::http::Params& body, const utils::FmtArgs& fmtArgs,
     utils::json::CustomParser<Res, Data, UseCustomParser> customParser) {
     utils::http::response res = sendReq(endpoints.at(service), body, fmtArgs);
-    if (!res) { kiteconnect::_throwException(res.errorType, res.code, res.message); }
+    if (!res) { kiteconnect::throwException(res.errorType, res.code, res.message); }
     return utils::json::parse<Res, Data, UseCustomParser>(res.data, customParser);
 }
 } // namespace kiteconnect
