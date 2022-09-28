@@ -49,37 +49,10 @@
         return *this;                                                                                                  \
     };
 
-namespace kiteconnect {
-
+namespace kiteconnect::internal::utils {
 using std::string;
 namespace rj = rapidjson;
 
-inline std::vector<string> _split(const std::string& text, char sep) {
-
-    std::vector<std::string> tokens;
-    std::size_t start = 0, end = 0;
-    while ((end = text.find(sep, start)) != std::string::npos) {
-        tokens.emplace_back(text.substr(start, end - start));
-
-        start = end + 1;
-    };
-
-    tokens.emplace_back(text.substr(start));
-
-    return tokens;
-};
-
-// ! std::isnan should be used but doing so breaks the compilation on Windows
-// ! utilizes a IEEE 754 property that states NaN != NaN, can fail because of compiler optimizations
-// NOLINTNEXTLINE(clang-diagnostic-tautological-compare, misc-redundant-expression)
-inline bool isValidArg(int value) { return value == value; };
-// NOLINTNEXTLINE(clang-diagnostic-tautological-compare, misc-redundant-expression)
-inline bool isValidArg(double value) { return value == value; };
-inline bool isValidArg(const string& value) { return !value.empty(); };
-
-} // namespace kiteconnect
-
-namespace kiteconnect::internal::utils {
 //! init_list doesn't have compare operator & gmock needs it
 using FmtArgs = std::vector<string>;
 template <typename>
@@ -192,7 +165,7 @@ Output get(const rj::Value::Object& val, const char* name) {
 
     auto it = val.FindMember(name);
     if constexpr (std::is_same_v<Val, JsonObject>) {
-        // ! static assert
+        static_assert(std::is_constructible_v<Output, rj::Value::Object>);
         rj::Value out(rj::kObjectType);
         if (it != val.MemberEnd()) {
             if (it->value.IsObject()) { return Output(it->value.GetObject()); };
@@ -200,7 +173,7 @@ Output get(const rj::Value::Object& val, const char* name) {
         };
         return {};
     } else if constexpr (std::is_same_v<Val, JsonArray>) {
-        // ! static assert
+        static_assert(std::is_constructible_v<Output, rj::Value::Array>);
         rj::Value out(rj::kArrayType);
         if (it != val.MemberEnd()) {
             if (it->value.IsArray()) { return Output(it->value.GetArray()); };
@@ -524,6 +497,19 @@ inline std::vector<string> parseInstruments(const std::string& data) {
     };
     // remove headers
     tokens.erase(tokens.begin());
+    return tokens;
+};
+
+inline std::vector<string> split(const std::string& text, char seperator) {
+    std::vector<std::string> tokens;
+    std::size_t start = 0;
+    std::size_t end = 0;
+    while ((end = text.find(seperator, start)) != std::string::npos) {
+        tokens.emplace_back(text.substr(start, end - start));
+        start = end + 1;
+    };
+
+    tokens.emplace_back(text.substr(start));
     return tokens;
 };
 

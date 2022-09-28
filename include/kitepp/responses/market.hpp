@@ -267,7 +267,7 @@ struct instrument {
     explicit instrument(const string& val) { parse(val); };
 
     void parse(const string& val) {
-        std::vector<string> tokens = kc::_split(val, ',');
+        std::vector<string> tokens = utils::split(val, ',');
 
         static const auto toInt = [](const string& str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
         static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };

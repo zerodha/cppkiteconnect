@@ -206,7 +206,7 @@ struct mfInstrument {
     explicit mfInstrument(const string& val) { parse(val); };
 
     void parse(const string& val) {
-        std::vector<string> tokens = kc::_split(val, ',');
+        std::vector<string> tokens = utils::split(val, ',');
 
         static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
 
