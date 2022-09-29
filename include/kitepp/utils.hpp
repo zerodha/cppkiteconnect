@@ -351,7 +351,7 @@ struct endpoint {
     struct path {
 
         string operator()(const FmtArgs& fmtArgs = {}) const {
-            if (fmtArgs.empty()) {
+            if (!fmtArgs.empty()) {
                 fmt::dynamic_format_arg_store<fmt::format_context> store;
                 for (const auto& arg : fmtArgs) { store.push_back(arg); };
                 return fmt::vformat(Path, store);
@@ -362,6 +362,7 @@ struct endpoint {
         string Path;
     } Path;
     CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON;
+    CONTENT_TYPE responseType = CONTENT_TYPE::JSON;
 };
 
 class response {
@@ -459,7 +460,7 @@ struct request {
             default: throw libException("unsupported http method");
         };
 
-        return { code, data, contentType == CONTENT_TYPE::JSON };
+        return { code, data, responseType == CONTENT_TYPE::JSON };
     };
 
     utils::http::METHOD method;
@@ -467,6 +468,7 @@ struct request {
     string authToken;
     Params body;
     CONTENT_TYPE contentType = CONTENT_TYPE::NON_JSON;
+    CONTENT_TYPE responseType = CONTENT_TYPE::JSON;
     string serializedBody;
 };
 } // namespace http

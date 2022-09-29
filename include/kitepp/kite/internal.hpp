@@ -23,7 +23,7 @@ inline utils::http::response kite::sendReq(
     const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs) {
     if (endpoint.contentType == utils::http::CONTENT_TYPE::JSON) {
         return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), getAuth(), body, endpoint.contentType,
-            body.begin()->second }
+            endpoint.responseType, body.begin()->second }
             .send(client);
     }
     return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), getAuth(), body, endpoint.contentType }.send(

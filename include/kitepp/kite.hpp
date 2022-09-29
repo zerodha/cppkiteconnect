@@ -653,7 +653,8 @@ class kite {
         { "mf.order.place", { utils::http::METHOD::POST, "/mf/orders" } },
         { "mf.order.cancel", { utils::http::METHOD::DEL, "/mf/orders/{0}" } },
         { "mf.holdings", { utils::http::METHOD::GET, "/mf/holdings" } },
-        { "mf.instruments", { utils::http::METHOD::GET, "/mf/instruments" } },
+        { "mf.instruments", { utils::http::METHOD::GET, "/mf/instruments", utils::http::CONTENT_TYPE::NON_JSON,
+                                utils::http::CONTENT_TYPE::JSON } },
         { "mf.sips", { utils::http::METHOD::GET, "/mf/sips" } },
         { "mf.sip.info", { utils::http::METHOD::GET, "/mf/sips/{0}" } },
         { "mf.sip.place", { utils::http::METHOD::POST, "/mf/sips" } },
@@ -664,8 +665,10 @@ class kite {
         { "portfolio.positions", { utils::http::METHOD::GET, "/portfolio/positions" } },
         { "portfolio.positions.convert", { utils::http::METHOD::PUT, "/portfolio/positions" } },
         // market endpoints
-        { "market.instruments.all", { utils::http::METHOD::GET, "/instruments" } },
-        { "market.instruments", { utils::http::METHOD::GET, "/instruments/{0}" } },
+        { "market.instruments.all", { utils::http::METHOD::GET, "/instruments", utils::http::CONTENT_TYPE::NON_JSON,
+                                        utils::http::CONTENT_TYPE::JSON } },
+        { "market.instruments", { utils::http::METHOD::GET, "/instruments/{0}", utils::http::CONTENT_TYPE::NON_JSON,
+                                    utils::http::CONTENT_TYPE::JSON } },
         { "market.margins", { utils::http::METHOD::GET, "/margins/{0}" } },
         { "market.historical", { utils::http::METHOD::GET, "/instruments/historical/{0}/"
                                                            "{1}?from={2}&to={3}&continuous={4}&oi={5}" } },
