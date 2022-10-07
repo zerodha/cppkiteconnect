@@ -32,7 +32,6 @@
 
 #include "cpp-httplib/httplib.h"
 
-#include "config.hpp"
 #include "responses/responses.hpp"
 #include "utils.hpp"
 

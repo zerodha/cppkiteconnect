@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "../config.hpp"
 #include "../utils.hpp"
 #include "order.hpp"
 #include "rapidjson/document.h"

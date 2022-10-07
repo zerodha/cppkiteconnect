@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "../config.hpp"
 #include "../utils.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/rapidjson.h"
@@ -233,7 +232,7 @@ struct mfInstrument {
     double minimumAdditionalPurchaseAmount = -1;
     double minimumRedemptionQuantity = -1;
     double redemptionQuantityMultiplier = -1;
-    double lastPrice = kc::DEFAULTDOUBLE;
+    double lastPrice = -1;
     bool purchaseAllowed = false;
     bool redemtpionAllowed = false;
     string tradingsymbol;
