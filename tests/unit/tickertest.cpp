@@ -35,13 +35,13 @@ namespace kiteconnect {
 
 namespace kc = kiteconnect;
 
-TEST(kWSTest, binaryParsingTest) {
-    kc::ticker kws("apikey123");
+TEST(tickerTest, binaryParsingTest) {
+    kc::ticker Ticker("apikey123");
     std::ifstream dataFile("../../tests/mock_custom/websocket_ticks.bin");
     ASSERT_TRUE(dataFile);
     std::vector<char> data(std::istreambuf_iterator<char>(dataFile), {});
 
-    std::vector<kc::tick> ticks = kws.parseBinaryMessage(data.data(), data.size());
+    std::vector<kc::tick> ticks = Ticker.parseBinaryMessage(data.data(), data.size());
 
     ASSERT_EQ(ticks.size(), 2);
     kc::tick tick1 = ticks[0];

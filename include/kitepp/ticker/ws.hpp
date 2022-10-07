@@ -201,7 +201,7 @@ class ticker {
     void setMode(const string& mode, const std::vector<int>& instrumentTokens);
 
   private:
-    friend class kWSTest_binaryParsingTest_Test;
+    friend class tickerTest_binaryParsingTest_Test;
     const string connectUrlFmt = "wss://ws.kite.trade/?api_key={0}&access_token={1}";
     string key;
     string token;

@@ -43,16 +43,16 @@ find_library(UWS_LIB uWS REQUIRED)
 find_path(UWS_INCLUDE uWS REQUIRED)
 
 # kws-test
-set(kWSTest_BINARY_NAME kWSTest)
+set(tickerTest_BINARY_NAME tickerTest)
 
-add_executable(${kWSTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/kwstest.cpp")
-add_test(NAME kiteWS-test COMMAND ${kWSTest_BINARY_NAME})
+add_executable(${tickerTest_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/tickertest.cpp")
+add_test(NAME kiteWS-test COMMAND ${tickerTest_BINARY_NAME})
 
 if((NOT UV_LIB OR NOT UV_INCLUDE) AND DEFINED LINUX)
     message("Couldn't find libuv..\nProceding anyway since Linux was detected..")
-    target_include_directories(${kWSTest_BINARY_NAME} PUBLIC ${UWS_INCLUDE} ${GTEST_INCLUDE_DIRS})
-    target_link_libraries(${kWSTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} Threads::Threads)
+    target_include_directories(${tickerTest_BINARY_NAME} PUBLIC ${UWS_INCLUDE} ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(${tickerTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} Threads::Threads)
 else()
-    target_include_directories(${kWSTest_BINARY_NAME} PUBLIC ${UV_INCLUDE} ${UWS_INCLUDE} ${GTEST_INCLUDE_DIRS})
-    target_link_libraries(${kWSTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UV_LIB} ${UWS_LIB} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} Threads::Threads)
+    target_include_directories(${tickerTest_BINARY_NAME} PUBLIC ${UV_INCLUDE} ${UWS_INCLUDE} ${GTEST_INCLUDE_DIRS})
+    target_link_libraries(${tickerTest_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UV_LIB} ${UWS_LIB} ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} Threads::Threads)
 endif()
