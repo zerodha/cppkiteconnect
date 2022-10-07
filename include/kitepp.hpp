@@ -35,6 +35,6 @@
 
 #include "kitepp/kite.hpp"
 #include "kitepp/kite/kite.hpp"
-#include "kitepp/kitews.hpp"
 #include "kitepp/responses/responses.hpp"
+#include "kitepp/ticker.hpp"
 #include "kitepp/userconstants.hpp"

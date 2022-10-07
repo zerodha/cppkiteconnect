@@ -65,6 +65,8 @@ struct isVector : std::false_type {};
 template <typename T>
 struct isVector<std::vector<T>> : std::true_type {};
 
+constexpr uint16_t MILLISECONDS_IN_A_SECOND = 100;
+
 namespace json {
 
 using JsonObject = rj::GenericValue<rj::UTF8<>>::Object;
@@ -95,6 +97,12 @@ inline JsonArray extractArray(rj::Document& doc) {
 inline bool extractBool(rj::Document& doc) {
     try {
         return doc["data"].GetBool();
+    } catch (const std::exception& ex) { throw libException("invalid body"); }
+}
+
+inline string extractString(rj::Document& doc) {
+    try {
+        return doc["data"].GetString();
     } catch (const std::exception& ex) { throw libException("invalid body"); }
 }
 
@@ -243,7 +251,7 @@ inline bool parse(rj::Document& dom, const string& str) {
     return true;
 };
 
-inline string dump(rj::Document& dom) {
+inline string serialize(rj::Document& dom) {
     rj::StringBuffer buffer;
     rj::Writer<rj::StringBuffer> writer(buffer);
     dom.Accept(writer);
@@ -472,6 +480,11 @@ struct request {
     string serializedBody;
 };
 } // namespace http
+
+namespace ws::ERROR_CODE {
+const unsigned int NORMAL_CLOSURE = 1000;
+const unsigned int NO_REASON = 1006;
+} // namespace ws::ERROR_CODE
 
 template <class Param>
 void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
