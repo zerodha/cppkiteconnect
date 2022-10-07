@@ -1,3 +1,6 @@
 [submodule "tests/mock_responses"]
 	path = tests/mock_responses
 	url = https://github.com/zerodha/kiteconnect-mocks
+[submodule "include/PicoSHA2"]
+	path = include/PicoSHA2
+	url = https://github.com/okdshin/PicoSHA2.git
