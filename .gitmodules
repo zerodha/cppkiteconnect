@@ -4,3 +4,6 @@
 [submodule "include/PicoSHA2"]
 	path = include/PicoSHA2
 	url = https://github.com/okdshin/PicoSHA2.git
+[submodule "include/fmt"]
+	path = include/fmt
+	url = https://github.com/fmtlib/fmt.git
