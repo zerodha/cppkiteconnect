@@ -36,11 +36,11 @@
 #include "cpp-httplib/httplib.h"
 #define FMT_HEADER_ONLY 1
 #include "fmt/include/fmt/format.h"
-#include "rapidjson/document.h"
-#include "rapidjson/encodings.h"
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
+#include "rapidjson/include/rapidjson/document.h"
+#include "rapidjson/include/rapidjson/encodings.h"
+#include "rapidjson/include/rapidjson/rapidjson.h"
+#include "rapidjson/include/rapidjson/stringbuffer.h"
+#include "rapidjson/include/rapidjson/writer.h"
 
 // Check endieness of platform
 #if defined(_WIN32)

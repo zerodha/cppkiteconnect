@@ -4,8 +4,8 @@
 
 #include "../utils.hpp"
 #include "order.hpp"
-#include "rapidjson/document.h"
-#include "rapidjson/rapidjson.h"
+#include "rapidjson/include/rapidjson/document.h"
+#include "rapidjson/include/rapidjson/rapidjson.h"
 
 namespace kiteconnect {
 
