@@ -34,9 +34,8 @@
 #include "exceptions.hpp"
 
 #include "cpp-httplib/httplib.h"
-
 #define FMT_HEADER_ONLY 1
-#include "fmt/format.h"
+#include "fmt/include/fmt/format.h"
 #include "rapidjson/document.h"
 #include "rapidjson/encodings.h"
 #include "rapidjson/rapidjson.h"
