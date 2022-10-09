@@ -1,22 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
-project(kitepp) 
+project(CPPKiteConnect) 
 
 function(downloadFile URL destination hashType hash)
-
-if (NOT EXISTS ${destination})
-    
-    message("Downloading ${destination} ..")
-    file(DOWNLOAD   ${URL} 
-                    ${destination}
-                    TIMEOUT 60  # seconds
-                    EXPECTED_HASH ${hashType}=${hash}
+    if(NOT EXISTS ${destination})
+        message("Downloading ${destination} ..")
+        file(DOWNLOAD ${URL}
+            ${destination}
+            TIMEOUT 60 # seconds
+            EXPECTED_HASH ${hashType}=${hash}
         )
-else()
-
-message("${destination} already exists")
-
-endif()
-
+    else()
+        message("${destination} already exists")
+    endif()
 endfunction(downloadFile)
 
 #Download uWS v0.14
@@ -45,9 +40,7 @@ downloadFile(   "https://dist.libuv.org/dist/v1.40.0/libuv-v1.40.0.tar.gz"
                 "${CMAKE_SOURCE_DIR}/deps/libuv-v1.40.0.tar.gz"
                 SHA256
                 61a90db95bac00adec1cc5ddc767ebbcaabc70242bd1134a7a6b1fb1d498a194
-            )
-
-#Download zlib
+            )# Download zlib
 downloadFile(   "https://github.com/madler/zlib/archive/v1.2.11.tar.gz"
                 "${CMAKE_SOURCE_DIR}/deps/zlib-v1.2.11.tar.gz"
                 SHA256
