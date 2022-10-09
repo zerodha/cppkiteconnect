@@ -20,12 +20,15 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, profile) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/profile.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/profile.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/user/profile" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     kc::userProfile profile = Kite.profile();
 
@@ -37,19 +40,25 @@ TEST(kiteTest, profile) {
     EXPECT_EQ(profile.userType, "investor");
     EXPECT_EQ(profile.email, "xxxyyy@gmail.com");
     EXPECT_EQ(profile.broker, "ZERODHA");
-    EXPECT_THAT(profile.products, ::testing::ElementsAre("BO", "CNC", "CO", "MIS", "NRML"));
-    EXPECT_THAT(profile.orderTypes, ::testing::ElementsAre("LIMIT", "MARKET", "SL", "SL-M"));
-    EXPECT_THAT(profile.exchanges, ::testing::ElementsAre("BSE", "BFO", "NFO", "MCX", "CDS", "NSE"));
+    EXPECT_THAT(profile.products,
+        ::testing::ElementsAre("BO", "CNC", "CO", "MIS", "NRML"));
+    EXPECT_THAT(profile.orderTypes,
+        ::testing::ElementsAre("LIMIT", "MARKET", "SL", "SL-M"));
+    EXPECT_THAT(profile.exchanges,
+        ::testing::ElementsAre("BSE", "BFO", "NFO", "MCX", "CDS", "NSE"));
     EXPECT_EQ(profile.meta.dematConsent, "physical");
 };
 
 TEST(kiteTest, getMarginsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/margins.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/margins.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/user/margins" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     kc::allMargins margins = Kite.getMargins();
 
@@ -92,14 +101,17 @@ TEST(kiteTest, getMarginsTest) {
 }
 
 TEST(kiteTest, getMarginsSegmentTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/margins_equity.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/margins_equity.json");
     const string SEGMENT = "equity";
 
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins/{0}" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/user/margins/{0}" },
                           utils::http::Params {}, utils::FmtArgs { SEGMENT }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     kc::margins margins = Kite.getMargins(SEGMENT);
 

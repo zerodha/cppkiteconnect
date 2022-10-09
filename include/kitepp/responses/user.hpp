@@ -47,7 +47,9 @@ struct userProfile {
         Meta() = default;
         explicit Meta(const rj::Value::Object& val) { parse(val); };
 
-        void parse(const rj::Value::Object& val) { dematConsent = utils::json::get<string>(val, "demat_consent"); }
+        void parse(const rj::Value::Object& val) {
+            dematConsent = utils::json::get<string>(val, "demat_consent");
+        }
 
         string dematConsent;
     } meta;
@@ -143,8 +145,10 @@ struct margins {
     void parse(const rj::Value::Object& val) {
         enabled = utils::json::get<bool>(val, "enabled");
         net = utils::json::get<double>(val, "net");
-        available = utils::json::get<utils::json::JsonObject, availableMargins>(val, "available");
-        used = utils::json::get<utils::json::JsonObject, usedMargins>(val, "utilised");
+        available = utils::json::get<utils::json::JsonObject, availableMargins>(
+            val, "available");
+        used = utils::json::get<utils::json::JsonObject, usedMargins>(
+            val, "utilised");
     };
 
     double net = -1;
@@ -159,8 +163,10 @@ struct allMargins {
     explicit allMargins(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        equity = utils::json::get<utils::json::JsonObject, margins>(val, "equity");
-        commodity = utils::json::get<utils::json::JsonObject, margins>(val, "commodity");
+        equity =
+            utils::json::get<utils::json::JsonObject, margins>(val, "equity");
+        commodity = utils::json::get<utils::json::JsonObject, margins>(
+            val, "commodity");
     };
 
     margins equity;

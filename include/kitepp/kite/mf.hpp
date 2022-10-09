@@ -18,13 +18,17 @@ inline string kite::placeMfOrder(const placeMfOrderParams& params) {
     utils::addParam(bodyParams, params.amount, "amount");
     utils::addParam(bodyParams, params.tag, "tag");
 
-    return callApi<string, utils::json::JsonObject, true>("mf.order.place", bodyParams, {},
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
+    return callApi<string, utils::json::JsonObject, true>(
+        "mf.order.place", bodyParams, {}, [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "order_id");
+        });
 };
 
 inline string kite::cancelMfOrder(const string& orderId) {
-    return callApi<string, utils::json::JsonObject, true>("mf.order.cancel", {}, { orderId },
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
+    return callApi<string, utils::json::JsonObject, true>(
+        "mf.order.cancel", {}, { orderId }, [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "order_id");
+        });
 };
 
 inline std::vector<mfOrder> kite::getMfOrders() {
@@ -37,7 +41,8 @@ inline std::vector<mfOrder> kite::getMfOrders() {
 };
 
 inline mfOrder kite::getMfOrder(const string& orderId) {
-    return callApi<mfOrder, utils::json::JsonObject>("mf.order.info", {}, { orderId });
+    return callApi<mfOrder, utils::json::JsonObject>(
+        "mf.order.info", {}, { orderId });
 };
 
 inline std::vector<mfHolding> kite::getMfHoldings() {
@@ -62,7 +67,8 @@ inline placeMfSipResponse kite::placeMfSip(const placeMfSipParams& params) {
     utils::addParam(bodyParams, params.installmentDay, "instalment_day");
     utils::addParam(bodyParams, params.tag, "tag");
 
-    return callApi<placeMfSipResponse, utils::json::JsonObject>("mf.sip.place", bodyParams);
+    return callApi<placeMfSipResponse, utils::json::JsonObject>(
+        "mf.sip.place", bodyParams);
 };
 
 inline string kite::modifyMfSip(const modifyMfSipParams& params) {
@@ -74,13 +80,17 @@ inline string kite::modifyMfSip(const modifyMfSipParams& params) {
     utils::addParam(bodyParams, params.frequency, "frequency");
     utils::addParam(bodyParams, params.installmentDay, "instalment_day");
 
-    return callApi<string, utils::json::JsonObject, true>("mf.sip.modify", bodyParams, { params.sipId },
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
+    return callApi<string, utils::json::JsonObject, true>("mf.sip.modify",
+        bodyParams, { params.sipId }, [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "order_id");
+        });
 };
 
 inline string kite::cancelMfSip(const string& sipId) {
-    return callApi<string, utils::json::JsonObject, true>("mf.sip.cancel", {}, { sipId },
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "sip_id"); });
+    return callApi<string, utils::json::JsonObject, true>(
+        "mf.sip.cancel", {}, { sipId }, [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "sip_id");
+        });
 };
 
 inline std::vector<mfSip> kite::getSips() {
@@ -93,7 +103,8 @@ inline std::vector<mfSip> kite::getSips() {
 };
 
 inline mfSip kite::getSip(const string& sipId) {
-    return callApi<mfSip, utils::json::JsonObject>("mf.sip.info", {}, { sipId });
+    return callApi<mfSip, utils::json::JsonObject>(
+        "mf.sip.info", {}, { sipId });
 };
 
 inline std::vector<mfInstrument> kite::getMfInstruments() {

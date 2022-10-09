@@ -20,12 +20,15 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, holdingsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/holdings.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/holdings.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/holdings" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/portfolio/holdings" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const std::vector<kc::holding> HOLDINGS = Kite.holdings();
 
@@ -51,12 +54,15 @@ TEST(kiteTest, holdingsTest) {
 }
 
 TEST(kiteTest, getPositionsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/positions.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/positions.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/positions" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/portfolio/positions" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const kc::positions POSITIONS = Kite.getPositions();
 
@@ -250,7 +256,8 @@ TEST(kiteTest, getPositionsTest) {
 }
 
 TEST(kiteTest, convertPositionTest) {
-    const string JSON = kc::test::readFile("../tests/mock_custom/convert_position.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_custom/convert_position.json");
     constexpr int QUNATITY = 11;
     const string EXCHANGE = "BSE";
     const string SYMBOL = "INFY";
@@ -260,7 +267,8 @@ TEST(kiteTest, convertPositionTest) {
     const string NEW_PRODUCT = "MIS";
     constexpr bool EXPECTED_RESULT = true;
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/portfolio/positions" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT,
+                                  "/portfolio/positions" },
                           utils::http::Params {
                               { "quantity", std::to_string(QUNATITY) },
                               { "tradingsymbol", SYMBOL },
@@ -272,16 +280,18 @@ TEST(kiteTest, convertPositionTest) {
                           },
                           utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const bool RESULT = Kite.convertPosition(kc::convertPositionParams()
-                                                 .Quantity(QUNATITY)
-                                                 .Exchange(EXCHANGE)
-                                                 .Symbol(SYMBOL)
-                                                 .TransactionType(TRANSACTION_TYPE)
-                                                 .PositionType(POSITION_TYPE)
-                                                 .OldProduct(OLD_PRODUCT)
-                                                 .NewProduct(NEW_PRODUCT));
+    const bool RESULT =
+        Kite.convertPosition(kc::convertPositionParams()
+                                 .Quantity(QUNATITY)
+                                 .Exchange(EXCHANGE)
+                                 .Symbol(SYMBOL)
+                                 .TransactionType(TRANSACTION_TYPE)
+                                 .PositionType(POSITION_TYPE)
+                                 .OldProduct(OLD_PRODUCT)
+                                 .NewProduct(NEW_PRODUCT));
 
     EXPECT_EQ(RESULT, EXPECTED_RESULT);
 }

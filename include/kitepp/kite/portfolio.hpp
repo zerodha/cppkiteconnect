@@ -16,7 +16,9 @@ inline std::vector<holding> kite::holdings() {
         });
 };
 
-inline positions kite::getPositions() { return callApi<positions, utils::json::JsonObject>("portfolio.positions"); };
+inline positions kite::getPositions() {
+    return callApi<positions, utils::json::JsonObject>("portfolio.positions");
+};
 
 inline bool kite::convertPosition(const convertPositionParams& params) {
     utils::http::Params bodyParams = {

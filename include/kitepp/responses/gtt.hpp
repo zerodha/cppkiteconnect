@@ -18,7 +18,8 @@ namespace utils = kc::internal::utils;
 struct gttParams {
     GENERATE_FLUENT_METHOD(gttParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(gttParams, double, price, Price);
-    GENERATE_FLUENT_METHOD(gttParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(
+        gttParams, const string&, transactionType, TransactionType);
     GENERATE_FLUENT_METHOD(gttParams, const string&, orderType, OrderType);
     GENERATE_FLUENT_METHOD(gttParams, const string&, product, Product);
 
@@ -38,7 +39,8 @@ struct GTTCondition {
         exchange = utils::json::get<string>(val, "exchange");
         tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
         lastPrice = utils::json::get<double>(val, "last_price");
-        triggerValues = utils::json::get<std::vector<double>>(val, "trigger_values");
+        triggerValues =
+            utils::json::get<std::vector<double>>(val, "trigger_values");
     };
 
     double lastPrice = -1;
@@ -50,11 +52,14 @@ struct GTTCondition {
 /// represents parameters required for the `placeGtt` function
 struct placeGttParams {
     GENERATE_FLUENT_METHOD(placeGttParams, double, lastPrice, LastPrice);
-    GENERATE_FLUENT_METHOD(placeGttParams, const string&, triggerType, TriggerType);
+    GENERATE_FLUENT_METHOD(
+        placeGttParams, const string&, triggerType, TriggerType);
     GENERATE_FLUENT_METHOD(placeGttParams, const string&, symbol, Symbol);
     GENERATE_FLUENT_METHOD(placeGttParams, const string&, exchange, Exchange);
-    GENERATE_FLUENT_METHOD(placeGttParams, const std::vector<double>&, triggerValues, TriggerValues);
-    GENERATE_FLUENT_METHOD(placeGttParams, const std::vector<gttParams>&, gttParamsList, GttParamsList);
+    GENERATE_FLUENT_METHOD(placeGttParams, const std::vector<double>&,
+        triggerValues, TriggerValues);
+    GENERATE_FLUENT_METHOD(placeGttParams, const std::vector<gttParams>&,
+        gttParamsList, GttParamsList);
 
     double lastPrice = -1;
     string triggerType;
@@ -68,11 +73,14 @@ struct placeGttParams {
 struct modifyGttParams {
     GENERATE_FLUENT_METHOD(modifyGttParams, int, triggerId, TriggerId);
     GENERATE_FLUENT_METHOD(modifyGttParams, double, lastPrice, LastPrice);
-    GENERATE_FLUENT_METHOD(modifyGttParams, const string&, triggerType, TriggerType);
+    GENERATE_FLUENT_METHOD(
+        modifyGttParams, const string&, triggerType, TriggerType);
     GENERATE_FLUENT_METHOD(modifyGttParams, const string&, symbol, Symbol);
     GENERATE_FLUENT_METHOD(modifyGttParams, const string&, exchange, Exchange);
-    GENERATE_FLUENT_METHOD(modifyGttParams, const std::vector<double>&, triggerValues, TriggerValues);
-    GENERATE_FLUENT_METHOD(modifyGttParams, const std::vector<gttParams>&, gttParamsList, GttParamsList);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const std::vector<double>&,
+        triggerValues, TriggerValues);
+    GENERATE_FLUENT_METHOD(modifyGttParams, const std::vector<gttParams>&,
+        gttParamsList, GttParamsList);
 
     int triggerId;
     double lastPrice;
@@ -96,11 +104,14 @@ struct GTT {
         updatedAt = utils::json::get<string>(val, "updated_at");
         expiresAt = utils::json::get<string>(val, "expires_at");
         status = utils::json::get<string>(val, "status");
-        condition = utils::json::get<utils::json::JsonObject, GTTCondition>(val, "condition");
+        condition = utils::json::get<utils::json::JsonObject, GTTCondition>(
+            val, "condition");
 
         rj::Value ordersBuffer(rj::kArrayType);
         utils::json::get<utils::json::JsonArray>(val, ordersBuffer, "orders");
-        for (auto& v : ordersBuffer.GetArray()) { orders.emplace_back(v.GetObject()); };
+        for (auto& v : ordersBuffer.GetArray()) {
+            orders.emplace_back(v.GetObject());
+        };
     };
 
     int ID = -1;

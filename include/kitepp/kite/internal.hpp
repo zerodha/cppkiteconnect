@@ -17,24 +17,31 @@ inline string kite::encodeSymbolsList(const std::vector<string>& symbols) {
     return str;
 }
 
-// GMock requires mock methods to be virtual (hi-perf dep injection is not possible here ಥ﹏ಥ).
-// Macro used to eliminate vptr overhead.
+// GMock requires mock methods to be virtual (hi-perf dep injection is not
+// possible here ಥ﹏ಥ). Macro used to eliminate vptr overhead.
 inline utils::http::response kite::sendReq(
-    const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs) {
+    const utils::http::endpoint& endpoint, const utils::http::Params& body,
+    const utils::FmtArgs& fmtArgs) {
     if (endpoint.contentType == utils::http::CONTENT_TYPE::JSON) {
-        return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), getAuth(), body, endpoint.contentType,
-            endpoint.responseType, body.begin()->second }
+        return utils::http::request { endpoint.method, endpoint.Path(fmtArgs),
+            getAuth(), body, endpoint.contentType, endpoint.responseType,
+            body.begin()->second }
             .send(client);
     }
-    return utils::http::request { endpoint.method, endpoint.Path(fmtArgs), getAuth(), body, endpoint.contentType }.send(
-        client);
+    return utils::http::request { endpoint.method, endpoint.Path(fmtArgs),
+        getAuth(), body, endpoint.contentType }
+        .send(client);
 };
 
 template <class Res, class Data, bool UseCustomParser>
-inline Res kite::callApi(const string& service, const utils::http::Params& body, const utils::FmtArgs& fmtArgs,
+inline Res kite::callApi(const string& service, const utils::http::Params& body,
+    const utils::FmtArgs& fmtArgs,
     utils::json::CustomParser<Res, Data, UseCustomParser> customParser) {
     utils::http::response res = sendReq(endpoints.at(service), body, fmtArgs);
-    if (!res) { kiteconnect::throwException(res.errorType, res.code, res.message); }
-    return utils::json::parse<Res, Data, UseCustomParser>(res.data, customParser);
+    if (!res) {
+        kiteconnect::throwException(res.errorType, res.code, res.message);
+    }
+    return utils::json::parse<Res, Data, UseCustomParser>(
+        res.data, customParser);
 }
 } // namespace kiteconnect

@@ -4,23 +4,23 @@
  *
  *  Copyright (c) 2020-2021 Bhumit Attarde
  *
- *  Permission is hereby  granted, free of charge, to any  person obtaining a copy
- *  of this software and associated  documentation files (the "Software"), to deal
- *  in the Software  without restriction, including without  limitation the rights
- *  to  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
- *  copies  of  the Software,  and  to  permit persons  to  whom  the Software  is
- *  furnished to do so, subject to the following conditions:
+ *  Permission is hereby  granted, free of charge, to any  person obtaining a
+ * copy of this software and associated  documentation files (the "Software"),
+ * to deal in the Software  without restriction, including without  limitation
+ * the rights to  use, copy,  modify, merge,  publish, distribute,  sublicense,
+ * and/or  sell copies  of  the Software,  and  to  permit persons  to  whom the
+ * Software  is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS OR
- *  IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF  MERCHANTABILITY,
- *  FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN NO EVENT  SHALL THE
- *  AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY  CLAIM,  DAMAGES OR  OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS
+ * OR IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN
+ * NO EVENT  SHALL THE AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY
+ * CLAIM,  DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT
+ * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #pragma once
@@ -53,7 +53,8 @@
 namespace kiteconnect {
 
 // To make sure doubles are parsed correctly
-static_assert(std::numeric_limits<double>::is_iec559, "Requires IEEE 754 floating point!");
+static_assert(std::numeric_limits<double>::is_iec559,
+    "Requires IEEE 754 floating point!");
 
 using std::string;
 namespace kc = kiteconnect;
@@ -75,7 +76,8 @@ class ticker {
     /// @brief Called when a message is received.
     std::function<void(ticker* ws, const string& message)> onMessage;
 
-    /// @brief Called when connection is closed with an error or websocket server sends an error message.
+    /// @brief Called when connection is closed with an error or websocket
+    /// server sends an error message.
     std::function<void(ticker* ws, int code, const string& message)> onError;
 
     /// @brief Called when an error occures while trying to connect.
@@ -86,18 +88,20 @@ class ticker {
      *
      * Auto reconnection:
      *
-     * Auto reconnection is disabled by default and can be enabled by setting `enablereconnect` to `true` in `kiteWS`'s
-     * constructor.
-     * Auto reonnection mechanism is based on Exponential backoff algorithm in which next retry interval
-     * will be increased exponentially. maxreconnectdelay and maxreconnecttries params can be used to tewak the
-     * alogrithm where maxreconnectdelay is the maximum delay after which subsequent reconnection interval will become
-     * constant and maxreconnecttries is maximum number of retries before its quiting reconnection.
+     * Auto reconnection is disabled by default and can be enabled by setting
+     * `enablereconnect` to `true` in `kiteWS`'s constructor. Auto reonnection
+     * mechanism is based on Exponential backoff algorithm in which next retry
+     * interval will be increased exponentially. maxreconnectdelay and
+     * maxreconnecttries params can be used to tewak the alogrithm where
+     * maxreconnectdelay is the maximum delay after which subsequent
+     * reconnection interval will become constant and maxreconnecttries is
+     * maximum number of retries before its quiting reconnection.
      */
     std::function<void(ticker* ws, unsigned int attemptCount)> onTryReconnect;
 
     /**
-     * @brief Called when reconnect attempts exceed maximum reconnect attempts set by user i.e., when client is unable
-     * to reconnect
+     * @brief Called when reconnect attempts exceed maximum reconnect attempts
+     * set by user i.e., when client is unable to reconnect
      */
     std::function<void(ticker* ws)> onReconnectFail;
 
@@ -111,10 +115,13 @@ class ticker {
      * @param connecttimeout Connection timeout
      * @param enablereconnect Should be set to `true` for enabling reconnection
      * @param maxreconnectdelay Maximum reconnect delay for reconnection
-     * @param maxreconnecttries Maximum reconnection attempts after which onReconnectFail will be called and no further
-     * attempt to reconnect will be made.
+     * @param maxreconnecttries Maximum reconnection attempts after which
+     * onReconnectFail will be called and no further attempt to reconnect will
+     * be made.
      */
-    explicit ticker(string Key, unsigned int ConnectTimeout = DEFAULT_CONNECT_TIMEOUT, bool EnableReconnect = false,
+    explicit ticker(string Key,
+        unsigned int ConnectTimeout = DEFAULT_CONNECT_TIMEOUT,
+        bool EnableReconnect = false,
         unsigned int MaxReconnectDelay = DEFAULT_MAX_RECONNECT_DELAY,
         unsigned int MaxReconnectTries = DEFAULT_MAX_RECONNECT_TRIES);
 
@@ -161,7 +168,8 @@ class ticker {
     bool isConnected() const;
 
     /**
-     * @brief Get the last time heartbeat was received. Should be used in conjunction with `isConnected()` method.
+     * @brief Get the last time heartbeat was received. Should be used in
+     * conjunction with `isConnected()` method.
      *
      * @return std::chrono::time_point<std::chrono::system_clock>
      */
@@ -173,7 +181,8 @@ class ticker {
     void run();
 
     /**
-     * @brief Stop the client. Closes the connection if connected. Should be the last method to be called.
+     * @brief Stop the client. Closes the connection if connected. Should be the
+     * last method to be called.
      */
     void stop();
 
@@ -201,7 +210,8 @@ class ticker {
 
   private:
     friend class tickerTest_binaryParsingTest_Test;
-    const string connectUrlFmt = "wss://ws.kite.trade/?api_key={0}&access_token={1}";
+    const string connectUrlFmt =
+        "wss://ws.kite.trade/?api_key={0}&access_token={1}";
     string key;
     string token;
     enum class SEGMENTS : int

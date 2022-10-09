@@ -27,8 +27,10 @@ inline string kite::placeOrder(const placeOrderParams& params) {
     utils::addParam(bodyParams, params.trailingStopLoss, "trailing_stoploss");
     utils::addParam(bodyParams, params.tag, "tag");
 
-    return callApi<string, utils::json::JsonObject, true>("order.place", bodyParams, { params.variety },
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
+    return callApi<string, utils::json::JsonObject, true>("order.place",
+        bodyParams, { params.variety }, [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "order_id");
+        });
 };
 
 inline string kite::modifyOrder(const modifyOrderParams& params) {
@@ -42,12 +44,15 @@ inline string kite::modifyOrder(const modifyOrderParams& params) {
     utils::addParam(bodyParams, params.validity, "validity");
     utils::addParam(bodyParams, params.disclosedQuantity, "disclosed_quantity");
 
-    return callApi<string, utils::json::JsonObject, true>("order.modify", bodyParams,
-        { params.variety, params.orderId },
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
+    return callApi<string, utils::json::JsonObject, true>("order.modify",
+        bodyParams, { params.variety, params.orderId },
+        [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "order_id");
+        });
 };
 
-inline string kite::cancelOrder(const string& variety, const string& orderId, const string& parentOrderID) {
+inline string kite::cancelOrder(
+    const string& variety, const string& orderId, const string& parentOrderID) {
     string endpoint;
     utils::FmtArgs fmtArgs;
     if (variety == "bo") {
@@ -57,11 +62,14 @@ inline string kite::cancelOrder(const string& variety, const string& orderId, co
         endpoint = "order.cancel";
         fmtArgs = { variety, orderId };
     };
-    return callApi<string, utils::json::JsonObject, true>(endpoint, {}, fmtArgs,
-        [](utils::json::JsonObject& data) { return utils::json::get<string>(data, "order_id"); });
+    return callApi<string, utils::json::JsonObject, true>(
+        endpoint, {}, fmtArgs, [](utils::json::JsonObject& data) {
+            return utils::json::get<string>(data, "order_id");
+        });
 };
 
-inline string kite::exitOrder(const string& variety, const string& orderId, const string& parentOrderId) {
+inline string kite::exitOrder(
+    const string& variety, const string& orderId, const string& parentOrderId) {
     return cancelOrder(variety, orderId, parentOrderId);
 };
 
@@ -101,22 +109,26 @@ inline std::vector<trade> kite::orderTrades(const string& orderId) {
         });
 };
 
-inline std::vector<orderMargins> kite::getOrderMargins(const std::vector<orderMarginsParams>& params) {
+inline std::vector<orderMargins> kite::getOrderMargins(
+    const std::vector<orderMarginsParams>& params) {
     utils::json::json<utils::json::JsonArray> ordersJson;
-    ordersJson.array<orderMarginsParams>(params, [&](const orderMarginsParams& param, rj::Value& buffer) {
-        ordersJson.field("exchange", param.exchange, &buffer);
-        ordersJson.field("tradingsymbol", param.tradingsymbol, &buffer);
-        ordersJson.field("transaction_type", param.transactionType, &buffer);
-        ordersJson.field("variety", param.variety, &buffer);
-        ordersJson.field("product", param.product, &buffer);
-        ordersJson.field("order_type", param.orderType, &buffer);
-        ordersJson.field("quantity", param.quantity, &buffer);
-        ordersJson.field("price", param.price, &buffer);
-        ordersJson.field("trigger_price", param.triggerPrice, &buffer);
-    });
+    ordersJson.array<orderMarginsParams>(
+        params, [&](const orderMarginsParams& param, rj::Value& buffer) {
+            ordersJson.field("exchange", param.exchange, &buffer);
+            ordersJson.field("tradingsymbol", param.tradingsymbol, &buffer);
+            ordersJson.field(
+                "transaction_type", param.transactionType, &buffer);
+            ordersJson.field("variety", param.variety, &buffer);
+            ordersJson.field("product", param.product, &buffer);
+            ordersJson.field("order_type", param.orderType, &buffer);
+            ordersJson.field("quantity", param.quantity, &buffer);
+            ordersJson.field("price", param.price, &buffer);
+            ordersJson.field("trigger_price", param.triggerPrice, &buffer);
+        });
 
     return callApi<std::vector<orderMargins>, utils::json::JsonArray, true>(
-        "order.margins", { { "", ordersJson.serialize() } }, {}, [](utils::json::JsonArray& data) {
+        "order.margins", { { "", ordersJson.serialize() } }, {},
+        [](utils::json::JsonArray& data) {
             std::vector<orderMargins> margins;
             for (auto& i : data) { margins.emplace_back(i.GetObject()); }
             return margins;

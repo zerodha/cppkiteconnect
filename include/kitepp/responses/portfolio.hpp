@@ -35,7 +35,8 @@ struct holding {
         closePrice = utils::json::get<double>(val, "close_price");
         PnL = utils::json::get<double>(val, "pnl");
         dayChange = utils::json::get<double>(val, "day_change");
-        dayChangePercentage = utils::json::get<double>(val, "day_change_percentage");
+        dayChangePercentage =
+            utils::json::get<double>(val, "day_change_percentage");
     };
 
     int instrumentToken = -1;
@@ -147,12 +148,18 @@ struct positions {
 /// represents parameters for the `convertPosition` function
 struct convertPositionParams {
     GENERATE_FLUENT_METHOD(convertPositionParams, int, quantity, Quantity);
-    GENERATE_FLUENT_METHOD(convertPositionParams, const string&, exchange, Exchange);
-    GENERATE_FLUENT_METHOD(convertPositionParams, const string&, symbol, Symbol);
-    GENERATE_FLUENT_METHOD(convertPositionParams, const string&, transactionType, TransactionType);
-    GENERATE_FLUENT_METHOD(convertPositionParams, const string&, positionType, PositionType);
-    GENERATE_FLUENT_METHOD(convertPositionParams, const string&, oldProduct, OldProduct);
-    GENERATE_FLUENT_METHOD(convertPositionParams, const string&, newProduct, NewProduct);
+    GENERATE_FLUENT_METHOD(
+        convertPositionParams, const string&, exchange, Exchange);
+    GENERATE_FLUENT_METHOD(
+        convertPositionParams, const string&, symbol, Symbol);
+    GENERATE_FLUENT_METHOD(
+        convertPositionParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(
+        convertPositionParams, const string&, positionType, PositionType);
+    GENERATE_FLUENT_METHOD(
+        convertPositionParams, const string&, oldProduct, OldProduct);
+    GENERATE_FLUENT_METHOD(
+        convertPositionParams, const string&, newProduct, NewProduct);
 
     int quantity = -1;
     string exchange;

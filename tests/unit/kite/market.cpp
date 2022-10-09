@@ -20,13 +20,17 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, getQuoteTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/quote.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/quote.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote?{0}" }, utils::http::Params {},
-                          utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+    EXPECT_CALL(Kite,
+        sendReq(
+            utils::http::endpoint { utils::http::METHOD::GET, "/quote?{0}" },
+            utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const std::unordered_map<string, kc::quote> QUOTES = Kite.getQuote(SYMBOLS);
 
@@ -90,12 +94,16 @@ TEST(kiteTest, getOHLCTest) {
     const string JSON = kc::test::readFile("../tests/mock_responses/ohlc.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ohlc?{0}" },
-                          utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                    "/quote/ohlc?{0}" },
+            utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const std::unordered_map<string, kc::ohlcQuote> QUOTES = Kite.getOhlc(SYMBOLS);
+    const std::unordered_map<string, kc::ohlcQuote> QUOTES =
+        Kite.getOhlc(SYMBOLS);
 
     kc::ohlcQuote Quote = QUOTES.at("NSE:INFY");
     EXPECT_EQ(Quote.instrumentToken, 408065);
@@ -110,12 +118,16 @@ TEST(kiteTest, getLTPTest) {
     const string JSON = kc::test::readFile("../tests/mock_responses/ltp.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ltp?{0}" },
-                          utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                    "/quote/ltp?{0}" },
+            utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const std::unordered_map<string, kc::ltpQuote> QUOTES = Kite.getLtp(SYMBOLS);
+    const std::unordered_map<string, kc::ltpQuote> QUOTES =
+        Kite.getLtp(SYMBOLS);
 
     kc::ltpQuote Quote = QUOTES.at("NSE:INFY");
     EXPECT_EQ(Quote.instrumentToken, 408065);
@@ -123,22 +135,30 @@ TEST(kiteTest, getLTPTest) {
 }
 
 TEST(kiteTest, getHistoricalDataTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/historical_minute.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/historical_minute.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     constexpr int INSTRUMENT_TOKEN = 5633;
     const string INTERVAL = "minute";
     const string FROM = "2017-12-15+09:15:00";
     const string TO = "2017-12-15+09:20:00";
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
-                    "/instruments/historical/{0}/{1}?from={2}&to={3}&continuous={4}&oi={5}" },
-            utils::http::Params {}, utils::FmtArgs { std::to_string(INSTRUMENT_TOKEN), INTERVAL, FROM, TO, "0", "0" }))
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/instruments/historical/{0}/"
+                                  "{1}?from={2}&to={3}&continuous={4}&oi={5}" },
+                          utils::http::Params {},
+                          utils::FmtArgs { std::to_string(INSTRUMENT_TOKEN),
+                              INTERVAL, FROM, TO, "0", "0" }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const std::vector<kc::historicalData> DATA = Kite.getHistoricalData(
-        kc::historicalDataParams().InstrumentToken(INSTRUMENT_TOKEN).Interval(INTERVAL).From(FROM).To(TO));
+    const std::vector<kc::historicalData> DATA =
+        Kite.getHistoricalData(kc::historicalDataParams()
+                                   .InstrumentToken(INSTRUMENT_TOKEN)
+                                   .Interval(INTERVAL)
+                                   .From(FROM)
+                                   .To(TO));
 
     ASSERT_EQ(DATA.size(), 3000);
     kc::historicalData data1 = DATA[0];
@@ -170,13 +190,16 @@ TEST(kiteTest, getHistoricalDataTest) {
 }
 
 TEST(kiteTest, getInstrumentsTest) {
-    const string CSV = kc::test::readFile("../tests/mock_responses/instruments_all.csv");
+    const string CSV =
+        kc::test::readFile("../tests/mock_responses/instruments_all.csv");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments", utils::http::CONTENT_TYPE::NON_JSON },
-            utils::http::Params {}, utils::FmtArgs {}))
+    EXPECT_CALL(
+        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                          "/instruments", utils::http::CONTENT_TYPE::NON_JSON },
+                  utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
+        .WillOnce(Return(
+            ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
 
     std::vector<kc::instrument> INSTRUMENTS = Kite.getInstruments();
 
@@ -211,14 +234,17 @@ TEST(kiteTest, getInstrumentsTest) {
 }
 
 TEST(kiteTest, getInstrumentsExchangeTest) {
-    const string CSV = kc::test::readFile("../tests/mock_responses/instruments_all.csv");
+    const string CSV =
+        kc::test::readFile("../tests/mock_responses/instruments_all.csv");
     const string EXCHANGE = "NSE";
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments/{0}",
-                                  utils::http::CONTENT_TYPE::NON_JSON },
-                          utils::http::Params {}, utils::FmtArgs { EXCHANGE }))
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                    "/instruments/{0}", utils::http::CONTENT_TYPE::NON_JSON },
+            utils::http::Params {}, utils::FmtArgs { EXCHANGE }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
+        .WillOnce(Return(
+            ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
 
     std::vector<kc::instrument> INSTRUMENTS = Kite.getInstruments(EXCHANGE);
 

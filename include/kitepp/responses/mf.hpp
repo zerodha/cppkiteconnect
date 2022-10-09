@@ -18,7 +18,8 @@ struct placeMfOrderParams {
     GENERATE_FLUENT_METHOD(placeMfOrderParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(placeMfOrderParams, double, amount, Amount);
     GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, symbol, Symbol);
-    GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(
+        placeMfOrderParams, const string&, transactionType, TransactionType);
     GENERATE_FLUENT_METHOD(placeMfOrderParams, const string&, tag, Tag);
 
     std::optional<int> quantity;
@@ -31,11 +32,14 @@ struct placeMfOrderParams {
 /// represents parameters required for the `placeMfSip` function
 struct placeMfSipParams {
     GENERATE_FLUENT_METHOD(placeMfSipParams, int, installments, Installments);
-    GENERATE_FLUENT_METHOD(placeMfSipParams, int, installmentDay, InstallmentDay);
+    GENERATE_FLUENT_METHOD(
+        placeMfSipParams, int, installmentDay, InstallmentDay);
     GENERATE_FLUENT_METHOD(placeMfSipParams, double, amount, Amount);
-    GENERATE_FLUENT_METHOD(placeMfSipParams, double, initialAmount, InitialAmount);
+    GENERATE_FLUENT_METHOD(
+        placeMfSipParams, double, initialAmount, InitialAmount);
     GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, symbol, Symbol);
-    GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, frequency, Frequency);
+    GENERATE_FLUENT_METHOD(
+        placeMfSipParams, const string&, frequency, Frequency);
     GENERATE_FLUENT_METHOD(placeMfSipParams, const string&, tag, Tag);
 
     int installments;
@@ -64,11 +68,13 @@ struct placeMfSipResponse {
 /// represents parameters required for the `modifyMfSip` function
 struct modifyMfSipParams {
     GENERATE_FLUENT_METHOD(modifyMfSipParams, int, installments, Installments);
-    GENERATE_FLUENT_METHOD(modifyMfSipParams, int, installmentDay, InstallmentDay);
+    GENERATE_FLUENT_METHOD(
+        modifyMfSipParams, int, installmentDay, InstallmentDay);
     GENERATE_FLUENT_METHOD(modifyMfSipParams, double, amount, Amount);
     GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, sipId, SipId);
     GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, status, Status);
-    GENERATE_FLUENT_METHOD(modifyMfSipParams, const string&, frequency, Frequency);
+    GENERATE_FLUENT_METHOD(
+        modifyMfSipParams, const string&, frequency, Frequency);
 
     std::optional<int> installmentDay;
     std::optional<int> installments;
@@ -173,7 +179,8 @@ struct mfSip {
         lastInstalment = utils::json::get<string>(val, "last_instalment");
         pendingInstalments = utils::json::get<int>(val, "pending_instalments");
         instalmentDay = utils::json::get<int>(val, "instalment_day");
-        completedInstalments = utils::json::get<int>(val, "completed_instalments");
+        completedInstalments =
+            utils::json::get<int>(val, "completed_instalments");
         nextInstalment = utils::json::get<string>(val, "next_instalment");
         triggerPrice = utils::json::get<double>(val, "trigger_price");
         tag = utils::json::get<string>(val, "tag");
@@ -207,18 +214,25 @@ struct mfInstrument {
     void parse(const string& val) {
         std::vector<string> tokens = utils::split(val, ',');
 
-        static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
+        static const auto toDouble = [](const string& str) -> double {
+            return (str.empty()) ? 0.0 : std::stod(str);
+        };
 
         tradingsymbol = tokens[TRADINGSYMBOL_IDX];
         amc = tokens[AMC_IDX];
         name = tokens[NAME_IDX];
-        purchaseAllowed = static_cast<bool>(std::stoi(tokens[PURCHASE_ALLOWED_IDX]));
-        redemtpionAllowed = static_cast<bool>(std::stoi(tokens[REDEMPTION_ALLOWED_IDX]));
+        purchaseAllowed =
+            static_cast<bool>(std::stoi(tokens[PURCHASE_ALLOWED_IDX]));
+        redemtpionAllowed =
+            static_cast<bool>(std::stoi(tokens[REDEMPTION_ALLOWED_IDX]));
         minimumPurchaseAmount = toDouble(tokens[MIN_PURCHASE_AMOUNT_IDX]);
         purchaseAmountMultiplier = toDouble(tokens[PURCHASE_AMOUNT_MUL_IDX]);
-        minimumAdditionalPurchaseAmount = toDouble(tokens[MIN_ADDITIONAL_PURCHASE_AMOUNT_IDX]);
-        minimumRedemptionQuantity = toDouble(tokens[MIN_REDEMPTION_QUANTITY_IDX]);
-        redemptionQuantityMultiplier = toDouble(tokens[REDEMPTION_QUANTITY_MUL_IDX]);
+        minimumAdditionalPurchaseAmount =
+            toDouble(tokens[MIN_ADDITIONAL_PURCHASE_AMOUNT_IDX]);
+        minimumRedemptionQuantity =
+            toDouble(tokens[MIN_REDEMPTION_QUANTITY_IDX]);
+        redemptionQuantityMultiplier =
+            toDouble(tokens[REDEMPTION_QUANTITY_MUL_IDX]);
         dividendType = tokens[DIVIDEND_TYPE_IDX];
         schemeType = tokens[SCHEME_TYPE_IDX];
         plan = tokens[PLAN_IDX];

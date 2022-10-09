@@ -67,9 +67,12 @@ struct quote {
         OI = utils::json::get<double>(val, "oi");
         OIDayHigh = utils::json::get<double>(val, "oi_day_high");
         OIDayLow = utils::json::get<double>(val, "oi_day_low");
-        lowerCircuitLimit = utils::json::get<double>(val, "lower_circuit_limit");
-        upperCircuitLimit = utils::json::get<double>(val, "upper_circuit_limit");
-        marketDepth = utils::json::get<utils::json::JsonObject, mDepth>(val, "depth");
+        lowerCircuitLimit =
+            utils::json::get<double>(val, "lower_circuit_limit");
+        upperCircuitLimit =
+            utils::json::get<double>(val, "upper_circuit_limit");
+        marketDepth =
+            utils::json::get<utils::json::JsonObject, mDepth>(val, "depth");
     };
 
     int instrumentToken = -1;
@@ -95,11 +98,15 @@ struct quote {
         void parse(const rj::Value::Object& val) {
             rj::Value buyDepthVal(rj::kArrayType);
             utils::json::get<utils::json::JsonArray>(val, buyDepthVal, "buy");
-            for (auto& i : buyDepthVal.GetArray()) { buy.emplace_back(i.GetObject()); };
+            for (auto& i : buyDepthVal.GetArray()) {
+                buy.emplace_back(i.GetObject());
+            };
 
             rj::Value sellDepthVal(rj::kArrayType);
             utils::json::get<utils::json::JsonArray>(val, sellDepthVal, "sell");
-            for (auto& i : sellDepthVal.GetArray()) { sell.emplace_back(i.GetObject()); };
+            for (auto& i : sellDepthVal.GetArray()) {
+                sell.emplace_back(i.GetObject());
+            };
         }
 
         std::vector<depth> buy;
@@ -139,12 +146,14 @@ struct ltpQuote {
 
 /// represents parameters required for the `getHistoricalData` function
 struct historicalDataParams {
-    GENERATE_FLUENT_METHOD(historicalDataParams, int, instrumentToken, InstrumentToken);
+    GENERATE_FLUENT_METHOD(
+        historicalDataParams, int, instrumentToken, InstrumentToken);
     GENERATE_FLUENT_METHOD(historicalDataParams, bool, continuous, Continuous);
     GENERATE_FLUENT_METHOD(historicalDataParams, bool, oi, Oi);
     GENERATE_FLUENT_METHOD(historicalDataParams, const string&, from, From);
     GENERATE_FLUENT_METHOD(historicalDataParams, const string&, to, To);
-    GENERATE_FLUENT_METHOD(historicalDataParams, const string&, interval, Interval);
+    GENERATE_FLUENT_METHOD(
+        historicalDataParams, const string&, interval, Interval);
 
     int instrumentToken = -1;
     bool continuous = false;
@@ -160,7 +169,8 @@ struct historicalData {
     explicit historicalData(const rj::Value::Array& val) { parse(val); };
 
     void parse(const rj::Value::Array& val) {
-        // if the sent value doesn't have a floating point (this time), GetDouble() will throw error
+        // if the sent value doesn't have a floating point (this time),
+        // GetDouble() will throw error
         static auto getDouble = [](rj::Value& val) -> double {
             if (val.IsDouble()) { return val.GetDouble(); };
             if (val.IsInt()) { return val.GetInt(); };
@@ -197,13 +207,18 @@ struct orderMarginsParams {
 
     GENERATE_FLUENT_METHOD(orderMarginsParams, double, quantity, Quantity);
     GENERATE_FLUENT_METHOD(orderMarginsParams, double, price, Price);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, double, triggerPrice, TriggerPrice);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, exchange, Exchange);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, tradingsymbol, Tradingsymbol);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(
+        orderMarginsParams, double, triggerPrice, TriggerPrice);
+    GENERATE_FLUENT_METHOD(
+        orderMarginsParams, const string&, exchange, Exchange);
+    GENERATE_FLUENT_METHOD(
+        orderMarginsParams, const string&, tradingsymbol, Tradingsymbol);
+    GENERATE_FLUENT_METHOD(
+        orderMarginsParams, const string&, transactionType, TransactionType);
     GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, variety, Variety);
     GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, product, Product);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, orderType, OrderType);
+    GENERATE_FLUENT_METHOD(
+        orderMarginsParams, const string&, orderType, OrderType);
 
     double quantity = 0;
     double price = 0;
@@ -268,8 +283,12 @@ struct instrument {
     void parse(const string& val) {
         std::vector<string> tokens = utils::split(val, ',');
 
-        static const auto toInt = [](const string& str) -> int { return (str.empty()) ? 0 : std::stoi(str); };
-        static const auto toDouble = [](const string& str) -> double { return (str.empty()) ? 0.0 : std::stod(str); };
+        static const auto toInt = [](const string& str) -> int {
+            return (str.empty()) ? 0 : std::stoi(str);
+        };
+        static const auto toDouble = [](const string& str) -> double {
+            return (str.empty()) ? 0.0 : std::stod(str);
+        };
 
         instrumentToken = toInt(tokens[INSTRUMENT_TOKEN_IDX]);
         exchangeToken = toInt(tokens[EXCHANGE_TOKEN_IDX]);

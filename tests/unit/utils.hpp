@@ -23,7 +23,8 @@ class mockKite : public kc::kite {
   public:
     mockKite(): kite(kc::test::API_KEY) {};
     MOCK_METHOD(utils::http::response, sendReq,
-        (const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs),
+        (const utils::http::endpoint& endpoint, const utils::http::Params& body,
+            const utils::FmtArgs& fmtArgs),
         (override));
 };
 
@@ -33,9 +34,13 @@ inline string readFile(const string& path) {
         string fileName;
         try {
             size_t lastOfSlash = path.find_last_of('/');
-            if (lastOfSlash == std::string::npos) { throw std::runtime_error(""); };
+            if (lastOfSlash == std::string::npos) {
+                throw std::runtime_error("");
+            };
             fileName = path.substr(lastOfSlash + 1, path.size() - 1);
-        } catch (const std::exception& ex) { throw std::runtime_error("invalid test data file path"); }
+        } catch (const std::exception& ex) {
+            throw std::runtime_error("invalid test data file path");
+        }
         throw std::runtime_error(FMT("missing test data file ({0})", fileName));
     }
 

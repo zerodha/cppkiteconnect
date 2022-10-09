@@ -5,11 +5,16 @@
 #include "../utils.hpp"
 
 namespace kiteconnect {
-inline userProfile kite::profile() { return callApi<userProfile, utils::json::JsonObject>("user.profile"); };
+inline userProfile kite::profile() {
+    return callApi<userProfile, utils::json::JsonObject>("user.profile");
+};
 
-inline allMargins kite::getMargins() { return callApi<allMargins, utils::json::JsonObject>("user.margins"); };
+inline allMargins kite::getMargins() {
+    return callApi<allMargins, utils::json::JsonObject>("user.margins");
+};
 
 inline margins kite::getMargins(const string& segment) {
-    return callApi<margins, utils::json::JsonObject>("user.margins.segment", {}, { segment });
+    return callApi<margins, utils::json::JsonObject>(
+        "user.margins.segment", {}, { segment });
 };
 } // namespace kiteconnect

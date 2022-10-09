@@ -20,7 +20,8 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, placeGttTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_place_order.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/gtt_place_order.json");
     constexpr double LAST_PRICE = 798.0;
     const string TRIGGER_TYPE = "single";
     const string SYMBOL = "INFY";
@@ -34,7 +35,8 @@ TEST(kiteTest, placeGttTest) {
     constexpr int EXPECTED_TRIGGER_ID = 123;
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/gtt/triggers" },
+        sendReq(utils::http::endpoint { utils::http::METHOD::POST,
+                    "/gtt/triggers" },
             utils::http::Params {
                 { "type", "single" },
                 { "condition",
@@ -44,7 +46,8 @@ TEST(kiteTest, placeGttTest) {
             },
             utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     // clang-format off
     const int TRIGGER_ID = Kite.placeGtt(kc::placeGttParams()
@@ -67,12 +70,15 @@ TEST(kiteTest, placeGttTest) {
 }
 
 TEST(kiteTest, getGTTsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_get_orders.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/gtt_get_orders.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/gtt/triggers" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/gtt/triggers" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const std::vector<kc::GTT> Triggers = Kite.triggers();
 
@@ -108,7 +114,8 @@ TEST(kiteTest, getGTTsTest) {
     EXPECT_EQ(order2.condition.exchange, "NSE");
     EXPECT_DOUBLE_EQ(order2.condition.lastPrice, 102.6);
     EXPECT_EQ(order2.condition.tradingsymbol, "RAIN");
-    EXPECT_THAT(order2.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
+    EXPECT_THAT(
+        order2.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
     EXPECT_EQ(order2.orders[0].tradingSymbol, "RAIN");
     EXPECT_EQ(order2.orders[0].product, "CNC");
     EXPECT_EQ(order2.orders[0].orderType, "LIMIT");
@@ -124,13 +131,17 @@ TEST(kiteTest, getGTTsTest) {
 }
 
 TEST(kiteTest, getGTTTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_get_order.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/gtt_get_order.json");
     constexpr int TRIGGER_ID = 123;
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/gtt/triggers/{0}" },
-                          utils::http::Params {}, utils::FmtArgs { std::to_string(TRIGGER_ID) }))
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/gtt/triggers/{0}" },
+                          utils::http::Params {},
+                          utils::FmtArgs { std::to_string(TRIGGER_ID) }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const kc::GTT trigger = Kite.getGtt(TRIGGER_ID);
     EXPECT_EQ(trigger.ID, 123);
@@ -143,7 +154,8 @@ TEST(kiteTest, getGTTTest) {
     EXPECT_EQ(trigger.condition.exchange, "NSE");
     EXPECT_DOUBLE_EQ(trigger.condition.lastPrice, 102.6);
     EXPECT_EQ(trigger.condition.tradingsymbol, "RAIN");
-    EXPECT_THAT(trigger.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
+    EXPECT_THAT(
+        trigger.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
     EXPECT_EQ(trigger.orders[0].tradingSymbol, "RAIN");
     EXPECT_EQ(trigger.orders[0].product, "CNC");
     EXPECT_EQ(trigger.orders[0].orderType, "LIMIT");
@@ -153,7 +165,8 @@ TEST(kiteTest, getGTTTest) {
 }
 
 TEST(kiteTest, modifyGttTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_modify_order.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/gtt_modify_order.json");
     constexpr double LAST_PRICE = 798.0;
     const string TRIGGER_TYPE = "single";
     const string SYMBOL = "INFY";
@@ -168,7 +181,8 @@ TEST(kiteTest, modifyGttTest) {
     constexpr int EXPECTED_TRIGGER_ID = 123;
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/gtt/triggers/{0}" },
+        sendReq(utils::http::endpoint { utils::http::METHOD::PUT,
+                    "/gtt/triggers/{0}" },
             utils::http::Params {
                 { "type", "single" },
                 { "condition",
@@ -178,34 +192,40 @@ TEST(kiteTest, modifyGttTest) {
             },
             utils::FmtArgs { std::to_string(TRIGGER_ID) }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const int RECEIVED_TRIGGER_ID = Kite.modifyGtt(kc::modifyGttParams()
-                                                       .TriggerId(TRIGGER_ID)
-                                                       .LastPrice(LAST_PRICE)
-                                                       .TriggerType(TRIGGER_TYPE)
-                                                       .Symbol(SYMBOL)
-                                                       .Exchange(EXCHANGE)
-                                                       .TriggerValues(TRIGGER_VALUES)
-                                                       .GttParamsList({ kc::gttParams()
-                                                                            .Quantity(GTT_PARAM1_QUANTITY)
-                                                                            .Price(GTT_PARAM1_PRICE)
-                                                                            .TransactionType(GTT_PARAM1_TRANSACTON_TYPE)
-                                                                            .OrderType(GTT_PARAM1_ORDER_TYPE)
-                                                                            .Product(GTT_PARAM1_PRODUCT) }));
+    const int RECEIVED_TRIGGER_ID = Kite.modifyGtt(
+        kc::modifyGttParams()
+            .TriggerId(TRIGGER_ID)
+            .LastPrice(LAST_PRICE)
+            .TriggerType(TRIGGER_TYPE)
+            .Symbol(SYMBOL)
+            .Exchange(EXCHANGE)
+            .TriggerValues(TRIGGER_VALUES)
+            .GttParamsList({ kc::gttParams()
+                                 .Quantity(GTT_PARAM1_QUANTITY)
+                                 .Price(GTT_PARAM1_PRICE)
+                                 .TransactionType(GTT_PARAM1_TRANSACTON_TYPE)
+                                 .OrderType(GTT_PARAM1_ORDER_TYPE)
+                                 .Product(GTT_PARAM1_PRODUCT) }));
 
     EXPECT_EQ(RECEIVED_TRIGGER_ID, EXPECTED_TRIGGER_ID);
 }
 
 TEST(kiteTest, deleteGTTTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_delete_order.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/gtt_delete_order.json");
     constexpr int TRIGGER_ID = 123;
     constexpr int EXPECTED_TRIGGER_ID = 123;
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/gtt/triggers/{0}" },
-                          utils::http::Params {}, utils::FmtArgs { std::to_string(TRIGGER_ID) }))
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL,
+                                  "/gtt/triggers/{0}" },
+                          utils::http::Params {},
+                          utils::FmtArgs { std::to_string(TRIGGER_ID) }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const int RECEIVED_TRIGGER_ID = Kite.deleteGtt(TRIGGER_ID);
 

@@ -16,7 +16,9 @@ inline void kite::setApiKey(const string& arg) { key = arg; };
 
 inline string kite::getApiKey() const { return key; };
 
-inline string kite::loginURL() const { return FMT(loginUrlFmt, "api_key"_a = key); };
+inline string kite::loginURL() const {
+    return FMT(loginUrlFmt, "api_key"_a = key);
+};
 
 inline void kite::setAccessToken(const string& arg) {
     token = arg;
@@ -25,17 +27,20 @@ inline void kite::setAccessToken(const string& arg) {
 
 inline string kite::getAccessToken() const { return token; };
 
-inline userSession kite::generateSession(const string& requestToken, const string& apiSecret) {
-    return callApi<userSession, utils::json::JsonObject>(
-        "api.token", {
-                         { "api_key", key },
-                         { "request_token", requestToken },
-                         { "checksum", picosha2::hash256_hex_string(key + requestToken + apiSecret) },
-                     });
+inline userSession kite::generateSession(
+    const string& requestToken, const string& apiSecret) {
+    return callApi<userSession, utils::json::JsonObject>("api.token",
+        {
+            { "api_key", key },
+            { "request_token", requestToken },
+            { "checksum",
+                picosha2::hash256_hex_string(key + requestToken + apiSecret) },
+        });
 };
 
 inline bool kite::invalidateSession() {
-    utils::http::response res = sendReq(endpoints.at("api.token.invalidate"), {}, { key, token });
+    utils::http::response res =
+        sendReq(endpoints.at("api.token.invalidate"), {}, { key, token });
     return static_cast<bool>(res);
 };
 } // namespace kiteconnect

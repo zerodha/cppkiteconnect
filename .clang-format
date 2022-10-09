@@ -18,7 +18,7 @@ BinPackArguments: 'true'
 BinPackParameters: 'true'
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: 'false'
-ColumnLimit: '120'
+ColumnLimit: '80'
 CompactNamespaces: 'false'
 Cpp11BracedListStyle: 'false'
 FixNamespaceComments: 'true'

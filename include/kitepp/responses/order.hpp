@@ -17,18 +17,23 @@ namespace utils = kc::internal::utils;
 /// represents parameters required for the `placeOrder` function
 struct placeOrderParams {
     GENERATE_FLUENT_METHOD(placeOrderParams, int, quantity, Quantity);
-    GENERATE_FLUENT_METHOD(placeOrderParams, int, disclosedQuantity, DisclosedQuantity);
+    GENERATE_FLUENT_METHOD(
+        placeOrderParams, int, disclosedQuantity, DisclosedQuantity);
     GENERATE_FLUENT_METHOD(placeOrderParams, double, price, Price);
-    GENERATE_FLUENT_METHOD(placeOrderParams, double, triggerPrice, TriggerPrice);
+    GENERATE_FLUENT_METHOD(
+        placeOrderParams, double, triggerPrice, TriggerPrice);
     GENERATE_FLUENT_METHOD(placeOrderParams, double, squareOff, SquareOff);
     GENERATE_FLUENT_METHOD(placeOrderParams, double, stopLoss, StopLoss);
-    GENERATE_FLUENT_METHOD(placeOrderParams, double, trailingStopLoss, TrailingStopLoss);
+    GENERATE_FLUENT_METHOD(
+        placeOrderParams, double, trailingStopLoss, TrailingStopLoss);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, variety, Variety);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, exchange, Exchange);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, symbol, Symbol);
-    GENERATE_FLUENT_METHOD(placeOrderParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(
+        placeOrderParams, const string&, transactionType, TransactionType);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, product, Product);
-    GENERATE_FLUENT_METHOD(placeOrderParams, const string&, orderType, OrderType);
+    GENERATE_FLUENT_METHOD(
+        placeOrderParams, const string&, orderType, OrderType);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, validity, Validity);
     GENERATE_FLUENT_METHOD(placeOrderParams, const string&, tag, Tag);
 
@@ -52,14 +57,19 @@ struct placeOrderParams {
 /// represents parameters required for the `modifyOrder` function
 struct modifyOrderParams {
     GENERATE_FLUENT_METHOD(modifyOrderParams, int, quantity, Quantity);
-    GENERATE_FLUENT_METHOD(modifyOrderParams, int, disclosedQuantity, DisclosedQuantity);
+    GENERATE_FLUENT_METHOD(
+        modifyOrderParams, int, disclosedQuantity, DisclosedQuantity);
     GENERATE_FLUENT_METHOD(modifyOrderParams, double, price, Price);
-    GENERATE_FLUENT_METHOD(modifyOrderParams, double, triggerPrice, TriggerPrice);
+    GENERATE_FLUENT_METHOD(
+        modifyOrderParams, double, triggerPrice, TriggerPrice);
     GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, variety, Variety);
-    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, orderType, OrderType);
-    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, validity, Validity);
+    GENERATE_FLUENT_METHOD(
+        modifyOrderParams, const string&, orderType, OrderType);
+    GENERATE_FLUENT_METHOD(
+        modifyOrderParams, const string&, validity, Validity);
     GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, orderId, OrderId);
-    GENERATE_FLUENT_METHOD(modifyOrderParams, const string&, parentOrderId, ParentOrderId);
+    GENERATE_FLUENT_METHOD(
+        modifyOrderParams, const string&, parentOrderId, ParentOrderId);
 
     std::optional<int> quantity;
     std::optional<int> disclosedQuantity;
@@ -86,7 +96,8 @@ struct order {
         status = utils::json::get<string>(val, "status");
         statusMessage = utils::json::get<string>(val, "status_message");
         orderTimestamp = utils::json::get<string>(val, "order_timestamp");
-        exchangeUpdateTimestamp = utils::json::get<string>(val, "exchange_update_timestamp");
+        exchangeUpdateTimestamp =
+            utils::json::get<string>(val, "exchange_update_timestamp");
         exchangeTimestamp = utils::json::get<string>(val, "exchange_timestamp");
         rejectedBy = utils::json::get<string>(val, "rejected_by");
         variety = utils::json::get<string>(val, "variety");

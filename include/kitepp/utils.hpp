@@ -4,23 +4,23 @@
  *
  *  Copyright (c) 2020-2021 Bhumit Attarde
  *
- *  Permission is hereby  granted, free of charge, to any  person obtaining a copy
- *  of this software and associated  documentation files (the "Software"), to deal
- *  in the Software  without restriction, including without  limitation the rights
- *  to  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
- *  copies  of  the Software,  and  to  permit persons  to  whom  the Software  is
- *  furnished to do so, subject to the following conditions:
+ *  Permission is hereby  granted, free of charge, to any  person obtaining a
+ * copy of this software and associated  documentation files (the "Software"),
+ * to deal in the Software  without restriction, including without  limitation
+ * the rights to  use, copy,  modify, merge,  publish, distribute,  sublicense,
+ * and/or  sell copies  of  the Software,  and  to  permit persons  to  whom the
+ * Software  is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS OR
- *  IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF  MERCHANTABILITY,
- *  FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN NO EVENT  SHALL THE
- *  AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY  CLAIM,  DAMAGES OR  OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS
+ * OR IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN
+ * NO EVENT  SHALL THE AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY
+ * CLAIM,  DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT
+ * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
 
@@ -74,10 +74,10 @@ using fmt::literals::operator""_a;
 #define FMT fmt::format
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)                                           \
-    returnType& methodName(fieldType arg) {                                                                            \
-        (fieldName) = arg;                                                                                             \
-        return *this;                                                                                                  \
+#define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)   \
+    returnType& methodName(fieldType arg) {                                    \
+        (fieldName) = arg;                                                     \
+        return *this;                                                          \
     };
 
 namespace kiteconnect::internal::utils {
@@ -107,8 +107,8 @@ using CustomObjectParser = std::function<Res(JsonObject&)>;
 template <class Res>
 using CustomArrayParser = std::function<Res(JsonArray&)>;
 template <class Res, class Data, bool UseCustomParser>
-using CustomParser =
-    std::conditional_t<std::is_same_v<Data, JsonObject>, const CustomObjectParser<Res>&, const CustomArrayParser<Res>&>;
+using CustomParser = std::conditional_t<std::is_same_v<Data, JsonObject>,
+    const CustomObjectParser<Res>&, const CustomArrayParser<Res>&>;
 template <class T>
 using JsonEncoder = std::function<void(const T&, rj::Value&)>;
 
@@ -153,7 +153,8 @@ inline Output get(const Document& val, const char* name) {
                 throw libException(exceptionString("string"));
             } else if constexpr (std::is_same_v<std::decay_t<Output>, double>) {
                 if (it->value.IsDouble()) { return it->value.GetDouble(); };
-                // if the sent value doesn't have a floating point (this time), GetDouble() will throw error
+                // if the sent value doesn't have a floating point (this time),
+                // GetDouble() will throw error
                 if (it->value.IsInt()) { return it->value.GetInt(); };
                 throw libException(exceptionString("double"));
             } else if constexpr (std::is_same_v<std::decay_t<Output>, int>) {
@@ -169,15 +170,22 @@ inline Output get(const Document& val, const char* name) {
             if (it->value.IsArray()) {
                 Output out;
                 for (const auto& v : it->value.GetArray()) {
-                    if constexpr (std::is_same_v<std::decay_t<typename Output::value_type>, string>) {
-                        (v.IsString()) ? out.emplace_back(v.GetString()) :
-                                         throw libException(exceptionString("string"));
-                    } else if constexpr (std::is_same_v<std::decay_t<typename Output::value_type>, double>) {
+                    if constexpr (std::is_same_v<
+                                      std::decay_t<typename Output::value_type>,
+                                      string>) {
+                        (v.IsString()) ?
+                            out.emplace_back(v.GetString()) :
+                            throw libException(exceptionString("string"));
+                    } else if constexpr (std::is_same_v<
+                                             std::decay_t<
+                                                 typename Output::value_type>,
+                                             double>) {
                         if (v.IsDouble()) {
                             out.emplace_back(v.GetDouble());
                             continue;
                         };
-                        // if the sent value doesn't have a floating point (this time), GetDouble() will throw error
+                        // if the sent value doesn't have a floating point (this
+                        // time), GetDouble() will throw error
                         if (v.IsInt()) {
                             out.emplace_back(v.GetInt());
                             continue;
@@ -253,13 +261,15 @@ bool get(const rj::Value::Object& val, rj::Value& out, const char* name) {
 };
 
 template <class Res, class Data, bool UseCustomParser>
-Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customParser) {
+Res parse(
+    rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customParser) {
     if constexpr (std::is_same_v<Data, JsonObject>) {
         auto object = extractObject(doc);
         if constexpr (UseCustomParser) {
             return customParser(object);
         } else {
-            static_assert(std::is_constructible_v<Res, JsonObject>, "Res should be constructable using JsonObject");
+            static_assert(std::is_constructible_v<Res, JsonObject>,
+                "Res should be constructable using JsonObject");
             return Res(object);
         }
     } else if constexpr (std::is_same_v<Data, JsonArray>) {
@@ -267,18 +277,22 @@ Res parse(rj::Document& doc, CustomParser<Res, Data, UseCustomParser> customPars
         if constexpr (UseCustomParser) {
             return customParser(array);
         } else {
-            static_assert(std::is_constructible_v<Res, JsonArray>, "Res should be constructable using JsonArray");
+            static_assert(std::is_constructible_v<Res, JsonArray>,
+                "Res should be constructable using JsonArray");
             return Res(array);
         }
     } else if constexpr (std::is_same_v<Data, bool>) {
-        static_assert(std::is_same_v<Res, bool>, "Res needs to be bool if Data is bool");
+        static_assert(
+            std::is_same_v<Res, bool>, "Res needs to be bool if Data is bool");
         return extractBool(doc);
     }
 }
 
 inline bool parse(rj::Document& dom, const string& str) {
     rj::ParseResult result = dom.Parse(str.c_str());
-    if (result == nullptr) { throw libException(FMT("failed to parse json string: {0}", str)); };
+    if (result == nullptr) {
+        throw libException(FMT("failed to parse json string: {0}", str));
+    };
     return true;
 };
 
@@ -301,7 +315,8 @@ class json {
     };
 
     template <class Value>
-    void field(const string& name, const Value& value, rj::Value* docOverride = nullptr) {
+    void field(const string& name, const Value& value,
+        rj::Value* docOverride = nullptr) {
         auto& allocater = dom.GetAllocator();
 
         if constexpr (std::is_same_v<std::decay_t<Value>, string>) {
@@ -313,14 +328,17 @@ class json {
         };
 
         if (docOverride == nullptr) {
-            dom.AddMember(rj::Value(name.c_str(), allocater).Move(), buffer, allocater);
+            dom.AddMember(
+                rj::Value(name.c_str(), allocater).Move(), buffer, allocater);
         } else {
-            docOverride->AddMember(rj::Value(name.c_str(), allocater).Move(), buffer, allocater);
+            docOverride->AddMember(
+                rj::Value(name.c_str(), allocater).Move(), buffer, allocater);
         }
     }
 
     template <class Value>
-    void field(const string& name, const std::vector<Value>& values, const JsonEncoder<Value>& encode = {}) {
+    void field(const string& name, const std::vector<Value>& values,
+        const JsonEncoder<Value>& encode = {}) {
         auto& allocater = dom.GetAllocator();
         rj::Value arrayBuffer(rj::kArrayType);
         for (const auto& i : values) {
@@ -334,14 +352,16 @@ class json {
         };
 
         if constexpr (std::is_same_v<T, JsonObject>) {
-            dom.AddMember(rj::Value(name.c_str(), dom.GetAllocator()).Move(), arrayBuffer, allocater);
+            dom.AddMember(rj::Value(name.c_str(), dom.GetAllocator()).Move(),
+                arrayBuffer, allocater);
         } else {
             dom.Swap(arrayBuffer);
         }
     }
 
     template <class Value>
-    void array(const std::vector<Value>& values, const JsonEncoder<Value>& encode = {}) {
+    void array(const std::vector<Value>& values,
+        const JsonEncoder<Value>& encode = {}) {
         field("", values, encode);
     }
 
@@ -383,7 +403,8 @@ enum class CONTENT_TYPE : uint8_t
 
 struct endpoint {
     bool operator==(const endpoint& lhs) const {
-        return lhs.method == this->method && lhs.Path.Path == this->Path.Path && lhs.contentType == this->contentType;
+        return lhs.method == this->method && lhs.Path.Path == this->Path.Path &&
+               lhs.contentType == this->contentType;
     }
 
     METHOD method = METHOD::GET;
@@ -406,16 +427,21 @@ struct endpoint {
 
 class response {
   public:
-    response(uint16_t Code, const string& body, bool json = true): code(Code) { parse(Code, body, json); };
+    response(uint16_t Code, const string& body, bool json = true): code(Code) {
+        parse(Code, body, json);
+    };
 
     explicit operator bool() const { return !error; };
 
-    uint16_t code = 0;                /// http code
-    bool error = false;               /// true if kite api reported an error (\a status field)
-    rj::Document data;                /// parsed body
-    string errorType = "NoException"; /// corresponds to kite api's \a error_type field (if \a error is \a true)
-    string message;                   /// corresponds to kite api's \a message field (if \a error is \a true)
-    string rawBody;                   /// raw body, set in case of non-json response
+    uint16_t code = 0;  /// http code
+    bool error = false; /// true if kite api reported an error (\a status field)
+    rj::Document data;  /// parsed body
+    string errorType =
+        "NoException"; /// corresponds to kite api's \a error_type field (if \a
+                       /// error is \a true)
+    string message; /// corresponds to kite api's \a message field (if \a error
+                    /// is \a true)
+    string rawBody; /// raw body, set in case of non-json response
 
   private:
     void parse(uint16_t code, const string& body, bool json) {
@@ -424,8 +450,10 @@ class response {
             if (code != static_cast<uint16_t>(code::OK)) {
                 string status;
                 status = utils::json::get<string, rj::Document>(data, "status");
-                errorType = utils::json::get<string, rj::Document>(data, "error_type");
-                message = utils::json::get<string, rj::Document>(data, "message");
+                errorType =
+                    utils::json::get<string, rj::Document>(data, "error_type");
+                message =
+                    utils::json::get<string, rj::Document>(data, "message");
                 if (status != "success") { error = true; };
             };
         } else {
@@ -443,7 +471,8 @@ struct request {
         uint16_t code = 0;
         string data;
 
-        // httplib::Result doesn't have a default constructor and using a pointer causes segfault
+        // httplib::Result doesn't have a default constructor and using a
+        // pointer causes segfault
         switch (method) {
             case utils::http::METHOD::GET:
                 if (auto res = client.Get(path.c_str(), headers)) {
@@ -451,7 +480,8 @@ struct request {
                     data = res->body;
                 } else {
                     // TODO convert enum to string
-                    throw libException(FMT("request failed ({0})", res.error()));
+                    throw libException(
+                        FMT("request failed ({0})", res.error()));
                 }
                 break;
             case utils::http::METHOD::POST:
@@ -460,14 +490,17 @@ struct request {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(FMT("request failed ({0})", res.error()));
+                        throw libException(
+                            FMT("request failed ({0})", res.error()));
                     }
                 } else {
-                    if (auto res = client.Post(path.c_str(), headers, serializedBody, "application/json")) {
+                    if (auto res = client.Post(path.c_str(), headers,
+                            serializedBody, "application/json")) {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(FMT("request failed({0})", res.error()));
+                        throw libException(
+                            FMT("request failed({0})", res.error()));
                     }
                 };
                 break;
@@ -477,14 +510,17 @@ struct request {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(FMT("request failed ({0})", res.error()));
+                        throw libException(
+                            FMT("request failed ({0})", res.error()));
                     }
                 } else {
-                    if (auto res = client.Put(path.c_str(), headers, serializedBody, "application/json")) {
+                    if (auto res = client.Put(path.c_str(), headers,
+                            serializedBody, "application/json")) {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(FMT("request failed({0})", res.error()));
+                        throw libException(
+                            FMT("request failed({0})", res.error()));
                     }
                 }
                 break;
@@ -493,7 +529,8 @@ struct request {
                     code = res->status;
                     data = res->body;
                 } else {
-                    throw libException(FMT("request failed ({0})", res.error()));
+                    throw libException(
+                        FMT("request failed ({0})", res.error()));
                 }
                 break;
             default: throw libException("unsupported http method");
@@ -519,7 +556,8 @@ const unsigned int NO_REASON = 1006;
 
 template <class Param>
 void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
-    static_assert(isOptional<std::decay_t<Param>>::value, "Param must be std::optional");
+    static_assert(
+        isOptional<std::decay_t<Param>>::value, "Param must be std::optional");
     if (param.has_value()) {
         string fieldValue;
         if constexpr (!std::is_same_v<typename Param::value_type, string>) {

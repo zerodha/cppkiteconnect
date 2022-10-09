@@ -20,7 +20,8 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, placeMFOrderTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_order_response.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
     constexpr int QUANTITY = 10;
     const string SYMBOL = "INF174K01LS2";
     const string TRANSACTION_TYPE = "BUY";
@@ -28,7 +29,8 @@ TEST(kiteTest, placeMFOrderTest) {
     const string EXPECTED_ORDER_ID = "123457";
 
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/mf/orders" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST,
+                                  "/mf/orders" },
                           utils::http::Params {
                               { "tradingsymbol", SYMBOL },
                               { "transaction_type", TRANSACTION_TYPE },
@@ -37,7 +39,8 @@ TEST(kiteTest, placeMFOrderTest) {
                           },
                           utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     // clang-format off
     const string ORDER_ID = Kite.placeMfOrder(kc::placeMfOrderParams()
@@ -53,14 +56,17 @@ TEST(kiteTest, placeMFOrderTest) {
 }
 
 TEST(kiteTest, cancelMFOrderTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_order_response.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
     const string ORDER_ID = "123457";
     const string EXPECTED_ORDER_ID = "123457";
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/mf/orders/{0}" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL,
+                                  "/mf/orders/{0}" },
                           utils::http::Params {}, utils::FmtArgs { ORDER_ID }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const string RECEIVED_ORDER_ID = Kite.cancelMfOrder(ORDER_ID);
 
@@ -68,12 +74,15 @@ TEST(kiteTest, cancelMFOrderTest) {
 }
 
 TEST(kiteTest, getMFOrdersTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_orders.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_orders.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/orders" }, utils::http::Params {},
-                          utils::FmtArgs {}))
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/mf/orders" },
+                          utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const std::vector<kc::mfOrder> orders = Kite.getMfOrders();
     ASSERT_EQ(orders.size(), 5);
@@ -121,13 +130,16 @@ TEST(kiteTest, getMFOrdersTest) {
 }
 
 TEST(kiteTest, getMFOrderTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_orders_info.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_orders_info.json");
     const string ORDER_ID = "2b6ad4b7-c84e-4c76-b459-f3a8994184f1";
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/orders/{0}" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/mf/orders/{0}" },
                           utils::http::Params {}, utils::FmtArgs { ORDER_ID }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const kc::mfOrder ORDER = Kite.getMfOrder(ORDER_ID);
 
@@ -153,12 +165,15 @@ TEST(kiteTest, getMFOrderTest) {
 }
 
 TEST(kiteTest, getMFHoldingsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_holdings.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_holdings.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/holdings" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/mf/holdings" },
                           utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const std::vector<kc::mfHolding> HOLDINGS = Kite.getMfHoldings();
 
@@ -215,7 +230,8 @@ TEST(kiteTest, getMFHoldingsTest) {
 }
 
 TEST(kiteTest, placeMFSIPTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_order_response.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
     const string SYMBOL = "INF174K01LS2";
     constexpr double AMOUNT = 1000;
     const string FREQUENCY = "monthly";
@@ -225,18 +241,20 @@ TEST(kiteTest, placeMFSIPTest) {
     const string ORDER_ID = "123457";
     const string SIP_ID = "123457";
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/mf/sips" },
-                          utils::http::Params {
-                              { "tradingsymbol", SYMBOL },
-                              { "amount", std::to_string(AMOUNT) },
-                              { "instalments", std::to_string(INSTALLMENTS) },
-                              { "frequency", FREQUENCY },
-                              { "instalment_day", std::to_string(INSTALLMENT_DAY) },
-                              { "tag", TAG },
-                          },
-                          utils::FmtArgs {}))
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/mf/sips" },
+            utils::http::Params {
+                { "tradingsymbol", SYMBOL },
+                { "amount", std::to_string(AMOUNT) },
+                { "instalments", std::to_string(INSTALLMENTS) },
+                { "frequency", FREQUENCY },
+                { "instalment_day", std::to_string(INSTALLMENT_DAY) },
+                { "tag", TAG },
+            },
+            utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const auto SIP = Kite.placeMfSip(kc::placeMfSipParams()
                                          .Symbol(SYMBOL)
@@ -251,38 +269,45 @@ TEST(kiteTest, placeMFSIPTest) {
 }
 
 TEST(kiteTest, modifyMFSIPTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_order_response.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
     constexpr double AMOUNT = 900;
     const string SIP_ID = "123457";
     const string FREQUENCY = "monthly";
     const string EXPECTED_SIP_ID = "123457";
 
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT, "/mf/sips/{0}" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT,
+                                  "/mf/sips/{0}" },
                           utils::http::Params {
                               { "amount", std::to_string(AMOUNT) },
                               { "frequency", FREQUENCY },
                           },
                           utils::FmtArgs { SIP_ID }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const string RECEIVED_SIP_ID =
-        Kite.modifyMfSip(kc::modifyMfSipParams().SipId(SIP_ID).Frequency(FREQUENCY).Amount(AMOUNT));
+    const string RECEIVED_SIP_ID = Kite.modifyMfSip(
+        kc::modifyMfSipParams().SipId(SIP_ID).Frequency(FREQUENCY).Amount(
+            AMOUNT));
 
     EXPECT_EQ(RECEIVED_SIP_ID, EXPECTED_SIP_ID);
 }
 
 TEST(kiteTest, cancelMFSIPTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_order_response.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
     const string SIP_ID = "123457";
     const string EXPECTED_SIP_ID = "123457";
 
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL, "/mf/sips/{0}" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL,
+                                  "/mf/sips/{0}" },
                           utils::http::Params {}, utils::FmtArgs { SIP_ID }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     string SIPID = Kite.cancelMfSip(SIP_ID);
 
@@ -290,12 +315,15 @@ TEST(kiteTest, cancelMFSIPTest) {
 }
 
 TEST(kiteTest, getSIPsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_sips.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_sips.json");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/sips" }, utils::http::Params {},
-                          utils::FmtArgs {}))
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/sips" },
+            utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const std::vector<kc::mfSip> SIPS = Kite.getSips();
     ASSERT_EQ(SIPS.size(), 5);
@@ -317,13 +345,16 @@ TEST(kiteTest, getSIPsTest) {
 }
 
 TEST(kiteTest, getSIPTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/mf_sip_info.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/mf_sip_info.json");
     const string SIP_ID = "123457";
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/sips/{0}" },
+    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                                  "/mf/sips/{0}" },
                           utils::http::Params {}, utils::FmtArgs { SIP_ID }))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const kc::mfSip sip = Kite.getSip(SIP_ID);
     EXPECT_EQ(sip.ID, "846479755969168");
@@ -343,7 +374,8 @@ TEST(kiteTest, getSIPTest) {
 }
 
 TEST(kiteTest, getOrderMarginsTest) {
-    const string JSON = kc::test::readFile("../tests/mock_responses/order_margins.json");
+    const string JSON =
+        kc::test::readFile("../tests/mock_responses/order_margins.json");
     constexpr double QUANTITY = 1;
     constexpr double PRICE = 0;
     constexpr double TRIGGER_PRICE = 0;
@@ -356,23 +388,26 @@ TEST(kiteTest, getOrderMarginsTest) {
 
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/margins/orders", utils::http::CONTENT_TYPE::JSON },
+        sendReq(utils::http::endpoint { utils::http::METHOD::POST,
+                    "/margins/orders", utils::http::CONTENT_TYPE::JSON },
             utils::http::Params { { "",
                 R"([{"exchange":"NSE","tradingsymbol":"INFY","transaction_type":"BUY","variety":"regular","product":"CNC","order_type":"MARKET","quantity":1.0,"price":0.0,"trigger_price":0.0}])" } },
             utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
+        .WillOnce(
+            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
-    const std::vector<kc::orderMargins> MARGINS = Kite.getOrderMargins({ kc::orderMarginsParams()
-                                                                             .Quantity(QUANTITY)
-                                                                             .Price(PRICE)
-                                                                             .TriggerPrice(TRIGGER_PRICE)
-                                                                             .Exchange(EXCHANGE)
-                                                                             .Tradingsymbol(TRADINGSYMBOL)
-                                                                             .TransactionType(TRANSACTION_TYPE)
-                                                                             .Variety(VARIETY)
-                                                                             .Product(PRODUCT)
-                                                                             .OrderType(ORDER_TYPE) });
+    const std::vector<kc::orderMargins> MARGINS =
+        Kite.getOrderMargins({ kc::orderMarginsParams()
+                                   .Quantity(QUANTITY)
+                                   .Price(PRICE)
+                                   .TriggerPrice(TRIGGER_PRICE)
+                                   .Exchange(EXCHANGE)
+                                   .Tradingsymbol(TRADINGSYMBOL)
+                                   .TransactionType(TRANSACTION_TYPE)
+                                   .Variety(VARIETY)
+                                   .Product(PRODUCT)
+                                   .OrderType(ORDER_TYPE) });
 
     ASSERT_EQ(MARGINS.size(), 1);
     kc::orderMargins ordMargins1 = MARGINS[0];
@@ -392,13 +427,16 @@ TEST(kiteTest, getOrderMarginsTest) {
 }
 
 TEST(kiteTest, getMFInstrumentsTest) {
-    const string CSV = kc::test::readFile("../tests/mock_responses/mf_instruments.csv");
+    const string CSV =
+        kc::test::readFile("../tests/mock_responses/mf_instruments.csv");
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/mf/instruments",
-                                  utils::http::CONTENT_TYPE::NON_JSON },
-                          utils::http::Params {}, utils::FmtArgs {}))
+    EXPECT_CALL(Kite,
+        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                    "/mf/instruments", utils::http::CONTENT_TYPE::NON_JSON },
+            utils::http::Params {}, utils::FmtArgs {}))
         .Times(1)
-        .WillOnce(Return(ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
+        .WillOnce(Return(
+            ByMove(utils::http::response(utils::http::code::OK, CSV, false))));
 
     const std::vector<kc::mfInstrument> INSTRUMENTS = Kite.getMfInstruments();
 

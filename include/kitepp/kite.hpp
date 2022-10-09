@@ -4,23 +4,23 @@
  *
  *  Copyright (c) 2020-2021 Bhumit Attarde
  *
- *  Permission is hereby  granted, free of charge, to any  person obtaining a copy
- *  of this software and associated  documentation files (the "Software"), to deal
- *  in the Software  without restriction, including without  limitation the rights
- *  to  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
- *  copies  of  the Software,  and  to  permit persons  to  whom  the Software  is
- *  furnished to do so, subject to the following conditions:
+ *  Permission is hereby  granted, free of charge, to any  person obtaining a
+ * copy of this software and associated  documentation files (the "Software"),
+ * to deal in the Software  without restriction, including without  limitation
+ * the rights to  use, copy,  modify, merge,  publish, distribute,  sublicense,
+ * and/or  sell copies  of  the Software,  and  to  permit persons  to  whom the
+ * Software  is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS OR
- *  IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF  MERCHANTABILITY,
- *  FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN NO EVENT  SHALL THE
- *  AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY  CLAIM,  DAMAGES OR  OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS
+ * OR IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN
+ * NO EVENT  SHALL THE AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY
+ * CLAIM,  DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT
+ * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
 
@@ -75,7 +75,8 @@ class kite {
     string getApiKey() const;
 
     /**
-     * @brief Get the remote login url to which a user should be redirected to initiate the login flow.
+     * @brief Get the remote login url to which a user should be redirected to
+     * initiate the login flow.
      *
      * @return string
      *
@@ -111,12 +112,14 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp obtaining access token
      */
-    userSession generateSession(const string& requestToken, const string& apiSecret);
+    userSession generateSession(
+        const string& requestToken, const string& apiSecret);
 
     /**
-     * @brief This call invalidates the access_token and destroys the API session. After this, the user should be sent
-     * through a new login flow before further interactions. This does not log the user out of the official Kite web or
-     * mobile applications.
+     * @brief This call invalidates the access_token and destroys the API
+     * session. After this, the user should be sent through a new login flow
+     * before further interactions. This does not log the user out of the
+     * official Kite web or mobile applications.
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp invalidate session
@@ -166,16 +169,19 @@ class kite {
      * @param symbol trading symbol
      * @param txnType transaction type
      * @param quantity quantity to transact
-     * @param product margin product to use for the order (margins are blocked based on this)
+     * @param product margin product to use for the order (margins are blocked
+     * based on this)
      * @param orderType order type (MARKET, LIMIT etc.)
-     * @param price the min or max price to execute the order at (for LIMIT orders)
+     * @param price the min or max price to execute the order at (for LIMIT
+     * orders)
      * @param validity order validity
      * @param trigPrice trigger price
      * @param sqOff square off
      * @param SL stoploss
      * @param trailSL trailing stoploss
      * @param discQuantity disclosed quantity
-     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 20 chars)
+     * @param tag an optional tag to apply to an order to identify it
+     * (alphanumeric, max 20 chars)
      *
      * @return string orderID
      *
@@ -191,7 +197,8 @@ class kite {
      * @param ordID order ID
      * @param parentOrdID parent order ID
      * @param quantity quantity to transact
-     * @param price the min or max price to execute the order at (for LIMIT orders)
+     * @param price the min or max price to execute the order at (for LIMIT
+     * orders)
      * @param ordType order type
      * @param trigPrice trigger price
      * @param validity order validity
@@ -216,7 +223,8 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp cancelling an order
      */
-    string cancelOrder(const string& variety, const string& orderId, const string& parentOrderId = "");
+    string cancelOrder(const string& variety, const string& orderId,
+        const string& parentOrderId = "");
 
     /**
      * @brief exit an order
@@ -230,7 +238,8 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp exiting an order
      */
-    string exitOrder(const string& variety, const string& orderId, const string& parentOrderId = "");
+    string exitOrder(const string& variety, const string& orderId,
+        const string& parentOrderId = "");
 
     /**
      * @brief get list of orders
@@ -395,7 +404,8 @@ class kite {
      *
      * @return std::vector<instrument>
      *
-     * @attention Note that the results could be large, with tens of thousands of entries.
+     * @attention Note that the results could be large, with tens of thousands
+     * of entries.
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get instruments
@@ -405,38 +415,44 @@ class kite {
     /**
      * @brief Retrieve quote for list of instruments
      *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
+     * @param symbols vector of trading symbols in `exchange:tradingsymbol`
+     * (NSE:INFY) format
      *
      *  @return std::unordered_map<string, quote>
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get quote
      */
-    std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols);
+    std::unordered_map<string, quote> getQuote(
+        const std::vector<string>& symbols);
 
     /**
      * @brief Retrieve OHLC for list of instruments
      *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
+     * @param symbols vector of trading symbols in `exchange:tradingsymbol`
+     * (NSE:INFY) format
      *
      * @return std::unordered_map<string, OHLCQuote>
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get ohlc
      */
-    std::unordered_map<string, ohlcQuote> getOhlc(const std::vector<string>& symbols);
+    std::unordered_map<string, ohlcQuote> getOhlc(
+        const std::vector<string>& symbols);
 
     /**
      * @brief Retrieve last price for list of instruments
      *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
+     * @param symbols vector of trading symbols in `exchange:tradingsymbol`
+     * (NSE:INFY) format
      *
      * @return std::unordered_map<string, LTPQuote>
      *
      * @paragraph ex1 Example
      * @snippet example2.cpp get ltp
      */
-    std::unordered_map<string, ltpQuote> getLtp(const std::vector<string>& symbols);
+    std::unordered_map<string, ltpQuote> getLtp(
+        const std::vector<string>& symbols);
 
     /**
      * @brief Retrieve historical data (candles) for an instrument
@@ -445,7 +461,8 @@ class kite {
      * @param from from date in the following format: yyyy-mm-dd HH:MM:SS
      * @param to to date in the following format: yyyy-mm-dd HH:MM:SS
      * @param interval candle interval
-     * @param continuous boolean flag to get continuous data for futures and options instruments
+     * @param continuous boolean flag to get continuous data for futures and
+     * options instruments
      * @param oi boolean flag to get open interest data
      *
      *  @return std::vector<historicalData>
@@ -453,7 +470,8 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get historical data
      */
-    std::vector<historicalData> getHistoricalData(const historicalDataParams& params);
+    std::vector<historicalData> getHistoricalData(
+        const historicalDataParams& params);
 
     /**
      * @brief get various margins required for orders
@@ -465,7 +483,8 @@ class kite {
      * @paragraph ex1 Example
      * @snippet example2.cpp get order margins
      */
-    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params);
+    std::vector<orderMargins> getOrderMargins(
+        const std::vector<orderMarginsParams>& params);
 
     // MF
 
@@ -474,10 +493,11 @@ class kite {
      *
      * @param symbol trading symbol
      * @param txnType transaction type
-     * @param quantity Quantity to SELL. Not applicable on BUYs. If the holding is less than
-     * minimum_redemption_quantity, all the units have to be sold
+     * @param quantity Quantity to SELL. Not applicable on BUYs. If the holding
+     * is less than minimum_redemption_quantity, all the units have to be sold
      * @param amount amount worth of units to purchase. Not applicable on SELLs
-     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 8 chars)
+     * @param tag an optional tag to apply to an order to identify it
+     * (alphanumeric, max 8 chars)
      *
      * @return string order ID
      *
@@ -535,12 +555,13 @@ class kite {
      *
      * @param symbol tradingsymbol (ISIN) of the fund
      * @param amount amount worth of units to purchase. Not applicable on SELLs
-     * @param installments number of instalments to trigger. If set to -1, instalments are triggered at fixed intervals
-     * until the SIP is cancelled
+     * @param installments number of instalments to trigger. If set to -1,
+     * instalments are triggered at fixed intervals until the SIP is cancelled
      * @param freq frequency
      * @param initAmount initial amount
      * @param installDay installment day
-     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 8 chars)
+     * @param tag an optional tag to apply to an order to identify it
+     * (alphanumeric, max 8 chars)
      *
      * @return std::pair<string, string>
      *
@@ -553,11 +574,12 @@ class kite {
      * @brief modify a MF SIP order
      *
      * @param SIPID SIP ID
-     * @param amount amount worth of units to purchase. It should be equal to or greated than
-     * minimum_additional_purchase_amount and in multiple of purchase_amount_multiplier in the instrument master.
+     * @param amount amount worth of units to purchase. It should be equal to or
+     * greated than minimum_additional_purchase_amount and in multiple of
+     * purchase_amount_multiplier in the instrument master.
      * @param status pause or unpause an SIP (active or paused)
-     * @param installments number of instalments to trigger. If set to -1, instalments are triggered idefinitely until
-     * the SIP is cancelled
+     * @param installments number of instalments to trigger. If set to -1,
+     * instalments are triggered idefinitely until the SIP is cancelled
      * @param freq weekly, monthly, or quarterly
      * @param installDay installment day
      *
@@ -616,30 +638,39 @@ class kite {
     string getAuth() const;
 
     template <class Res, class Data, bool UseCustomParser = false>
-    inline Res callApi(const string& service, const utils::http::Params& body = {}, const utils::FmtArgs& fmtArgs = {},
-        utils::json::CustomParser<Res, Data, UseCustomParser> customParser = {});
+    inline Res callApi(const string& service,
+        const utils::http::Params& body = {},
+        const utils::FmtArgs& fmtArgs = {},
+        utils::json::CustomParser<Res, Data, UseCustomParser>
+            customParser = {});
 
     const string version = "3";
     const string root = "https://api.kite.trade";
-    const string loginUrlFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
+    const string loginUrlFmt =
+        "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
     const std::unordered_map<string, utils::http::endpoint> endpoints {
         // api
         { "api.token", { utils::http::METHOD::POST, "/session/token" } },
-        { "api.token.invalidate", { utils::http::METHOD::DEL, "/session/token?api_key={0}&access_token={1}" } },
+        { "api.token.invalidate",
+            { utils::http::METHOD::DEL,
+                "/session/token?api_key={0}&access_token={1}" } },
         // user
         { "user.profile", { utils::http::METHOD::GET, "/user/profile" } },
         { "user.margins", { utils::http::METHOD::GET, "/user/margins" } },
-        { "user.margins.segment", { utils::http::METHOD::GET, "/user/margins/{0}" } },
+        { "user.margins.segment",
+            { utils::http::METHOD::GET, "/user/margins/{0}" } },
         // order
         { "order.info", { utils::http::METHOD::GET, "/orders/{0}" } },
         { "order.place", { utils::http::METHOD::POST, "/orders/{0}" } },
         { "order.modify", { utils::http::METHOD::PUT, "/orders/{0}/{1}" } },
         { "order.cancel", { utils::http::METHOD::DEL, "/orders/{0}/{1}" } },
-        { "order.cancel.bo", { utils::http::METHOD::DEL, "/orders/{0}/{1}?parent_order_id={1}" } },
+        { "order.cancel.bo", { utils::http::METHOD::DEL,
+                                 "/orders/{0}/{1}?parent_order_id={1}" } },
         { "order.trades", { utils::http::METHOD::GET, "/orders/{0}/trades" } },
         { "orders", { utils::http::METHOD::GET, "/orders" } },
         { "trades", { utils::http::METHOD::GET, "/trades" } },
-        { "order.margins", { utils::http::METHOD::POST, "/margins/orders", utils::http::CONTENT_TYPE::JSON } },
+        { "order.margins", { utils::http::METHOD::POST, "/margins/orders",
+                               utils::http::CONTENT_TYPE::JSON } },
         // gtt
         { "gtt", { utils::http::METHOD::GET, "/gtt/triggers" } },
         { "gtt.place", { utils::http::METHOD::POST, "/gtt/triggers" } },
@@ -652,7 +683,8 @@ class kite {
         { "mf.order.place", { utils::http::METHOD::POST, "/mf/orders" } },
         { "mf.order.cancel", { utils::http::METHOD::DEL, "/mf/orders/{0}" } },
         { "mf.holdings", { utils::http::METHOD::GET, "/mf/holdings" } },
-        { "mf.instruments", { utils::http::METHOD::GET, "/mf/instruments", utils::http::CONTENT_TYPE::NON_JSON,
+        { "mf.instruments", { utils::http::METHOD::GET, "/mf/instruments",
+                                utils::http::CONTENT_TYPE::NON_JSON,
                                 utils::http::CONTENT_TYPE::JSON } },
         { "mf.sips", { utils::http::METHOD::GET, "/mf/sips" } },
         { "mf.sip.info", { utils::http::METHOD::GET, "/mf/sips/{0}" } },
@@ -660,20 +692,29 @@ class kite {
         { "mf.sip.modify", { utils::http::METHOD::PUT, "/mf/sips/{0}" } },
         { "mf.sip.cancel", { utils::http::METHOD::DEL, "/mf/sips/{0}" } },
         // portfolio
-        { "portfolio.holdings", { utils::http::METHOD::GET, "/portfolio/holdings" } },
-        { "portfolio.positions", { utils::http::METHOD::GET, "/portfolio/positions" } },
-        { "portfolio.positions.convert", { utils::http::METHOD::PUT, "/portfolio/positions" } },
+        { "portfolio.holdings",
+            { utils::http::METHOD::GET, "/portfolio/holdings" } },
+        { "portfolio.positions",
+            { utils::http::METHOD::GET, "/portfolio/positions" } },
+        { "portfolio.positions.convert",
+            { utils::http::METHOD::PUT, "/portfolio/positions" } },
         // market endpoints
-        { "market.instruments.all", { utils::http::METHOD::GET, "/instruments", utils::http::CONTENT_TYPE::NON_JSON,
+        { "market.instruments.all", { utils::http::METHOD::GET, "/instruments",
+                                        utils::http::CONTENT_TYPE::NON_JSON,
                                         utils::http::CONTENT_TYPE::JSON } },
-        { "market.instruments", { utils::http::METHOD::GET, "/instruments/{0}", utils::http::CONTENT_TYPE::NON_JSON,
+        { "market.instruments", { utils::http::METHOD::GET, "/instruments/{0}",
+                                    utils::http::CONTENT_TYPE::NON_JSON,
                                     utils::http::CONTENT_TYPE::JSON } },
         { "market.margins", { utils::http::METHOD::GET, "/margins/{0}" } },
-        { "market.historical", { utils::http::METHOD::GET, "/instruments/historical/{0}/"
-                                                           "{1}?from={2}&to={3}&continuous={4}&oi={5}" } },
-        { "market.trigger_range", { utils::http::METHOD::GET, "/instruments/trigger_range/{9}" } },
+        { "market.historical",
+            { utils::http::METHOD::GET,
+                "/instruments/historical/{0}/"
+                "{1}?from={2}&to={3}&continuous={4}&oi={5}" } },
+        { "market.trigger_range",
+            { utils::http::METHOD::GET, "/instruments/trigger_range/{9}" } },
         { "market.quote", { utils::http::METHOD::GET, "/quote?{0}" } },
-        { "market.quote.ohlc", { utils::http::METHOD::GET, "/quote/ohlc?{0}" } },
+        { "market.quote.ohlc",
+            { utils::http::METHOD::GET, "/quote/ohlc?{0}" } },
         { "market.quote.ltp", { utils::http::METHOD::GET, "/quote/ltp?{0}" } },
     };
     string key;
@@ -683,8 +724,8 @@ class kite {
 
   protected:
 #ifdef KITE_UNIT_TEST
-    virtual utils::http::response sendReq(
-        const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
+    virtual utils::http::response sendReq(const utils::http::endpoint& endpoint,
+        const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #else
     /**
      * \brief send a http request with the context used by \a kite
@@ -694,8 +735,8 @@ class kite {
      *
      * \return utils::http::response response received
      */
-    utils::http::response sendReq(
-        const utils::http::endpoint& endpoint, const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
+    utils::http::response sendReq(const utils::http::endpoint& endpoint,
+        const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #endif
 };
 

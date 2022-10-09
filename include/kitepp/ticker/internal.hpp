@@ -28,17 +28,21 @@
 
 namespace kiteconnect {
 // To make sure doubles are parsed correctly
-static_assert(std::numeric_limits<double>::is_iec559, "Requires IEEE 754 floating point!");
+static_assert(std::numeric_limits<double>::is_iec559,
+    "Requires IEEE 754 floating point!");
 using std::string;
 namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-inline ticker::ticker(string Key, unsigned int ConnectTimeout, bool EnableReconnect, unsigned int maxreconnectdelay,
+inline ticker::ticker(string Key, unsigned int ConnectTimeout,
+    bool EnableReconnect, unsigned int maxreconnectdelay,
     unsigned int MaxReconnectTries)
-    : key(std::move(Key)), connectTimeout(ConnectTimeout * utils::MILLISECONDS_IN_A_SECOND),
-      enableReconnect(EnableReconnect), maxReconnectDelay(maxreconnectdelay), maxReconnectTries(MaxReconnectTries),
+    : key(std::move(Key)),
+      connectTimeout(ConnectTimeout * utils::MILLISECONDS_IN_A_SECOND),
+      enableReconnect(EnableReconnect), maxReconnectDelay(maxreconnectdelay),
+      maxReconnectTries(MaxReconnectTries),
       group(hub.createGroup<uWS::CLIENT>()) {};
 
 inline void ticker::setApiKey(const string& Key) { key = Key; };
@@ -56,7 +60,10 @@ inline void ticker::connect() {
 
 inline bool ticker::isConnected() const { return ws != nullptr; };
 
-inline std::chrono::time_point<std::chrono::system_clock> ticker::getLastBeatTime() const { return lastBeatTime; };
+inline std::chrono::time_point<std::chrono::system_clock> ticker::
+    getLastBeatTime() const {
+    return lastBeatTime;
+};
 
 inline void ticker::run() { hub.run(); };
 
@@ -72,7 +79,9 @@ inline void ticker::subscribe(const std::vector<int>& instrumentTokens) {
 
     if (isConnected()) {
         ws->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
-        for (const int tok : instrumentTokens) { subbedInstruments[tok] = DEFAULT_MODE; };
+        for (const int tok : instrumentTokens) {
+            subbedInstruments[tok] = DEFAULT_MODE;
+        };
     } else {
         throw kc::libException("not connected to websocket server");
     };
@@ -95,7 +104,8 @@ inline void ticker::unsubscribe(const std::vector<int>& instrumentTokens) {
     };
 };
 
-inline void ticker::setMode(const string& mode, const std::vector<int>& instrumentTokens) {
+inline void ticker::setMode(
+    const string& mode, const std::vector<int>& instrumentTokens) {
     // create request json
     rj::Document req;
     req.SetObject();
@@ -132,7 +142,8 @@ inline void ticker::setMode(const string& mode, const std::vector<int>& instrume
 };
 
 inline void ticker::connectInternal() {
-    hub.connect(FMT(connectUrlFmt, key, token), nullptr, {}, static_cast<int>(connectTimeout), group);
+    hub.connect(FMT(connectUrlFmt, key, token), nullptr, {},
+        static_cast<int>(connectTimeout), group);
 };
 
 inline void ticker::reconnect() {
@@ -142,7 +153,9 @@ inline void ticker::reconnect() {
 
     if (reconnectTries <= maxReconnectTries) {
         std::this_thread::sleep_for(std::chrono::seconds(reconnectDelay));
-        reconnectDelay = (reconnectDelay * 2 > maxReconnectDelay) ? maxReconnectDelay : reconnectDelay * 2;
+        reconnectDelay = (reconnectDelay * 2 > maxReconnectDelay) ?
+                             maxReconnectDelay :
+                             reconnectDelay * 2;
 
         if (onTryReconnect) { onTryReconnect(this, reconnectTries); };
         connectInternal();
@@ -160,19 +173,26 @@ inline void ticker::processTextMessage(const string& message) {
     if (!res.IsObject()) { throw libException("Expected a JSON object"); };
 
     auto type = utils::json::get<string>(res, "type");
-    if (type.empty()) { throw kc::libException(FMT("Cannot recognize websocket message type {0}", type)); }
+    if (type.empty()) {
+        throw kc::libException(
+            FMT("Cannot recognize websocket message type {0}", type));
+    }
 
-    if (type == "order" && onOrderUpdate) { onOrderUpdate(this, kc::postback(utils::json::extractObject(res))); }
+    if (type == "order" && onOrderUpdate) {
+        onOrderUpdate(this, kc::postback(utils::json::extractObject(res)));
+    }
     if (type == "message" && onMessage) { onMessage(this, message); };
-    if (type == "error" && onError) { onError(this, 0, utils::json::extractString(res)); };
+    if (type == "error" && onError) {
+        onError(this, 0, utils::json::extractString(res));
+    };
 };
 
 template <typename T>
 T ticker::unpack(const std::vector<char>& bytes, size_t start, size_t end) {
     // FIXME directly iterate over bytes instead of making a copy or reversing
     T value;
-    std::vector<char> requiredBytes(
-        bytes.begin() + static_cast<int64_t>(start), bytes.begin() + static_cast<int64_t>(end) + 1);
+    std::vector<char> requiredBytes(bytes.begin() + static_cast<int64_t>(start),
+        bytes.begin() + static_cast<int64_t>(end) + 1);
 
     // clang-format off
         #ifndef WORDS_BIGENDIAN
@@ -184,21 +204,25 @@ T ticker::unpack(const std::vector<char>& bytes, size_t start, size_t end) {
     return value;
 };
 
-inline std::vector<std::vector<char>> ticker::splitPackets(const std::vector<char>& bytes) {
+inline std::vector<std::vector<char>> ticker::splitPackets(
+    const std::vector<char>& bytes) {
     const auto numberOfPackets = unpack<int16_t>(bytes, 0, 1);
     std::vector<std::vector<char>> packets;
 
     unsigned int packetLengthStartIdx = 2;
     for (int i = 1; i <= numberOfPackets; i++) {
         unsigned int packetLengthEndIdx = packetLengthStartIdx + 1;
-        auto packetLength = unpack<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
+        auto packetLength =
+            unpack<int16_t>(bytes, packetLengthStartIdx, packetLengthEndIdx);
         packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
-        packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1, bytes.begin() + packetLengthStartIdx);
+        packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1,
+            bytes.begin() + packetLengthStartIdx);
     };
     return packets;
 };
 
-inline std::vector<kc::tick> ticker::parseBinaryMessage(char* bytes, size_t size) {
+inline std::vector<kc::tick> ticker::parseBinaryMessage(
+    char* bytes, size_t size) {
     static constexpr uint8_t SEGMENT_MASK = 0xff;
     static constexpr double CDS_DIVISOR = 10000000.0;
     static constexpr double BSECDS_DIVISOR = 10000.0;
@@ -210,7 +234,8 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(char* bytes, size_t size
     static constexpr size_t FULL_PACKET_SIZE = 184;
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    std::vector<std::vector<char>> packets = splitPackets(std::vector<char>(bytes, bytes + size));
+    std::vector<std::vector<char>> packets =
+        splitPackets(std::vector<char>(bytes, bytes + size));
     if (packets.empty()) { return {}; };
 
     std::vector<kc::tick> ticks;
@@ -219,7 +244,8 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(char* bytes, size_t size
         const auto instrumentToken = unpack<int32_t>(packet, 0, 3);
         // NOLINTNEXTLINE(hicpp-signed-bitwise)
         const uint8_t segment = instrumentToken & SEGMENT_MASK;
-        const bool tradable = segment != static_cast<uint8_t>(SEGMENTS::INDICES);
+        const bool tradable =
+            segment != static_cast<uint8_t>(SEGMENTS::INDICES);
         double divisor = 0.0;
         if (segment == static_cast<uint8_t>(SEGMENTS::CDS)) {
             divisor = CDS_DIVISOR;
@@ -240,19 +266,25 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(char* bytes, size_t size
         if (packetSize == LTP_PACKET_SIZE) {
             Tick.mode = MODE_LTP;
             Tick.lastPrice = unpack<int32_t>(packet, 4, 7) / divisor;
-        } else if (packetSize == INDICES_QUOTE_PACKET_SIZE || packetSize == INDICES_FULL_PACKET_SIZE) {
+        } else if (packetSize == INDICES_QUOTE_PACKET_SIZE ||
+                   packetSize == INDICES_FULL_PACKET_SIZE) {
             // indices quote and full mode
-            Tick.mode = (packetSize == INDICES_QUOTE_PACKET_SIZE) ? MODE_QUOTE : MODE_FULL;
+            Tick.mode = (packetSize == INDICES_QUOTE_PACKET_SIZE) ? MODE_QUOTE :
+                                                                    MODE_FULL;
             Tick.lastPrice = unpack<int32_t>(packet, 4, 7) / divisor;
             Tick.ohlc.high = unpack<int32_t>(packet, 8, 11) / divisor;
             Tick.ohlc.low = unpack<int32_t>(packet, 12, 15) / divisor;
             Tick.ohlc.open = unpack<int32_t>(packet, 16, 19) / divisor;
             Tick.ohlc.close = unpack<int32_t>(packet, 20, 23) / divisor;
             Tick.netChange = unpack<int32_t>(packet, 24, 27) / divisor;
-            if (packetSize == INDICES_FULL_PACKET_SIZE) { Tick.timestamp = unpack<int32_t>(packet, 28, 33); }
-        } else if (packetSize == QUOTE_PACKET_SIZE || packetSize == FULL_PACKET_SIZE) {
+            if (packetSize == INDICES_FULL_PACKET_SIZE) {
+                Tick.timestamp = unpack<int32_t>(packet, 28, 33);
+            }
+        } else if (packetSize == QUOTE_PACKET_SIZE ||
+                   packetSize == FULL_PACKET_SIZE) {
             // Quote and full mode
-            Tick.mode = (packetSize == QUOTE_PACKET_SIZE) ? MODE_QUOTE : MODE_FULL;
+            Tick.mode =
+                (packetSize == QUOTE_PACKET_SIZE) ? MODE_QUOTE : MODE_FULL;
             Tick.lastPrice = unpack<int32_t>(packet, 4, 7) / divisor;
             Tick.lastTradedQuantity = unpack<int32_t>(packet, 8, 11);
             Tick.averageTradePrice = unpack<int32_t>(packet, 12, 15) / divisor;
@@ -263,7 +295,8 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(char* bytes, size_t size
             Tick.ohlc.high = unpack<int32_t>(packet, 32, 35) / divisor;
             Tick.ohlc.low = unpack<int32_t>(packet, 36, 39) / divisor;
             Tick.ohlc.close = unpack<int32_t>(packet, 40, 43) / divisor;
-            Tick.netChange = (Tick.lastPrice - Tick.ohlc.close) * 100 / Tick.ohlc.close;
+            Tick.netChange =
+                (Tick.lastPrice - Tick.ohlc.close) * 100 / Tick.ohlc.close;
 
             // parse full mode
             if (packetSize == FULL_PACKET_SIZE) {
@@ -276,11 +309,16 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(char* bytes, size_t size
                 unsigned int depthStartIdx = 64;
                 for (int i = 0; i <= 9; i++) {
                     kc::depthWS depth;
-                    depth.quantity = unpack<int32_t>(packet, depthStartIdx, depthStartIdx + 3);
-                    depth.price = unpack<int32_t>(packet, depthStartIdx + 4, depthStartIdx + 7) / divisor;
-                    depth.orders = unpack<int16_t>(packet, depthStartIdx + 8, depthStartIdx + 9);
+                    depth.quantity = unpack<int32_t>(
+                        packet, depthStartIdx, depthStartIdx + 3);
+                    depth.price = unpack<int32_t>(packet, depthStartIdx + 4,
+                                      depthStartIdx + 7) /
+                                  divisor;
+                    depth.orders = unpack<int16_t>(
+                        packet, depthStartIdx + 8, depthStartIdx + 9);
 
-                    (i >= 5) ? Tick.marketDepth.sell.emplace_back(depth) : Tick.marketDepth.buy.emplace_back(depth);
+                    (i >= 5) ? Tick.marketDepth.sell.emplace_back(depth) :
+                               Tick.marketDepth.buy.emplace_back(depth);
                     depthStartIdx = depthStartIdx + 12;
                 };
             };
@@ -308,21 +346,23 @@ inline void ticker::resubInstruments() {
 
 inline void ticker::assignCallbacks() {
     // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onConnection([&](uWS::WebSocket<uWS::CLIENT>* Ws, uWS::HttpRequest /*req*/) {
-        ws = Ws;
-        //! not setting this time would prompt reconnecting immediately even when conected since pongTime would be
-        //! far back
-        lastPongTime = std::chrono::system_clock::now();
+    group->onConnection(
+        [&](uWS::WebSocket<uWS::CLIENT>* Ws, uWS::HttpRequest /*req*/) {
+            ws = Ws;
+            //! not setting this time would prompt reconnecting immediately even
+            //! when conected since pongTime would be far back
+            lastPongTime = std::chrono::system_clock::now();
 
-        reconnectTries = 0;
-        reconnectDelay = initReconnectDelay;
-        isReconnecting = false;
-        if (!subbedInstruments.empty()) { resubInstruments(); };
-        if (onConnect) { onConnect(this); };
-    });
+            reconnectTries = 0;
+            reconnectDelay = initReconnectDelay;
+            isReconnecting = false;
+            if (!subbedInstruments.empty()) { resubInstruments(); };
+            if (onConnect) { onConnect(this); };
+        });
 
     // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onMessage([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, char* message, size_t length, uWS::OpCode opCode) {
+    group->onMessage([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, char* message,
+                         size_t length, uWS::OpCode opCode) {
         if (opCode == uWS::OpCode::BINARY && onTicks) {
             if (length == 1) {
                 // is a heartbeat
@@ -336,7 +376,8 @@ inline void ticker::assignCallbacks() {
     });
 
     // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onPong([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, char* /*message*/, size_t /*length*/) {
+    group->onPong([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, char* /*message*/,
+                      size_t /*length*/) {
         lastPongTime = std::chrono::system_clock::now();
     });
 
@@ -348,7 +389,8 @@ inline void ticker::assignCallbacks() {
     });
 
     // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, int code, char* reason, size_t length) {
+    group->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, int code,
+                               char* reason, size_t length) {
         ws = nullptr;
 
         if (code != utils::ws::ERROR_CODE::NORMAL_CLOSURE) {
