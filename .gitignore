@@ -8,7 +8,7 @@ build/
 compile_commands.json
 
 #generated docs
-docs/**
+# docs/**
 !docs/config.doxygen
 !docs/mainpage.dox
 !docs/CMakeLists.txt

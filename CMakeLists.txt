@@ -95,7 +95,24 @@ if(BUILD_TESTS)
         add_test(NAME ticker-test COMMAND ${TICKER_TEST_BINARY_NAME})
 endif()
 
-# generate documentation
+# generate docs
 if(BUILD_DOCS)
-        add_subdirectory("docs")
+        find_package(Doxygen)
+
+        if(DOXYGEN_FOUND)
+                # set io files and configure doxyfile
+                set(DOXY_FILE Doxyfile.in)
+                set(DOXYGEN_IN ${CMAKE_SOURCE_DIR}/cmake/templates/${DOXY_FILE})
+                set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile.out)
+                configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
+
+                # ! don't add to the `all` target. doing so will build build docs everytime.
+                add_custom_target(docs
+                        COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
+                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+                        COMMENT "generating documentation with doxygen"
+                        VERBATIM)
+        else(DOXYGEN_FOUND)
+                message(FATAL_ERROR "doxygen is required for generating documentation")
+        endif(DOXYGEN_FOUND)
 endif()
