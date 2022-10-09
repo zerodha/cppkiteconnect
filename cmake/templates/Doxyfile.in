@@ -14,3 +14,5 @@ GENERATE_TREEVIEW      = YES
 DISABLE_INDEX = NO
 FULL_SIDEBAR = NO
 HTML_EXTRA_STYLESHEET  = "@CMAKE_SOURCE_DIR@/docs/doxygen-awesome-css/doxygen-awesome.css"
+HTML_EXTRA_FILES = "@CMAKE_SOURCE_DIR@/docs/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js"
+HTML_HEADER = "@CMAKE_SOURCE_DIR@/docs/header.html"
