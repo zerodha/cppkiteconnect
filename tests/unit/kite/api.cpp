@@ -34,7 +34,7 @@ TEST(kiteTest, loginURLTest) {
 };
 
 TEST(kiteTest, generateSessionTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_custom/generate_session.json");
+    const string JSON = kc::test::readFile("../tests/mock_custom/generate_session.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/session/token" },
                           utils::http::Params {
@@ -70,7 +70,7 @@ TEST(kiteTest, generateSessionTest) {
 };
 
 TEST(kiteTest, invalidateSessionTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_custom/invalidate_session.json");
+    const string JSON = kc::test::readFile("../tests/mock_custom/invalidate_session.json");
     StrictMock<kc::test::mockKite> Kite;
     Kite.setAccessToken(kc::test::ACCESS_TOKEN);
 

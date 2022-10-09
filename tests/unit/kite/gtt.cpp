@@ -20,7 +20,7 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, placeGttTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_place_order.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_place_order.json");
     constexpr double LAST_PRICE = 798.0;
     const string TRIGGER_TYPE = "single";
     const string SYMBOL = "INFY";
@@ -67,7 +67,7 @@ TEST(kiteTest, placeGttTest) {
 }
 
 TEST(kiteTest, getGTTsTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_get_orders.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_get_orders.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/gtt/triggers" },
                           utils::http::Params {}, utils::FmtArgs {}))
@@ -124,7 +124,7 @@ TEST(kiteTest, getGTTsTest) {
 }
 
 TEST(kiteTest, getGTTTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_get_order.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_get_order.json");
     constexpr int TRIGGER_ID = 123;
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/gtt/triggers/{0}" },
@@ -153,7 +153,7 @@ TEST(kiteTest, getGTTTest) {
 }
 
 TEST(kiteTest, modifyGttTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_modify_order.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_modify_order.json");
     constexpr double LAST_PRICE = 798.0;
     const string TRIGGER_TYPE = "single";
     const string SYMBOL = "INFY";
@@ -198,7 +198,7 @@ TEST(kiteTest, modifyGttTest) {
 }
 
 TEST(kiteTest, deleteGTTTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/gtt_delete_order.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/gtt_delete_order.json");
     constexpr int TRIGGER_ID = 123;
     constexpr int EXPECTED_TRIGGER_ID = 123;
     StrictMock<kc::test::mockKite> Kite;

@@ -20,7 +20,7 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, placeOrderTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/order_response.json");
     const int QUANTITY = 10;
     const string VARIETY = "regular";
     const string EXCHANGE = "NSE";
@@ -63,7 +63,7 @@ TEST(kiteTest, placeOrderTest) {
 }
 
 TEST(kiteTest, modifyOrderTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/order_response.json");
     const int QUANTITY = 11;
     const string VARIETY = "regular";
     const string ORDER_ID = "151220000000000";
@@ -92,7 +92,7 @@ TEST(kiteTest, modifyOrderTest) {
 }
 
 TEST(kiteTest, cancelOrderTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/order_response.json");
     const string VARIETY = "regular";
     const string ORDER_ID = "151220000000000";
     const string EXPECTED_ORDER_ID = "151220000000000";
@@ -108,7 +108,7 @@ TEST(kiteTest, cancelOrderTest) {
 }
 
 TEST(kiteTest, exitOrderTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/order_response.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/order_response.json");
     const string VARIETY = "bo";
     const string ORDER_ID = "151220000000000";
     const string PARENT_ORDER_ID = "151220000000001";
@@ -125,7 +125,7 @@ TEST(kiteTest, exitOrderTest) {
 }
 
 TEST(kiteTest, ordersTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/orders.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/orders.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders" }, utils::http::Params {},
                           utils::FmtArgs {}))
@@ -166,7 +166,7 @@ TEST(kiteTest, ordersTest) {
 }
 
 TEST(kiteTest, orderHistoryTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/orders.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/orders.json");
     const string ORDER_ID = "100000000000000";
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders/{0}" }, utils::http::Params {},
@@ -208,7 +208,7 @@ TEST(kiteTest, orderHistoryTest) {
 }
 
 TEST(kiteTest, tradesTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/trades.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/trades.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/trades" }, utils::http::Params {},
                           utils::FmtArgs {}))
@@ -233,7 +233,7 @@ TEST(kiteTest, tradesTest) {
 }
 
 TEST(kiteTest, orderTradesTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/order_trades.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/order_trades.json");
     const string ORDER_ID = "100000000000000";
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/orders/{0}/trades" },

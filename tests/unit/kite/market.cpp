@@ -20,7 +20,7 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, getQuoteTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/quote.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/quote.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote?{0}" }, utils::http::Params {},
@@ -87,7 +87,7 @@ TEST(kiteTest, getQuoteTest) {
 }
 
 TEST(kiteTest, getOHLCTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/ohlc.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/ohlc.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ohlc?{0}" },
@@ -107,7 +107,7 @@ TEST(kiteTest, getOHLCTest) {
 }
 
 TEST(kiteTest, getLTPTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/ltp.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/ltp.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/quote/ltp?{0}" },
@@ -123,7 +123,7 @@ TEST(kiteTest, getLTPTest) {
 }
 
 TEST(kiteTest, getHistoricalDataTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/historical_minute.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/historical_minute.json");
     const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
     constexpr int INSTRUMENT_TOKEN = 5633;
     const string INTERVAL = "minute";
@@ -170,7 +170,7 @@ TEST(kiteTest, getHistoricalDataTest) {
 }
 
 TEST(kiteTest, getInstrumentsTest) {
-    const string CSV = kc::test::readFile("../../tests/mock_responses/instruments_all.csv");
+    const string CSV = kc::test::readFile("../tests/mock_responses/instruments_all.csv");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments", utils::http::CONTENT_TYPE::NON_JSON },
@@ -211,7 +211,7 @@ TEST(kiteTest, getInstrumentsTest) {
 }
 
 TEST(kiteTest, getInstrumentsExchangeTest) {
-    const string CSV = kc::test::readFile("../../tests/mock_responses/instruments_all.csv");
+    const string CSV = kc::test::readFile("../tests/mock_responses/instruments_all.csv");
     const string EXCHANGE = "NSE";
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/instruments/{0}",

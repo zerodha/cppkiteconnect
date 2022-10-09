@@ -20,7 +20,7 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, profile) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/profile.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/profile.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/profile" },
                           utils::http::Params {}, utils::FmtArgs {}))
@@ -44,7 +44,7 @@ TEST(kiteTest, profile) {
 };
 
 TEST(kiteTest, getMarginsTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/margins.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/margins.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/user/margins" },
                           utils::http::Params {}, utils::FmtArgs {}))
@@ -92,7 +92,7 @@ TEST(kiteTest, getMarginsTest) {
 }
 
 TEST(kiteTest, getMarginsSegmentTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/margins_equity.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/margins_equity.json");
     const string SEGMENT = "equity";
 
     StrictMock<kc::test::mockKite> Kite;

@@ -20,7 +20,7 @@ namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
 TEST(kiteTest, holdingsTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/holdings.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/holdings.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/holdings" },
                           utils::http::Params {}, utils::FmtArgs {}))
@@ -51,7 +51,7 @@ TEST(kiteTest, holdingsTest) {
 }
 
 TEST(kiteTest, getPositionsTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_responses/positions.json");
+    const string JSON = kc::test::readFile("../tests/mock_responses/positions.json");
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET, "/portfolio/positions" },
                           utils::http::Params {}, utils::FmtArgs {}))
@@ -250,7 +250,7 @@ TEST(kiteTest, getPositionsTest) {
 }
 
 TEST(kiteTest, convertPositionTest) {
-    const string JSON = kc::test::readFile("../../tests/mock_custom/convert_position.json");
+    const string JSON = kc::test::readFile("../tests/mock_custom/convert_position.json");
     constexpr int QUNATITY = 11;
     const string EXCHANGE = "BSE";
     const string SYMBOL = "INFY";
