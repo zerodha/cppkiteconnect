@@ -43,7 +43,7 @@ jobs:
       - name: Build and test on macOS
         if: startsWith(matrix.config.name, 'macOS')
         run: |
-          brew install googletest@v1.10.0 libuv
+          brew extract --version=1.10.0 googletest homebrew/cask && brew install googletest@1.10.0 libuv
           export PKG_CONFIG_PATH="/usr/local/opt/openssl/lib/pkgconfig"
 
           curl -L https://github.com/hoytech/uWebSockets/archive/refs/tags/v0.14.8.tar.gz > uWebSocketsv-0.14.8.tar.gz
