@@ -23,9 +23,9 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include "kitepp.hpp"
 #include <cstdlib>
 #include <iostream>
-#include <kitepp.hpp>
 
 namespace kc = kiteconnect;
 
