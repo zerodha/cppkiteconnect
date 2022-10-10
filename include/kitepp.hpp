@@ -30,6 +30,7 @@
  * @paragraph ex1 example1
  * @snippet example2.cpp adding kitepp header
  */
+
 #pragma once
 
 #define CPPHTTPLIB_OPENSSL_SUPPORT
