@@ -37,7 +37,7 @@ jobs:
           git clone https://github.com/hoytech/uWebSockets.git
           cd uWebSockets && make && sudo make install && cd ..
           mkdir build && cd build
-          cmake .. && make && make test ARGS="-V"
+          cmake .. -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON && make && make test ARGS="-V"
 
       # Build & test on macOS
       - name: Build and test on macOS
@@ -52,4 +52,4 @@ jobs:
           make && make installDarwin && cd ..
 
           mkdir build && cd build
-          cmake .. && make && make test ARGS="-V"
+          cmake .. -DBUILD_EXAMPLES=ON -DBUILD_TESTS=ON && make && make test ARGS="-V"
