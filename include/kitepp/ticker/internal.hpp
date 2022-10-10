@@ -303,7 +303,7 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(
             Tick.ohlc.close = unpack<int32_t>(packet, 20, 23) / divisor;
             Tick.netChange = unpack<int32_t>(packet, 24, 27) / divisor;
             if (packetSize == INDICES_FULL_PACKET_SIZE) {
-                Tick.timestamp = unpack<int32_t>(packet, 28, 33);
+                Tick.timestamp = unpack<int32_t>(packet, 28, 31);
             }
         } else if (packetSize == QUOTE_PACKET_SIZE ||
                    packetSize == FULL_PACKET_SIZE) {
