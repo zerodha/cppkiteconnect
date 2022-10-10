@@ -34,6 +34,13 @@ You can also download source of the required dependencies by running `cmake .` i
 
 ## Building & Installation
 
+Clone the repository and fetch the submodules
+
+```sh
+git clone https://github.com/zerodha/cppkiteconnect.git
+submodule update --init --recursive
+```
+
 CPPKiteConnect is a header-only library. Copy the `include` folder to system or project's include path.
 
 ### Build
