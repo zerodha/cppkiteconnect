@@ -13,7 +13,7 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// represents parameters required for the `placeMfOrder` function
+/// Parameters required for the `placeMfOrder` method.
 struct placeMfOrderParams {
     GENERATE_FLUENT_METHOD(placeMfOrderParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(placeMfOrderParams, double, amount, Amount);
@@ -29,7 +29,7 @@ struct placeMfOrderParams {
     std::optional<string> tag;
 };
 
-/// represents parameters required for the `placeMfSip` function
+/// Parameters required for the `placeMfSip` method.
 struct placeMfSipParams {
     GENERATE_FLUENT_METHOD(placeMfSipParams, int, installments, Installments);
     GENERATE_FLUENT_METHOD(
@@ -51,7 +51,7 @@ struct placeMfSipParams {
     std::optional<string> tag;
 };
 
-/// represents response returned by the `placeMfSip` method
+/// Represents response returned by the `placeMfSip` method.
 struct placeMfSipResponse {
     placeMfSipResponse() = default;
     explicit placeMfSipResponse(const rj::Value::Object& val) { parse(val); };
@@ -65,7 +65,7 @@ struct placeMfSipResponse {
     string sipId;
 };
 
-/// represents parameters required for the `modifyMfSip` function
+/// Parameters required for the `modifyMfSip` method.
 struct modifyMfSipParams {
     GENERATE_FLUENT_METHOD(modifyMfSipParams, int, installments, Installments);
     GENERATE_FLUENT_METHOD(
@@ -84,7 +84,7 @@ struct modifyMfSipParams {
     std::optional<string> frequency;
 };
 
-/// mfOrder represents an individual mutual fund order response
+/// Represents information of a mutual fund order.
 struct mfOrder {
     mfOrder() = default;
     explicit mfOrder(const rj::Value::Object& val) { parse(val); };
@@ -132,7 +132,7 @@ struct mfOrder {
     string tag;
 };
 
-/// mfHolding represents an individual mutual fund holding
+/// Represents information of a mutual fund holding.
 struct mfHolding {
 
     mfHolding() = default;
@@ -159,7 +159,7 @@ struct mfHolding {
     string lastPriceDate;
 };
 
-/// mfSip represents an individual mutual fund SIP response
+/// Represents information of a mutual fund SIP.
 struct mfSip {
     mfSip() = default;
     explicit mfSip(const rj::Value::Object& val) { parse(val); };
@@ -206,7 +206,7 @@ struct mfSip {
     string tag;
 };
 
-/// mfInstrument represents an individual mutual fund instrument response
+/// Represents information about a mutual fund instrument.
 struct mfInstrument {
     mfInstrument() = default;
     explicit mfInstrument(const string& val) { parse(val); };

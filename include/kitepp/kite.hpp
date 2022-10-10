@@ -41,595 +41,576 @@ using std::string;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/**
- * @brief Used for accessing REST interface provided by Kite API.
- *
- */
+///
+/// \brief \a kite represents a KiteConnect session. It wraps around the
+///        KiteConnect REST API and provides a native interface.
+///
 class kite {
 
   public:
-    /**
-     * @brief Construct a new kite object
-     *
-     * @param apikey
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp initializing kite
-     */
+    ///
+    /// \brief Construct a new kite object.
+    ///
+    /// \param apikey kiteconnect api key
+    ///
     explicit kite(string apikey);
 
     // api
 
-    /**
-     * @brief Set the API key
-     *
-     * @param arg The string that should be set as API key
-     */
+    ///
+    /// \brief Set the API key for current session.
+    ///
+    /// \param arg API key is set to \a arg
+    ///
     void setApiKey(const string& arg);
 
-    /**
-     * @brief Fetch current API key
-     *
-     * @return string
-     */
+    ///
+    /// \brief Get current session's API key.
+    ///
+    /// \return string API key
+    ///
     string getApiKey() const;
 
-    /**
-     * @brief Get the remote login url to which a user should be redirected to
-     * initiate the login flow.
-     *
-     * @return string
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp obtaining login url
-     */
+    ///
+    /// \brief Get the login URL to which the user should be redirected to
+    /// initiate the login flow.
+    ///
+    /// \return string login URL
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp obtaining login url
+    ///
     string loginURL() const;
 
-    /**
-     * @brief Set the Access Token
-     *
-     * @param arg the string you want to set as access token
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp settting access token
-     */
+    ///
+    /// \brief Set the access token current session.
+    ///
+    /// \param arg access token is set to \a arg
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp settting access token
+    ///
     void setAccessToken(const string& arg);
 
-    /**
-     * @brief Get the Access Token set currently
-     *
-     * @return string
-     */
+    ///
+    /// \brief Get access token set for current session.
+    ///
+    /// \return string access token
+    ///
     string getAccessToken() const;
 
-    /**
-     * @brief Generate user session details like `access_token`
-     *
-     * @param requestToken
-     * @param apiSecret
-     * @return userSession
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp obtaining access token
-     */
+    ///
+    /// \brief Generate an user session. Use this method to generate an access
+    ///        token.
+    ///
+    /// \param requestToken request token to use
+    /// \param apiSecret corresponding API secret
+    /// \return userSession session details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp obtaining access token
+    ///
     userSession generateSession(
         const string& requestToken, const string& apiSecret);
 
-    /**
-     * @brief This call invalidates the access_token and destroys the API
-     * session. After this, the user should be sent through a new login flow
-     * before further interactions. This does not log the user out of the
-     * official Kite web or mobile applications.
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp invalidate session
-     */
+    ///
+    /// \brief This method invalidates the access token and destroys current
+    ///        session.
+    ///
+    /// \note After this, the user should be sent through a new login flow
+    ///       before further interactions.
+    ///       This does not log the user out of the
+    ///       official Kite web or mobile applications.
+    ///
+    /// \return `true` if session was invalidated successfully, `false`
+    ///         otherwise.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp invalidate session
+    ///
     bool invalidateSession();
 
     // user
 
-    /**
-     * @brief returns user profile
-     *
-     * @return userProfile
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get user profile
-     */
+    ///
+    /// \brief Get user's profile.
+    ///
+    /// \return userProfile user profile
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get user profile
+    ///
     userProfile profile();
 
-    /**
-     * @brief Get margins for all segments
-     *
-     * @return allMargins
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get margins
-     */
+    /// \brief Get margins for all segments.
+    ///
+    /// \return allMargins margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get margins
+    ///
     allMargins getMargins();
 
-    /**
-     * @brief Get margins for a particular segment
-     *
-     * @param segment
-     * @return margins
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get margins
-     */
+    /// \brief Get margins for a particular segment.
+    ///
+    /// \param segment segment whose margins should be fetched
+    ///
+    /// \return margins segment margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get margins
+    ///
     margins getMargins(const string& segment);
 
     // orders
 
-    /**
-     * @brief place an order.
-     *
-     * @param variety variety of the order
-     * @param exchange name of the exchange
-     * @param symbol trading symbol
-     * @param txnType transaction type
-     * @param quantity quantity to transact
-     * @param product margin product to use for the order (margins are blocked
-     * based on this)
-     * @param orderType order type (MARKET, LIMIT etc.)
-     * @param price the min or max price to execute the order at (for LIMIT
-     * orders)
-     * @param validity order validity
-     * @param trigPrice trigger price
-     * @param sqOff square off
-     * @param SL stoploss
-     * @param trailSL trailing stoploss
-     * @param discQuantity disclosed quantity
-     * @param tag an optional tag to apply to an order to identify it
-     * (alphanumeric, max 20 chars)
-     *
-     * @return string orderID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp placing an order
-     */
+    ///
+    /// \brief Place an order.
+    ///
+    /// \param params parameters of order to place
+    ///
+    /// \return string ID of placed order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp placing an order
+    ///
     string placeOrder(const placeOrderParams& params);
 
     /**
-     * @brief modify an order
+     * \brief modify an order
      *
-     * @param variety variety of the order
-     * @param ordID order ID
-     * @param parentOrdID parent order ID
-     * @param quantity quantity to transact
-     * @param price the min or max price to execute the order at (for LIMIT
+     * \param variety variety of the order
+     * \param ordID order ID
+     * \param parentOrdID parent order ID
+     * \param quantity quantity to transact
+     * \param price the min or max price to execute the order at (for LIMIT
      * orders)
-     * @param ordType order type
-     * @param trigPrice trigger price
-     * @param validity order validity
-     * @param discQuantity disclosed quantity
+     * \param ordType order type
+     * \param trigPrice trigger price
+     * \param validity order validity
+     * \param discQuantity disclosed quantity
      *
-     * @return string order ID
+     * \return string order ID
      *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp modifying an order
+     * \paragraph ex1 Example
+     * \snippet example2.cpp modifying an order
      */
+
+    ///
+    /// \brief Modify an order.
+    ///
+    /// \param params parameters of the order to modify
+    ///
+    /// \return string ID of modified order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp modifying an order
+    ///
     string modifyOrder(const modifyOrderParams& params);
 
     /**
-     * @brief cancel an order
+     * \brief cancel an order
      *
-     * @param variety variety of the order
-     * @param ordID order ID
-     * @param parentOrdID parent order ID
+     * \param variety variety of the order
+     * \param ordID order ID
+     * \param parentOrdID parent order ID
      *
-     * @return string order ID
+     * \return string order ID
      *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp cancelling an order
+     * \paragraph ex1 Example
+     * \snippet example2.cpp cancelling an order
      */
+
+    ///
+    /// \brief Cancel an order.
+    ///
+    /// \param variety       variety of order to cancel
+    /// \param orderId       ID of order to cancel
+    /// \param parentOrderId parent order ID of the order to cancel (if any)
+    ///
+    /// \return string ID of the cancelled order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp cancelling an order
+    ///
     string cancelOrder(const string& variety, const string& orderId,
         const string& parentOrderId = "");
 
-    /**
-     * @brief exit an order
-     *
-     * @param variety variety of the order
-     * @param ordID order ID
-     * @param parentOrdID parent order ID
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp exiting an order
-     */
+    ///
+    /// \brief Exit an order.
+    ///
+    /// \param variety       variety of the order to exit
+    /// \param orderId       ID of the order to exit
+    /// \param parentOrderId parent order ID of the order to exit (if any)
+    ///
+    /// \return string ID of the order exited
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp exiting an order
+    ///
     string exitOrder(const string& variety, const string& orderId,
         const string& parentOrderId = "");
 
-    /**
-     * @brief get list of orders
-     *
-     * @return std::vector<order>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get orders
-     */
+    ///
+    /// \brief Get list of orders.
+    ///
+    /// \return std::vector<order> orders
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get orders
+    ///
     std::vector<order> orders();
 
-    /**
-     * @brief get history of an order
-     *
-     * @param ordID order ID
-     *
-     * @return std::vector<order>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order history
-     */
+    ///
+    /// \brief Get history of an order.
+    ///
+    /// \param orderId ID of order whose history should be fetched.
+    ///
+    /// \return std::vector<order> order history
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order history
+    ///
     std::vector<order> orderHistory(const string& orderId);
 
-    /**
-     * @brief get list of trades
-     *
-     * @return std::vector<trade>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get trades
-     */
+    ///
+    /// \brief Get list of trades.
+    ///
+    /// \return std::vector<trade> trades
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get trades
+    ///
     std::vector<trade> trades();
 
-    /**
-     * @brief get the list of trades executed for a particular order.
-     *
-     * @param ordID order ID
-     *
-     *  @return std::vector<trade>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order trades
-     */
+    ///
+    /// \brief Get the list of trades executed for a particular order.
+    ///
+    /// \param orderId ID of order whose trades should be fetched
+    ///
+    ///  \return std::vector<trade> trades
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order trades
+    ///
     std::vector<trade> orderTrades(const string& orderId);
 
     // gtt
 
-    /**
-     * @brief place GTT order
-     *
-     * @param trigType trigger type
-     * @param symbol trading symbol
-     * @param exchange exchange name
-     * @param trigValues trigger values
-     * @param lastPrice last price
-     * @param gttParams vector of GTTParams
-     *
-     * @return int trigger ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp placing a gtt
-     */
+    ///
+    /// \brief Place a GTT.
+    ///
+    /// \param params parameters of the GTT to place.
+    ///
+    /// \return int trigger ID
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp placing a gtt
+    ///
     int placeGtt(const placeGttParams& params);
 
-    /**
-     * @brief get list of GTTs
-     *
-     * @return std::vector<GTT>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get gtts
-     */
+    ///
+    /// \brief Get list of GTTs.
+    ///
+    /// \return std::vector<GTT> triggers
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get gtts
+    ///
     std::vector<GTT> triggers();
 
-    /**
-     * @brief get details of a GTT
-     *
-     * @param trigID trigger ID
-     * @return GTT
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get gtt info
-     */
+    ///
+    /// \brief Get details of a particular GTT.
+    ///
+    /// \param triggerId ID of trigger whose details should be fetched
+    /// \return GTT trigger details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get gtt info
+    ///
     GTT getGtt(int triggerId);
 
-    /**
-     * @brief
-     *
-     * @param trigID trigger ID
-     * @param trigType trigger type
-     * @param symbol trading symbol
-     * @param exchange name of the exchange
-     * @param trigValues trigger values
-     * @param lastPrice last traded price of the instrument
-     * @param gttParams vector of GTTParams
-     *
-     * @return int trigger ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp modifying a gtt
-     */
+    ///
+    /// \brief Modify a GTT.
+    ///
+    /// \param params parameters required to modify a GTT
+    ///
+    /// \return int ID of modified trigger
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp modifying a gtt
+    ///
     int modifyGtt(const kc::modifyGttParams& params);
 
-    /**
-     * @brief delete a GTT order.
-     *
-     * @param trigID trigger ID
-     *
-     * @return int trigger ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp delete a gtt
-     */
+    ///
+    /// \brief Delete a GTT.
+    ///
+    /// \param triggerId ID of trigger to delete
+    ///
+    /// \return int ID of deleted trigger
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp delete a gtt
+    ///
     int deleteGtt(int triggerId);
 
     // portfolio
 
-    /**
-     * @brief get holdings
-     *
-     * @return std::vector<holding>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get holdings
-     */
+    ///
+    /// \brief Get holdings.
+    ///
+    /// \return std::vector<holding> holdings
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get holdings
+    ///
     std::vector<holding> holdings();
 
-    /**
-     * @brief get positions
-     *
-     * @return positions
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get positions
-     */
+    ///
+    /// \brief Get positions.
+    ///
+    /// \return positions positions
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get positions
+    ///
     positions getPositions();
 
-    /**
-     * @brief Modify an open position's product type.
-     *
-     * @param exchange exchange name
-     * @param symbol trading symbol
-     * @param txnType transaction type
-     * @param posType position type
-     * @param quantity quantity to transact
-     * @param oldProduct old product
-     * @param newProduct new product
-     *
-     * @return bool true if position was successfully modified
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp convert position
-     */
+    ///
+    /// \brief Convert an open position to a different product type.
+    ///
+    /// \param params parameters required to convert a position
+    ///
+    /// \return bool `true` the if position was successfully modified, `false`
+    ///              otherwise.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp convert position
+    ///
     bool convertPosition(const convertPositionParams& params);
 
     // market
 
-    /**
-     * @brief Retrieve the list of market instruments available to trade.
-     *
-     * @param exchange returns all instruments if none specified
-     *
-     * @return std::vector<instrument>
-     *
-     * @attention Note that the results could be large, with tens of thousands
-     * of entries.
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get instruments
-     */
+    ///
+    /// \brief Retrieve the list of market instruments available to trade.
+    ///
+    /// \param exchange if specified, only instruments available on this
+    ///                 exchange are fetched.
+    ///
+    /// \return std::vector<instrument> instruments
+    ///
+    /// \attention Results could be large, with tens of thousands of entries.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get instruments
+    ///
     std::vector<instrument> getInstruments(const string& exchange = "");
 
-    /**
-     * @brief Retrieve quote for list of instruments
-     *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol`
-     * (NSE:INFY) format
-     *
-     *  @return std::unordered_map<string, quote>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get quote
-     */
+    ///
+    /// \brief Retrieve quote for a list of instruments.
+    ///
+    /// \param symbols list of instruments whose quotes should be fetched.
+    ///                format of each entry should be `exchange:tradingsymbol`.
+    ///                example: `NSE:INFY`.
+    ///
+    /// \return std::unordered_map<string, quote> quotes mapped to respective
+    ///                                           insruments. format of
+    ///                                           keys is similar to
+    ///                                           \a symbols.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get quote
+    ///
     std::unordered_map<string, quote> getQuote(
         const std::vector<string>& symbols);
 
-    /**
-     * @brief Retrieve OHLC for list of instruments
-     *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol`
-     * (NSE:INFY) format
-     *
-     * @return std::unordered_map<string, OHLCQuote>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get ohlc
-     */
+    ///
+    /// \brief Retrieve OHLC info for a list of instruments.
+    ///
+    /// \param symbols list of instruments whose OHLC info should be fetched.
+    ///                format of each entry should be `exchange:tradingsymbol`.
+    ///                example: `NSE:INFY`.
+    ///
+    /// \return std::unordered_map<string, OHLCQuote> OHLC info mapped to
+    ///                                               respective insruments.
+    ///                                               format of keys is similar
+    ///                                               to \a symbols.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get ohlc
+    ///
     std::unordered_map<string, ohlcQuote> getOhlc(
         const std::vector<string>& symbols);
 
-    /**
-     * @brief Retrieve last price for list of instruments
-     *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol`
-     * (NSE:INFY) format
-     *
-     * @return std::unordered_map<string, LTPQuote>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get ltp
-     */
+    ///
+    /// \brief Retrieve Last Traded Price for a list of instruments.
+    ///
+    /// \param symbols list of instruments whose OHLC info should be fetched.
+    ///                format of each entry should be `exchange:tradingsymbol`.
+    ///                example: `NSE:INFY`.
+    ///
+    /// \return std::unordered_map<string, LTPQuote> LTP info mapped to
+    ///                                              respective insruments.
+    ///                                              format of keys is similar
+    ///                                              to \a symbols.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get ltp
+    ///
     std::unordered_map<string, ltpQuote> getLtp(
         const std::vector<string>& symbols);
 
-    /**
-     * @brief Retrieve historical data (candles) for an instrument
-     *
-     * @param instrumentTok instrument token (NOT trading symbol)
-     * @param from from date in the following format: yyyy-mm-dd HH:MM:SS
-     * @param to to date in the following format: yyyy-mm-dd HH:MM:SS
-     * @param interval candle interval
-     * @param continuous boolean flag to get continuous data for futures and
-     * options instruments
-     * @param oi boolean flag to get open interest data
-     *
-     *  @return std::vector<historicalData>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get historical data
-     */
+    ///
+    /// \brief Retrieve historical data of an instrument.
+    ///
+    /// \param params paramters required to fetch the data.
+    ///
+    /// \return std::vector<historicalData> historical data
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get historical data
+    ///
     std::vector<historicalData> getHistoricalData(
         const historicalDataParams& params);
 
-    /**
-     * @brief get various margins required for orders
-     *
-     * @param params
-     *
-     * @return std::vector<orderMargins>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order margins
-     */
+    ///
+    /// \brief Get margins required for placing particular orders.
+    ///
+    /// \param params list of paramters required to fetch margins. each entry
+    ///               represents an order.
+    ///
+    /// \return std::vector<orderMargins> margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order margins
+    ///
     std::vector<orderMargins> getOrderMargins(
         const std::vector<orderMarginsParams>& params);
 
     // MF
 
-    /**
-     * @brief place a mutual fund order
-     *
-     * @param symbol trading symbol
-     * @param txnType transaction type
-     * @param quantity Quantity to SELL. Not applicable on BUYs. If the holding
-     * is less than minimum_redemption_quantity, all the units have to be sold
-     * @param amount amount worth of units to purchase. Not applicable on SELLs
-     * @param tag an optional tag to apply to an order to identify it
-     * (alphanumeric, max 8 chars)
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp place mf order
-     */
+    ///
+    /// \brief Place a mutual fund order.
+    ///
+    /// \param params parameters required to place the order
+    ///
+    /// \return string ID of the order placed
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp place mf order
+    ///
     string placeMfOrder(const placeMfOrderParams& params);
 
-    /**
-     * @brief cancel a mutual fund order
-     *
-     * @param ordID order ID
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp cancel a mf order
-     */
+    ///
+    /// \brief Cancel a mutual fund order.
+    ///
+    /// \param orderId ID of order to cancel
+    ///
+    /// \return string ID of cancelled order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp cancel a mf order
+    ///
     string cancelMfOrder(const string& orderId);
 
-    /**
-     * @brief get all mutual fund orders
-     *
-     * @return std::vector<MFOrder>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf orders
-     */
+    ///
+    /// \brief Get mutual fund orders.
+    ///
+    /// \return std::vector<mfOrder> orders
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf orders
+    ///
     std::vector<mfOrder> getMfOrders();
 
-    /**
-     * @brief get details of a mutual fund order
-     *
-     * @param ordID order ID
-     *
-     * @return MFOrder
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf order info
-     */
+    ///
+    /// \brief Get details of a particular mutual fund order
+    ///
+    /// \param orderId ID of the order whose details should be fetched
+    ///
+    /// \return mfOrder order details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf order info
+    ///
     mfOrder getMfOrder(const string& orderId);
 
-    /**
-     * @brief get mutual fund holdings
-     *
-     * @return std::vector<MFHolding>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf holdings
-     */
+    ///
+    /// \brief Get mutual fund holdings.
+    ///
+    /// \return std::vector<mfHolding> holdings
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf holdings
+    ///
     std::vector<mfHolding> getMfHoldings();
 
-    /**
-     * @brief place MF SIP
-     *
-     * @param symbol tradingsymbol (ISIN) of the fund
-     * @param amount amount worth of units to purchase. Not applicable on SELLs
-     * @param installments number of instalments to trigger. If set to -1,
-     * instalments are triggered at fixed intervals until the SIP is cancelled
-     * @param freq frequency
-     * @param initAmount initial amount
-     * @param installDay installment day
-     * @param tag an optional tag to apply to an order to identify it
-     * (alphanumeric, max 8 chars)
-     *
-     * @return std::pair<string, string>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp place mf sip order
-     */
+    ///
+    /// \brief Place a mutual fund SIP order.
+    ///
+    /// \param symbol tradingsymbol (ISIN) of the fund
+    ///
+    /// \return placeMfSipResponse IDs of the placed order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp place mf sip order
+    ///
     placeMfSipResponse placeMfSip(const placeMfSipParams& params);
 
-    /**
-     * @brief modify a MF SIP order
-     *
-     * @param SIPID SIP ID
-     * @param amount amount worth of units to purchase. It should be equal to or
-     * greated than minimum_additional_purchase_amount and in multiple of
-     * purchase_amount_multiplier in the instrument master.
-     * @param status pause or unpause an SIP (active or paused)
-     * @param installments number of instalments to trigger. If set to -1,
-     * instalments are triggered idefinitely until the SIP is cancelled
-     * @param freq weekly, monthly, or quarterly
-     * @param installDay installment day
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp modify mf sip order
-     */
+    ///
+    /// \brief Modify a mutual SIP order.
+    ///
+    /// \param params parameters required to modify the order
+    ///
+    /// \return string ID of the modified order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp modify mf sip order
+    ////
     string modifyMfSip(const modifyMfSipParams& params);
 
-    /**
-     * @brief cancel a MF SIP
-     *
-     * @param SIPID SIP ID
-     *
-     * @return SIP ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp cancel mf sip
-     */
+    ///
+    /// \brief Cancel a mutual fund SIP.
+    ///
+    /// \param sipId ID of SIP to cancel
+    ///
+    /// \return string ID of cancelled SIP
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp cancel mf sip
+    ///
     string cancelMfSip(const string& sipId);
 
-    /**
-     * @brief get list of SIPs
-     *
-     * @return std::vector<MFSIP>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get sips
-     */
+    ///
+    /// \brief Get list of SIPs.
+    ///
+    /// \return std::vector<mfSips> SIPs
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get sips
+    ///
     std::vector<mfSip> getSips();
 
-    /**
-     * @brief get details of a SIP
-     *
-     * @param SIPID SIP ID
-     *
-     * @return MFSIP
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get sip info
-     */
+    ///
+    /// \brief Get details of a particular SIP.
+    ///
+    /// \param sipId ID of the SIP whose details should be fetched
+    ///
+    /// \return mfSip SIP details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get sip info
+    ///
     mfSip getSip(const string& sipId);
 
-    /**
-     * @brief Get list of mutual fund instruments
-     *
-     * @return std::vector<MFInstrument>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf instruments
-     */
+    ///
+    /// \brief Get the list of mutual fund instruments available for trading.
+    ///
+    /// \return std::vector<mfInstrument> instruments
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf instruments
+    ///
     std::vector<mfInstrument> getMfInstruments();
 
   private:
@@ -727,14 +708,14 @@ class kite {
     virtual utils::http::response sendReq(const utils::http::endpoint& endpoint,
         const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #else
-    /**
-     * \brief send a http request with the context used by \a kite
-     *
-     * \param endpoint request endpoint
-     * \param body     body of the request (sent as form url encoded)
-     *
-     * \return utils::http::response response received
-     */
+    ///
+    /// \brief send a http request with the context used by \a kite
+    ///
+    /// \param endpoint request endpoint
+    /// \param body     body of the request (sent as form url encoded)
+    ///
+    /// \return utils::http::response response received
+    ///
     utils::http::response sendReq(const utils::http::endpoint& endpoint,
         const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
 #endif

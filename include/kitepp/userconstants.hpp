@@ -27,7 +27,7 @@
 
 /**
  * @file userconstants.hpp
- * @brief this file has useful constants that users can use
+ * @brief Useful constants users can utilize.
  */
 
 #include <string>

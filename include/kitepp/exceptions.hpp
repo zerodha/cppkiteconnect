@@ -33,46 +33,45 @@ namespace kiteconnect {
 
 using std::string;
 
-/**
- * @brief kitepp saves you the hassle of detecting API errors by looking at HTTP
- * codes or JSON error responses. Instead, it raises aptly named exceptions that
- * you can catch. `kiteppException` is derived from `std::exception` and, along
- * with other useful methods like `code()`, `message()`, provides `what()`
- * method. You should catch exceptions of this class. All kitepp exceptions
- * barring `libException` are derived from this class. `kiteppException` being a
- * abstract class, you cannot create it direectly. Instead, use exceptions
- * provided in `kiteexceptions.hpp` file.
- * @attention libExcpetion isn't derived from this class. You'll either have to
- * catch it directly or catch `std::exception`.
- *
- * @paragraph ex1 example
- * @snippet example2.cpp dealing with kitepp exceptions
- */
+///
+/// @brief CPPKiteConnect saves you the hassle of detecting API errors by
+/// manually checking HTTP codes or JSON error responses. It
+/// raises appropriately named exceptions. `kiteppException` is
+/// derived from `std::exception`, provides `code()`, `message()` methods and
+/// inherits the `what()` method. All kitepp exceptions barring one
+/// are derived from this class. Most of the times, this is the exception class
+/// you'll want to catch.
+///
+/// @attention `libExcpetion` isn't derived from `kiteppException`.
+///
+/// @paragraph ex1 example
+/// @snippet example2.cpp dealing with kitepp exceptions
+///
 class kiteppException : public std::exception {
 
   public:
     kiteppException(int Code_, string Message_)
         : Code(Code_), Message(std::move(Message_)) {};
 
-    /**
-     * @brief classic `what()` method inherited from `std::exception`
-     *
-     * @return const char*
-     */
+    ///
+    /// @brief Provides short descripion of the error.
+    ///
+    /// @return const char* short descripion
+    ///
     [[nodiscard]] const char* what() const noexcept override = 0;
 
-    /**
-     * @brief returns HTTP code sent by REST API
-     *
-     * @return int
-     */
+    ///
+    /// @brief Get HTTP code sent by the REST API.
+    ///
+    /// @return int HTTP code
+    ///
     [[nodiscard]] int code() const noexcept { return Code; };
 
-    /**
-     * @brief returns message sent by REST API
-     *
-     * @return const char*
-     */
+    ///
+    /// @brief Get error message sent by the REST API.
+    ///
+    /// @return const char* error message
+    ///
     [[nodiscard]] const char* message() const noexcept {
         return Message.c_str();
     };
@@ -82,160 +81,145 @@ class kiteppException : public std::exception {
     string Message;
 };
 
-/**
- * @brief Represents all token and authentication related errors.
- *
- */
+/// @brief Represents all token and authentication related errors.
 class tokenException : public kiteppException {
 
   public:
     tokenException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "TokenException was thrown by Kite";
     };
 };
 
-/**
- * @brief Represents user account related errors
- *
- */
+/// @brief Represents user account related errors.
 class userException : public kiteppException {
 
   public:
     userException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "UserException was thrown by Kite";
     };
 };
 
-/**
- * @brief Represents all order placement and manipulation errors.
- *
- */
+/// @brief Represents all order placement and manipulation errors.
 class orderException : public kiteppException {
 
   public:
     orderException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "OrderException was thrown by Kite";
     };
 };
 
-/**
- * @brief Represents user input errors such as missing and invalid parameters.
- *
- */
+/// @brief Represents user input errors such as missing and invalid parameters.
 class inputException : public kiteppException {
 
   public:
     inputException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "InputException was thrown by Kite";
     };
 };
 
-/**
- * @brief Represents a network issue between Kite and the backend Order
- * Management System (OMS).
- *
- */
+///
+/// @brief Represents a network issue between Kite and the backend Order
+///        Management System (OMS).
+///
 class networkException : public kiteppException {
 
   public:
     networkException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "NetworkException was thrown by Kite";
     };
 };
 
-/**
- * @brief Represents a bad response from the backend Order Management System
- *
- */
+/// @brief Represents a bad response from the backend Order Management System.
 class dataException : public kiteppException {
 
   public:
     dataException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "DataException was thrown by Kite";
     };
 };
 
-/**
- * @brief An unclassified, general error.
- *
- */
+/// @brief An unclassified, general error.
 class generalException : public kiteppException {
 
   public:
     generalException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "GeneralException was thrown by Kite";
     };
 };
 
-/**
- * @brief Represents permission denied exceptions for certain calls.
- *
- */
+/// @brief Represents permission denied exceptions for certain calls.
 class permissionException : public kiteppException {
 
   public:
     permissionException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "PermissionException was thrown by Kite";
     };
 };
 
-/**
- * @brief This exception is thrown when REST API doesn't return a `HTTP OK 200`
- * code and any exception string.
- *
- */
+/// @brief This exception is thrown when REST API doesn't return a `HTTP OK 200`
+///        code but doesn't return any exception string either.
 class unknownException : public kiteppException {
 
   public:
     unknownException(int code, string message)
         : kiteppException(code, std::move(message)) {};
 
+    /// \copydoc kiteconnect::kiteppException::what()
     [[nodiscard]] const char* what() const noexcept override {
         return "unknown exception was thrown by Kite";
     };
 };
 
-/**
- * @brief This exception is thrown when some error occures while processing data
- * on library level. Serves as the placeholder exception for all library related
- * errors.
- *
- */
+/// @brief This exception is thrown when an error occures at the library level.
 class libException : public std::exception {
 
   public:
     explicit libException(string Message): message(std::move(Message)) {};
 
+    ///
+    /// \brief Provides short description of the error.
+    ///
+    /// \return const char* short description
+    ///
     const char* what() { return message.c_str(); };
 
   private:
     string message;
 };
 
+namespace internal {
 inline void throwException(
     const string& exceptionString, int code, const string& msg) {
     // exception strings sent by API
@@ -282,5 +266,6 @@ inline void throwException(
 
     throw libException("unknown exception was thrown by REST API");
 };
+} // namespace internal
 
 } // namespace kiteconnect

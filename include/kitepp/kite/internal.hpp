@@ -39,7 +39,8 @@ inline Res kite::callApi(const string& service, const utils::http::Params& body,
     utils::json::CustomParser<Res, Data, UseCustomParser> customParser) {
     utils::http::response res = sendReq(endpoints.at(service), body, fmtArgs);
     if (!res) {
-        kiteconnect::throwException(res.errorType, res.code, res.message);
+        kiteconnect::internal::throwException(
+            res.errorType, res.code, res.message);
     }
     return utils::json::parse<Res, Data, UseCustomParser>(
         res.data, customParser);

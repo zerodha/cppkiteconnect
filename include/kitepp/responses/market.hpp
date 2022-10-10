@@ -13,7 +13,7 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// contains OHLC information of a security
+/// Represents OHLC information of an instrument.
 struct ohlc {
     ohlc() = default;
     explicit ohlc(const rj::Value::Object& val) { parse(val); };
@@ -31,7 +31,7 @@ struct ohlc {
     double close = -1;
 };
 
-/// represents market depth
+/// Represents market depth of an instrument.
 struct depth {
     depth() = default;
     explicit depth(const rj::Value::Object& val) { parse(val); };
@@ -47,7 +47,7 @@ struct depth {
     double price = -1;
 };
 
-/// represents a full quote response
+/// Represents quote informating of an instrument.
 struct quote {
     quote() = default;
     explicit quote(const rj::Value::Object& val) { parse(val); };
@@ -114,7 +114,7 @@ struct quote {
     } marketDepth;
 };
 
-/// represents a ohlc quote response
+/// Represents a ohlc quote information of an instrument.
 struct ohlcQuote {
     ohlcQuote() = default;
     explicit ohlcQuote(const rj::Value::Object& val) { parse(val); };
@@ -130,7 +130,7 @@ struct ohlcQuote {
     ohlc OHLC;
 };
 
-/// represents a ltp quote response
+/// Represents a LTP quote information of an instrument.
 struct ltpQuote {
     ltpQuote() = default;
     explicit ltpQuote(const rj::Value::Object& val) { parse(val); };
@@ -163,7 +163,7 @@ struct historicalDataParams {
     string interval;
 };
 
-/// represents historical data call reponse
+/// Represents historical data of an instrument.
 struct historicalData {
     historicalData() = default;
     explicit historicalData(const rj::Value::Array& val) { parse(val); };
@@ -201,7 +201,7 @@ struct historicalData {
     static constexpr uint8_t OI_IDX = 6;
 };
 
-/// represents a position from the margin calculation API
+/// Parameters required by the `getOrderMargins` method.
 struct orderMarginsParams {
     orderMarginsParams() = default;
 
@@ -231,7 +231,7 @@ struct orderMarginsParams {
     string orderType;
 };
 
-/// represents response from the margin calculation API
+/// Represents margins required for placing an order.
 struct orderMargins {
     orderMargins() = default;
     explicit orderMargins(const rj::Value::Object& val) { parse(val); };
@@ -275,7 +275,7 @@ struct orderMargins {
         double unrealised = -1;
     } pnl;
 };
-/// represents an individual instrument response
+/// Represents information of an instrument.
 struct instrument {
     instrument() = default;
     explicit instrument(const string& val) { parse(val); };

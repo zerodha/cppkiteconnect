@@ -14,14 +14,14 @@ namespace kc = kiteconnect;
 namespace rj = rapidjson;
 namespace utils = kc::internal::utils;
 
-/// represents a single entry in market depth returned by kWS
+/// Represents a single entry in market depth returned by `ticker`.
 struct depthWS {
     int16_t orders = -1;
     int32_t quantity = -1;
     double price = -1;
 };
 
-/// represents a single tick returned by kWS
+/// Represents a single market data tick.
 struct tick {
     int32_t instrumentToken = -1;
     int32_t timestamp = -1;
@@ -50,7 +50,7 @@ struct tick {
     } marketDepth;
 };
 
-/// represents postback sent via websockets
+/// Represents a postback.
 struct postback {
     postback() = default;
     explicit postback(const rj::Value::Object& val) { parse(val); };

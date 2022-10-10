@@ -59,7 +59,10 @@ static_assert(std::numeric_limits<double>::is_iec559,
 using std::string;
 namespace kc = kiteconnect;
 
-///@brief Used for accessing websocket interface of Kite API.
+///
+/// \brief \a ticker wraps around the websocket API provided by KiteConnect and
+///         provides a native interface.
+///
 class ticker {
 
   public:
@@ -77,32 +80,32 @@ class ticker {
     std::function<void(ticker* ws, const string& message)> onMessage;
 
     /// @brief Called when connection is closed with an error or websocket
-    /// server sends an error message.
+    ///        server sends an error message.
     std::function<void(ticker* ws, int code, const string& message)> onError;
 
     /// @brief Called when an error occures while trying to connect.
     std::function<void(ticker* ws)> onConnectError;
 
-    /**
-     * @brief Called when reconnection is being attempted.
-     *
-     * Auto reconnection:
-     *
-     * Auto reconnection is disabled by default and can be enabled by setting
-     * `enablereconnect` to `true` in `kiteWS`'s constructor. Auto reonnection
-     * mechanism is based on Exponential backoff algorithm in which next retry
-     * interval will be increased exponentially. maxreconnectdelay and
-     * maxreconnecttries params can be used to tewak the alogrithm where
-     * maxreconnectdelay is the maximum delay after which subsequent
-     * reconnection interval will become constant and maxreconnecttries is
-     * maximum number of retries before its quiting reconnection.
-     */
+    ///
+    /// @brief Called when reconnection is being attempted.
+    ///
+    /// \note Auto reconnection:
+    ///       Auto reconnection is disabled by default and can be enabled by
+    ///       setting `EnableReconnect` to `true` in `ticker`'s constructor.
+    ///       Auto reonnection mechanism is based on exponential backoff
+    ///       algorithm in which next retry interval will be increased
+    ///       exponentially. MaxReconnectDelay and MaxReconnectTries params can
+    ///       be used to tweak the alogrithm. MaxReconnectDelay is the
+    ///       maximum delay after which subsequent reconnection interval will
+    ///       become constant and MaxReconnectTries is maximum number of retries
+    ///       before `ticker` quits trying to reconnect.
+    ///
     std::function<void(ticker* ws, unsigned int attemptCount)> onTryReconnect;
 
-    /**
-     * @brief Called when reconnect attempts exceed maximum reconnect attempts
-     * set by user i.e., when client is unable to reconnect
-     */
+    ///
+    /// @brief Called when reconnect attempts exceed maximum reconnect attempts
+    ///        set by user i.e., when `ticker` is unable to reconnect
+    ///
     std::function<void(ticker* ws)> onReconnectFail;
 
     /// @brief Called when connection is closed.
@@ -119,92 +122,99 @@ class ticker {
      * onReconnectFail will be called and no further attempt to reconnect will
      * be made.
      */
+
+    ///
+    /// \brief Construct a new ticker object. All durations are in seconds.
+    ///
+    /// \param Key               API key
+    /// \param ConnectTimeout    connection timeout
+    /// \param EnableReconnect   auto reconnect is enabled if
+    ///                          \a EnableReconnect is set to `true`
+    /// \param MaxReconnectDelay Maximum delay after which subsequent
+    ///                          reconnection interval will become constant
+    /// \param MaxReconnectTries Maximum number of retries before `ticker` quits
+    ///                          trying to reconnect.
+    ///
     explicit ticker(string Key,
         unsigned int ConnectTimeout = DEFAULT_CONNECT_TIMEOUT,
         bool EnableReconnect = false,
         unsigned int MaxReconnectDelay = DEFAULT_MAX_RECONNECT_DELAY,
         unsigned int MaxReconnectTries = DEFAULT_MAX_RECONNECT_TRIES);
 
-    /**
-     * @brief Set the API key
-     *
-     * @param arg
-     */
+    ///
+    /// @brief Set the API key.
+    ///
+    /// @param key API key is set to \a key
+    ///
     void setApiKey(const string& key);
 
-    /**
-     * @brief get set API key
-     *
-     * @return string
-     */
+    ///
+    /// @brief Get API key set at the moment.
+    ///
+    /// @return string API key
+    ///
     string getApiKey() const;
 
-    /**
-     * @brief Set the Access Token
-     *
-     * @param arg the string you want to set as access token
-     *
-     * @paragraph ex1 example
-     * @snippet example2.cpp settting access token
-     */
+    ///
+    /// @brief Set the access token.
+    ///
+    /// @param token access token is set to \a token.
+    ///
+    /// @paragraph ex1 example
+    /// @snippet example2.cpp settting access token
+    ///
     void setAccessToken(const string& token);
 
-    /**
-     * @brief Get the Access Token set currently
-     *
-     * @return string
-     */
+    ///
+    /// @brief Get access token set at the moment.
+    ///
+    /// @return string access token
+    ///
     string getAccessToken() const;
 
-    /**
-     * @brief Connect to websocket server
-     *
-     */
+    /// @brief Connect to the websocket server.
     void connect();
 
-    /**
-     * @brief Check if client is connected at present.
-     */
+    /// @brief Check if client is connected.
     bool isConnected() const;
 
-    /**
-     * @brief Get the last time heartbeat was received. Should be used in
-     * conjunction with `isConnected()` method.
-     *
-     * @return std::chrono::time_point<std::chrono::system_clock>
-     */
+    ///
+    /// @brief Get the last time heartbeat was received. Should be used in
+    ///        conjunction with the `isConnected()` method.
+    ///
+    /// @return std::chrono::time_point<std::chrono::system_clock> time
+    ///
     std::chrono::time_point<std::chrono::system_clock> getLastBeatTime() const;
 
-    /**
-     * @brief Start the client. Should always be called after `connect()`.
-     */
+    /// @brief Start the client. Should always be called after `connect()`.
     void run();
 
-    /**
-     * @brief Stop the client. Closes the connection if connected. Should be the
-     * last method to be called.
-     */
+    /// @brief Stop the client. Closes the connection if connected. Should be
+    ///        the last method that is called.
     void stop();
 
-    /**
-     * @brief Subscribe instrument tokens.
-     *
-     * @param instrumentToks vector of instrument tokens to be subscribed.
-     */
+    ///
+    /// @brief Subscribe to a list of instrument tokens.
+    ///
+    /// @param instrumentTokens list of instrument tokens that should be
+    ///                         subscribed
+    ///
     void subscribe(const std::vector<int>& instrumentTokens);
 
-    /**
-     * @brief unsubscribe instrument tokens.
-     *
-     * @param instrumentToks vector of instrument tokens to be unsubscribed.
-     */
+    ///
+    /// @brief Unsubscribe.
+    ///
+    /// @param instrumentTokens list of instrument tokens that should be
+    ///                         unsubscribed
+    ///
     void unsubscribe(const std::vector<int>& instrumentTokens);
 
     /**
-     * @brief Set the mode of instrument tokens.
+     * @brief Set the subscription mode for a list of instrument tokens.
      *
-     * @param mode mode
-     * @param instrumentToks vector of instrument tokens.
+     * @param mode             mode to set
+     * @param instrumentTokens list of instrument tokens whose mode should be
+     *                         set
      */
     void setMode(const string& mode, const std::vector<int>& instrumentTokens);
 

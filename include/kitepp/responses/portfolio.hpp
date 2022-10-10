@@ -13,7 +13,7 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// respresents an individual holding
+/// Respresents an individual holding.
 struct holding {
     holding() = default;
     explicit holding(const rj::Value::Object& val) { parse(val); };
@@ -58,7 +58,7 @@ struct holding {
     string collateralType;
 };
 
-/// represents an individual position
+/// Represents an individual position.
 struct position {
     position() = default;
     explicit position(const rj::Value::Object& val) { parse(val); };
@@ -126,7 +126,7 @@ struct position {
     string product;
 };
 
-/// represents response of the fetch all positions call
+/// Represents response of the `getPositions()` method.
 struct positions {
     positions() = default;
     explicit positions(const rj::Value::Object& val) { parse(val); };
@@ -145,7 +145,7 @@ struct positions {
     std::vector<position> day;
 };
 
-/// represents parameters for the `convertPosition` function
+/// Parameters required for the `convertPosition()` method.
 struct convertPositionParams {
     GENERATE_FLUENT_METHOD(convertPositionParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(

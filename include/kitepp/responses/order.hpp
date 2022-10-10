@@ -14,7 +14,7 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// represents parameters required for the `placeOrder` function
+/// Parameters required for the `placeOrder` method.
 struct placeOrderParams {
     GENERATE_FLUENT_METHOD(placeOrderParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(
@@ -54,7 +54,7 @@ struct placeOrderParams {
     std::optional<string> tag;
 };
 
-/// represents parameters required for the `modifyOrder` function
+/// Parameters required for the `modifyOrder` method.
 struct modifyOrderParams {
     GENERATE_FLUENT_METHOD(modifyOrderParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(
@@ -82,7 +82,7 @@ struct modifyOrderParams {
     std::optional<string> validity;
 };
 
-/// order represents an individual order response
+/// Represents information of an order.
 struct order {
     order() = default;
     explicit order(const rj::Value::Object& val) { parse(val); };
@@ -147,7 +147,7 @@ struct order {
     string product;
 };
 
-/// trade represents an individual trade response
+/// Represents information of a trade.
 struct trade {
     trade() = default;
     explicit trade(const rj::Value::Object& val) { parse(val); };

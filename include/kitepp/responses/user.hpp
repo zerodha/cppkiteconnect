@@ -13,7 +13,7 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// represents a user's profile
+/// Represents an user's profile.
 struct userProfile {
     userProfile() = default;
     explicit userProfile(const rj::Value::Object& val) { parse(val); };
@@ -55,7 +55,7 @@ struct userProfile {
     } meta;
 };
 
-/// represents tokens received after successful authentication
+/// Represents tokens received after successful authentication.
 struct userTokens {
     userTokens() = default;
     explicit userTokens(const rj::Value::Object& val) { parse(val); };
@@ -71,7 +71,7 @@ struct userTokens {
     string refreshToken;
 };
 
-/// represents the response after a successful authentication
+/// Represents information of a user session.
 struct userSession {
     userSession() = default;
     explicit userSession(const rj::Value::Object& val) { parse(val); };
@@ -91,7 +91,7 @@ struct userSession {
     userTokens tokens;
 };
 
-/// represents available margins from margins response for a single segment
+/// Represents available margins of a single segment.
 struct availableMargins {
     availableMargins() = default;
     explicit availableMargins(const rj::Value::Object& val) { parse(val); };
@@ -109,7 +109,7 @@ struct availableMargins {
     double intradayPayin = -1;
 };
 
-/// represents used margins from margins response for a single segment
+/// Represents used margins of a single segment.
 struct usedMargins {
     usedMargins() = default;
     explicit usedMargins(const rj::Value::Object& val) { parse(val); };
@@ -137,7 +137,7 @@ struct usedMargins {
     double turnover = -1;
 };
 
-/// represents user margins for a segment
+/// Represents user margins for a segment.
 struct margins {
     margins() = default;
     explicit margins(const rj::Value::Object& val) { parse(val); };
@@ -157,7 +157,7 @@ struct margins {
     usedMargins used;
 };
 
-/// represents all margins (contains both equity and commodity margins)
+/// Represents all margins (equity and commodity).
 struct allMargins {
     allMargins() = default;
     explicit allMargins(const rj::Value::Object& val) { parse(val); };

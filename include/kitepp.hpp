@@ -24,7 +24,7 @@
  */
 
 /**
- * @brief convenience header for kitepp. This is the ONLY header that should be
+ * @brief Convenience header for kitepp. This is the ONLY header that should be
  * included.
  *
  * @paragraph ex1 example1

@@ -14,7 +14,7 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// represents parameters of a single gtt
+/// Represents parameters of a single GTT.
 struct gttParams {
     GENERATE_FLUENT_METHOD(gttParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(gttParams, double, price, Price);
@@ -30,7 +30,7 @@ struct gttParams {
     string product;
 };
 
-/// represents 'condition' for a single gtt
+/// Represents 'condition' for a single gtt.
 struct GTTCondition {
     GTTCondition() = default;
     explicit GTTCondition(const rj::Value::Object& val) { parse(val); };
@@ -49,7 +49,7 @@ struct GTTCondition {
     std::vector<double> triggerValues;
 };
 
-/// represents parameters required for the `placeGtt` function
+/// Parameters required for the `placeGtt` method.
 struct placeGttParams {
     GENERATE_FLUENT_METHOD(placeGttParams, double, lastPrice, LastPrice);
     GENERATE_FLUENT_METHOD(
@@ -69,7 +69,7 @@ struct placeGttParams {
     std::vector<gttParams> gttParamsList;
 };
 
-/// represents parameters required for the `modifyGtt` function
+/// Parameters required for the `modifyGtt` method.
 struct modifyGttParams {
     GENERATE_FLUENT_METHOD(modifyGttParams, int, triggerId, TriggerId);
     GENERATE_FLUENT_METHOD(modifyGttParams, double, lastPrice, LastPrice);
@@ -91,7 +91,7 @@ struct modifyGttParams {
     std::vector<gttParams> gttParamsList;
 };
 
-/// GTT represents a single GTT order.
+/// `GTT` represents a single GTT order.
 struct GTT {
     GTT() = default;
     explicit GTT(const rj::Value::Object& val) { parse(val); };
