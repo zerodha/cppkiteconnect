@@ -97,7 +97,7 @@ struct isVector : std::false_type {};
 template <typename T>
 struct isVector<std::vector<T>> : std::true_type {};
 
-constexpr uint16_t MILLISECONDS_IN_A_SECOND = 100;
+constexpr uint16_t MILLISECONDS_IN_A_SECOND = 1000;
 
 namespace json {
 
