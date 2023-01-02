@@ -72,6 +72,9 @@ void onClose(kc::ticker* ws, int code, const std::string& message) {
 };
 
 int main(int argc, char const* argv[]) {
+
+    fmt::print("fmt version is {}\n",FMT_VERSION);
+
     kc::ticker Ticker(std::getenv("KITE_API_KEY"), 5, true, 5);
 
     Ticker.setAccessToken(std::getenv("KITE_ACCESS_TOKEN"));

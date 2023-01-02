@@ -56,6 +56,9 @@ if(BUILD_EXAMPLES)
                         target_include_directories(${example_name} PUBLIC ${UWS_INCLUDE} ${UV_INCLUDE})
                         target_link_libraries(${example_name} PUBLIC Threads::Threads OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${UV_LIB})
                 endif()
+                
+                # Suppress warnings about cpp-httplib & openssl 3.0
+                target_compile_options(${example_name} PRIVATE -Wno-deprecated-declarations)
         endfunction(build_exmaple)
 
         build_exmaple(example1)

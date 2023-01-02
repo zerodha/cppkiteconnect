@@ -37,6 +37,7 @@
 #include "cpp-httplib/httplib.h"
 #define FMT_HEADER_ONLY 1
 #include "fmt/include/fmt/format.h"
+#include "fmt/include/fmt/args.h"
 #include "rapidjson/include/rapidjson/document.h"
 #include "rapidjson/include/rapidjson/encodings.h"
 #include "rapidjson/include/rapidjson/rapidjson.h"
@@ -482,7 +483,7 @@ struct request {
                 } else {
                     // TODO convert enum to string
                     throw libException(
-                        FMT("request failed ({0})", res.error()));
+                        FMT("request failed ({0})", (int)res.error()));
                 }
                 break;
             case utils::http::METHOD::POST:
@@ -492,7 +493,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed ({0})", res.error()));
+                            FMT("request failed ({0})", (int)res.error()));
                     }
                 } else {
                     if (auto res = client.Post(path.c_str(), headers,
@@ -501,7 +502,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed({0})", res.error()));
+                            FMT("request failed({0})", (int)res.error()));
                     }
                 };
                 break;
@@ -512,7 +513,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed ({0})", res.error()));
+                            FMT("request failed ({0})", (int)res.error()));
                     }
                 } else {
                     if (auto res = client.Put(path.c_str(), headers,
@@ -521,7 +522,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed({0})", res.error()));
+                            FMT("request failed({0})", (int)res.error()));
                     }
                 }
                 break;
@@ -531,7 +532,7 @@ struct request {
                     data = res->body;
                 } else {
                     throw libException(
-                        FMT("request failed ({0})", res.error()));
+                        FMT("request failed ({0})", (int)res.error()));
                 }
                 break;
             default: throw libException("unsupported http method");
