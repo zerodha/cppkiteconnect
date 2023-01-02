@@ -58,7 +58,7 @@ if(BUILD_EXAMPLES)
                 endif()
                 
                 # Suppress warnings about cpp-httplib & openssl 3.0
-                target_compile_options(${example_name} PRIVATE -Wno-deprecated-declarations)
+                #target_compile_options(${example_name} PRIVATE -Wno-deprecated-declarations)
         endfunction(build_exmaple)
 
         build_exmaple(example1)
