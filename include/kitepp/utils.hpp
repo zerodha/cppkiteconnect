@@ -483,7 +483,7 @@ struct request {
                 } else {
                     // TODO convert enum to string
                     throw libException(
-                        FMT("request failed ({0})", (int)res.error()));
+                        FMT("request failed ({0})", httplib::to_string(res.error())));
                 }
                 break;
             case utils::http::METHOD::POST:
@@ -493,7 +493,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed ({0})", (int)res.error()));
+                            FMT("request failed ({0})", httplib::to_string(res.error())));
                     }
                 } else {
                     if (auto res = client.Post(path.c_str(), headers,
@@ -502,7 +502,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed({0})", (int)res.error()));
+                            FMT("request failed({0})", httplib::to_string(res.error())));
                     }
                 };
                 break;
@@ -513,7 +513,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed ({0})", (int)res.error()));
+                            FMT("request failed ({0})", httplib::to_string(res.error())));
                     }
                 } else {
                     if (auto res = client.Put(path.c_str(), headers,
@@ -522,7 +522,7 @@ struct request {
                         data = res->body;
                     } else {
                         throw libException(
-                            FMT("request failed({0})", (int)res.error()));
+                            FMT("request failed({0})", httplib::to_string(res.error())));
                     }
                 }
                 break;
@@ -532,7 +532,7 @@ struct request {
                     data = res->body;
                 } else {
                     throw libException(
-                        FMT("request failed ({0})", (int)res.error()));
+                        FMT("request failed ({0})", httplib::to_string(res.error())));
                 }
                 break;
             default: throw libException("unsupported http method");
