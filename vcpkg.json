@@ -11,12 +11,6 @@
       "zlib",
       "gtest",
       "libuv",
-      "openssl",
-      "uwebsockets"
-    ],
-    "builtin-baseline": "f9bea5d58186dc14e7e33132e43b52222147f51e",
-    "overrides": [
-        { "name": "uwebsockets", "version": "0.14.1" }
-      ]    
-    
+      "openssl"
+    ]
   }

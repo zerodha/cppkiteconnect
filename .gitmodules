@@ -1,18 +1,6 @@
 [submodule "tests/mock_responses"]
 	path = tests/mock_responses
 	url = https://github.com/zerodha/kiteconnect-mocks
-[submodule "include/PicoSHA2"]
-	path = include/PicoSHA2
-	url = https://github.com/okdshin/PicoSHA2.git
-[submodule "include/fmt"]
-	path = include/fmt
-	url = https://github.com/fmtlib/fmt.git
-[submodule "include/rapidjson"]
-	path = include/rapidjson
-	url = https://github.com/Tencent/rapidjson.git
-[submodule "include/cpp-httplib"]
-	path = include/cpp-httplib
-	url = https://github.com/yhirose/cpp-httplib.git
 [submodule "doxygen-awesome-css"]
 	path = doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css.git
