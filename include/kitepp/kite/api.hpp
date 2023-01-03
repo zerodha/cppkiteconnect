@@ -26,7 +26,7 @@
 #pragma once
 #pragma clang diagnostic ignored "-Wundefined-inline"
 
-#include "PicoSHA2/picosha2.h"
+#include "picosha2.h"
 
 #include "../kite.hpp"
 #include "../utils.hpp"

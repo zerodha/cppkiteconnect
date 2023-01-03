@@ -30,7 +30,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "cpp-httplib/httplib.h"
+#include "httplib.h"
 
 #include "responses/responses.hpp"
 #include "utils.hpp"

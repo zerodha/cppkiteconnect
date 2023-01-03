@@ -46,9 +46,9 @@
 #include "../utils.hpp"
 #include "ws.hpp"
 
-#include "rapidjson/include/rapidjson/document.h"
-#include "rapidjson/include/rapidjson/rapidjson.h"
-#include "rapidjson/include/rapidjson/writer.h"
+#include "rapidjson/document.h"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/writer.h"
 #include <uWS/uWS.h>
 
 namespace kiteconnect {

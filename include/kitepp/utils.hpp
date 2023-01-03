@@ -34,15 +34,15 @@
 
 #include "exceptions.hpp"
 
-#include "cpp-httplib/httplib.h"
+#include "httplib.h"
 #define FMT_HEADER_ONLY 1
-#include "fmt/include/fmt/format.h"
-#include "fmt/include/fmt/args.h"
-#include "rapidjson/include/rapidjson/document.h"
-#include "rapidjson/include/rapidjson/encodings.h"
-#include "rapidjson/include/rapidjson/rapidjson.h"
-#include "rapidjson/include/rapidjson/stringbuffer.h"
-#include "rapidjson/include/rapidjson/writer.h"
+#include "fmt/format.h"
+#include "fmt/args.h"
+#include "rapidjson/document.h"
+#include "rapidjson/encodings.h"
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/stringbuffer.h"
+#include "rapidjson/writer.h"
 
 // Check endieness of platform
 #if defined(_WIN32)
