@@ -170,7 +170,7 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order1.rejectedBy, "");
     EXPECT_EQ(order1.variety, "regular");
     EXPECT_EQ(order1.exchange, "CDS");
-    EXPECT_EQ(order1.tradingSymbol, "USDINR21JUNFUT");
+    EXPECT_EQ(order1.tradingsymbol, "USDINR21JUNFUT");
     EXPECT_EQ(order1.instrumentToken, 412675);
     EXPECT_EQ(order1.orderType, "LIMIT");
     EXPECT_EQ(order1.transactionType, "BUY");
@@ -215,7 +215,7 @@ TEST(kiteTest, orderHistoryTest) {
     EXPECT_EQ(order1.rejectedBy, "");
     EXPECT_EQ(order1.variety, "regular");
     EXPECT_EQ(order1.exchange, "CDS");
-    EXPECT_EQ(order1.tradingSymbol, "USDINR21JUNFUT");
+    EXPECT_EQ(order1.tradingsymbol, "USDINR21JUNFUT");
     EXPECT_EQ(order1.instrumentToken, 412675);
     EXPECT_EQ(order1.orderType, "LIMIT");
     EXPECT_EQ(order1.transactionType, "BUY");

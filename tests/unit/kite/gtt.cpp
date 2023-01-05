@@ -121,7 +121,7 @@ TEST(kiteTest, getGTTsTest) {
     EXPECT_EQ(order1.condition.tradingsymbol, "INFY");
     EXPECT_DOUBLE_EQ(order1.condition.triggerValues[0], 702);
     EXPECT_EQ(order1.orders[0].exchange, "NSE");
-    EXPECT_EQ(order1.orders[0].tradingSymbol, "INFY");
+    EXPECT_EQ(order1.orders[0].tradingsymbol, "INFY");
     EXPECT_EQ(order1.orders[0].product, "CNC");
     EXPECT_EQ(order1.orders[0].orderType, "LIMIT");
     EXPECT_EQ(order1.orders[0].transactionType, "BUY");
@@ -141,13 +141,13 @@ TEST(kiteTest, getGTTsTest) {
     EXPECT_EQ(order2.condition.tradingsymbol, "RAIN");
     EXPECT_THAT(
         order2.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
-    EXPECT_EQ(order2.orders[0].tradingSymbol, "RAIN");
+    EXPECT_EQ(order2.orders[0].tradingsymbol, "RAIN");
     EXPECT_EQ(order2.orders[0].product, "CNC");
     EXPECT_EQ(order2.orders[0].orderType, "LIMIT");
     EXPECT_EQ(order2.orders[0].transactionType, "SELL");
     EXPECT_EQ(order2.orders[0].quantity, 1);
     EXPECT_DOUBLE_EQ(order2.orders[0].price, 1);
-    EXPECT_EQ(order2.orders[1].tradingSymbol, "RAIN");
+    EXPECT_EQ(order2.orders[1].tradingsymbol, "RAIN");
     EXPECT_EQ(order2.orders[1].product, "CNC");
     EXPECT_EQ(order2.orders[1].orderType, "LIMIT");
     EXPECT_EQ(order2.orders[1].transactionType, "SELL");
@@ -181,7 +181,7 @@ TEST(kiteTest, getGTTTest) {
     EXPECT_EQ(trigger.condition.tradingsymbol, "RAIN");
     EXPECT_THAT(
         trigger.condition.triggerValues, ::testing::ElementsAre(102.0, 103.7));
-    EXPECT_EQ(trigger.orders[0].tradingSymbol, "RAIN");
+    EXPECT_EQ(trigger.orders[0].tradingsymbol, "RAIN");
     EXPECT_EQ(trigger.orders[0].product, "CNC");
     EXPECT_EQ(trigger.orders[0].orderType, "LIMIT");
     EXPECT_EQ(trigger.orders[0].transactionType, "SELL");

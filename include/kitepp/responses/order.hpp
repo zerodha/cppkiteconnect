@@ -127,7 +127,7 @@ struct order {
         rejectedBy = utils::json::get<string>(val, "rejected_by");
         variety = utils::json::get<string>(val, "variety");
         exchange = utils::json::get<string>(val, "exchange");
-        tradingSymbol = utils::json::get<string>(val, "tradingsymbol");
+        tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
         instrumentToken = utils::json::get<int>(val, "instrument_token");
         orderType = utils::json::get<string>(val, "order_type");
         transactionType = utils::json::get<string>(val, "transaction_type");
@@ -165,7 +165,7 @@ struct order {
     string rejectedBy;
     string variety;
     string exchange;
-    string tradingSymbol;
+    string tradingsymbol;
     string orderType;
     string transactionType;
     string validity;
