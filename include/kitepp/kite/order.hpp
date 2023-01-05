@@ -93,11 +93,6 @@ inline string kite::cancelOrder(
         });
 };
 
-inline string kite::exitOrder(
-    const string& variety, const string& orderId, const string& parentOrderId) {
-    return cancelOrder(variety, orderId, parentOrderId);
-};
-
 inline std::vector<order> kite::orders() {
     return callApi<std::vector<order>, utils::json::JsonArray, true>(
         "orders", {}, {}, [](utils::json::JsonArray& data) {

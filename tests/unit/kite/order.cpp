@@ -142,29 +142,6 @@ TEST(kiteTest, cancelOrderTest) {
     EXPECT_EQ(RECEIVED_ORDER_ID, "151220000000000");
 }
 
-TEST(kiteTest, exitOrderTest) {
-    const string JSON =
-        kc::test::readFile("../tests/mock_responses/order_response.json");
-    const string VARIETY = "bo";
-    const string ORDER_ID = "151220000000000";
-    const string PARENT_ORDER_ID = "151220000000001";
-    const string EXPECTED_ORDER_ID = "151220000000000";
-
-    StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(
-        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL,
-                          "/orders/{0}/{1}?parent_order_id={1}" },
-                  utils::http::Params {},
-                  utils::FmtArgs { VARIETY, ORDER_ID, PARENT_ORDER_ID }))
-        .Times(1)
-        .WillOnce(
-            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
-    const string RECEIVED_ORDER_ID =
-        Kite.exitOrder(VARIETY, ORDER_ID, PARENT_ORDER_ID);
-
-    EXPECT_EQ(RECEIVED_ORDER_ID, "151220000000000");
-}
-
 TEST(kiteTest, ordersTest) {
     const string JSON =
         kc::test::readFile("../tests/mock_responses/orders.json");

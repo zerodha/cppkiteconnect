@@ -237,21 +237,6 @@ class kite {
         const string& parentOrderId = "");
 
     ///
-    /// \brief Exit an order.
-    ///
-    /// \param variety       variety of the order to exit
-    /// \param orderId       ID of the order to exit
-    /// \param parentOrderId parent order ID of the order to exit (if any)
-    ///
-    /// \return string ID of the order exited
-    ///
-    /// \paragraph ex1 Example
-    /// \snippet example2.cpp exiting an order
-    ///
-    string exitOrder(const string& variety, const string& orderId,
-        const string& parentOrderId = "");
-
-    ///
     /// \brief Get list of orders.
     ///
     /// \return std::vector<order> orders

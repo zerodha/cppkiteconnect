@@ -128,16 +128,6 @@ int main() {
         // };
         //! [cancelling an order]
 
-        //! [exiting an order]
-        // std::string exitedOrderId =
-        //     Kite.exitOrder("regular", "201223002546330", "201223002546328");
-        // if (!exitedOrderId.empty()) {
-        //     std::cout << "order ID: " << exitedOrderId << "\n";
-        // } else {
-        //     std::cout << "failed to exit order\n";
-        // };
-        //! [exiting an order]
-
         //! [get orders]
         // std::vector<kc::order> Orders = Kite.orders();
         // for (const auto& i : Orders) {
