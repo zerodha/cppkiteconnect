@@ -471,7 +471,7 @@ TEST(kiteTest, getMFInstrumentsTest) {
     EXPECT_EQ(instrument1.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument1.name, "Aditya Birla Sun Life Advantage Fund");
     EXPECT_EQ(instrument1.purchaseAllowed, true);
-    EXPECT_EQ(instrument1.redemtpionAllowed, true);
+    EXPECT_EQ(instrument1.redemptionAllowed, true);
     EXPECT_EQ(instrument1.minimumPurchaseAmount, 1000.0);
     EXPECT_EQ(instrument1.purchaseAmountMultiplier, 1.0);
     EXPECT_EQ(instrument1.minimumAdditionalPurchaseAmount, 1000.0);
@@ -489,7 +489,7 @@ TEST(kiteTest, getMFInstrumentsTest) {
     EXPECT_EQ(instrument2.amc, "BirlaSunLifeMutualFund_MF");
     EXPECT_EQ(instrument2.name, "Aditya Birla Sun Life Advantage Fund");
     EXPECT_EQ(instrument2.purchaseAllowed, true);
-    EXPECT_EQ(instrument2.redemtpionAllowed, true);
+    EXPECT_EQ(instrument2.redemptionAllowed, true);
     EXPECT_EQ(instrument2.minimumPurchaseAmount, 1000.0);
     EXPECT_EQ(instrument2.purchaseAmountMultiplier, 1.0);
     EXPECT_EQ(instrument2.minimumAdditionalPurchaseAmount, 1000.0);

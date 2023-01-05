@@ -248,7 +248,7 @@ struct mfInstrument {
         name = tokens[NAME_IDX];
         purchaseAllowed =
             static_cast<bool>(std::stoi(tokens[PURCHASE_ALLOWED_IDX]));
-        redemtpionAllowed =
+        redemptionAllowed =
             static_cast<bool>(std::stoi(tokens[REDEMPTION_ALLOWED_IDX]));
         minimumPurchaseAmount = toDouble(tokens[MIN_PURCHASE_AMOUNT_IDX]);
         purchaseAmountMultiplier = toDouble(tokens[PURCHASE_AMOUNT_MUL_IDX]);
@@ -273,7 +273,7 @@ struct mfInstrument {
     double redemptionQuantityMultiplier = -1;
     double lastPrice = -1;
     bool purchaseAllowed = false;
-    bool redemtpionAllowed = false;
+    bool redemptionAllowed = false;
     string tradingsymbol;
     string amc;
     string name;
