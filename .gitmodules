@@ -19,3 +19,6 @@
 [submodule "docs/doxygen-awesome-css"]
 	path = docs/doxygen-awesome-css
 	url = https://github.com/jothepro/doxygen-awesome-css.git
+[submodule "include/uri-parser"]
+	path = include/uri-parser
+	url = git@github.com:bhumitattarde/uri-parser.git
