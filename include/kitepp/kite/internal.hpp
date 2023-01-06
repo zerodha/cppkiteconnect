@@ -28,6 +28,9 @@
 #include <functional>
 #include <type_traits>
 
+#include "kitepp/exceptions.hpp"
+#include "uri-parser/include/parser.hpp"
+
 #include "../kite.hpp"
 #include "../utils.hpp"
 
@@ -36,10 +39,21 @@ namespace kiteconnect {
 inline string kite::getAuth() const { return authorization; }
 
 inline string kite::encodeSymbolsList(const std::vector<string>& symbols) {
-    string str;
-    for (const auto& symbol : symbols) { str.append(FMT("i={0}&", symbol)); };
-    if (!str.empty()) { str.pop_back(); };
-    return str;
+    string symbolsList;
+    for (const auto& symbol : symbols) {
+        size_t colonPos = symbol.find_first_of(':');
+        if (colonPos == std::string::npos) {
+            throw libException("invalid symbol");
+        };
+        string exchange = symbol.substr(0, colonPos);
+        string ticker = symbol.substr(colonPos + 1);
+
+        symbolsList.append(
+            FMT("i={0}:{1}&", exchange, parser::encodeUrl(ticker)));
+    };
+
+    if (!symbolsList.empty()) { symbolsList.pop_back(); };
+    return symbolsList;
 }
 
 // GMock requires mock methods to be virtual (hi-perf dep injection is not

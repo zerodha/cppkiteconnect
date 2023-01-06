@@ -47,12 +47,13 @@ namespace utils = kc::internal::utils;
 TEST(kiteTest, getQuoteTest) {
     const string JSON =
         kc::test::readFile("../tests/mock_responses/quote.json");
-    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS", "NSE:M&M" };
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(
             utils::http::endpoint { utils::http::METHOD::GET, "/quote?{0}" },
-            utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+            utils::http::Params {},
+            utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS&i=NSE:M%26M" }))
         .Times(1)
         .WillOnce(
             Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
@@ -117,12 +118,13 @@ TEST(kiteTest, getQuoteTest) {
 
 TEST(kiteTest, getOHLCTest) {
     const string JSON = kc::test::readFile("../tests/mock_responses/ohlc.json");
-    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS", "NSE:M&M" };
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
-                    "/quote/ohlc?{0}" },
-            utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+    EXPECT_CALL(
+        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                          "/quote/ohlc?{0}" },
+                  utils::http::Params {},
+                  utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS&i=NSE:M%26M" }))
         .Times(1)
         .WillOnce(
             Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
@@ -141,12 +143,13 @@ TEST(kiteTest, getOHLCTest) {
 
 TEST(kiteTest, getLTPTest) {
     const string JSON = kc::test::readFile("../tests/mock_responses/ltp.json");
-    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS" };
+    const std::vector<string> SYMBOLS = { "NSE:INFY", "NSE:TCS", "NSE:M&M" };
     StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::GET,
-                    "/quote/ltp?{0}" },
-            utils::http::Params {}, utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS" }))
+    EXPECT_CALL(
+        Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
+                          "/quote/ltp?{0}" },
+                  utils::http::Params {},
+                  utils::FmtArgs { "i=NSE:INFY&i=NSE:TCS&i=NSE:M%26M" }))
         .Times(1)
         .WillOnce(
             Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
