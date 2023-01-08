@@ -28,6 +28,7 @@
 #include <string>
 
 #include "../utils.hpp"
+#include "rapidcsv/src/rapidcsv.h"
 #include "rapidjson/include/rapidjson/document.h"
 #include "rapidjson/include/rapidjson/rapidjson.h"
 
@@ -303,11 +304,9 @@ struct orderMargins {
 /// Represents information of an instrument.
 struct instrument {
     instrument() = default;
-    explicit instrument(const string& val) { parse(val); };
+    explicit instrument(const std::vector<string>& row) { parse(row); };
 
-    void parse(const string& val) {
-        std::vector<string> tokens = utils::split(val, ',');
-
+    void parse(const std::vector<string>& tokens) {
         static const auto toInt = [](const string& str) -> int {
             return (str.empty()) ? 0 : std::stoi(str);
         };

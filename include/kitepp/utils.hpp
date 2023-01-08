@@ -37,6 +37,7 @@
 #include "cpp-httplib/httplib.h"
 #define FMT_HEADER_ONLY 1
 #include "fmt/include/fmt/format.h"
+#include "rapidcsv/src/rapidcsv.h"
 #include "rapidjson/include/rapidjson/document.h"
 #include "rapidjson/include/rapidjson/encodings.h"
 #include "rapidjson/include/rapidjson/rapidjson.h"
@@ -570,32 +571,20 @@ void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
     }
 };
 
-inline std::vector<string> parseInstruments(const std::string& data) {
-    constexpr char seperator = '\n';
-    std::size_t start = 0;
-    std::size_t end = 0;
-    std::vector<std::string> tokens;
-    while ((end = data.find(seperator, start)) != std::string::npos) {
-        string token = data.substr(start, end - start - 1);
-        tokens.emplace_back(token);
-        start = end + 1;
-    };
-    // remove headers
-    tokens.erase(tokens.begin());
-    return tokens;
-};
+template <class Instrument>
+inline std::vector<Instrument> parseInstruments(const std::string& data) {
+    static_assert(std::is_constructible_v<Instrument, std::vector<string>>,
+        "Instrument must have a constructor that accepts vector of strings");
 
-inline std::vector<string> split(const std::string& text, char seperator) {
-    std::vector<std::string> tokens;
-    std::size_t start = 0;
-    std::size_t end = 0;
-    while ((end = text.find(seperator, start)) != std::string::npos) {
-        tokens.emplace_back(text.substr(start, end - start));
-        start = end + 1;
-    };
+    std::stringstream sstream(data);
+    rapidcsv::Document csv(sstream, rapidcsv::LabelParams(0, -1));
+    const size_t numberOfRows = csv.GetRowCount();
 
-    tokens.emplace_back(text.substr(start));
-    return tokens;
+    std::vector<Instrument> instruments;
+    for (size_t row = 0; row < numberOfRows; row++) {
+        instruments.emplace_back(csv.GetRow<string>(row));
+    }
+    return instruments;
 };
 
 } // namespace kiteconnect::internal::utils

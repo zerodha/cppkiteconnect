@@ -136,8 +136,7 @@ inline std::vector<mfInstrument> kite::getMfInstruments() {
     const auto response = sendReq(endpoints.at("mf.instruments"), {}, {});
     if (!response) { return {}; };
 
-    std::vector<string> instruments = utils::parseInstruments(response.rawBody);
-    return { instruments.begin(), instruments.end() };
+    return utils::parseInstruments<mfInstrument>(response.rawBody);
 };
 
 } // namespace kiteconnect

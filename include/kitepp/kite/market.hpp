@@ -99,8 +99,7 @@ inline std::vector<instrument> kite::getInstruments(const string& exchange) {
     const auto response = sendReq(endpoint, {}, fmtArgs);
     if (!response) { return {}; };
 
-    std::vector<string> instruments = utils::parseInstruments(response.rawBody);
-    return { instruments.begin(), instruments.end() };
+    return utils::parseInstruments<instrument>(response.rawBody);
 };
 
 }; // namespace kiteconnect

@@ -234,11 +234,9 @@ struct mfSip {
 /// Represents information about a mutual fund instrument.
 struct mfInstrument {
     mfInstrument() = default;
-    explicit mfInstrument(const string& val) { parse(val); };
+    explicit mfInstrument(const std::vector<string>& row) { parse(row); };
 
-    void parse(const string& val) {
-        std::vector<string> tokens = utils::split(val, ',');
-
+    void parse(const std::vector<string>& tokens) {
         static const auto toDouble = [](const string& str) -> double {
             return (str.empty()) ? 0.0 : std::stod(str);
         };
