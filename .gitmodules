@@ -22,3 +22,6 @@
 [submodule "include/uri-parser"]
 	path = include/uri-parser
 	url = git@github.com:bhumitattarde/uri-parser.git
+[submodule "include/rapidcsv"]
+	path = include/rapidcsv
+	url = git@github.com:d99kris/rapidcsv.git
