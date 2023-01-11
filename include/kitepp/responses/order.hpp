@@ -128,7 +128,7 @@ struct order {
         variety = utils::json::get<string>(val, "variety");
         exchange = utils::json::get<string>(val, "exchange");
         tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
         orderType = utils::json::get<string>(val, "order_type");
         transactionType = utils::json::get<string>(val, "transaction_type");
         validity = utils::json::get<string>(val, "validity");
@@ -143,7 +143,7 @@ struct order {
         cancelledQuantity = utils::json::get<int>(val, "cancelled_quantity");
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     int quantity = -1;
     int disclosedQuantity = -1;
     int filledQuantity = -1;
@@ -189,10 +189,10 @@ struct trade {
         transactionType = utils::json::get<string>(val, "transaction_type");
         tradingSymbol = utils::json::get<string>(val, "tradingsymbol");
         exchange = utils::json::get<string>(val, "exchange");
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     double averagePrice = -1.0;
     double quantity = -1.0;
     string tradeID;

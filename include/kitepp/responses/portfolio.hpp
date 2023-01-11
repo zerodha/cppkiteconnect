@@ -46,7 +46,7 @@ struct holding {
     void parse(const rj::Value::Object& val) {
         tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
         exchange = utils::json::get<string>(val, "exchange");
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
         ISIN = utils::json::get<string>(val, "isin");
         product = utils::json::get<string>(val, "product");
         price = utils::json::get<double>(val, "price");
@@ -64,7 +64,7 @@ struct holding {
             utils::json::get<double>(val, "day_change_percentage");
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     int quantity = -1;
     int t1Quantity = -1;
     int realisedQuantity = -1;
@@ -91,7 +91,7 @@ struct position {
     void parse(const rj::Value::Object& val) {
         tradingsymbol = utils::json::get<string>(val, "tradingsymbol");
         exchange = utils::json::get<string>(val, "exchange");
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
         product = utils::json::get<string>(val, "product");
         quantity = utils::json::get<int>(val, "quantity");
         overnightQuantity = utils::json::get<int>(val, "overnight_quantity");
@@ -120,7 +120,7 @@ struct position {
         daySellValue = utils::json::get<double>(val, "day_sell_value");
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     int quantity = -1;
     int buyQuantity = -1;
     int overnightQuantity = -1;

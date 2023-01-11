@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 
 #include "../utils.hpp"
@@ -79,13 +80,13 @@ struct quote {
     explicit quote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
         timestamp = utils::json::get<string>(val, "timestamp");
         lastPrice = utils::json::get<double>(val, "last_price");
         lastQuantity = utils::json::get<int>(val, "last_quantity");
         lastTradeTime = utils::json::get<string>(val, "last_trade_time");
         averagePrice = utils::json::get<double>(val, "average_price");
-        volume = utils::json::get<int>(val, "volume");
+        volume = utils::json::get<int64_t>(val, "volume");
         buyQuantity = utils::json::get<int>(val, "buy_quantity");
         sellQuantity = utils::json::get<int>(val, "sell_quantity");
         OHLC = utils::json::get<utils::json::JsonObject, ohlc>(val, "ohlc");
@@ -101,11 +102,11 @@ struct quote {
             utils::json::get<utils::json::JsonObject, mDepth>(val, "depth");
     };
 
-    int instrumentToken = -1;
-    int lastQuantity = -1;
-    int volume = -1;
+    uint32_t instrumentToken = 0;
+    int64_t volume = -1;
     int buyQuantity = -1;
     int sellQuantity = -1;
+    int lastQuantity = -1;
     double lastPrice = -1;
     double averagePrice = -1;
     double netChange = -1;
@@ -146,12 +147,12 @@ struct ohlcQuote {
     explicit ohlcQuote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
         lastPrice = utils::json::get<double>(val, "last_price");
         OHLC = utils::json::get<utils::json::JsonObject, ohlc>(val, "ohlc");
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     double lastPrice = -1;
     ohlc OHLC;
 };
@@ -162,18 +163,18 @@ struct ltpQuote {
     explicit ltpQuote(const rj::Value::Object& val) { parse(val); };
 
     void parse(const rj::Value::Object& val) {
-        instrumentToken = utils::json::get<int>(val, "instrument_token");
+        instrumentToken = utils::json::get<uint32_t>(val, "instrument_token");
         lastPrice = utils::json::get<double>(val, "last_price");
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     double lastPrice = -1;
 };
 
 /// represents parameters required for the `getHistoricalData` function
 struct historicalDataParams {
     GENERATE_FLUENT_METHOD(
-        historicalDataParams, int, instrumentToken, InstrumentToken);
+        historicalDataParams, uint32_t, instrumentToken, InstrumentToken);
     GENERATE_FLUENT_METHOD(historicalDataParams, bool, continuous, Continuous);
     GENERATE_FLUENT_METHOD(historicalDataParams, bool, oi, Oi);
     GENERATE_FLUENT_METHOD(historicalDataParams, const string&, from, From);
@@ -181,7 +182,7 @@ struct historicalDataParams {
     GENERATE_FLUENT_METHOD(
         historicalDataParams, const string&, interval, Interval);
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     bool continuous = false;
     bool oi = false;
     string from;
@@ -207,12 +208,12 @@ struct historicalData {
         high = getDouble(val[HIGH_IDX]);
         low = getDouble(val[LOW_IDX]);
         close = getDouble(val[CLOSE_IDX]);
-        volume = val[VOLUME_IDX].GetInt();
-        if (val.Size() > OI_IDX) { OI = val[OI_IDX].GetInt(); };
+        volume = val[VOLUME_IDX].GetInt64();
+        if (val.Size() > OI_IDX) { OI = val[OI_IDX].GetInt64(); };
     };
 
-    int volume = -1;
-    int OI = -1;
+    int64_t volume = -1;
+    int64_t OI = -1;
     double open = -1;
     double high = -1;
     double low = -1;
@@ -310,11 +311,14 @@ struct instrument {
         static const auto toInt = [](const string& str) -> int {
             return (str.empty()) ? 0 : std::stoi(str);
         };
+        static const auto toUint32 = [](const string& str) -> uint32_t {
+            return (str.empty()) ? 0 : std::stoul(str);
+        };
         static const auto toDouble = [](const string& str) -> double {
             return (str.empty()) ? 0.0 : std::stod(str);
         };
 
-        instrumentToken = toInt(tokens[INSTRUMENT_TOKEN_IDX]);
+        instrumentToken = toUint32(tokens[INSTRUMENT_TOKEN_IDX]);
         exchangeToken = toInt(tokens[EXCHANGE_TOKEN_IDX]);
         tradingsymbol = tokens[TRADINGSYMBOL_IDX];
         name = tokens[NAME_IDX];
@@ -328,7 +332,7 @@ struct instrument {
         exchange = tokens[EXCHANGE_IDX];
     };
 
-    int instrumentToken = -1;
+    uint32_t instrumentToken = 0;
     int exchangeToken = -1;
     double lastPrice = -1;
     double strikePrice = -1;

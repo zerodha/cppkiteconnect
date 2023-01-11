@@ -162,6 +162,14 @@ inline Output get(const Document& val, const char* name) {
             } else if constexpr (std::is_same_v<std::decay_t<Output>, int>) {
                 if (it->value.IsInt()) { return it->value.GetInt(); };
                 throw libException(exceptionString("int"));
+            } else if constexpr (std::is_same_v<std::decay_t<Output>,
+                                     uint32_t>) {
+                if (it->value.IsUint()) { return it->value.GetUint(); };
+                throw libException(exceptionString("uint32_t"));
+            } else if constexpr (std::is_same_v<std::decay_t<Output>,
+                                     int64_t>) {
+                if (it->value.IsInt64()) { return it->value.GetInt64(); };
+                throw libException(exceptionString("int64_t"));
             } else if constexpr (std::is_same_v<std::decay_t<Output>, bool>) {
                 if (it->value.IsBool()) { return it->value.GetBool(); };
                 throw libException(exceptionString("bool"));
