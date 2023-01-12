@@ -36,6 +36,7 @@
 
 #include "cpp-httplib/httplib.h"
 #define FMT_HEADER_ONLY 1
+#include "fmt/include/fmt/args.h"
 #include "fmt/include/fmt/format.h"
 #include "rapidcsv/src/rapidcsv.h"
 #include "rapidjson/include/rapidjson/document.h"
@@ -485,62 +486,61 @@ struct request {
         // pointer causes segfault
         switch (method) {
             case utils::http::METHOD::GET:
-                if (auto res = client.Get(path.c_str(), headers)) {
+                if (auto res = client.Get(path, headers)) {
                     code = res->status;
                     data = res->body;
                 } else {
-                    // TODO convert enum to string
-                    throw libException(
-                        FMT("request failed ({0})", res.error()));
+                    throw libException(FMT("request failed ({0})",
+                        httplib::to_string(res.error())));
                 }
                 break;
             case utils::http::METHOD::POST:
                 if (contentType != CONTENT_TYPE::JSON) {
-                    if (auto res = client.Post(path.c_str(), headers, body)) {
+                    if (auto res = client.Post(path, headers, body)) {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(
-                            FMT("request failed ({0})", res.error()));
+                        throw libException(FMT("request failed ({0})",
+                            httplib::to_string(res.error())));
                     }
                 } else {
-                    if (auto res = client.Post(path.c_str(), headers,
-                            serializedBody, "application/json")) {
+                    if (auto res = client.Post(path, headers, serializedBody,
+                            "application/json")) {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(
-                            FMT("request failed({0})", res.error()));
+                        throw libException(FMT("request failed({0})",
+                            httplib::to_string(res.error())));
                     }
                 };
                 break;
             case utils::http::METHOD::PUT:
                 if (contentType != CONTENT_TYPE::JSON) {
-                    if (auto res = client.Put(path.c_str(), headers, body)) {
+                    if (auto res = client.Put(path, headers, body)) {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(
-                            FMT("request failed ({0})", res.error()));
+                        throw libException(FMT("request failed ({0})",
+                            httplib::to_string(res.error())));
                     }
                 } else {
-                    if (auto res = client.Put(path.c_str(), headers,
-                            serializedBody, "application/json")) {
+                    if (auto res = client.Put(path, headers, serializedBody,
+                            "application/json")) {
                         code = res->status;
                         data = res->body;
                     } else {
-                        throw libException(
-                            FMT("request failed({0})", res.error()));
+                        throw libException(FMT("request failed({0})",
+                            httplib::to_string(res.error())));
                     }
                 }
                 break;
             case utils::http::METHOD::DEL:
-                if (auto res = client.Delete(path.c_str(), headers)) {
+                if (auto res = client.Delete(path, headers)) {
                     code = res->status;
                     data = res->body;
                 } else {
-                    throw libException(
-                        FMT("request failed ({0})", res.error()));
+                    throw libException(FMT("request failed ({0})",
+                        httplib::to_string(res.error())));
                 }
                 break;
             default: throw libException("unsupported http method");
