@@ -2,1511 +2,708 @@
  *  Licensed under the MIT License <http://opensource.org/licenses/MIT>.
  *  SPDX-License-Identifier: MIT
  *
- *  Copyright (c) 2020-2021 Bhumit Attarde
+ *  Copyright (c) 2020-2022 Bhumit Attarde
  *
- *  Permission is hereby  granted, free of charge, to any  person obtaining a copy
- *  of this software and associated  documentation files (the "Software"), to deal
- *  in the Software  without restriction, including without  limitation the rights
- *  to  use, copy,  modify, merge,  publish, distribute,  sublicense, and/or  sell
- *  copies  of  the Software,  and  to  permit persons  to  whom  the Software  is
- *  furnished to do so, subject to the following conditions:
+ *  Permission is hereby  granted, free of charge, to any  person obtaining a
+ * copy of this software and associated  documentation files (the "Software"),
+ * to deal in the Software  without restriction, including without  limitation
+ * the rights to  use, copy,  modify, merge,  publish, distribute,  sublicense,
+ * and/or  sell copies  of  the Software,  and  to  permit persons  to  whom the
+ * Software  is furnished to do so, subject to the following conditions:
  *
- *  The above copyright notice and this permission notice shall be included in all
- *  copies or substantial portions of the Software.
+ *  The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
  *
- *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS OR
- *  IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF  MERCHANTABILITY,
- *  FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN NO EVENT  SHALL THE
- *  AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY  CLAIM,  DAMAGES OR  OTHER
- *  LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- *  OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE USE OR OTHER DEALINGS IN THE
- *  SOFTWARE.
+ *  THE SOFTWARE  IS PROVIDED "AS  IS", WITHOUT WARRANTY  OF ANY KIND,  EXPRESS
+ * OR IMPLIED,  INCLUDING BUT  NOT  LIMITED TO  THE  WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR  A PARTICULAR PURPOSE AND  NONINFRINGEMENT. IN
+ * NO EVENT  SHALL THE AUTHORS  OR COPYRIGHT  HOLDERS  BE  LIABLE FOR  ANY
+ * CLAIM,  DAMAGES OR  OTHER LIABILITY, WHETHER IN AN ACTION OF  CONTRACT, TORT
+ * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE  OR THE
+ * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 #pragma once
 
-#include <algorithm> //for_each
-#include <array>
-#include <iostream> //debug
-#include <limits>   //nan
-#include <sstream>
+#include <cstdint>
+#include <functional>
 #include <string>
-#include <tuple>
 #include <unordered_map>
-#include <utility> //pair<>
 #include <vector>
 
-#include "PicoSHA2/picosha2.h"
 #include "cpp-httplib/httplib.h"
 
-#include "rapidjson/document.h"
-#include "rapidjson/prettywriter.h"
-#include "rapidjson/rapidjson.h"
-#include "rapidjson/stringbuffer.h"
-#include "rapidjson/writer.h"
-
-#include "config.hpp"
-#include "kiteppexceptions.hpp"
-#include "responses.hpp"
-#include "rjutils.hpp"
+#include "responses/responses.hpp"
 #include "utils.hpp"
 
 namespace kiteconnect {
 
 using std::string;
-namespace rj = rapidjson;
 namespace kc = kiteconnect;
-namespace rju = kc::rjutils;
-using kc::_methods;
-using kc::DEFAULTDOUBLE;
-using kc::DEFAULTINT;
-using kc::isValid;
-using kc::libException;
+namespace utils = kc::internal::utils;
 
-/**
- * @brief Used for accessing REST interface provided by Kite API.
- *
- */
+///
+/// \brief \a kite represents a KiteConnect session. It wraps around the
+///        KiteConnect REST API and provides a native interface.
+///
 class kite {
 
   public:
-    // member variables:
+    ///
+    /// \brief Construct a new kite object.
+    ///
+    /// \param apikey kiteconnect api key
+    ///
+    explicit kite(string apikey);
 
-    // constructors and destructor:
+    // api
 
-    /**
-     * @brief Construct a new kite object
-     *
-     * @param apikey
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp initializing kite
-     */
-    explicit kite(string apikey): _apiKey(std::move(apikey)), _httpClient(_rootURL.c_str()) {};
+    ///
+    /// \brief Set the API key for current session.
+    ///
+    /// \param arg API key is set to \a arg
+    ///
+    void setApiKey(const string& arg);
 
-    virtual ~kite() {};
+    ///
+    /// \brief Get current session's API key.
+    ///
+    /// \return string API key
+    ///
+    string getApiKey() const;
 
-    // methods:
+    ///
+    /// \brief Get the login URL to which the user should be redirected to
+    /// initiate the login flow.
+    ///
+    /// \return string login URL
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp obtaining login url
+    ///
+    string loginURL() const;
 
-    // api:
+    ///
+    /// \brief Set the access token current session.
+    ///
+    /// \param arg access token is set to \a arg
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp settting access token
+    ///
+    void setAccessToken(const string& arg);
 
-    /**
-     * @brief Set the API key
-     *
-     * @param arg The string that should be set as API key
-     */
-    void setAPIKey(const string& arg) { _apiKey = arg; };
+    ///
+    /// \brief Get access token set for current session.
+    ///
+    /// \return string access token
+    ///
+    string getAccessToken() const;
 
-    /**
-     * @brief Fetch current API key
-     *
-     * @return string
-     */
-    string getAPIKey() const { return _apiKey; };
+    ///
+    /// \brief Generate an user session. Use this method to generate an access
+    ///        token.
+    ///
+    /// \param requestToken request token to use
+    /// \param apiSecret corresponding API secret
+    /// \return userSession session details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp obtaining access token
+    ///
+    userSession generateSession(
+        const string& requestToken, const string& apiSecret);
 
-    /**
-     * @brief Get the remote login url to which a user should be redirected to initiate the login flow.
-     *
-     * @return string
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp obtaining login url
-     */
-    string loginURL() const { return FMT(_loginURLFmt, "api_key"_a = _apiKey); };
+    ///
+    /// \brief This method invalidates the access token and destroys current
+    ///        session.
+    ///
+    /// \note After this, the user should be sent through a new login flow
+    ///       before further interactions.
+    ///       This does not log the user out of the
+    ///       official Kite web or mobile applications.
+    ///
+    /// \return `true` if session was invalidated successfully, `false`
+    ///         otherwise.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp invalidate session
+    ///
+    bool invalidateSession();
 
-    /**
-     * @brief Generate user session details like `access_token`
-     *
-     * @param requestToken
-     * @param apiSecret
-     * @return userSession
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp obtaining access token
-     */
-    userSession generateSession(const string& requestToken, const string& apiSecret) {
+    // user
 
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("api.token"),
-            {
-                { "api_key", _apiKey },
-                { "request_token", requestToken },
-                { "checksum", picosha2::hash256_hex_string(_apiKey + requestToken + apiSecret) },
-            });
+    ///
+    /// \brief Get user's profile.
+    ///
+    /// \return userProfile user profile
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get user profile
+    ///
+    userProfile profile();
 
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (generateSession())");
-        };
+    /// \brief Get margins for all segments.
+    ///
+    /// \return allMargins margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get margins
+    ///
+    allMargins getMargins();
 
-        return userSession(res["data"].GetObject());
-    };
+    /// \brief Get margins for a particular segment.
+    ///
+    /// \param segment segment whose margins should be fetched
+    ///
+    /// \return margins segment margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get margins
+    ///
+    margins getMargins(const string& segment);
 
-    /**
-     * @brief Set the Access Token
-     *
-     * @param arg the string you want to set as access token
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp settting access token
-     */
-    void setAccessToken(const string& arg) { _accessToken = arg; };
+    // orders
 
-    /**
-     * @brief Get the Access Token set currently
-     *
-     * @return string
-     */
-    string getAccessToken() const { return _accessToken; };
-
-    /**
-     * @brief This call invalidates the access_token and destroys the API session. After this, the user should be sent
-     * through a new login flow before further interactions. This does not log the user out of the official Kite web or
-     * mobile applications.
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp invalidate session
-     */
-    void invalidateSession() {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL,
-            FMT(_endpoints.at("api.token.invalidate"), "api_key"_a = _apiKey, "access_token"_a = _accessToken));
-    };
-
-    // user:
-
-    /**
-     * @brief returns user profile
-     *
-     * @return userProfile
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get user profile
-     *
-     */
-    userProfile profile() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("user.profile"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (profile())"); };
-
-        return userProfile(res["data"].GetObject());
-    };
-
-    /**
-     * @brief Get margins for all segments
-     *
-     * @return allMargins
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get margins
-     */
-    allMargins getMargins() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("user.margins"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMargins())"); };
-
-        return allMargins(res["data"].GetObject());
-    };
+    ///
+    /// \brief Place an order.
+    ///
+    /// \param params parameters of order to place
+    ///
+    /// \return string ID of placed order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp placing an order
+    ///
+    string placeOrder(const placeOrderParams& params);
 
     /**
-     * @brief Get margins for a particular segment
+     * \brief modify an order
      *
-     * @param segment
-     * @return margins
+     * \param variety variety of the order
+     * \param ordID order ID
+     * \param parentOrdID parent order ID
+     * \param quantity quantity to transact
+     * \param price the min or max price to execute the order at (for LIMIT
+     * orders)
+     * \param ordType order type
+     * \param trigPrice trigger price
+     * \param validity order validity
+     * \param discQuantity disclosed quantity
      *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get margins
+     * \return string order ID
+     *
+     * \paragraph ex1 Example
+     * \snippet example2.cpp modifying an order
      */
-    margins getMargins(const string& segment) {
 
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("user.margins.segment"), "segment"_a = segment));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getMargins(segment))");
-        };
-
-        return margins(res["data"].GetObject());
-    };
-
-    // orders:
+    ///
+    /// \brief Modify an order.
+    ///
+    /// \param params parameters of the order to modify
+    ///
+    /// \return string ID of modified order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp modifying an order
+    ///
+    string modifyOrder(const modifyOrderParams& params);
 
     /**
-     * @brief place an order.
+     * \brief cancel an order
      *
-     * @param variety variety of the order
-     * @param exchange name of the exchange
-     * @param symbol trading symbol
-     * @param txnType transaction type
-     * @param quantity quantity to transact
-     * @param product margin product to use for the order (margins are blocked based on this)
-     * @param orderType order type (MARKET, LIMIT etc.)
-     * @param price the min or max price to execute the order at (for LIMIT orders)
-     * @param validity order validity
-     * @param trigPrice trigger price
-     * @param sqOff square off
-     * @param SL stoploss
-     * @param trailSL trailing stoploss
-     * @param discQuantity disclosed quantity
-     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 20 chars)
+     * \param variety variety of the order
+     * \param ordID order ID
+     * \param parentOrdID parent order ID
      *
-     * @return string orderID
+     * \return string order ID
      *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp placing an order
+     * \paragraph ex1 Example
+     * \snippet example2.cpp cancelling an order
      */
-    string placeOrder(const string& variety, const string& exchange, const string& symbol, const string& txnType,
-        int quantity, const string& product, const string& orderType, double price = DEFAULTDOUBLE,
-        const string& validity = "", double trigPrice = DEFAULTDOUBLE, double sqOff = DEFAULTDOUBLE,
-        double SL = DEFAULTDOUBLE, double trailSL = DEFAULTDOUBLE, int discQuantity = DEFAULTINT,
-        const string& tag = "") {
-
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-            { "quantity", std::to_string(quantity) },
-            { "product", product },
-            { "order_type", orderType },
-        };
-
-        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
-        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
-        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!isValid(sqOff)) { bodyParams.emplace_back("squareoff", std::to_string(sqOff)); }
-        if (!isValid(SL)) { bodyParams.emplace_back("stoploss", std::to_string(SL)); }
-        if (!isValid(trailSL)) { bodyParams.emplace_back("trailing_stoploss", std::to_string(trailSL)); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, FMT(_endpoints.at("order.place"), "variety"_a = variety), bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
-
-    /**
-     * @brief modify an order
-     *
-     * @param variety variety of the order
-     * @param ordID order ID
-     * @param parentOrdID parent order ID
-     * @param quantity quantity to transact
-     * @param price the min or max price to execute the order at (for LIMIT orders)
-     * @param ordType order type
-     * @param trigPrice trigger price
-     * @param validity order validity
-     * @param discQuantity disclosed quantity
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp modifying an order
-     */
-    string modifyOrder(const string& variety, const string& ordID, const string& parentOrdID = "",
-        int quantity = DEFAULTINT, double price = DEFAULTDOUBLE, const string& ordType = "",
-        double trigPrice = DEFAULTDOUBLE, const string& validity = "", int discQuantity = DEFAULTINT) {
-
-        std::vector<std::pair<string, string>> bodyParams = {};
-
-        if (!parentOrdID.empty()) { bodyParams.emplace_back("parent_order_id", parentOrdID); }
-        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!isValid(price)) { bodyParams.emplace_back("price", std::to_string(price)); }
-        if (!ordType.empty()) { bodyParams.emplace_back("order_type", ordType); }
-        if (!isValid(trigPrice)) { bodyParams.emplace_back("trigger_price", std::to_string(trigPrice)); }
-        if (!validity.empty()) { bodyParams.emplace_back("validity", validity); }
-        if (!isValid(discQuantity)) { bodyParams.emplace_back("disclosed_quantity", std::to_string(discQuantity)); }
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("order.modify"), "variety"_a = variety, "order_id"_a = ordID),
-            bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
-
-    /**
-     * @brief cancel an order
-     *
-     * @param variety variety of the order
-     * @param ordID order ID
-     * @param parentOrdID parent order ID
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp cancelling an order
-     */
-    string cancelOrder(const string& variety, const string& ordID, const string& parentOrdID = "") {
-
-        rj::Document res;
-        (variety == "bo") ? _sendReq(res, _methods::DEL,
-                                FMT(_endpoints.at("order.cancel.bo"), "variety"_a = variety, "order_id"_a = ordID,
-                                    "parent_order_id"_a = parentOrdID)) :
-                            _sendReq(res, _methods::DEL,
-                                FMT(_endpoints.at("order.cancel"), "variety"_a = variety, "order_id"_a = ordID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (cancelOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
-
-    /**
-     * @brief exit an order
-     *
-     * @param variety variety of the order
-     * @param ordID order ID
-     * @param parentOrdID parent order ID
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp exiting an order
-     */
-    string exitOrder(const string& variety, const string& ordID, const string& parentOrdID = "") {
-
-        return cancelOrder(variety, ordID, parentOrdID);
-    };
-
-    /**
-     * @brief get list of orders
-     *
-     * @return std::vector<order>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get orders
-     */
-    std::vector<order> orders() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("orders"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (orders())"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (orders())"); };
-
-        std::vector<order> orderVec;
-        for (auto& i : it->value.GetArray()) { orderVec.emplace_back(i.GetObject()); }
-
-        return orderVec;
-    };
-
-    /**
-     * @brief get history of an order
-     *
-     * @param ordID order ID
-     *
-     * @return std::vector<order>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order history
-     */
-    std::vector<order> orderHistory(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("order.info"), "order_id"_a = ordID));
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (orderHistory())");
-        };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (orderHistory())"); };
-
-        std::vector<order> orderVec;
-        for (auto& i : it->value.GetArray()) { orderVec.emplace_back(i.GetObject()); }
-
-        return orderVec;
-    };
-
-    /**
-     * @brief get list of trades
-     *
-     * @return std::vector<trade>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get trades
-     */
-    std::vector<trade> trades() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("trades"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (trades())"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (trades())"); };
-
-        std::vector<trade> tradeVec;
-        for (auto& i : it->value.GetArray()) { tradeVec.emplace_back(i.GetObject()); }
-
-        return tradeVec;
-    };
-
-    /**
-     * @brief get the list of trades executed for a particular order.
-     *
-     * @param ordID order ID
-     *
-     *  @return std::vector<trade>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order trades
-     */
-    std::vector<trade> orderTrades(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("order.trades"), "order_id"_a = ordID));
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (orderTrades())");
-        };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (orderTrades())"); };
-
-        std::vector<trade> tradeVec;
-        for (auto& i : it->value.GetArray()) { tradeVec.emplace_back(i.GetObject()); }
-
-        return tradeVec;
-    };
-
-    // gtt:
-
-    /**
-     * @brief place GTT order
-     *
-     * @param trigType trigger type
-     * @param symbol trading symbol
-     * @param exchange exchange name
-     * @param trigValues trigger values
-     * @param lastPrice last price
-     * @param gttParams vector of GTTParams
-     *
-     * @return int trigger ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp placing a gtt
-     */
-    int placeGTT(const string& trigType, const string& symbol, const string& exchange,
-        const std::vector<double>& trigValues, double lastPrice, const std::vector<GTTParams>& gttParams) {
-
-        // make condition json
-        rj::Document condition;
-        condition.SetObject();
-        auto& condnAlloc = condition.GetAllocator();
-
-        rj::Value val; // used for making string values
-        rj::Value trigValArr(rj::kArrayType);
-
-        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
-        condition.AddMember("exchange", val, condnAlloc);
-
-        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
-        condition.AddMember("tradingsymbol", val, condnAlloc);
-
-        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
-        condition.AddMember("trigger_values", trigValArr, condnAlloc);
-
-        condition.AddMember("last_price", lastPrice, condnAlloc);
-
-        // make orders json
-        rj::Document params;
-        params.SetArray();
-        auto& paramsAlloc = params.GetAllocator();
-
-        for (const GTTParams& param : gttParams) {
-            rj::Value strVal;
-            rj::Value tmpVal(rj::kObjectType);
-
-            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), paramsAlloc);
-            tmpVal.AddMember("transaction_type", strVal, paramsAlloc);
-
-            tmpVal.AddMember("quantity", param.quantity, paramsAlloc);
-
-            strVal.SetString(param.orderType.c_str(), param.orderType.size(), paramsAlloc);
-            tmpVal.AddMember("order_type", strVal, paramsAlloc);
-
-            strVal.SetString(param.product.c_str(), param.product.size(), paramsAlloc);
-            tmpVal.AddMember("product", strVal, paramsAlloc);
-
-            tmpVal.AddMember("price", param.price, paramsAlloc);
-
-            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
-            tmpVal.AddMember("exchange", strVal, paramsAlloc);
-
-            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
-            tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
-
-            params.PushBack(tmpVal, paramsAlloc);
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("gtt.place"),
-            { { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) } });
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeGTT)"); };
-
-        int rcvdTrigID = DEFAULTINT;
-        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
-
-        return rcvdTrigID;
-    };
-
-    /**
-     * @brief get list of GTTs
-     *
-     * @return std::vector<GTT>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get gtts
-     */
-    std::vector<GTT> getGTTs() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("gtt"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTTs)"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (getGTTs())"); };
-
-        std::vector<GTT> gttVec;
-        for (auto& i : it->value.GetArray()) { gttVec.emplace_back(i.GetObject()); }
-
-        return gttVec;
-    };
-
-    /**
-     * @brief get details of a GTT
-     *
-     * @param trigID trigger ID
-     * @return GTT
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get gtt info
-     */
-    GTT getGTT(int trigID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("gtt.info"), "trigger_id"_a = trigID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getGTT)"); };
-
-        return GTT(res["data"].GetObject());
-    };
-
-    /**
-     * @brief
-     *
-     * @param trigID trigger ID
-     * @param trigType trigger type
-     * @param symbol trading symbol
-     * @param exchange name of the exchange
-     * @param trigValues trigger values
-     * @param lastPrice last traded price of the instrument
-     * @param gttParams vector of GTTParams
-     *
-     * @return int trigger ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp modifying a gtt
-     */
-    int modifyGTT(int trigID, const string& trigType, const string& symbol, const string& exchange,
-        const std::vector<double>& trigValues, double lastPrice, const std::vector<GTTParams>& gttParams) {
-
-        // make condition json
-        rj::Document condition;
-        condition.SetObject();
-        auto& condnAlloc = condition.GetAllocator();
-        rj::Value val;
-        rj::Value trigValArr(rj::kArrayType);
-
-        val.SetString(exchange.c_str(), exchange.size(), condnAlloc);
-        condition.AddMember("exchange", val, condnAlloc);
-
-        val.SetString(symbol.c_str(), symbol.size(), condnAlloc);
-        condition.AddMember("tradingsymbol", val, condnAlloc);
-
-        for (const double& i : trigValues) { trigValArr.PushBack(i, condnAlloc); };
-        condition.AddMember("trigger_values", trigValArr, condnAlloc);
-
-        condition.AddMember("last_price", lastPrice, condnAlloc);
-
-        // make orders json
-        rj::Document params;
-        params.SetArray();
-        auto& paramsAlloc = params.GetAllocator();
-
-        for (const GTTParams& param : gttParams) {
-            rj::Value strVal;
-            rj::Value tmpVal(rj::kObjectType);
-
-            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), paramsAlloc);
-            tmpVal.AddMember("transaction_type", strVal, paramsAlloc);
-
-            tmpVal.AddMember("quantity", param.quantity, paramsAlloc);
-
-            strVal.SetString(param.orderType.c_str(), param.orderType.size(), paramsAlloc);
-            tmpVal.AddMember("order_type", strVal, paramsAlloc);
-
-            strVal.SetString(param.product.c_str(), param.product.size(), paramsAlloc);
-            tmpVal.AddMember("product", strVal, paramsAlloc);
-
-            tmpVal.AddMember("price", param.price, paramsAlloc);
-
-            strVal.SetString(exchange.c_str(), exchange.size(), paramsAlloc);
-            tmpVal.AddMember("exchange", strVal, paramsAlloc);
-
-            strVal.SetString(symbol.c_str(), symbol.size(), paramsAlloc);
-            tmpVal.AddMember("tradingsymbol", strVal, paramsAlloc);
-
-            params.PushBack(tmpVal, paramsAlloc);
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("gtt.modify"), "trigger_id"_a = trigID),
-            { { "type", trigType }, { "condition", rju::_dump(condition) }, { "orders", rju::_dump(params) } });
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (modifyGTT)"); };
-
-        int rcvdTrigID = DEFAULTINT;
-        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
-
-        return rcvdTrigID;
-    };
-
-    /**
-     * @brief delete a GTT order.
-     *
-     * @param trigID trigger ID
-     *
-     * @return int trigger ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp delete a gtt
-     */
-    int deleteGTT(int trigID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL, FMT(_endpoints.at("gtt.delete"), "trigger_id"_a = trigID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (deleteGTT)"); };
-
-        int rcvdTrigID = DEFAULTINT;
-        rju::_getIfExists(res["data"].GetObject(), rcvdTrigID, "trigger_id");
-
-        return rcvdTrigID;
-    };
-
-    // portfolio:
-
-    /**
-     * @brief get holdings
-     *
-     * @return std::vector<holding>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get holdings
-     */
-    std::vector<holding> holdings() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("portfolio.holdings"));
-
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (holdings)"); };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsArray()) { throw libException("Array was expected (holdinga)"); };
-
-        std::vector<holding> holdingsVec;
-        for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
-
-        return holdingsVec;
-    };
-
-    /**
-     * @brief get positions
-     *
-     * @return positions
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get positions
-     */
-    positions getPositions() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("portfolio.positions"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getPositions)"); };
-
-        return positions(res["data"].GetObject());
-    };
-
-    /**
-     * @brief Modify an open position's product type.
-     *
-     * @param exchange exchange name
-     * @param symbol trading symbol
-     * @param txnType transaction type
-     * @param posType position type
-     * @param quantity quantity to transact
-     * @param oldProduct old product
-     * @param newProduct new product
-     *
-     * @return bool true if position was successfully modified
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp convert position
-     */
-    bool convertPosition(const string& exchange, const string& symbol, const string& txnType, const string& posType,
-        int quantity, const string& oldProduct, const string& newProduct) {
-
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "exchange", exchange },
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-            { "position_type", posType },
-            { "quantity", std::to_string(quantity) },
-            { "old_product", oldProduct },
-            { "new_product", newProduct },
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, _endpoints.at("portfolio.positions.convert"), bodyParams);
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (convertPosition)");
-        };
-
-        auto it = res.FindMember("data");
-        if (!it->value.IsBool()) {
-            throw libException("data type wasn't the one expected. Expected bool (convertPosition)");
-        };
-
-        return it->value.GetBool();
-    };
-
-    // quotes and instruments:
-
-    /**
-     * @brief Retrieve the list of market instruments available to trade.
-     *
-     * @param exchange returns all instruments if none specified
-     *
-     * @return std::vector<instrument>
-     *
-     * @attention Note that the results could be large, with tens of thousands of entries.
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get instruments
-     */
-    std::vector<instrument> getInstruments(const string& exchange = "") {
-
-        const string rcvdData =
-            (exchange.empty()) ? _sendInstrumentsReq(_endpoints.at("market.instruments.all")) :
-                                 _sendInstrumentsReq(FMT(_endpoints.at("market.instruments"), "exchange"_a = exchange));
-        if (rcvdData.empty()) { return {}; };
-
-        std::vector<string> tokens = kc::_split(rcvdData, '\n');
-        tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
-
-        for (auto& tok : tokens) {
-            // sent data has \r\n as delimiter and _split only removes \n. pop_back() to remove that \r
-            tok.pop_back();
-        };
-
-        return { ++tokens.begin(), tokens.end() }; //++ to skip first iteration (headers)
-    };
-
-    /**
-     * @brief Retrieve quote for list of instruments
-     *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
-     *
-     *  @return std::unordered_map<string, quote>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get quote
-     */
-    std::unordered_map<string, quote> getQuote(const std::vector<string>& symbols) {
-
-        rj::Document res;
-        _sendReq(
-            res, _methods::GET, FMT(_endpoints.at("market.quote"), "symbols_list"_a = _encodeSymbolsList(symbols)));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getQuote)"); };
-
-        std::unordered_map<string, quote> quoteMap;
-        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
-
-        return quoteMap;
-    };
-
-    /**
-     * @brief Retrieve OHLC for list of instruments
-     *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
-     *
-     * @return std::unordered_map<string, OHLCQuote>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get ohlc
-     */
-    std::unordered_map<string, OHLCQuote> getOHLC(const std::vector<string>& symbols) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET,
-            FMT(_endpoints.at("market.quote.ohlc"), "symbols_list"_a = _encodeSymbolsList(symbols)));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getOHLC)"); };
-
-        std::unordered_map<string, OHLCQuote> quoteMap;
-        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
-
-        return quoteMap;
-    };
-
-    /**
-     * @brief Retrieve last price for list of instruments
-     *
-     * @param symbols vector of trading symbols in `exchange:tradingsymbol` (NSE:INFY) format
-     *
-     * @return std::unordered_map<string, LTPQuote>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get ltp
-     */
-    std::unordered_map<string, LTPQuote> getLTP(const std::vector<string>& symbols) {
-
-        rj::Document res;
-        _sendReq(
-            res, _methods::GET, FMT(_endpoints.at("market.quote.ltp"), "symbols_list"_a = _encodeSymbolsList(symbols)));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getLTP)"); };
-
-        std::unordered_map<string, LTPQuote> quoteMap;
-        for (auto& i : res["data"].GetObject()) { quoteMap.emplace(i.name.GetString(), i.value.GetObject()); };
-
-        return quoteMap;
-    };
-
-    // historical:
-
-    /**
-     * @brief Retrieve historical data (candles) for an instrument
-     *
-     * @param instrumentTok instrument token (NOT trading symbol)
-     * @param from from date in the following format: yyyy-mm-dd HH:MM:SS
-     * @param to to date in the following format: yyyy-mm-dd HH:MM:SS
-     * @param interval candle interval
-     * @param continuous boolean flag to get continuous data for futures and options instruments
-     * @param oi boolean flag to get open interest data
-     *
-     *  @return std::vector<historicalData>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get historical data
-     */
-    std::vector<historicalData> getHistoricalData(int instrumentTok, const string& from, const string& to,
-        const string& interval, bool continuous = false, bool oi = false) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET,
-            FMT(_endpoints.at("market.historical"), "instrument_token"_a = instrumentTok, "interval"_a = interval,
-                "from"_a = from, "to"_a = to, "continuous"_a = static_cast<int>(continuous),
-                "oi"_a = static_cast<int>(oi)));
-
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getHistoricalData)");
-        };
-
-        auto it = res.FindMember("data")->value.FindMember("candles");
-        if (!it->value.IsArray()) { throw libException("Array was expected (trades())"); };
-
-        std::vector<historicalData> dataVec;
-        for (auto& i : it->value.GetArray()) { dataVec.emplace_back(i.GetArray()); };
-
-        return dataVec;
-    };
-
-    // MF:
-
-    /**
-     * @brief place a mutual fund order
-     *
-     * @param symbol trading symbol
-     * @param txnType transaction type
-     * @param quantity Quantity to SELL. Not applicable on BUYs. If the holding is less than
-     * minimum_redemption_quantity, all the units have to be sold
-     * @param amount amount worth of units to purchase. Not applicable on SELLs
-     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 8 chars)
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp place mf order
-     */
-    string placeMFOrder(const string& symbol, const string& txnType, int quantity = DEFAULTINT,
-        double amount = DEFAULTDOUBLE, const string& tag = "") {
-
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", symbol },
-            { "transaction_type", txnType },
-        };
-
-        if (!isValid(quantity)) { bodyParams.emplace_back("quantity", std::to_string(quantity)); }
-        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); }
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("mf.order.place"), bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFOrder)"); };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
-
-    /**
-     * @brief cancel a mutual fund order
-     *
-     * @param ordID order ID
-     *
-     * @return string order ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp cancel a mf order
-     */
-    string cancelMFOrder(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.order.cancel"), "order_id"_a = ordID));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (cancelMFOrder)");
-        };
-
-        string rcvdOrdID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdOrdID, "order_id");
-
-        return rcvdOrdID;
-    };
-
-    /**
-     * @brief get all mutual fund orders
-     *
-     * @return std::vector<MFOrder>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf orders
-     */
-    std::vector<MFOrder> getMFOrders() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("mf.orders"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getMFOrders)"); };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getMFOrders"); };
-
-        std::vector<MFOrder> ordersVec;
-        for (auto& i : it->value.GetArray()) { ordersVec.emplace_back(i.GetObject()); }
-
-        return ordersVec;
-    };
-
-    /**
-     * @brief get details of a mutual fund order
-     *
-     * @param ordID order ID
-     *
-     * @return MFOrder
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf order info
-     */
-    MFOrder getMFOrder(const string& ordID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.order.info"), "order_id"_a = ordID));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (cancelMFOrder)");
-        };
-
-        return MFOrder(res["data"].GetObject());
-    };
-
-    /**
-     * @brief get mutual fund holdings
-     *
-     * @return std::vector<MFHolding>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf holdings
-     */
-    std::vector<MFHolding> getMFHoldings() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("mf.holdings"));
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getMFHoldings)");
-        };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getMFHoldings"); };
-
-        std::vector<MFHolding> holdingsVec;
-        for (auto& i : it->value.GetArray()) { holdingsVec.emplace_back(i.GetObject()); }
-
-        return holdingsVec;
-    };
-
-    // SIP:
-
-    /**
-     * @brief place MF SIP
-     *
-     * @param symbol tradingsymbol (ISIN) of the fund
-     * @param amount amount worth of units to purchase. Not applicable on SELLs
-     * @param installments number of instalments to trigger. If set to -1, instalments are triggered at fixed intervals
-     * until the SIP is cancelled
-     * @param freq frequency
-     * @param initAmount initial amount
-     * @param installDay installment day
-     * @param tag an optional tag to apply to an order to identify it (alphanumeric, max 8 chars)
-     *
-     * @return std::pair<string, string>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp place mf sip order
-     */
-    std::pair<string, string> placeMFSIP(const string& symbol, double amount, int installments, const string& freq,
-        double initAmount = DEFAULTDOUBLE, int installDay = DEFAULTINT, const string& tag = "") {
-
-        std::vector<std::pair<string, string>> bodyParams = {
-            { "tradingsymbol", symbol },
-            { "amount", std::to_string(amount) },
-            { "instalments", std::to_string(installments) },
-            { "frequency", freq },
-        };
-
-        if (!isValid(initAmount)) { bodyParams.emplace_back("initial_amount", std::to_string(initAmount)); };
-        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); };
-        if (!tag.empty()) { bodyParams.emplace_back("tag", tag); };
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("mf.sip.place"), bodyParams);
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
-
-        string rcvdOrdID, rcvdSipID;
-        auto it = res.FindMember("data");
-        rju::_getIfExists(it->value.GetObject(), rcvdOrdID, "order_id");
-        rju::_getIfExists(it->value.GetObject(), rcvdSipID, "sip_id");
-
-        return { rcvdOrdID, rcvdSipID };
-    };
-
-    /**
-     * @brief modify a MF SIP order
-     *
-     * @param SIPID SIP ID
-     * @param amount amount worth of units to purchase. It should be equal to or greated than
-     * minimum_additional_purchase_amount and in multiple of purchase_amount_multiplier in the instrument master.
-     * @param status pause or unpause an SIP (active or paused)
-     * @param installments number of instalments to trigger. If set to -1, instalments are triggered idefinitely until
-     * the SIP is cancelled
-     * @param freq weekly, monthly, or quarterly
-     * @param installDay installment day
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp modify mf sip order
-     */
-    void modifyMFSIP(const string& SIPID, double amount = DEFAULTDOUBLE, const string& status = "",
-        int installments = DEFAULTINT, const string& freq = "", int installDay = DEFAULTINT) {
-
-        std::vector<std::pair<string, string>> bodyParams = {};
-
-        if (!isValid(amount)) { bodyParams.emplace_back("amount", std::to_string(amount)); }
-        if (!status.empty()) { bodyParams.emplace_back("status", status); }
-        if (!isValid(installments)) { bodyParams.emplace_back("instalments", std::to_string(installments)); }
-        if (!freq.empty()) { bodyParams.emplace_back("frequency", freq); }
-        if (!isValid(installDay)) { bodyParams.emplace_back("instalment_day", std::to_string(installDay)); }
-
-        rj::Document res;
-        _sendReq(res, _methods::PUT, FMT(_endpoints.at("mf.sip.modify"), "sip_id"_a = SIPID), bodyParams);
-    };
-
-    /**
-     * @brief cancel a MF SIP
-     *
-     * @param SIPID SIP ID
-     *
-     * @return SIP ID
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp cancel mf sip
-     */
-    string cancelMFSIP(const string& SIPID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::DEL, FMT(_endpoints.at("mf.sip.cancel"), "sip_id"_a = SIPID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (placeMFSIP)"); };
-
-        string rcvdSipID;
-        rju::_getIfExists(res["data"].GetObject(), rcvdSipID, "sip_id");
-
-        return rcvdSipID;
-    };
-
-    /**
-     * @brief get list of SIPs
-     *
-     * @return std::vector<MFSIP>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get sips
-     */
-    std::vector<MFSIP> getSIPs() {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, _endpoints.at("mf.sips"));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIPs)"); };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getSIPs)"); };
-
-        std::vector<MFSIP> sipVec;
-        for (auto& i : it->value.GetArray()) { sipVec.emplace_back(i.GetObject()); }
-
-        return sipVec;
-    };
-
-    /**
-     * @brief get details of a SIP
-     *
-     * @param SIPID SIP ID
-     *
-     * @return MFSIP
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get sip info
-     */
-    MFSIP getSIP(const string& SIPID) {
-
-        rj::Document res;
-        _sendReq(res, _methods::GET, FMT(_endpoints.at("mf.sip.info"), "sip_id"_a = SIPID));
-        if (!res.IsObject()) { throw libException("Empty data was received where it wasn't expected (getSIP)"); };
-
-        return MFSIP(res["data"].GetObject());
-    };
-
-    /**
-     * @brief Get list of mutual fund instruments
-     *
-     * @return std::vector<MFInstrument>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get mf instruments
-     */
-    std::vector<MFInstrument> getMFInstruments() {
-
-        const string rcvdData = _sendInstrumentsReq(_endpoints.at("mf.instruments"));
-
-        if (rcvdData.empty()) { return {}; };
-        std::vector<string> tokens = kc::_split(rcvdData, '\n');
-        tokens.pop_back(); // because last token is empty since empty tokens aren't ignored
-
-        for (auto& tok : tokens) {
-            // sent data has \r\n as delimiter and _split only removes \n. pop_back() to remove that \r
-            tok.pop_back();
-        };
-
-        return { ++tokens.begin(), tokens.end() }; //++ to skip first iteration (headers)
-    };
-
-    // others:
-
-    /**
-     * @brief get various margins required for orders
-     *
-     * @param params
-     *
-     * @return std::vector<orderMargins>
-     *
-     * @paragraph ex1 Example
-     * @snippet example2.cpp get order margins
-     */
-    std::vector<orderMargins> getOrderMargins(const std::vector<orderMarginsParams>& params) {
-
-        rj::Document req;
-        req.SetArray();
-        auto& reqAlloc = req.GetAllocator();
-
-        for (const auto& param : params) {
-            rj::Value paramVal(rj::kObjectType);
-            rj::Value strVal; // used for making string values
-
-            strVal.SetString(param.exchange.c_str(), param.exchange.size(), reqAlloc);
-            paramVal.AddMember("exchange", strVal, reqAlloc);
-
-            strVal.SetString(param.tradingsymbol.c_str(), param.tradingsymbol.size(), reqAlloc);
-            paramVal.AddMember("tradingsymbol", strVal, reqAlloc);
-
-            strVal.SetString(param.transactionType.c_str(), param.transactionType.size(), reqAlloc);
-            paramVal.AddMember("transaction_type", strVal, reqAlloc);
-
-            strVal.SetString(param.variety.c_str(), param.variety.size(), reqAlloc);
-            paramVal.AddMember("variety", strVal, reqAlloc);
-
-            strVal.SetString(param.product.c_str(), param.product.size(), reqAlloc);
-            paramVal.AddMember("product", strVal, reqAlloc);
-
-            strVal.SetString(param.orderType.c_str(), param.orderType.size(), reqAlloc);
-            paramVal.AddMember("order_type", strVal, reqAlloc);
-
-            paramVal.AddMember("quantity", param.quantity, reqAlloc);
-            paramVal.AddMember("price", param.price, reqAlloc);
-            paramVal.AddMember("trigger_price", param.triggerPrice, reqAlloc);
-
-            req.PushBack(paramVal, reqAlloc);
-        };
-
-        rj::Document res;
-        _sendReq(res, _methods::POST, _endpoints.at("order.margins"), { { "", rju::_dump(req) } }, true);
-        if (!res.IsObject()) {
-            throw libException("Empty data was received where it wasn't expected (getOrderMargis)");
-        };
-
-        auto it = res.FindMember("data");
-        if (!(it->value.IsArray())) { throw libException("Array was expected (getOrderMargis)"); };
-
-        std::vector<orderMargins> marginsVec;
-        for (auto& i : it->value.GetArray()) { marginsVec.emplace_back(i.GetObject()); }
-
-        return marginsVec;
-    };
+
+    ///
+    /// \brief Cancel an order.
+    ///
+    /// \param variety       variety of order to cancel
+    /// \param orderId       ID of order to cancel
+    /// \param parentOrderId parent order ID of the order to cancel (if any)
+    ///
+    /// \return string ID of the cancelled order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp cancelling an order
+    ///
+    string cancelOrder(const string& variety, const string& orderId,
+        const string& parentOrderId = "");
+
+    ///
+    /// \brief Get list of orders.
+    ///
+    /// \return std::vector<order> orders
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get orders
+    ///
+    std::vector<order> orders();
+
+    ///
+    /// \brief Get history of an order.
+    ///
+    /// \param orderId ID of order whose history should be fetched.
+    ///
+    /// \return std::vector<order> order history
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order history
+    ///
+    std::vector<order> orderHistory(const string& orderId);
+
+    ///
+    /// \brief Get list of trades.
+    ///
+    /// \return std::vector<trade> trades
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get trades
+    ///
+    std::vector<trade> trades();
+
+    ///
+    /// \brief Get the list of trades executed for a particular order.
+    ///
+    /// \param orderId ID of order whose trades should be fetched
+    ///
+    ///  \return std::vector<trade> trades
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order trades
+    ///
+    std::vector<trade> orderTrades(const string& orderId);
+
+    // gtt
+
+    ///
+    /// \brief Place a GTT.
+    ///
+    /// \param params parameters of the GTT to place.
+    ///
+    /// \return int trigger ID
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp placing a gtt
+    ///
+    int placeGtt(const placeGttParams& params);
+
+    ///
+    /// \brief Get list of GTTs.
+    ///
+    /// \return std::vector<GTT> triggers
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get gtts
+    ///
+    std::vector<GTT> triggers();
+
+    ///
+    /// \brief Get details of a particular GTT.
+    ///
+    /// \param triggerId ID of trigger whose details should be fetched
+    /// \return GTT trigger details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get gtt info
+    ///
+    GTT getGtt(int triggerId);
+
+    ///
+    /// \brief Modify a GTT.
+    ///
+    /// \param params parameters required to modify a GTT
+    ///
+    /// \return int ID of modified trigger
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp modifying a gtt
+    ///
+    int modifyGtt(const kc::modifyGttParams& params);
+
+    ///
+    /// \brief Delete a GTT.
+    ///
+    /// \param triggerId ID of trigger to delete
+    ///
+    /// \return int ID of deleted trigger
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp delete a gtt
+    ///
+    int deleteGtt(int triggerId);
+
+    // portfolio
+
+    ///
+    /// \brief Get holdings.
+    ///
+    /// \return std::vector<holding> holdings
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get holdings
+    ///
+    std::vector<holding> holdings();
+
+    ///
+    /// \brief Get positions.
+    ///
+    /// \return positions positions
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get positions
+    ///
+    positions getPositions();
+
+    ///
+    /// \brief Convert an open position to a different product type.
+    ///
+    /// \param params parameters required to convert a position
+    ///
+    /// \return bool `true` the if position was successfully modified, `false`
+    ///              otherwise.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp convert position
+    ///
+    bool convertPosition(const convertPositionParams& params);
+
+    // market
+
+    ///
+    /// \brief Retrieve the list of market instruments available to trade.
+    ///
+    /// \param exchange if specified, only instruments available on this
+    ///                 exchange are fetched.
+    ///
+    /// \return std::vector<instrument> instruments
+    ///
+    /// \attention Results could be large, with tens of thousands of entries.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get instruments
+    ///
+    std::vector<instrument> getInstruments(const string& exchange = "");
+
+    ///
+    /// \brief Retrieve quote for a list of instruments.
+    ///
+    /// \param symbols list of instruments whose quotes should be fetched.
+    ///                format of each entry should be `exchange:tradingsymbol`.
+    ///                example: `NSE:INFY`.
+    ///
+    /// \return std::unordered_map<string, quote> quotes mapped to respective
+    ///                                           insruments. format of
+    ///                                           keys is similar to
+    ///                                           \a symbols.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get quote
+    ///
+    std::unordered_map<string, quote> getQuote(
+        const std::vector<string>& symbols);
+
+    ///
+    /// \brief Retrieve OHLC info for a list of instruments.
+    ///
+    /// \param symbols list of instruments whose OHLC info should be fetched.
+    ///                format of each entry should be `exchange:tradingsymbol`.
+    ///                example: `NSE:INFY`.
+    ///
+    /// \return std::unordered_map<string, OHLCQuote> OHLC info mapped to
+    ///                                               respective insruments.
+    ///                                               format of keys is similar
+    ///                                               to \a symbols.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get ohlc
+    ///
+    std::unordered_map<string, ohlcQuote> getOhlc(
+        const std::vector<string>& symbols);
+
+    ///
+    /// \brief Retrieve Last Traded Price for a list of instruments.
+    ///
+    /// \param symbols list of instruments whose OHLC info should be fetched.
+    ///                format of each entry should be `exchange:tradingsymbol`.
+    ///                example: `NSE:INFY`.
+    ///
+    /// \return std::unordered_map<string, LTPQuote> LTP info mapped to
+    ///                                              respective insruments.
+    ///                                              format of keys is similar
+    ///                                              to \a symbols.
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get ltp
+    ///
+    std::unordered_map<string, ltpQuote> getLtp(
+        const std::vector<string>& symbols);
+
+    ///
+    /// \brief Retrieve historical data of an instrument.
+    ///
+    /// \param params paramters required to fetch the data.
+    ///
+    /// \return std::vector<historicalData> historical data
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get historical data
+    ///
+    std::vector<historicalData> getHistoricalData(
+        const historicalDataParams& params);
+
+    ///
+    /// \brief Get margins required for placing particular orders.
+    ///
+    /// \param params list of paramters required to fetch margins. each entry
+    ///               represents an order.
+    ///
+    /// \return std::vector<orderMargins> margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order margins
+    ///
+    std::vector<orderMargins> getOrderMargins(
+        const std::vector<orderMarginsParams>& params);
+
+    // MF
+
+    ///
+    /// \brief Place a mutual fund order.
+    ///
+    /// \param params parameters required to place the order
+    ///
+    /// \return string ID of the order placed
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp place mf order
+    ///
+    string placeMfOrder(const placeMfOrderParams& params);
+
+    ///
+    /// \brief Cancel a mutual fund order.
+    ///
+    /// \param orderId ID of order to cancel
+    ///
+    /// \return string ID of cancelled order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp cancel a mf order
+    ///
+    string cancelMfOrder(const string& orderId);
+
+    ///
+    /// \brief Get mutual fund orders.
+    ///
+    /// \return std::vector<mfOrder> orders
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf orders
+    ///
+    std::vector<mfOrder> getMfOrders();
+
+    ///
+    /// \brief Get details of a particular mutual fund order
+    ///
+    /// \param orderId ID of the order whose details should be fetched
+    ///
+    /// \return mfOrder order details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf order info
+    ///
+    mfOrder getMfOrder(const string& orderId);
+
+    ///
+    /// \brief Get mutual fund holdings.
+    ///
+    /// \return std::vector<mfHolding> holdings
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf holdings
+    ///
+    std::vector<mfHolding> getMfHoldings();
+
+    ///
+    /// \brief Place a mutual fund SIP order.
+    ///
+    /// \param symbol tradingsymbol (ISIN) of the fund
+    ///
+    /// \return placeMfSipResponse IDs of the placed order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp place mf sip order
+    ///
+    placeMfSipResponse placeMfSip(const placeMfSipParams& params);
+
+    ///
+    /// \brief Modify a mutual SIP order.
+    ///
+    /// \param params parameters required to modify the order
+    ///
+    /// \return string ID of the modified order
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp modify mf sip order
+    ////
+    string modifyMfSip(const modifyMfSipParams& params);
+
+    ///
+    /// \brief Cancel a mutual fund SIP.
+    ///
+    /// \param sipId ID of SIP to cancel
+    ///
+    /// \return string ID of cancelled SIP
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp cancel mf sip
+    ///
+    string cancelMfSip(const string& sipId);
+
+    ///
+    /// \brief Get list of SIPs.
+    ///
+    /// \return std::vector<mfSips> SIPs
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get sips
+    ///
+    std::vector<mfSip> getSips();
+
+    ///
+    /// \brief Get details of a particular SIP.
+    ///
+    /// \param sipId ID of the SIP whose details should be fetched
+    ///
+    /// \return mfSip SIP details
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get sip info
+    ///
+    mfSip getSip(const string& sipId);
+
+    ///
+    /// \brief Get the list of mutual fund instruments available for trading.
+    ///
+    /// \return std::vector<mfInstrument> instruments
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get mf instruments
+    ///
+    std::vector<mfInstrument> getMfInstruments();
 
   private:
-    // member variables:
+    static string encodeSymbolsList(const std::vector<string>& symbols);
 
-    string _apiKey = "";
-    string _accessToken = "";
+    string getAuth() const;
 
-    const string _kiteVersion = "3";
-    const string _rootURL = "https://api.kite.trade";
-    const string _loginURLFmt = "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
-    const std::unordered_map<string, string> _endpoints = {
+    template <class Res, class Data, bool UseCustomParser = false>
+    inline Res callApi(const string& service,
+        const utils::http::Params& body = {},
+        const utils::FmtArgs& fmtArgs = {},
+        utils::json::CustomParser<Res, Data, UseCustomParser>
+            customParser = {});
+
+    const string version = "3";
+    const string root = "https://api.kite.trade";
+    const string loginUrlFmt =
+        "https://kite.zerodha.com/connect/login?v=3&api_key={api_key}";
+    const std::unordered_map<string, utils::http::endpoint> endpoints {
         // api
-        { "api.token", "/session/token" },
-        { "api.token.invalidate", "/session/token?api_key={api_key}&access_token={access_token}" },
-        // x{"api.token.renew", "/session/refresh_token"},
-
+        { "api.token", { utils::http::METHOD::POST, "/session/token" } },
+        { "api.token.invalidate",
+            { utils::http::METHOD::DEL,
+                "/session/token?api_key={0}&access_token={1}" } },
         // user
-        { "user.profile", "/user/profile" },
-        { "user.margins", "/user/margins" },
-        { "user.margins.segment", "/user/margins/{segment}" },
-
-        // orders
-        { "orders", "/orders" },
-        { "trades", "/trades" },
-
-        { "order.info", "/orders/{order_id}" },
-        { "order.place", "/orders/{variety}" },
-        { "order.modify", "/orders/{variety}/{order_id}" },
-        { "order.cancel", "/orders/{variety}/{order_id}" },
-        { "order.cancel.bo", "/orders/{variety}/{order_id}?parent_order_id={parent_order_id}" },
-        { "order.trades", "/orders/{order_id}/trades" },
-
+        { "user.profile", { utils::http::METHOD::GET, "/user/profile" } },
+        { "user.margins", { utils::http::METHOD::GET, "/user/margins" } },
+        { "user.margins.segment",
+            { utils::http::METHOD::GET, "/user/margins/{0}" } },
+        // order
+        { "order.info", { utils::http::METHOD::GET, "/orders/{0}" } },
+        { "order.place", { utils::http::METHOD::POST, "/orders/{0}" } },
+        { "order.modify", { utils::http::METHOD::PUT, "/orders/{0}/{1}" } },
+        { "order.cancel", { utils::http::METHOD::DEL, "/orders/{0}/{1}" } },
+        { "order.cancel.bo", { utils::http::METHOD::DEL,
+                                 "/orders/{0}/{1}?parent_order_id={1}" } },
+        { "order.trades", { utils::http::METHOD::GET, "/orders/{0}/trades" } },
+        { "orders", { utils::http::METHOD::GET, "/orders" } },
+        { "trades", { utils::http::METHOD::GET, "/trades" } },
+        { "order.margins", { utils::http::METHOD::POST, "/margins/orders",
+                               utils::http::CONTENT_TYPE::JSON } },
+        // gtt
+        { "gtt", { utils::http::METHOD::GET, "/gtt/triggers" } },
+        { "gtt.place", { utils::http::METHOD::POST, "/gtt/triggers" } },
+        { "gtt.info", { utils::http::METHOD::GET, "/gtt/triggers/{0}" } },
+        { "gtt.modify", { utils::http::METHOD::PUT, "/gtt/triggers/{0}" } },
+        { "gtt.delete", { utils::http::METHOD::DEL, "/gtt/triggers/{0}" } },
+        // mf
+        { "mf.orders", { utils::http::METHOD::GET, "/mf/orders" } },
+        { "mf.order.info", { utils::http::METHOD::GET, "/mf/orders/{0}" } },
+        { "mf.order.place", { utils::http::METHOD::POST, "/mf/orders" } },
+        { "mf.order.cancel", { utils::http::METHOD::DEL, "/mf/orders/{0}" } },
+        { "mf.holdings", { utils::http::METHOD::GET, "/mf/holdings" } },
+        { "mf.instruments", { utils::http::METHOD::GET, "/mf/instruments",
+                                utils::http::CONTENT_TYPE::NON_JSON,
+                                utils::http::CONTENT_TYPE::JSON } },
+        { "mf.sips", { utils::http::METHOD::GET, "/mf/sips" } },
+        { "mf.sip.info", { utils::http::METHOD::GET, "/mf/sips/{0}" } },
+        { "mf.sip.place", { utils::http::METHOD::POST, "/mf/sips" } },
+        { "mf.sip.modify", { utils::http::METHOD::PUT, "/mf/sips/{0}" } },
+        { "mf.sip.cancel", { utils::http::METHOD::DEL, "/mf/sips/{0}" } },
         // portfolio
-        { "portfolio.positions", "/portfolio/positions" },
-        { "portfolio.holdings", "/portfolio/holdings" },
-        { "portfolio.positions.convert", "/portfolio/positions" },
-
-        // MF api endpoints
-        { "mf.orders", "/mf/orders" },
-        { "mf.order.info", "/mf/orders/{order_id}" },
-        { "mf.order.place", "/mf/orders" },
-        { "mf.order.cancel", "/mf/orders/{order_id}" },
-
-        { "mf.sips", "/mf/sips" },
-        { "mf.sip.info", "/mf/sips/{sip_id}" },
-        { "mf.sip.place", "/mf/sips" },
-        { "mf.sip.modify", "/mf/sips/{sip_id}" },
-        { "mf.sip.cancel", "/mf/sips/{sip_id}" },
-
-        { "mf.holdings", "/mf/holdings" },
-        { "mf.instruments", "/mf/instruments" },
-
+        { "portfolio.holdings",
+            { utils::http::METHOD::GET, "/portfolio/holdings" } },
+        { "portfolio.positions",
+            { utils::http::METHOD::GET, "/portfolio/positions" } },
+        { "portfolio.positions.convert",
+            { utils::http::METHOD::PUT, "/portfolio/positions" } },
         // market endpoints
-        { "market.instruments.all", "/instruments" },
-        { "market.instruments", "/instruments/{exchange}" },
-        { "market.margins", "/margins/{segment}" },
-        { "market.historical", "/instruments/historical/{instrument_token}/"
-                               "{interval}?from={from}&to={to}&continuous={continuous}&oi={oi}" },
-        { "market.trigger_range", "/instruments/trigger_range/{transaction_type}" },
-
-        // x{"market.quote", "/quote"},
-        // x{"market.quote.ohlc", "/quote/ohlc"},
-        // x{"market.quote.ltp", "/quote/ltp"},
-
-        { "market.quote", "/quote?{symbols_list}" },
-        { "market.quote.ohlc", "/quote/ohlc?{symbols_list}" },
-        { "market.quote.ltp", "/quote/ltp?{symbols_list}" },
-
-        // GTT endpoints
-        { "gtt", "/gtt/triggers" },
-        { "gtt.place", "/gtt/triggers" },
-        { "gtt.info", "/gtt/triggers/{trigger_id}" },
-        { "gtt.modify", "/gtt/triggers/{trigger_id}" },
-        { "gtt.delete", "/gtt/triggers/{trigger_id}" },
-
-        // Margin computation endpoints
-        { "order.margins", "/margins/orders" },
+        { "market.instruments.all", { utils::http::METHOD::GET, "/instruments",
+                                        utils::http::CONTENT_TYPE::NON_JSON,
+                                        utils::http::CONTENT_TYPE::JSON } },
+        { "market.instruments", { utils::http::METHOD::GET, "/instruments/{0}",
+                                    utils::http::CONTENT_TYPE::NON_JSON,
+                                    utils::http::CONTENT_TYPE::JSON } },
+        { "market.margins", { utils::http::METHOD::GET, "/margins/{0}" } },
+        { "market.historical",
+            { utils::http::METHOD::GET,
+                "/instruments/historical/{0}/"
+                "{1}?from={2}&to={3}&continuous={4}&oi={5}" } },
+        { "market.trigger_range",
+            { utils::http::METHOD::GET, "/instruments/trigger_range/{9}" } },
+        { "market.quote", { utils::http::METHOD::GET, "/quote?{0}" } },
+        { "market.quote.ohlc",
+            { utils::http::METHOD::GET, "/quote/ohlc?{0}" } },
+        { "market.quote.ltp", { utils::http::METHOD::GET, "/quote/ltp?{0}" } },
     };
+    string key;
+    string token;
+    string authorization;
+    httplib::Client client;
 
-    httplib::Client _httpClient;
-
-    // methods:
-
-    string _getAuthStr() const { return FMT("token {0}:{1}", _apiKey, _accessToken); };
-
-    static string _encodeSymbolsList(const std::vector<string>& symbols) {
-
-        string str;
-
-        for (const auto& symbol : symbols) {
-            //! could cause problems because there will be extra `&` after last query. can be solved by scraping the
-            //! last char of string after the for loop, if necessary
-            str.append(FMT("i={0}&", symbol));
-        };
-
-        return str;
-    }
-
-    // GMock requires mock methods to be virtual
-    virtual void _sendReq(rj::Document& data, const _methods& mtd, const string& endpoint,
-        const std::vector<std::pair<string, string>>& bodyParams = {}, bool isJson = false) {
-
-        /*
-        If the endpoint expects pure JSON body, set isJson to true and put the json body in second element of
-        bodyParam's first pair with first element being empty string. see orderMargins() function
-        */
-
-        // create request
-        const httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };
-        httplib::Params params;
-        int code = 0;
-        string dataRcvd;
-
-        // this code can obviously be shortened but return type of client.Get() etc. doesn't have a default constructor,
-        // which means we cannot init an instance and assign to it later
-        if (mtd == _methods::GET) {
-            if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
-                code = res->status;
-                dataRcvd = res->body;
-            } else {
-                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-            };
-        } else if (mtd == _methods::POST) {
-            if (!isJson) {
-                for (const auto& i : bodyParams) { params.emplace(i.first, i.second); };
-                if (auto res = _httpClient.Post(endpoint.c_str(), headers, params)) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            } else {
-                if (auto res = _httpClient.Post(endpoint.c_str(), headers, bodyParams[0].second, "application/json")) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            };
-        } else if (mtd == _methods::PUT) {
-            if (!isJson) {
-                for (const auto& i : bodyParams) { params.emplace(i.first, i.second); };
-
-                if (auto res = _httpClient.Put(endpoint.c_str(), headers, params)) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            } else {
-                if (auto res = _httpClient.Put(endpoint.c_str(), headers, bodyParams[0].second, "application/json")) {
-                    code = res->status;
-                    dataRcvd = res->body;
-                } else {
-                    throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-                };
-            };
-
-        } else if (mtd == _methods::DEL) {
-            if (auto res = _httpClient.Delete(endpoint.c_str(), headers)) {
-                code = res->status;
-                dataRcvd = res->body;
-            } else {
-                throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-            };
-        };
-
-        //?std::cout << dataRcvd << std::endl;
-
-        if (!dataRcvd.empty()) {
-            rju::_parse(data, dataRcvd);
-            if (code != 200) {
-                string excpStr;
-                string message;
-
-                try {
-                    if (!rju::_getIfExists(data, excpStr, "error_type")) { excpStr = "NoException"; };
-                    rju::_getIfExists(data, message, "message");
-
-                } catch (const std::exception& e) {
-                    throw libException(FMT("{0} was thrown while extracting excpStr({1}) and message({2}) (_sendReq)",
-                        e.what(), excpStr, message));
-                };
-
-                kc::_throwException(excpStr, code, message);
-            };
-        } else {
-            // sets the document to a non-object entity on failure. array was chosen because no kite method returns
-            // `data` field with an array
-            data.Parse("[]");
-        };
-    };
-
-    // GMock requires mock methods to be virtual
-    virtual string _sendInstrumentsReq(const string& endpoint) {
-
-        // create request and send req
-        httplib::Headers headers = { { "Authorization", _getAuthStr() }, { "X-Kite-Version", _kiteVersion } };
-        int code = 0;
-        string dataRcvd;
-
-        if (auto res = _httpClient.Get(endpoint.c_str(), headers)) {
-            code = res->status;
-            if (code == 200) { dataRcvd = res->body; };
-        } else {
-            throw libException(FMT("Failed to send http/https request (enum code: {0})", res.error()));
-        };
-
-        // get data
-        if (!dataRcvd.empty()) {
-            if (code == 200) { return dataRcvd; }
-            kc::_throwException("NoException", code, "");
-        } else {
-            return "";
-        };
-
-        return "";
-    };
-
-}; // namespace kitepp
+  protected:
+#ifdef KITE_UNIT_TEST
+    virtual utils::http::response sendReq(const utils::http::endpoint& endpoint,
+        const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
+#else
+    ///
+    /// \brief send a http request with the context used by \a kite
+    ///
+    /// \param endpoint request endpoint
+    /// \param body     body of the request (sent as form url encoded)
+    ///
+    /// \return utils::http::response response received
+    ///
+    utils::http::response sendReq(const utils::http::endpoint& endpoint,
+        const utils::http::Params& body, const utils::FmtArgs& fmtArgs);
+#endif
+};
 
 } // namespace kiteconnect

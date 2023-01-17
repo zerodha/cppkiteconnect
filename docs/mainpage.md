@@ -1,16 +1,6 @@
-# Kite Connect API C++ client
+# CPPKiteConnect Documentation
 
-- [Overview](https://github.com/zerodha/cppkiteconnect#overview)
-- [Dependencies](https://github.com/zerodha/cppkiteconnect#dependencies)
-- [Getting dependencies](https://github.com/zerodha/cppkiteconnect#getting-dependencies)
-  - [Linux](https://github.com/zerodha/cppkiteconnect#linux)
-  - [Others & uWS v0.14](https://github.com/zerodha/cppkiteconnect#others--uws-v014)
-- [Building & installation](https://github.com/zerodha/cppkiteconnect#building--installation)
-- [Examples](https://github.com/zerodha/cppkiteconnect#examples)
-  - [REST API](https://github.com/zerodha/cppkiteconnect#rest-api)
-  - [Ticker](https://github.com/zerodha/cppkiteconnect#ticker)
-- [Documentation](https://github.com/zerodha/cppkiteconnect#documentation)
-- [License](https://github.com/zerodha/cppkiteconnect#license)
+[TOC]
 
 ## Overview
 
@@ -65,15 +55,15 @@ If `cmake` cannot find your `uWS` library, try providing it manually to `cmake` 
 
 #### Build options
 
-|  Option          | Description    |
-| :--------------  | ----------:    |
-| `BUILD_TESTS`    | Build tests    |
-| `BUILD_EXAMPLES` | Build examples |    |
-| `BUILD_DOCS`     | Build docs     |
+|  Option          | Description
+| :--------------  | ---------:
+| `BUILD_TESTS`    | Build tests
+| `BUILD_EXAMPLES` | Build examples     |
+| `BUILD_DOCS`     | Build docs
 
 ### Run tests
 
-`make && make test ARGS='-V'`
+``make && make test ARGS='-V'``
 
 ### Generate docs
 
@@ -83,7 +73,7 @@ If `cmake` cannot find your `uWS` library, try providing it manually to `cmake` 
 
 ### REST API
 
-```c++
+```{.cpp}
 #include <cstdlib>
 #include <iostream>
 #include "kitepp.hpp"
@@ -125,7 +115,7 @@ catch (std::exception& e) {
 
 ### Ticker
 
-```c++
+```{.cpp}
 #include <iostream>
 #include "kitepp.hpp"
 
@@ -177,7 +167,12 @@ More examples can be found in the [examples directory](https://github.com/zerodh
 ## Documentation
 
 - [KiteConnect API documentation](https://kite.trade/docs/connect/v3/)
-- [CPPKiteConnect reference documentation](https://kite.trade/docs/cppkiteconnect/index.htmll#autotoc_md14)
+- [CPPKiteConnect reference documentation](https://kite.trade/docs/cppkiteconnect/)
+  - [Hierarchial list of classes](hierarchy.html)
+  - [`kite` (REST interface) class](classkiteconnect_1_1kite.html)
+  - [`ticker` (WebSocket interface) class](classkiteconnect_1_1ticker.html)
+  - [Useful user constants](userconstants_8hpp.html)
+  - [Exceptions](classkiteconnect_1_1kiteppException.html)
 
 ## License
 

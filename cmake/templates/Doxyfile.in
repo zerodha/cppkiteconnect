@@ -1,0 +1,17 @@
+PROJECT_NAME           = "CPPKiteConnect"
+OUTPUT_DIRECTORY       = "@CMAKE_CURRENT_BINARY_DIR@/docs/"
+INPUT                  = "@CMAKE_SOURCE_DIR@/include/kitepp" "@CMAKE_SOURCE_DIR@/include/kitepp.hpp" "@CMAKE_SOURCE_DIR@/docs/mainpage.md"
+RECURSIVE              = YES
+EXAMPLE_PATH           = "@CMAKE_SOURCE_DIR@/examples"
+GENERATE_HTML          = YES
+USE_MDFILE_AS_MAINPAGE = "mainpage.md"
+EXCLUDE_SYMBOLS = "internal"
+ENABLE_PREPROCESSING = YES
+MACRO_EXPANSION = YES
+
+GENERATE_TREEVIEW      = YES
+DISABLE_INDEX = NO
+FULL_SIDEBAR = NO
+HTML_EXTRA_STYLESHEET  = "@CMAKE_SOURCE_DIR@/docs/doxygen-awesome-css/doxygen-awesome.css"
+HTML_EXTRA_FILES = "@CMAKE_SOURCE_DIR@/docs/doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js"
+HTML_HEADER = "@CMAKE_SOURCE_DIR@/docs/header.html"

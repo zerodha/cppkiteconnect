@@ -23,20 +23,23 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * @brief Convenience header for kitepp. This is the ONLY header that should be
- * included.
- *
- * @paragraph ex1 example1
- * @snippet example2.cpp adding kitepp header
- */
-
 #pragma once
+#pragma clang diagnostic ignored "-Wundefined-inline"
 
-#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include "../kite.hpp"
+#include "../utils.hpp"
 
-#include "kitepp/kite.hpp"
-#include "kitepp/kite/kite.hpp"
-#include "kitepp/responses/responses.hpp"
-#include "kitepp/ticker.hpp"
-#include "kitepp/userconstants.hpp"
+namespace kiteconnect {
+inline userProfile kite::profile() {
+    return callApi<userProfile, utils::json::JsonObject>("user.profile");
+};
+
+inline allMargins kite::getMargins() {
+    return callApi<allMargins, utils::json::JsonObject>("user.margins");
+};
+
+inline margins kite::getMargins(const string& segment) {
+    return callApi<margins, utils::json::JsonObject>(
+        "user.margins.segment", {}, { segment });
+};
+} // namespace kiteconnect

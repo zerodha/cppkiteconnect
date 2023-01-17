@@ -1,2 +1,4 @@
-Checks:          '*, -modernize-use-trailing-return-type, -fuchsia*, -google-runtime-references, -google-readability-todo'
-CheckOptions: 'IgnoreClassesWithAllMemberVariablesBeingPublic'
+Checks:          '*, -modernize-use-trailing-return-type, -fuchsia*, -google-runtime-references, -google-readability-todo, -llvmlibc-*, -altera*, -readability-function-cognitive-complexity, -misc-non-private-member-variables-in-classes, -cppcoreguidelines-non-private-member-variables-in-classes, -cppcoreguidelines-pro-bounds-pointer-arithmetic'
+CheckOptions: 
+    - key: 'misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic'
+      value: 'true'

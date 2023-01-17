@@ -23,20 +23,12 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/**
- * @brief Convenience header for kitepp. This is the ONLY header that should be
- * included.
- *
- * @paragraph ex1 example1
- * @snippet example2.cpp adding kitepp header
- */
-
 #pragma once
 
-#define CPPHTTPLIB_OPENSSL_SUPPORT
-
-#include "kitepp/kite.hpp"
-#include "kitepp/kite/kite.hpp"
-#include "kitepp/responses/responses.hpp"
-#include "kitepp/ticker.hpp"
-#include "kitepp/userconstants.hpp"
+#include "gtt.hpp"
+#include "market.hpp"
+#include "mf.hpp"
+#include "order.hpp"
+#include "portfolio.hpp"
+#include "user.hpp"
+#include "ws.hpp"
