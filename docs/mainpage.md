@@ -164,7 +164,7 @@ int main(int argc, char const* argv[]) {
 
 More examples can be found in the [examples directory](https://github.com/zerodha/cppkiteconnect/tree/main/examples).
 
-## Documentation
+## Documentation {#documentation}
 
 - [KiteConnect API documentation](https://kite.trade/docs/connect/v3/)
 - [CPPKiteConnect reference documentation](https://kite.trade/docs/cppkiteconnect/)

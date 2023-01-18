@@ -177,7 +177,7 @@ More examples can be found in the [examples directory](https://github.com/zerodh
 ## Documentation
 
 - [KiteConnect API documentation](https://kite.trade/docs/connect/v3/)
-- [CPPKiteConnect reference documentation](https://kite.trade/docs/cppkiteconnect/)
+- [CPPKiteConnect reference documentation](https://kite.trade/docs/cppkiteconnect/#documentation)
 
 ## License
 
