@@ -55,7 +55,7 @@ const string VARIETY_REGULAR = "regular";
 const string VARIETY_BO = "bo";
 const string VARIETY_CO = "co";
 const string VARIETY_AMO = "amo";
-const string VERIETY_ICEBERG = "iceberg";
+const string VARIETY_ICEBERG = "iceberg";
 
 // Transaction type
 const string TRANSACTION_TYPE_BUY = "BUY";
