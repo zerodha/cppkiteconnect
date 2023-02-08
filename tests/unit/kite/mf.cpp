@@ -50,7 +50,7 @@ TEST(kiteTest, placeMFOrderTest) {
     const string SYMBOL = "INF174K01LS2";
     const string TRANSACTION_TYPE = "BUY";
     constexpr double AMOUNT = 1000;
-    const string EXPECTED_ORDER_ID = "123457";
+    const string EXPECTED_ORDER_ID = "3bb085d1-5038-450e-a807-6543fef6c9ae";
 
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::POST,
@@ -83,7 +83,7 @@ TEST(kiteTest, cancelMFOrderTest) {
     const string JSON =
         kc::test::readFile("../tests/mock_responses/mf_order_response.json");
     const string ORDER_ID = "123457";
-    const string EXPECTED_ORDER_ID = "123457";
+    const string EXPECTED_ORDER_ID = "3bb085d1-5038-450e-a807-6543fef6c9ae";
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL,
                                   "/mf/orders/{0}" },
@@ -201,69 +201,48 @@ TEST(kiteTest, getMFHoldingsTest) {
 
     const std::vector<kc::mfHolding> HOLDINGS = Kite.getMfHoldings();
 
-    ASSERT_EQ(HOLDINGS.size(), 5);
+    ASSERT_EQ(HOLDINGS.size(), 3);
     kc::mfHolding holding1 = HOLDINGS[0];
-    EXPECT_EQ(holding1.folio, "123123/123");
-    EXPECT_EQ(holding1.fund, "Kotak Select Focus Fund - Direct Plan");
-    EXPECT_EQ(holding1.tradingsymbol, "INF174K01LS2");
-    EXPECT_DOUBLE_EQ(holding1.averagePrice, 30.729);
-    EXPECT_DOUBLE_EQ(holding1.lastPrice, 33.014);
-    EXPECT_DOUBLE_EQ(holding1.Pnl, 594.769);
-    EXPECT_EQ(holding1.lastPriceDate, "2016-11-11");
-    EXPECT_DOUBLE_EQ(holding1.quantity, 260.337);
+    EXPECT_EQ(holding1.folio, "3108290884");
+    EXPECT_EQ(holding1.fund, "INVESCO INDIA TAX PLAN - DIRECT PLAN");
+    EXPECT_EQ(holding1.tradingsymbol, "INF205K01NT8");
+    EXPECT_DOUBLE_EQ(holding1.averagePrice, 78.43);
+    EXPECT_DOUBLE_EQ(holding1.lastPrice, 84.86);
+    EXPECT_DOUBLE_EQ(holding1.Pnl, 0);
+    EXPECT_EQ(holding1.lastPriceDate, "");
+    EXPECT_DOUBLE_EQ(holding1.quantity, 382.488);
 
     kc::mfHolding holding2 = HOLDINGS[1];
-    EXPECT_EQ(holding2.folio, "385080203");
-    EXPECT_EQ(holding2.fund, "DSP BlackRock Money Manager Fund");
-    EXPECT_EQ(holding2.tradingsymbol, "INF740K01QQ3");
-    EXPECT_DOUBLE_EQ(holding2.averagePrice, 2146.131);
-    EXPECT_DOUBLE_EQ(holding2.lastPrice, 2277.0708);
-    EXPECT_DOUBLE_EQ(holding2.Pnl, 61.018);
+    EXPECT_EQ(holding2.folio, "5102495241");
+    EXPECT_EQ(holding2.fund, "Indiabulls Liquid Fund - Direct Plan");
+    EXPECT_EQ(holding2.tradingsymbol, "INF666M01451");
+    EXPECT_DOUBLE_EQ(holding2.averagePrice, 1874.101138);
+    EXPECT_DOUBLE_EQ(holding2.lastPrice, 2081.4984);
+    EXPECT_DOUBLE_EQ(holding2.Pnl, 0);
     EXPECT_EQ(holding2.lastPriceDate, "");
-    EXPECT_DOUBLE_EQ(holding2.quantity, 0.466);
+    EXPECT_DOUBLE_EQ(holding2.quantity, 1.334);
 
     kc::mfHolding holding3 = HOLDINGS[2];
-    EXPECT_EQ(holding3.folio, "1052046771");
-    EXPECT_EQ(holding3.fund, "HDFC TaxSaver - Regular Plan");
-    EXPECT_EQ(holding3.tradingsymbol, "INF179K01BB8");
-    EXPECT_DOUBLE_EQ(holding3.averagePrice, 345.849);
-    EXPECT_DOUBLE_EQ(holding3.lastPrice, 559.081);
-    EXPECT_DOUBLE_EQ(holding3.Pnl, 61963.074);
+    EXPECT_EQ(holding3.folio, "9104386836");
+    EXPECT_EQ(holding3.fund, "BOI AXA TAX ADVANTAGE FUND - DIRECT PLAN");
+    EXPECT_EQ(holding3.tradingsymbol, "INF761K01884");
+    EXPECT_DOUBLE_EQ(holding3.averagePrice, 116.7);
+    EXPECT_DOUBLE_EQ(holding3.lastPrice, 101.13);
+    EXPECT_DOUBLE_EQ(holding3.Pnl, 0);
     EXPECT_EQ(holding3.lastPriceDate, "");
-    EXPECT_DOUBLE_EQ(holding3.quantity, 290.59);
-
-    kc::mfHolding holding4 = HOLDINGS[3];
-    EXPECT_EQ(holding4.folio, "91022348426");
-    EXPECT_EQ(holding4.fund, "Axis Long Term Equity Fund");
-    EXPECT_EQ(holding4.tradingsymbol, "INF846K01131");
-    EXPECT_DOUBLE_EQ(holding4.averagePrice, 28.779);
-    EXPECT_DOUBLE_EQ(holding4.lastPrice, 41.3876);
-    EXPECT_DOUBLE_EQ(holding4.Pnl, 44467.717);
-    EXPECT_EQ(holding4.lastPriceDate, "");
-    EXPECT_DOUBLE_EQ(holding4.quantity, 3526.834);
-
-    kc::mfHolding holding5 = HOLDINGS[4];
-    EXPECT_EQ(holding5.folio, "488155267386");
-    EXPECT_EQ(holding5.fund, "Reliance Money Manager Fund");
-    EXPECT_EQ(holding5.tradingsymbol, "INF204K01EY0");
-    EXPECT_DOUBLE_EQ(holding5.averagePrice, 1002.948);
-    EXPECT_DOUBLE_EQ(holding5.lastPrice, 1007.5645);
-    EXPECT_DOUBLE_EQ(holding5.Pnl, 2.304);
-    EXPECT_EQ(holding5.lastPriceDate, "");
-    EXPECT_DOUBLE_EQ(holding5.quantity, 0.499);
+    EXPECT_DOUBLE_EQ(holding3.quantity, 257.057);
 }
 
 TEST(kiteTest, placeMFSIPTest) {
     const string JSON =
-        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
+        kc::test::readFile("../tests/mock_responses/mf_sip_place.json");
     const string SYMBOL = "INF174K01LS2";
     constexpr double AMOUNT = 1000;
     const string FREQUENCY = "monthly";
     constexpr int INSTALLMENTS = 100;
     constexpr int INSTALLMENT_DAY = 12;
     const string TAG = "randomtag";
-    const string ORDER_ID = "123457";
-    const string SIP_ID = "123457";
+    const string SIP_ID = "986124545877922";
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite,
         sendReq(utils::http::endpoint { utils::http::METHOD::POST, "/mf/sips" },
@@ -288,7 +267,6 @@ TEST(kiteTest, placeMFSIPTest) {
                                          .InstallmentDay(INSTALLMENT_DAY)
                                          .Tag(TAG));
 
-    EXPECT_EQ(SIP.orderId, ORDER_ID);
     EXPECT_EQ(SIP.sipId, SIP_ID);
 }
 
@@ -298,7 +276,7 @@ TEST(kiteTest, modifyMFSIPTest) {
     constexpr double AMOUNT = 900;
     const string SIP_ID = "123457";
     const string FREQUENCY = "monthly";
-    const string EXPECTED_SIP_ID = "123457";
+    const string EXPECTED_SIP_ID = "3bb085d1-5038-450e-a807-6543fef6c9ae";
 
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::PUT,
@@ -321,9 +299,9 @@ TEST(kiteTest, modifyMFSIPTest) {
 
 TEST(kiteTest, cancelMFSIPTest) {
     const string JSON =
-        kc::test::readFile("../tests/mock_responses/mf_order_response.json");
-    const string SIP_ID = "123457";
-    const string EXPECTED_SIP_ID = "123457";
+        kc::test::readFile("../tests/mock_responses/mf_sip_cancel.json");
+    const string SIP_ID = "986124545877922";
+    const string EXPECTED_SIP_ID = "986124545877922";
 
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::DEL,
@@ -371,7 +349,7 @@ TEST(kiteTest, getSIPsTest) {
 TEST(kiteTest, getSIPTest) {
     const string JSON =
         kc::test::readFile("../tests/mock_responses/mf_sip_info.json");
-    const string SIP_ID = "123457";
+    const string SIP_ID = "181635213661372";
     StrictMock<kc::test::mockKite> Kite;
     EXPECT_CALL(Kite, sendReq(utils::http::endpoint { utils::http::METHOD::GET,
                                   "/mf/sips/{0}" },
@@ -381,73 +359,21 @@ TEST(kiteTest, getSIPTest) {
             Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
 
     const kc::mfSip sip = Kite.getSip(SIP_ID);
-    EXPECT_EQ(sip.ID, "846479755969168");
-    EXPECT_EQ(sip.tradingsymbol, "INF179K01VY8");
-    EXPECT_EQ(sip.fundName, "HDFC Balanced Advantage Fund - Direct Plan");
-    EXPECT_EQ(sip.dividendType, "idcw");
+    EXPECT_EQ(sip.ID, "181635213661372");
+    EXPECT_EQ(sip.tradingsymbol, "INF209KB1ZH2");
+    EXPECT_EQ(
+        sip.fundName, "Aditya Birla Sun Life Overnight Fund - Direct Plan");
+    EXPECT_EQ(sip.dividendType, "growth");
     EXPECT_EQ(sip.transactionType, "BUY");
     EXPECT_EQ(sip.status, "ACTIVE");
-    EXPECT_EQ(sip.created, "2021-05-22 10:45:29");
-    EXPECT_EQ(sip.frequency, "monthly");
-    EXPECT_DOUBLE_EQ(sip.instalmentAmount, 1000);
-    EXPECT_EQ(sip.instalments, 9999);
-    EXPECT_EQ(sip.lastInstalment, "2021-06-10 08:37:11.273142");
-    EXPECT_EQ(sip.pendingInstalments, 9998);
-    EXPECT_EQ(sip.instalmentDay, 10);
-    EXPECT_EQ(sip.tag, "coinandroidsip");
-}
-
-TEST(kiteTest, getOrderMarginsTest) {
-    const string JSON =
-        kc::test::readFile("../tests/mock_responses/order_margins.json");
-    constexpr double QUANTITY = 1;
-    constexpr double PRICE = 0;
-    constexpr double TRIGGER_PRICE = 0;
-    const string EXCHANGE = "NSE";
-    const string TRADINGSYMBOL = "INFY";
-    const string TRANSACTION_TYPE = "BUY";
-    const string VARIETY = "regular";
-    const string PRODUCT = "CNC";
-    const string ORDER_TYPE = "MARKET";
-
-    StrictMock<kc::test::mockKite> Kite;
-    EXPECT_CALL(Kite,
-        sendReq(utils::http::endpoint { utils::http::METHOD::POST,
-                    "/margins/orders", utils::http::CONTENT_TYPE::JSON },
-            utils::http::Params { { "",
-                R"([{"exchange":"NSE","tradingsymbol":"INFY","transaction_type":"BUY","variety":"regular","product":"CNC","order_type":"MARKET","quantity":1.0,"price":0.0,"trigger_price":0.0}])" } },
-            utils::FmtArgs {}))
-        .Times(1)
-        .WillOnce(
-            Return(ByMove(utils::http::response(utils::http::code::OK, JSON))));
-
-    const std::vector<kc::orderMargins> MARGINS =
-        Kite.getOrderMargins({ kc::orderMarginsParams()
-                                   .Quantity(QUANTITY)
-                                   .Price(PRICE)
-                                   .TriggerPrice(TRIGGER_PRICE)
-                                   .Exchange(EXCHANGE)
-                                   .Tradingsymbol(TRADINGSYMBOL)
-                                   .TransactionType(TRANSACTION_TYPE)
-                                   .Variety(VARIETY)
-                                   .Product(PRODUCT)
-                                   .OrderType(ORDER_TYPE) });
-
-    ASSERT_EQ(MARGINS.size(), 1);
-    kc::orderMargins ordMargins1 = MARGINS[0];
-    EXPECT_EQ(ordMargins1.type, "equity");
-    EXPECT_EQ(ordMargins1.tradingSymbol, "INFY");
-    EXPECT_EQ(ordMargins1.exchange, "NSE");
-    EXPECT_DOUBLE_EQ(ordMargins1.span, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.exposure, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.optionPremium, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.additional, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.bo, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.cash, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.var, 961.45);
-    EXPECT_DOUBLE_EQ(ordMargins1.pnl.realised, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.pnl.unrealised, 0);
-    EXPECT_DOUBLE_EQ(ordMargins1.total, 961.45);
+    EXPECT_EQ(sip.created, "2022-02-15 13:39:44");
+    EXPECT_EQ(sip.frequency, "weekly");
+    EXPECT_DOUBLE_EQ(sip.instalmentAmount, 5000);
+    EXPECT_EQ(sip.instalments, -1);
+    EXPECT_EQ(sip.lastInstalment, "2022-02-15 13:39:44");
+    EXPECT_EQ(sip.pendingInstalments, -1);
+    EXPECT_EQ(sip.instalmentDay, 0);
+    EXPECT_EQ(sip.tag, "coiniossip");
 }
 
 TEST(kiteTest, getMFInstrumentsTest) {

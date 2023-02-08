@@ -154,7 +154,7 @@ TEST(kiteTest, ordersTest) {
 
     const std::vector<kc::order> Orders = Kite.orders();
 
-    ASSERT_THAT(Orders.size(), 5);
+    ASSERT_THAT(Orders.size(), 4);
     const kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
     EXPECT_EQ(order1.placedBy, "XXXXXX");
@@ -199,7 +199,7 @@ TEST(kiteTest, orderHistoryTest) {
 
     const std::vector<kc::order> Orders = Kite.orderHistory(ORDER_ID);
 
-    ASSERT_THAT(Orders.size(), 5);
+    ASSERT_THAT(Orders.size(), 4);
     const kc::order order1 = Orders[0];
     EXPECT_EQ(order1.accountID, "");
     EXPECT_EQ(order1.placedBy, "XXXXXX");

@@ -59,17 +59,17 @@ TEST(kiteTest, profile) {
     // Expected values
     EXPECT_EQ(profile.userID, "AB1234");
     EXPECT_EQ(profile.userName, "AxAx Bxx");
-    EXPECT_EQ(profile.userShortName, "abc");
+    EXPECT_EQ(profile.userShortName, "AxAx");
     EXPECT_EQ(profile.avatarURL, "");
-    EXPECT_EQ(profile.userType, "investor");
+    EXPECT_EQ(profile.userType, "individual");
     EXPECT_EQ(profile.email, "xxxyyy@gmail.com");
     EXPECT_EQ(profile.broker, "ZERODHA");
     EXPECT_THAT(profile.products,
-        ::testing::ElementsAre("BO", "CNC", "CO", "MIS", "NRML"));
+        ::testing::ElementsAre("CNC", "NRML", "MIS", "BO", "CO"));
     EXPECT_THAT(profile.orderTypes,
-        ::testing::ElementsAre("LIMIT", "MARKET", "SL", "SL-M"));
-    EXPECT_THAT(profile.exchanges,
-        ::testing::ElementsAre("BSE", "BFO", "NFO", "MCX", "CDS", "NSE"));
+        ::testing::ElementsAre("MARKET", "LIMIT", "SL", "SL-M"));
+    EXPECT_THAT(profile.exchanges, ::testing::ElementsAre("BFO", "MCX", "NSE",
+                                       "CDS", "BSE", "BCD", "MF", "NFO"));
     EXPECT_EQ(profile.meta.dematConsent, "physical");
 };
 

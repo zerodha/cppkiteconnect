@@ -56,25 +56,25 @@ TEST(kiteTest, holdingsTest) {
 
     const std::vector<kc::holding> HOLDINGS = Kite.holdings();
 
-    ASSERT_EQ(HOLDINGS.size(), 19);
+    ASSERT_EQ(HOLDINGS.size(), 2);
     kc::holding holding1 = HOLDINGS[0];
-    EXPECT_EQ(holding1.tradingsymbol, "AXTEL");
+    EXPECT_EQ(holding1.tradingsymbol, "GOLDBEES");
     EXPECT_EQ(holding1.exchange, "BSE");
-    EXPECT_EQ(holding1.instrumentToken, 134105604);
-    EXPECT_EQ(holding1.ISIN, "INE767C01012");
+    EXPECT_EQ(holding1.instrumentToken, 151064324);
+    EXPECT_EQ(holding1.ISIN, "INF204KB17I5");
     EXPECT_EQ(holding1.product, "CNC");
     EXPECT_DOUBLE_EQ(holding1.price, 0);
-    EXPECT_EQ(holding1.quantity, 1);
+    EXPECT_EQ(holding1.quantity, 2);
     EXPECT_EQ(holding1.t1Quantity, 0);
-    EXPECT_EQ(holding1.realisedQuantity, 1);
+    EXPECT_EQ(holding1.realisedQuantity, 2);
     EXPECT_EQ(holding1.collateralQuantity, 0);
     EXPECT_EQ(holding1.collateralType, "");
-    EXPECT_DOUBLE_EQ(holding1.averagePrice, 261.5);
-    EXPECT_DOUBLE_EQ(holding1.lastPrice, 313);
-    EXPECT_DOUBLE_EQ(holding1.closePrice, 308.8);
-    EXPECT_DOUBLE_EQ(holding1.PnL, 51.5);
-    EXPECT_DOUBLE_EQ(holding1.dayChange, 4.1999999999999886);
-    EXPECT_DOUBLE_EQ(holding1.dayChangePercentage, 1.3601036269430016);
+    EXPECT_DOUBLE_EQ(holding1.averagePrice, 40.67);
+    EXPECT_DOUBLE_EQ(holding1.lastPrice, 42.47);
+    EXPECT_DOUBLE_EQ(holding1.closePrice, 42.28);
+    EXPECT_DOUBLE_EQ(holding1.PnL, 3.5999999999999943);
+    EXPECT_DOUBLE_EQ(holding1.dayChange, 0.18999999999999773);
+    EXPECT_DOUBLE_EQ(holding1.dayChangePercentage, 0.44938505203405327);
 }
 
 TEST(kiteTest, getPositionsTest) {
