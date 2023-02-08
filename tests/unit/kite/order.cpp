@@ -183,6 +183,39 @@ TEST(kiteTest, ordersTest) {
     EXPECT_EQ(order1.filledQuantity, 0);
     EXPECT_EQ(order1.pendingQuantity, 1);
     EXPECT_EQ(order1.cancelledQuantity, 1);
+    EXPECT_EQ(order1.validityTtl, 0);
+
+    const kc::order order4 = Orders[3];
+    EXPECT_EQ(order4.accountID, "");
+    EXPECT_EQ(order4.placedBy, "XXXXXX");
+    EXPECT_EQ(order4.orderID, "220524001859672");
+    EXPECT_EQ(order4.exchangeOrderID, "");
+    EXPECT_EQ(order4.parentOrderID, "");
+    EXPECT_EQ(order4.status, "REJECTED");
+    EXPECT_EQ(order4.statusMessage,
+        "Insufficient funds. Required margin is 95417.84 but available margin "
+        "is 74251.80. Check the orderbook for open orders.");
+    EXPECT_EQ(order4.orderTimestamp, "2022-05-24 12:26:52");
+    EXPECT_EQ(order4.exchangeUpdateTimestamp, "");
+    EXPECT_EQ(order4.exchangeTimestamp, "");
+    EXPECT_EQ(order4.rejectedBy, "");
+    EXPECT_EQ(order4.variety, "iceberg");
+    EXPECT_EQ(order4.exchange, "NSE");
+    EXPECT_EQ(order4.tradingsymbol, "SBIN");
+    EXPECT_EQ(order4.instrumentToken, 779521);
+    EXPECT_EQ(order4.orderType, "LIMIT");
+    EXPECT_EQ(order4.transactionType, "BUY");
+    EXPECT_EQ(order4.validity, "TTL");
+    EXPECT_EQ(order4.product, "CNC");
+    EXPECT_EQ(order4.quantity, 200);
+    EXPECT_EQ(order4.disclosedQuantity, 0);
+    EXPECT_DOUBLE_EQ(order4.price, 463);
+    EXPECT_DOUBLE_EQ(order4.triggerPrice, 0);
+    EXPECT_DOUBLE_EQ(order4.averagePrice, 0);
+    EXPECT_EQ(order4.filledQuantity, 0);
+    EXPECT_EQ(order4.pendingQuantity, 0);
+    EXPECT_EQ(order4.cancelledQuantity, 0);
+    EXPECT_EQ(order4.validityTtl, 2);
 }
 
 TEST(kiteTest, orderHistoryTest) {

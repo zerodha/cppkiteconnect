@@ -55,6 +55,7 @@ const string VARIETY_REGULAR = "regular";
 const string VARIETY_BO = "bo";
 const string VARIETY_CO = "co";
 const string VARIETY_AMO = "amo";
+const string VERIETY_ICEBERG = "iceberg";
 
 // Transaction type
 const string TRANSACTION_TYPE_BUY = "BUY";
@@ -63,6 +64,7 @@ const string TRANSACTION_TYPE_SELL = "SELL";
 // Validity
 const string VALIDITY_DAY = "DAY";
 const string VALIDITY_IOC = "IOC";
+const string VALIDITY_TTL = "TTL";
 
 // Exchanges
 const string EXCHANGE_NSE = "NSE";

@@ -44,6 +44,10 @@ struct placeOrderParams {
     GENERATE_FLUENT_METHOD(placeOrderParams, int, quantity, Quantity);
     GENERATE_FLUENT_METHOD(
         placeOrderParams, int, disclosedQuantity, DisclosedQuantity);
+    GENERATE_FLUENT_METHOD(placeOrderParams, int, validityTtl, ValidityTtl);
+    GENERATE_FLUENT_METHOD(placeOrderParams, int, icebergLegs, IcebergLegs);
+    GENERATE_FLUENT_METHOD(
+        placeOrderParams, int, icebergQuantity, IcebergQuantity);
     GENERATE_FLUENT_METHOD(placeOrderParams, double, price, Price);
     GENERATE_FLUENT_METHOD(
         placeOrderParams, double, triggerPrice, TriggerPrice);
@@ -64,7 +68,10 @@ struct placeOrderParams {
 
     int quantity;
     std::optional<int> disclosedQuantity;
-    std::optional<int> price;
+    std::optional<int> validityTtl;
+    std::optional<int> icebergLegs;
+    std::optional<int> icebergQuantity;
+    std::optional<double> price;
     std::optional<double> triggerPrice;
     std::optional<double> squareOff;
     std::optional<double> stopLoss;
@@ -135,6 +142,7 @@ struct order {
         product = utils::json::get<string>(val, "product");
         quantity = utils::json::get<int>(val, "quantity");
         disclosedQuantity = utils::json::get<int>(val, "disclosed_quantity");
+        validityTtl = utils::json::get<int>(val, "validity_ttl");
         price = utils::json::get<double>(val, "price");
         triggerPrice = utils::json::get<double>(val, "trigger_price");
         averagePrice = utils::json::get<double>(val, "average_price");
@@ -149,6 +157,7 @@ struct order {
     int filledQuantity = -1;
     int pendingQuantity = -1;
     int cancelledQuantity = -1;
+    int validityTtl = -1;
     double price = -1.0;
     double triggerPrice = -1.0;
     double averagePrice = -1.0;
