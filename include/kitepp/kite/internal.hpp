@@ -68,7 +68,7 @@ inline utils::http::response kite::sendReq(
             .send(client);
     }
     return utils::http::request { endpoint.method, endpoint.Path(fmtArgs),
-        getAuth(), body, endpoint.contentType }
+        getAuth(), body, endpoint.contentType, endpoint.responseType }
         .send(client);
 };
 
