@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM fedora:38
 
 # install dependencies
 WORKDIR /opt
