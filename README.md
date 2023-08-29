@@ -68,8 +68,29 @@ If `cmake` cannot find your `uWS` library, try providing it manually to `cmake` 
 |  Option          | Description    |
 | :--------------  | ----------:    |
 | `BUILD_TESTS`    | Build tests    |
-| `BUILD_EXAMPLES` | Build examples |    |
+| `BUILD_EXAMPLES` | Build examples |
 | `BUILD_DOCS`     | Build docs     |
+
+### Run examples using Docker
+
+#### Build the image
+
+In project directory,
+
+`docker build -t cppkiteconnect-dev .`
+
+#### Run the built image
+
+`docker run -it -e EXAMPLE_NUMBER=1 cppkiteconnect-dev`
+
+##### env variables
+
+| Option              | Description                  |
+|:--------------------|-----------------------------:|
+| `EXAMPLE_NUMBER`    | Example to run (e.g., `1`  ) |
+| `KITE_API_KEY`      | Kite API key                 |
+| `KITE_ACCESS_TOKEN` | Kite access token            |
+| `KITE_API_SECRET`   | Kite API secret              |
 
 ### Run tests
 
