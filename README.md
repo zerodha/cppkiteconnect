@@ -77,11 +77,11 @@ If `cmake` cannot find your `uWS` library, try providing it manually to `cmake` 
 
 In project directory,
 
-`docker build -t <IMAGE-NAME> .`
+`docker build -t cppkiteconnect-dev .`
 
 #### Run the built image
 
-`docker run -it -e ENV1_NAME=ENV1_VALUE <IMAGE-NAME>`
+`docker run -it -e EXAMPLE_NUMBER=1 cppkiteconnect-dev`
 
 ##### env variables
 
