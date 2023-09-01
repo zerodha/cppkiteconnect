@@ -64,7 +64,7 @@ struct placeOrderParams {
 
     int quantity;
     std::optional<int> disclosedQuantity;
-    std::optional<int> price;
+    std::optional<double> price;
     std::optional<double> triggerPrice;
     std::optional<double> squareOff;
     std::optional<double> stopLoss;
