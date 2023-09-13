@@ -50,6 +50,9 @@ inline string kite::placeOrder(const placeOrderParams& params) {
     utils::addParam(bodyParams, params.squareOff, "squareoff");
     utils::addParam(bodyParams, params.stopLoss, "stoploss");
     utils::addParam(bodyParams, params.trailingStopLoss, "trailing_stoploss");
+    utils::addParam(bodyParams, params.icebergLegs, "iceberg_legs");
+    utils::addParam(bodyParams, params.icebergQuantity, "iceberg_quantity");
+    utils::addParam(bodyParams, params.validityTtl, "validity_ttl");
     utils::addParam(bodyParams, params.tag, "tag");
 
     return callApi<string, utils::json::JsonObject, true>("order.place",
