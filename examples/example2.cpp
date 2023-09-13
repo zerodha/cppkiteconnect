@@ -104,6 +104,27 @@ int main() {
         // };
         //! [placing an order]
 
+        //! [placing an iceberg order]
+        /* std::string orderId = Kite.placeOrder(kc::placeOrderParams()
+                                                  .Symbol("SBIN")
+                                                  .Exchange("NSE")
+                                                  .TransactionType("BUY")
+                                                  .OrderType("LIMIT")
+                                                  .Price(580.0)
+                                                  .Quantity(2000)
+                                                  .Product("MIS")
+                                                  .IcebergQuantity(1000)
+                                                  .IcebergLegs(2)
+                                                  .ValidityTtl(2)
+                                                  .Variety(kc::VARIETY_ICEBERG)
+                                                  .Validity(kc::VALIDITY_TTL));
+        if (!orderId.empty()) {
+            std::cout << "order ID: " << orderId << "\n";
+        } else {
+            std::cout << "failed to place iceberg order\n";
+        }; */
+        //! [placing an iceberg order]
+
         //! [modifying an order]
         // std::string modifiedOrderId =
         //     Kite.modifyOrder(kc::modifyOrderParams()
@@ -357,7 +378,8 @@ int main() {
 
         //! [get sip info]
         // kc::mfSip sip = Kite.getSip("555299391983723");
-        // std::cout << "SIP ID: " << sip.ID << " status:" << sip.status << '\n';
+        // std::cout << "SIP ID: " << sip.ID << " status:" << sip.status <<
+        // '\n';
         //! [get sip info]
 
         //! [cancel mf sip]
