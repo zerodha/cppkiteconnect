@@ -128,30 +128,4 @@ inline std::vector<trade> kite::orderTrades(const string& orderId) {
             return trades;
         });
 };
-
-inline std::vector<orderMargins> kite::getOrderMargins(
-    const std::vector<orderMarginsParams>& params) {
-    utils::json::json<utils::json::JsonArray> ordersJson;
-    ordersJson.array<orderMarginsParams>(
-        params, [&](const orderMarginsParams& param, rj::Value& buffer) {
-            ordersJson.field("exchange", param.exchange, &buffer);
-            ordersJson.field("tradingsymbol", param.tradingsymbol, &buffer);
-            ordersJson.field(
-                "transaction_type", param.transactionType, &buffer);
-            ordersJson.field("variety", param.variety, &buffer);
-            ordersJson.field("product", param.product, &buffer);
-            ordersJson.field("order_type", param.orderType, &buffer);
-            ordersJson.field("quantity", param.quantity, &buffer);
-            ordersJson.field("price", param.price, &buffer);
-            ordersJson.field("trigger_price", param.triggerPrice, &buffer);
-        });
-
-    return callApi<std::vector<orderMargins>, utils::json::JsonArray, true>(
-        "order.margins", { { "", ordersJson.serialize() } }, {},
-        [](utils::json::JsonArray& data) {
-            std::vector<orderMargins> margins;
-            for (auto& i : data) { margins.emplace_back(i.GetObject()); }
-            return margins;
-        });
-};
 } // namespace kiteconnect

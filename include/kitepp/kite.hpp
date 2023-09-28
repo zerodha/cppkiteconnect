@@ -635,8 +635,6 @@ class kite {
         { "order.trades", { utils::http::METHOD::GET, "/orders/{0}/trades" } },
         { "orders", { utils::http::METHOD::GET, "/orders" } },
         { "trades", { utils::http::METHOD::GET, "/trades" } },
-        { "order.margins", { utils::http::METHOD::POST, "/margins/orders",
-                               utils::http::CONTENT_TYPE::JSON } },
         // gtt
         { "gtt", { utils::http::METHOD::GET, "/gtt/triggers" } },
         { "gtt.place", { utils::http::METHOD::POST, "/gtt/triggers" } },
@@ -664,7 +662,7 @@ class kite {
             { utils::http::METHOD::GET, "/portfolio/positions" } },
         { "portfolio.positions.convert",
             { utils::http::METHOD::PUT, "/portfolio/positions" } },
-        // market endpoints
+        // market
         { "market.instruments.all", { utils::http::METHOD::GET, "/instruments",
                                         utils::http::CONTENT_TYPE::NON_JSON,
                                         utils::http::CONTENT_TYPE::NON_JSON } },
@@ -682,6 +680,9 @@ class kite {
         { "market.quote.ohlc",
             { utils::http::METHOD::GET, "/quote/ohlc?{0}" } },
         { "market.quote.ltp", { utils::http::METHOD::GET, "/quote/ltp?{0}" } },
+        // margins
+        { "margins.orders", { utils::http::METHOD::POST, "/margins/orders",
+                                utils::http::CONTENT_TYPE::JSON } },
     };
     string key;
     string token;
