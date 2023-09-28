@@ -28,6 +28,7 @@
 #include "api.hpp"
 #include "gtt.hpp"
 #include "internal.hpp"
+#include "margins.hpp"
 #include "market.hpp"
 #include "mf.hpp"
 #include "order.hpp"
