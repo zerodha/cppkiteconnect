@@ -88,6 +88,9 @@ struct orderMargins {
         var = utils::json::get<double>(val, "var");
         pnl = utils::json::get<utils::json::JsonObject, PNL>(val, "pnl");
         total = utils::json::get<double>(val, "total");
+        leverage = utils::json::get<double>(val, "leverage");
+        charges =
+            utils::json::get<utils::json::JsonObject, Charges>(val, "charges");
     };
 
     double span = -1;
@@ -98,6 +101,7 @@ struct orderMargins {
     double cash = -1;
     double var = -1;
     double total = -1;
+    double leverage = -1;
     string type;
     string tradingSymbol;
     string exchange;
@@ -113,5 +117,47 @@ struct orderMargins {
         double realised = -1;
         double unrealised = -1;
     } pnl;
+    struct Charges {
+        Charges() = default;
+        explicit Charges(const rj::Value::Object& val) { parse(val); };
+
+        void parse(const rj::Value::Object& val) {
+            transactionTax = utils::json::get<double>(val, "transaction_tax");
+            exchangeTurnoverCharge =
+                utils::json::get<double>(val, "exchange_turnover_charge");
+            sebiTurnoverCharge =
+                utils::json::get<double>(val, "sebi_turnover_charge");
+            brokerage = utils::json::get<double>(val, "brokerage");
+            stampDuty = utils::json::get<double>(val, "stamp_duty");
+            total = utils::json::get<double>(val, "total");
+            transactionTaxType =
+                utils::json::get<string>(val, "transaction_tax_type");
+            gst = utils::json::get<utils::json::JsonObject, Gst>(val, "gst");
+        };
+
+        double transactionTax = -1;
+        double exchangeTurnoverCharge = -1;
+        double sebiTurnoverCharge = -1;
+        double brokerage = -1;
+        double stampDuty = -1;
+        double total = -1;
+        string transactionTaxType;
+        struct Gst {
+            Gst() = default;
+            explicit Gst(const rj::Value::Object& val) { parse(val); };
+
+            void parse(const rj::Value::Object& val) {
+                igst = utils::json::get<double>(val, "igst");
+                cgst = utils::json::get<double>(val, "cgst");
+                sgst = utils::json::get<double>(val, "sgst");
+                total = utils::json::get<double>(val, "total");
+            };
+
+            double igst = -1;
+            double cgst = -1;
+            double sgst = -1;
+            double total = -1;
+        } gst;
+    } charges;
 };
 } // namespace kiteconnect

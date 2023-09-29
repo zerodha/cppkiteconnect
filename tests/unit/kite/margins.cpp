@@ -94,4 +94,17 @@ TEST(kiteTest, getOrderMarginsTest) {
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.realised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.pnl.unrealised, 0);
     EXPECT_DOUBLE_EQ(ordMargins1.total, 1498);
+    EXPECT_DOUBLE_EQ(ordMargins1.leverage, 1);
+
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.transactionTax, 1.498);
+    EXPECT_EQ(ordMargins1.charges.transactionTaxType, "stt");
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.exchangeTurnoverCharge, 0.051681);
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.sebiTurnoverCharge, 0.001498);
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.brokerage, 0.01);
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.stampDuty, 0.22);
+
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.gst.igst, 0.011372219999999999);
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.gst.cgst, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.gst.sgst, 0);
+    EXPECT_DOUBLE_EQ(ordMargins1.charges.gst.total, 0.011372219999999999);
 }
