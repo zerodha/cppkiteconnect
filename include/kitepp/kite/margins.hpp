@@ -24,6 +24,7 @@
  */
 
 #pragma once
+#include "kitepp/responses/margins.hpp"
 #pragma clang diagnostic ignored "-Wundefined-inline"
 
 #include <vector>
@@ -33,21 +34,20 @@
 
 namespace kiteconnect {
 inline std::vector<orderMargins> kite::getOrderMargins(
-    const std::vector<orderMarginsParams>& params) {
+    const std::vector<marginsParams>& params) {
     utils::json::json<utils::json::JsonArray> ordersJson;
-    ordersJson.array<orderMarginsParams>(
-        params, [&](const orderMarginsParams& param, rj::Value& buffer) {
-            ordersJson.field("exchange", param.exchange, &buffer);
-            ordersJson.field("tradingsymbol", param.tradingsymbol, &buffer);
-            ordersJson.field(
-                "transaction_type", param.transactionType, &buffer);
-            ordersJson.field("variety", param.variety, &buffer);
-            ordersJson.field("product", param.product, &buffer);
-            ordersJson.field("order_type", param.orderType, &buffer);
-            ordersJson.field("quantity", param.quantity, &buffer);
-            ordersJson.field("price", param.price, &buffer);
-            ordersJson.field("trigger_price", param.triggerPrice, &buffer);
-        });
+    ordersJson.array<marginsParams>(params, [&](const marginsParams& param,
+                                                rj::Value& buffer) {
+        ordersJson.field("exchange", param.exchange, &buffer);
+        ordersJson.field("tradingsymbol", param.tradingsymbol, &buffer);
+        ordersJson.field("transaction_type", param.transactionType, &buffer);
+        ordersJson.field("variety", param.variety, &buffer);
+        ordersJson.field("product", param.product, &buffer);
+        ordersJson.field("order_type", param.orderType, &buffer);
+        ordersJson.field("quantity", param.quantity, &buffer);
+        ordersJson.field("price", param.price, &buffer);
+        ordersJson.field("trigger_price", param.triggerPrice, &buffer);
+    });
 
     return callApi<std::vector<orderMargins>, utils::json::JsonArray, true>(
         "margins.orders", { { "", ordersJson.serialize() } }, {},
@@ -56,5 +56,26 @@ inline std::vector<orderMargins> kite::getOrderMargins(
             for (auto& i : data) { margins.emplace_back(i.GetObject()); }
             return margins;
         });
+};
+
+inline basketMargins kite::getBasketMargins(
+    const std::vector<marginsParams>& params, bool considerPositions) {
+    utils::json::json<utils::json::JsonArray> ordersJson;
+    ordersJson.array<marginsParams>(params, [&](const marginsParams& param,
+                                                rj::Value& buffer) {
+        ordersJson.field("exchange", param.exchange, &buffer);
+        ordersJson.field("tradingsymbol", param.tradingsymbol, &buffer);
+        ordersJson.field("transaction_type", param.transactionType, &buffer);
+        ordersJson.field("variety", param.variety, &buffer);
+        ordersJson.field("product", param.product, &buffer);
+        ordersJson.field("order_type", param.orderType, &buffer);
+        ordersJson.field("quantity", param.quantity, &buffer);
+        ordersJson.field("price", param.price, &buffer);
+        ordersJson.field("trigger_price", param.triggerPrice, &buffer);
+    });
+
+    return callApi<basketMargins, utils::json::JsonObject>("margins.basket",
+        { { "", ordersJson.serialize() } },
+        { considerPositions ? "true" : "false" });
 };
 } // namespace kiteconnect

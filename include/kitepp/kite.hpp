@@ -458,20 +458,6 @@ class kite {
     std::vector<historicalData> getHistoricalData(
         const historicalDataParams& params);
 
-    ///
-    /// \brief Get margins required for placing particular orders.
-    ///
-    /// \param params list of paramters required to fetch margins. each entry
-    ///               represents an order.
-    ///
-    /// \return std::vector<orderMargins> margins
-    ///
-    /// \paragraph ex1 Example
-    /// \snippet example2.cpp get order margins
-    ///
-    std::vector<orderMargins> getOrderMargins(
-        const std::vector<orderMarginsParams>& params);
-
     // MF
 
     ///
@@ -598,6 +584,37 @@ class kite {
     ///
     std::vector<mfInstrument> getMfInstruments();
 
+    // margins
+
+    ///
+    /// \brief Get margins required for placing particular orders.
+    ///
+    /// \param params list of paramters required to fetch margins. each entry
+    ///               represents an order.
+    ///
+    /// \return std::vector<orderMargins> margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get order margins
+    ///
+    std::vector<orderMargins> getOrderMargins(
+        const std::vector<marginsParams>& params);
+
+    ///
+    /// \brief Get margins required for a basket.
+    ///
+    /// \param params list of paramters required to fetch margins. each entry
+    ///               represents an order.
+    /// \param considerPositions if `true`, current positions are considered
+    ///
+    /// \return basketMargins margins
+    ///
+    /// \paragraph ex1 Example
+    /// \snippet example2.cpp get basket margins
+    ///
+    basketMargins getBasketMargins(
+        const std::vector<marginsParams>& params, bool considerPositions);
+
   private:
     static string encodeSymbolsList(const std::vector<string>& symbols);
 
@@ -682,6 +699,9 @@ class kite {
         { "market.quote.ltp", { utils::http::METHOD::GET, "/quote/ltp?{0}" } },
         // margins
         { "margins.orders", { utils::http::METHOD::POST, "/margins/orders",
+                                utils::http::CONTENT_TYPE::JSON } },
+        { "margins.basket", { utils::http::METHOD::POST,
+                                "/margins/basket?consider_positions={0}",
                                 utils::http::CONTENT_TYPE::JSON } },
     };
     string key;

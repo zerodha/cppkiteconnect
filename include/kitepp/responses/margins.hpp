@@ -40,24 +40,64 @@ namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
 
-/// Parameters required by the `getOrderMargins` method.
-struct orderMarginsParams {
-    orderMarginsParams() = default;
+struct orderCharges {
+    orderCharges() = default;
+    explicit orderCharges(const rj::Value::Object& val) { parse(val); };
 
-    GENERATE_FLUENT_METHOD(orderMarginsParams, double, quantity, Quantity);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, double, price, Price);
+    void parse(const rj::Value::Object& val) {
+        transactionTax = utils::json::get<double>(val, "transaction_tax");
+        exchangeTurnoverCharge =
+            utils::json::get<double>(val, "exchange_turnover_charge");
+        sebiTurnoverCharge =
+            utils::json::get<double>(val, "sebi_turnover_charge");
+        brokerage = utils::json::get<double>(val, "brokerage");
+        stampDuty = utils::json::get<double>(val, "stamp_duty");
+        total = utils::json::get<double>(val, "total");
+        transactionTaxType =
+            utils::json::get<string>(val, "transaction_tax_type");
+        gst = utils::json::get<utils::json::JsonObject, Gst>(val, "gst");
+    };
+
+    double transactionTax = -1;
+    double exchangeTurnoverCharge = -1;
+    double sebiTurnoverCharge = -1;
+    double brokerage = -1;
+    double stampDuty = -1;
+    double total = -1;
+    string transactionTaxType;
+    struct Gst {
+        Gst() = default;
+        explicit Gst(const rj::Value::Object& val) { parse(val); };
+
+        void parse(const rj::Value::Object& val) {
+            igst = utils::json::get<double>(val, "igst");
+            cgst = utils::json::get<double>(val, "cgst");
+            sgst = utils::json::get<double>(val, "sgst");
+            total = utils::json::get<double>(val, "total");
+        };
+
+        double igst = -1;
+        double cgst = -1;
+        double sgst = -1;
+        double total = -1;
+    } gst;
+};
+
+/// Parameters required by the margin methods.
+struct marginsParams {
+    marginsParams() = default;
+
+    GENERATE_FLUENT_METHOD(marginsParams, double, quantity, Quantity);
+    GENERATE_FLUENT_METHOD(marginsParams, double, price, Price);
+    GENERATE_FLUENT_METHOD(marginsParams, double, triggerPrice, TriggerPrice);
+    GENERATE_FLUENT_METHOD(marginsParams, const string&, exchange, Exchange);
     GENERATE_FLUENT_METHOD(
-        orderMarginsParams, double, triggerPrice, TriggerPrice);
+        marginsParams, const string&, tradingsymbol, Tradingsymbol);
     GENERATE_FLUENT_METHOD(
-        orderMarginsParams, const string&, exchange, Exchange);
-    GENERATE_FLUENT_METHOD(
-        orderMarginsParams, const string&, tradingsymbol, Tradingsymbol);
-    GENERATE_FLUENT_METHOD(
-        orderMarginsParams, const string&, transactionType, TransactionType);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, variety, Variety);
-    GENERATE_FLUENT_METHOD(orderMarginsParams, const string&, product, Product);
-    GENERATE_FLUENT_METHOD(
-        orderMarginsParams, const string&, orderType, OrderType);
+        marginsParams, const string&, transactionType, TransactionType);
+    GENERATE_FLUENT_METHOD(marginsParams, const string&, variety, Variety);
+    GENERATE_FLUENT_METHOD(marginsParams, const string&, product, Product);
+    GENERATE_FLUENT_METHOD(marginsParams, const string&, orderType, OrderType);
 
     double quantity = 0;
     double price = 0;
@@ -89,8 +129,8 @@ struct orderMargins {
         pnl = utils::json::get<utils::json::JsonObject, PNL>(val, "pnl");
         total = utils::json::get<double>(val, "total");
         leverage = utils::json::get<double>(val, "leverage");
-        charges =
-            utils::json::get<utils::json::JsonObject, Charges>(val, "charges");
+        charges = utils::json::get<utils::json::JsonObject, orderCharges>(
+            val, "charges");
     };
 
     double span = -1;
@@ -117,47 +157,31 @@ struct orderMargins {
         double realised = -1;
         double unrealised = -1;
     } pnl;
-    struct Charges {
-        Charges() = default;
-        explicit Charges(const rj::Value::Object& val) { parse(val); };
+    orderCharges charges;
+};
 
-        void parse(const rj::Value::Object& val) {
-            transactionTax = utils::json::get<double>(val, "transaction_tax");
-            exchangeTurnoverCharge =
-                utils::json::get<double>(val, "exchange_turnover_charge");
-            sebiTurnoverCharge =
-                utils::json::get<double>(val, "sebi_turnover_charge");
-            brokerage = utils::json::get<double>(val, "brokerage");
-            stampDuty = utils::json::get<double>(val, "stamp_duty");
-            total = utils::json::get<double>(val, "total");
-            transactionTaxType =
-                utils::json::get<string>(val, "transaction_tax_type");
-            gst = utils::json::get<utils::json::JsonObject, Gst>(val, "gst");
+struct basketMargins {
+    basketMargins() = default;
+    explicit basketMargins(const rj::Value::Object& val) { parse(val); };
+
+    void parse(const rj::Value::Object& val) {
+        initial = utils::json::get<utils::json::JsonObject, orderMargins>(
+            val, "initial");
+        final = utils::json::get<utils::json::JsonObject, orderMargins>(
+            val, "final");
+        charges = utils::json::get<utils::json::JsonObject, orderCharges>(
+            val, "charges");
+
+        rj::Value ordersVal(rj::kArrayType);
+        utils::json::get<utils::json::JsonArray>(val, ordersVal, "orders");
+        for (auto& i : ordersVal.GetArray()) {
+            orders.emplace_back(i.GetObject());
         };
+    };
 
-        double transactionTax = -1;
-        double exchangeTurnoverCharge = -1;
-        double sebiTurnoverCharge = -1;
-        double brokerage = -1;
-        double stampDuty = -1;
-        double total = -1;
-        string transactionTaxType;
-        struct Gst {
-            Gst() = default;
-            explicit Gst(const rj::Value::Object& val) { parse(val); };
-
-            void parse(const rj::Value::Object& val) {
-                igst = utils::json::get<double>(val, "igst");
-                cgst = utils::json::get<double>(val, "cgst");
-                sgst = utils::json::get<double>(val, "sgst");
-                total = utils::json::get<double>(val, "total");
-            };
-
-            double igst = -1;
-            double cgst = -1;
-            double sgst = -1;
-            double total = -1;
-        } gst;
-    } charges;
+    orderMargins initial;
+    orderMargins final;
+    std::vector<orderMargins> orders;
+    orderCharges charges;
 };
 } // namespace kiteconnect
