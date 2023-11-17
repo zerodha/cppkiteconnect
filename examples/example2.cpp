@@ -79,12 +79,12 @@ int main() {
 
         //! [get margins]
         // kc::allMargins Margins = Kite.getMargins();
-        // std::cout << "available cash for equity segment is " <<
-        // Margins.equity.available.cash << "\n";
+        // std::cout << "available cash for equity segment is "
+        //           << Margins.equity.available.cash << "\n";
 
         // kc::margins eqMargins = Kite.getMargins("equity");
-        // std::cout << "adhoc margin for equity segment is " <<
-        // eqMargins.available.adHocMargin << "\n";
+        // std::cout << "adhoc margin for equity segment is "
+        //           << eqMargins.available.adHocMargin << "\n";
         //! [get margins]
 
         //! [placing an order]
@@ -425,7 +425,7 @@ int main() {
 
         //! [get order margins]
         // std::vector<kc::orderMargins> ordMargins =
-        //     Kite.getOrderMargins({ kc::orderMarginsParams()
+        //     Kite.getOrderMargins({ kc::marginsParams()
         //                                .Exchange("NSE")
         //                                .Tradingsymbol("INFY")
         //                                .OrderType("MARKET")
@@ -439,6 +439,37 @@ int main() {
         // std::cout << "trading symbol: " << ordMargins[0].tradingSymbol
         //           << " total: " << ordMargins[0].total << "\n";
         //! [get order margins]
+
+        //! [get basket margins]
+        // kc::basketMargins basketMargins =
+        //     Kite.getBasketMargins({ {
+        //                                 kc::marginsParams()
+        //                                     .Exchange("NSE")
+        //                                     .Tradingsymbol("INFY")
+        //                                     .OrderType("MARKET")
+        //                                     .TransactionType("BUY")
+        //                                     .Variety("regular")
+        //                                     .Product("CNC")
+        //                                     .Quantity(1)
+        //                                     .Price(0)
+        //                                     .TriggerPrice(0),
+        //                             },
+        //                               {
+        //                                   kc::marginsParams()
+        //                                       .Exchange("NSE")
+        //                                       .Tradingsymbol("HDFCBANK")
+        //                                       .OrderType("SL")
+        //                                       .TransactionType("BUY")
+        //                                       .Variety("regular")
+        //                                       .Product("MIS")
+        //                                       .Quantity(100)
+        //                                       .Price(1510)
+        //                                       .TriggerPrice(1500),
+        //                               } },
+        //         true);
+
+        // std::cout << "final total: " << basketMargins.final.total << "\n";
+        //! [get basket margins]
 
         //! [dealing with kitepp exceptions]
     } catch (kc::kiteppException& e) {

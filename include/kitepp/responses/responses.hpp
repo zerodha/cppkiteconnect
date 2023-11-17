@@ -26,6 +26,7 @@
 #pragma once
 
 #include "gtt.hpp"
+#include "margins.hpp"
 #include "market.hpp"
 #include "mf.hpp"
 #include "order.hpp"
