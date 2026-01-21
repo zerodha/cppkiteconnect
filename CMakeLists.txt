@@ -26,6 +26,15 @@ if(BUILD_EXAMPLES OR BUILD_TESTS)
 	endif()
 	message(STATUS "Found Boost headers at: ${BOOST_INCLUDE_DIR}")
 
+	# Find glaze headers (header-only JSON library)
+	find_path(GLAZE_INCLUDE_DIR glaze/glaze.hpp
+		HINTS /usr/local/include /usr/include
+	)
+	if(NOT GLAZE_INCLUDE_DIR)
+		message(FATAL_ERROR "Could not find glaze headers. Please install glaze (https://github.com/stephenberry/glaze)")
+	endif()
+	message(STATUS "Found glaze headers at: ${GLAZE_INCLUDE_DIR}")
+
 	if(BUILD_TESTS)
 		find_package(GTest REQUIRED)
 		find_package(GMock REQUIRED)
@@ -36,7 +45,7 @@ endif()
 if(BUILD_EXAMPLES)
 	function(build_exmaple example_name)
 		add_executable(${example_name} "${CMAKE_SOURCE_DIR}/examples/${example_name}.cpp")
-		target_include_directories(${example_name} PUBLIC ${BOOST_INCLUDE_DIR})
+		target_include_directories(${example_name} PUBLIC ${BOOST_INCLUDE_DIR} ${GLAZE_INCLUDE_DIR})
 		target_link_libraries(${example_name} PUBLIC Threads::Threads OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB fmt::fmt)
 	endfunction(build_exmaple)
 
@@ -65,7 +74,7 @@ if(BUILD_TESTS)
 	# ticker-test
 	set(TICKER_TEST_BINARY_NAME tickerTest)
 	add_executable(${TICKER_TEST_BINARY_NAME} "${CMAKE_SOURCE_DIR}/tests/unit/tickertest.cpp")
-	target_include_directories(${TICKER_TEST_BINARY_NAME} PUBLIC ${BOOST_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS})
+	target_include_directories(${TICKER_TEST_BINARY_NAME} PUBLIC ${BOOST_INCLUDE_DIR} ${GLAZE_INCLUDE_DIR} ${GTEST_INCLUDE_DIRS})
 	target_link_libraries(${TICKER_TEST_BINARY_NAME} PUBLIC OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${GTEST_LIBRARIES} ${GTEST_MAIN_LIBRARIES} Threads::Threads fmt::fmt)
 	add_test(NAME ticker-test COMMAND ${TICKER_TEST_BINARY_NAME})
 endif()

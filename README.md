@@ -24,6 +24,7 @@ CPPKiteConnect requires C++23 and following dependencies:
 - [OpenSSL (devel)](https://github.com/openssl/openssl "OpenSSL")
 - [Boost](https://www.boost.org/) (1.74+ recommended) - Beast and Asio components for WebSocket functionality
 - [fmt](https://github.com/fmtlib/fmt) (10.0+ recommended) - String formatting library
+- [glaze](https://github.com/stephenberry/glaze) - High-performance JSON library for ticker/WebSocket
 - [zlib (devel)](https://zlib.net/)
 - [googletest](https://github.com/google/googletest) and [googlemock](https://github.com/google/googletest) are required for running tests.
 - Doxygen is required for generating documentation.
@@ -33,9 +34,15 @@ CPPKiteConnect requires C++23 and following dependencies:
 ### Linux
 
 - On Fedora:
-`sudo dnf install openssl-devel zlib-devel boost-devel fmt-devel` + (`gtest-devel gmock-devel` for running tests)
+`sudo dnf install openssl-devel zlib-devel boost-devel fmt-devel` + glaze (build from source) + (`gtest-devel gmock-devel` for running tests)
 - On Ubuntu:
-`sudo apt install libssl-dev zlib1g-dev libboost-all-dev libfmt-dev` + (googletest, googlemock for running tests)
+`sudo apt install libssl-dev zlib1g-dev libboost-all-dev libfmt-dev` + glaze (build from source) + (googletest, googlemock for running tests)
+
+Note: [glaze](https://github.com/stephenberry/glaze) is header-only and can be installed with:
+```bash
+git clone https://github.com/stephenberry/glaze.git
+cd glaze && cmake -B build && sudo cmake --install build
+```
 
 You can also download source of some dependencies by running `cmake .` in `deps` directory. This will place files in the same directory.
 

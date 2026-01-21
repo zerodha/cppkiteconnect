@@ -47,9 +47,7 @@
 #include "../utils.hpp"
 #include "ws.hpp"
 
-#include "rapidjson/include/rapidjson/document.h"
-#include "rapidjson/include/rapidjson/rapidjson.h"
-#include "rapidjson/include/rapidjson/writer.h"
+#include <glaze/glaze.hpp>
 
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/context.hpp>
@@ -66,9 +64,19 @@ namespace kiteconnect {
 static_assert(std::numeric_limits<double>::is_iec559,
     "Requires IEEE 754 floating point!");
 using std::string;
-namespace rj = rapidjson;
 namespace kc = kiteconnect;
 namespace utils = kc::internal::utils;
+
+namespace internal {
+// Helper structs for JSON parsing with glaze
+struct WsTypeMessage {
+    string type;
+};
+
+struct WsErrorMessage {
+    string data;
+};
+} // namespace internal
 
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
 inline ticker::ticker(string Key, unsigned int ConnectTimeout,
@@ -170,25 +178,13 @@ inline void ticker::unsubscribe(const std::vector<int>& instrumentTokens) {
 
 inline void ticker::setMode(
     const string& mode, const std::vector<int>& instrumentTokens) {
-    // create request json
-    rj::Document req;
-    req.SetObject();
-    auto& reqAlloc = req.GetAllocator();
-    rj::Value val;
-    rj::Value valArr(rj::kArrayType);
-    rj::Value toksArr(rj::kArrayType);
+    // create request json: {"a": "mode", "v": ["full", [408065, 2953217]]}
+    auto req = glz::obj{
+        "a", "mode",
+        "v", std::make_tuple(mode, instrumentTokens)
+    };
+    string reqStr = glz::write_json(req).value_or("");
 
-    val.SetString("mode", reqAlloc);
-    req.AddMember("a", val, reqAlloc);
-
-    val.SetString(mode.c_str(), mode.size(), reqAlloc);
-    valArr.PushBack(val, reqAlloc);
-    for (const int tok : instrumentTokens) { toksArr.PushBack(tok, reqAlloc); }
-    valArr.PushBack(toksArr, reqAlloc);
-    req.AddMember("v", valArr, reqAlloc);
-
-    // send the request
-    string reqStr = utils::json::serialize(req);
     if (isConnected()) {
         sendMessage(reqStr);
         for (const int tok : instrumentTokens) {
@@ -465,22 +461,30 @@ inline void ticker::reconnect() {
 }
 
 inline void ticker::processTextMessage(const string& message) {
-    rj::Document res;
-    utils::json::parse(res, message);
-    if (!res.IsObject()) { throw libException("Expected a JSON object"); }
+    // Parse the type field first to determine message type
+    internal::WsTypeMessage typeMsg;
+    auto typeErr = glz::read_json(typeMsg, message);
+    if (typeErr) {
+        throw libException("Expected a JSON object");
+    }
 
-    auto type = utils::json::get<string>(res, "type");
-    if (type.empty()) {
+    if (typeMsg.type.empty()) {
         throw kc::libException(
-            FMT("Cannot recognize websocket message type {0}", type));
+            FMT("Cannot recognize websocket message type {0}", typeMsg.type));
     }
 
-    if (type == "order" && onOrderUpdate) {
-        onOrderUpdate(this, kc::postback(utils::json::extractObject(res)));
+    if (typeMsg.type == "order" && onOrderUpdate) {
+        kc::postback pb;
+        auto err = glz::read_json(pb, message);
+        if (!err) {
+            onOrderUpdate(this, pb);
+        }
     }
-    if (type == "message" && onMessage) { onMessage(this, message); }
-    if (type == "error" && onError) {
-        onError(this, 0, utils::json::extractString(res));
+    if (typeMsg.type == "message" && onMessage) { onMessage(this, message); }
+    if (typeMsg.type == "error" && onError) {
+        internal::WsErrorMessage errMsg;
+        std::ignore = glz::read_json(errMsg, message);
+        onError(this, 0, errMsg.data);
     }
 }
 

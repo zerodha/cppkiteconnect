@@ -6,6 +6,11 @@ RUN dnf update -y && \
     dnf install -y cmake gcc-c++ make openssl-devel zlib-devel boost-devel fmt-devel git && \
     dnf clean all
 
+# install glaze (header-only JSON library)
+RUN git clone --depth 1 https://github.com/stephenberry/glaze.git && \
+    cd glaze && cmake -B build && cmake --install build && \
+    cd .. && rm -rf glaze
+
 # setup repo
 WORKDIR /app
 COPY . /app
