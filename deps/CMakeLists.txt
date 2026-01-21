@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(CPPKiteConnect) 
+project(CPPKiteConnect)
 
 function(downloadFile URL destination hashType hash)
     if(NOT EXISTS ${destination})
@@ -13,13 +13,6 @@ function(downloadFile URL destination hashType hash)
         message("${destination} already exists")
     endif()
 endfunction(downloadFile)
-
-#Download uWS v0.14
-downloadFile(   "https://api.github.com/repos/hoytech/uWebSockets/tarball/master"
-                "${CMAKE_SOURCE_DIR}/deps/uWebSockets.tar.gz"
-                SHA256
-                40ecedbdd2fb5b6f69f06e8830e9139dc290c3125d1eb1f3449b9fd9277b50c8
-            )
 
 #Download GTest
 downloadFile(   "https://github.com/google/googletest/archive/release-1.10.0.tar.gz"
@@ -35,12 +28,7 @@ downloadFile(   "https://github.com/openssl/openssl/archive/OpenSSL_1_1_1i.tar.g
                 728d537d466a062e94705d44ee8c13c7b82d1b66f59f4e948e0cbf1cd7c461d8
             )
 
-#Download libuv
-downloadFile(   "https://dist.libuv.org/dist/v1.40.0/libuv-v1.40.0.tar.gz"
-                "${CMAKE_SOURCE_DIR}/deps/libuv-v1.40.0.tar.gz"
-                SHA256
-                61a90db95bac00adec1cc5ddc767ebbcaabc70242bd1134a7a6b1fb1d498a194
-            )# Download zlib
+# Download zlib
 downloadFile(   "https://github.com/madler/zlib/archive/v1.2.11.tar.gz"
                 "${CMAKE_SOURCE_DIR}/deps/zlib-v1.2.11.tar.gz"
                 SHA256

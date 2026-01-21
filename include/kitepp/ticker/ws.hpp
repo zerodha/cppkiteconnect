@@ -34,6 +34,7 @@
 #include <ios>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -48,7 +49,16 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include "rapidjson/include/rapidjson/rapidjson.h"
 #include "rapidjson/include/rapidjson/writer.h"
-#include <uWS/uWS.h>
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/context.hpp>
+#include <boost/asio/ssl/stream.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/strand.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
 
 namespace kiteconnect {
 
@@ -58,6 +68,11 @@ static_assert(std::numeric_limits<double>::is_iec559,
 
 using std::string;
 namespace kc = kiteconnect;
+namespace beast = boost::beast;
+namespace websocket = beast::websocket;
+namespace net = boost::asio;
+namespace ssl = net::ssl;
+using tcp = net::ip::tcp;
 
 ///
 /// \brief \a ticker wraps around the websocket API provided by KiteConnect and
@@ -141,6 +156,8 @@ class ticker {
         unsigned int MaxReconnectDelay = DEFAULT_MAX_RECONNECT_DELAY,
         unsigned int MaxReconnectTries = DEFAULT_MAX_RECONNECT_TRIES);
 
+    ~ticker();
+
     ///
     /// @brief Set the API key.
     ///
@@ -220,8 +237,14 @@ class ticker {
 
   private:
     friend class tickerTest_binaryParsingTest_Test;
+
+    // WebSocket connection types
+    using WsStream = websocket::stream<beast::ssl_stream<beast::tcp_stream>>;
+
     const string connectUrlFmt =
         "wss://ws.kite.trade/?api_key={0}&access_token={1}";
+    const string wsHost = "ws.kite.trade";
+    const string wsPort = "443";
     string key;
     string token;
     enum class SEGMENTS : int
@@ -244,16 +267,19 @@ class ticker {
     };
     const MODES DEFAULT_MODE = MODES::QUOTE;
     std::unordered_map<int, MODES> subbedInstruments;
-    uWS::Hub hub;
-    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    uWS::Group<uWS::CLIENT>* group;
-    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    uWS::WebSocket<uWS::CLIENT>* ws = nullptr;
+
+    // Boost.Asio/Beast members
+    net::io_context ioc;
+    ssl::context sslCtx{ssl::context::tlsv12_client};
+    std::unique_ptr<WsStream> ws;
+    tcp::resolver resolver{ioc};
+    beast::flat_buffer readBuffer;
+    std::unique_ptr<net::steady_timer> pingTimer;
+
     static constexpr unsigned int DEFAULT_CONNECT_TIMEOUT = 5;      // s
     static constexpr unsigned int DEFAULT_MAX_RECONNECT_DELAY = 60; // s
     static constexpr unsigned int DEFAULT_MAX_RECONNECT_TRIES = 30;
-    const unsigned int connectTimeout = DEFAULT_CONNECT_TIMEOUT; // ms
-    const string pingMessage;
+    const unsigned int connectTimeout = DEFAULT_CONNECT_TIMEOUT; // s
     const unsigned int pingInterval = 3000; // ms
     const bool enableReconnect = false;
     const unsigned int initReconnectDelay = 2; // s
@@ -261,11 +287,27 @@ class ticker {
     const unsigned int maxReconnectDelay = DEFAULT_MAX_RECONNECT_DELAY; // s
     unsigned int reconnectTries = 0;
     const unsigned int maxReconnectTries = DEFAULT_MAX_RECONNECT_TRIES;
-    std::atomic<bool> isReconnecting { false };
+    std::atomic<bool> isReconnecting{false};
+    std::atomic<bool> connected{false};
+    std::atomic<bool> stopRequested{false};
     std::chrono::time_point<std::chrono::system_clock> lastPongTime;
     std::chrono::time_point<std::chrono::system_clock> lastBeatTime;
 
     void connectInternal();
+
+    void doConnect(const tcp::resolver::results_type& results);
+
+    void doSslHandshake();
+
+    void doWsHandshake();
+
+    void onConnected();
+
+    void doRead();
+
+    void startPingTimer();
+
+    void sendPing();
 
     void reconnect();
 
@@ -280,6 +322,6 @@ class ticker {
 
     void resubInstruments();
 
-    void assignCallbacks();
+    void sendMessage(const string& message);
 };
 } // namespace kiteconnect

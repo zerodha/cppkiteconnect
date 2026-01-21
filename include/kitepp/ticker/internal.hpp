@@ -34,6 +34,7 @@
 #include <ios>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -49,7 +50,16 @@
 #include "rapidjson/include/rapidjson/document.h"
 #include "rapidjson/include/rapidjson/rapidjson.h"
 #include "rapidjson/include/rapidjson/writer.h"
-#include <uWS/uWS.h>
+
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/context.hpp>
+#include <boost/asio/ssl/stream.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/strand.hpp>
+#include <boost/beast/core.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
 
 namespace kiteconnect {
 // To make sure doubles are parsed correctly
@@ -65,36 +75,65 @@ inline ticker::ticker(string Key, unsigned int ConnectTimeout,
     bool EnableReconnect, unsigned int maxreconnectdelay,
     unsigned int MaxReconnectTries)
     : key(std::move(Key)),
-      connectTimeout(ConnectTimeout * utils::MILLISECONDS_IN_A_SECOND),
+      connectTimeout(ConnectTimeout),
       enableReconnect(EnableReconnect), maxReconnectDelay(maxreconnectdelay),
-      maxReconnectTries(MaxReconnectTries),
-      group(hub.createGroup<uWS::CLIENT>()) {};
+      maxReconnectTries(MaxReconnectTries) {
+    // Load default SSL certificates
+    sslCtx.set_default_verify_paths();
+    sslCtx.set_verify_mode(ssl::verify_peer);
+}
 
-inline void ticker::setApiKey(const string& Key) { key = Key; };
+inline ticker::~ticker() {
+    stopRequested = true;
+    if (pingTimer) {
+        pingTimer->cancel();
+    }
+    if (ws && connected) {
+        beast::error_code ec;
+        ws->close(websocket::close_code::normal, ec);
+    }
+    ioc.stop();
+}
 
-inline string ticker::getApiKey() const { return key; };
+inline void ticker::setApiKey(const string& Key) { key = Key; }
 
-inline void ticker::setAccessToken(const string& Token) { token = Token; };
+inline string ticker::getApiKey() const { return key; }
 
-inline string ticker::getAccessToken() const { return token; };
+inline void ticker::setAccessToken(const string& Token) { token = Token; }
+
+inline string ticker::getAccessToken() const { return token; }
 
 inline void ticker::connect() {
-    assignCallbacks();
     connectInternal();
-};
+}
 
-inline bool ticker::isConnected() const { return ws != nullptr; };
+inline bool ticker::isConnected() const { return connected.load(); }
 
 inline std::chrono::time_point<std::chrono::system_clock> ticker::
     getLastBeatTime() const {
     return lastBeatTime;
-};
+}
 
-inline void ticker::run() { hub.run(); };
+inline void ticker::run() {
+    ioc.run();
+}
 
 inline void ticker::stop() {
-    if (isConnected()) { ws->close(); };
-};
+    stopRequested = true;
+    if (pingTimer) {
+        pingTimer->cancel();
+    }
+    if (isConnected()) {
+        ws->async_close(websocket::close_code::normal,
+            [this](beast::error_code ec) {
+                connected = false;
+                if (onClose) {
+                    onClose(this, static_cast<int>(websocket::close_code::normal),
+                            "Connection closed by client");
+                }
+            });
+    }
+}
 
 inline void ticker::subscribe(const std::vector<int>& instrumentTokens) {
     utils::json::json<utils::json::JsonObject> req;
@@ -103,14 +142,14 @@ inline void ticker::subscribe(const std::vector<int>& instrumentTokens) {
     string reqStr = req.serialize();
 
     if (isConnected()) {
-        ws->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
+        sendMessage(reqStr);
         for (const int tok : instrumentTokens) {
             subbedInstruments[tok] = DEFAULT_MODE;
-        };
+        }
     } else {
         throw kc::libException("not connected to websocket server");
-    };
-};
+    }
+}
 
 inline void ticker::unsubscribe(const std::vector<int>& instrumentTokens) {
     utils::json::json<utils::json::JsonObject> req;
@@ -119,15 +158,15 @@ inline void ticker::unsubscribe(const std::vector<int>& instrumentTokens) {
     string reqStr = req.serialize();
 
     if (isConnected()) {
-        ws->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
+        sendMessage(reqStr);
         for (const int tok : instrumentTokens) {
             auto it = subbedInstruments.find(tok);
-            if (it != subbedInstruments.end()) { subbedInstruments.erase(it); };
-        };
+            if (it != subbedInstruments.end()) { subbedInstruments.erase(it); }
+        }
     } else {
         throw kc::libException("not connected to websocket server");
-    };
-};
+    }
+}
 
 inline void ticker::setMode(
     const string& mode, const std::vector<int>& instrumentTokens) {
@@ -151,7 +190,7 @@ inline void ticker::setMode(
     // send the request
     string reqStr = utils::json::serialize(req);
     if (isConnected()) {
-        ws->send(reqStr.data(), reqStr.size(), uWS::OpCode::TEXT);
+        sendMessage(reqStr);
         for (const int tok : instrumentTokens) {
             if (mode == MODE_LTP) {
                 subbedInstruments[tok] = MODES::LTP;
@@ -160,42 +199,275 @@ inline void ticker::setMode(
             } else {
                 subbedInstruments[tok] = MODES::FULL;
             }
-        };
+        }
     } else {
         throw kc::libException("not connected to websocket server");
-    };
-};
+    }
+}
+
+inline void ticker::sendMessage(const string& message) {
+    if (!isConnected() || !ws) {
+        return;
+    }
+    ws->text(true);
+    ws->async_write(net::buffer(message),
+        [this](beast::error_code ec, std::size_t /*bytes_transferred*/) {
+            if (ec) {
+                if (onError) {
+                    onError(this, ec.value(), ec.message());
+                }
+            }
+        });
+}
 
 inline void ticker::connectInternal() {
-    hub.connect(FMT(connectUrlFmt, key, token), nullptr, {},
-        static_cast<int>(connectTimeout), group);
-};
+    // Reset io_context if it was stopped
+    if (ioc.stopped()) {
+        ioc.restart();
+    }
+
+    // Create new WebSocket stream
+    ws = std::make_unique<WsStream>(ioc, sslCtx);
+
+    // Set SNI hostname (required for SSL)
+    if (!SSL_set_tlsext_host_name(ws->next_layer().native_handle(), wsHost.c_str())) {
+        beast::error_code ec{static_cast<int>(::ERR_get_error()), net::error::get_ssl_category()};
+        if (onConnectError) { onConnectError(this); }
+        if (enableReconnect) { reconnect(); }
+        return;
+    }
+
+    // Set timeout for the TCP connect operation
+    beast::get_lowest_layer(*ws).expires_after(std::chrono::seconds(connectTimeout));
+
+    // Start async DNS resolution
+    resolver.async_resolve(wsHost, wsPort,
+        [this](beast::error_code ec, tcp::resolver::results_type results) {
+            if (ec) {
+                if (onConnectError) { onConnectError(this); }
+                if (enableReconnect) { reconnect(); }
+                return;
+            }
+            doConnect(results);
+        });
+}
+
+inline void ticker::doConnect(const tcp::resolver::results_type& results) {
+    // Set timeout
+    beast::get_lowest_layer(*ws).expires_after(std::chrono::seconds(connectTimeout));
+
+    // Make the TCP connection
+    beast::get_lowest_layer(*ws).async_connect(results,
+        [this](beast::error_code ec, tcp::resolver::results_type::endpoint_type /*ep*/) {
+            if (ec) {
+                if (onConnectError) { onConnectError(this); }
+                if (enableReconnect) { reconnect(); }
+                return;
+            }
+            doSslHandshake();
+        });
+}
+
+inline void ticker::doSslHandshake() {
+    // Set timeout
+    beast::get_lowest_layer(*ws).expires_after(std::chrono::seconds(connectTimeout));
+
+    // Perform SSL handshake
+    ws->next_layer().async_handshake(ssl::stream_base::client,
+        [this](beast::error_code ec) {
+            if (ec) {
+                if (onConnectError) { onConnectError(this); }
+                if (enableReconnect) { reconnect(); }
+                return;
+            }
+            doWsHandshake();
+        });
+}
+
+inline void ticker::doWsHandshake() {
+    // Turn off timeout for websocket (we'll handle our own ping/pong)
+    beast::get_lowest_layer(*ws).expires_never();
+
+    // Set suggested timeout settings for the websocket
+    ws->set_option(websocket::stream_base::timeout::suggested(beast::role_type::client));
+
+    // Set a decorator to change the User-Agent
+    ws->set_option(websocket::stream_base::decorator(
+        [](websocket::request_type& req) {
+            req.set(boost::beast::http::field::user_agent,
+                std::string("cppkiteconnect/boost-beast"));
+        }));
+
+    // Set up pong handler
+    ws->control_callback([this](websocket::frame_type kind, beast::string_view /*payload*/) {
+        if (kind == websocket::frame_type::pong) {
+            lastPongTime = std::chrono::system_clock::now();
+        }
+    });
+
+    // Build the target path with query parameters
+    string target = "/?api_key=" + key + "&access_token=" + token;
+
+    // Perform WebSocket handshake
+    ws->async_handshake(wsHost, target,
+        [this](beast::error_code ec) {
+            if (ec) {
+                if (onConnectError) { onConnectError(this); }
+                if (enableReconnect) { reconnect(); }
+                return;
+            }
+            onConnected();
+        });
+}
+
+inline void ticker::onConnected() {
+    connected = true;
+    lastPongTime = std::chrono::system_clock::now();
+
+    reconnectTries = 0;
+    reconnectDelay = initReconnectDelay;
+    isReconnecting = false;
+
+    if (!subbedInstruments.empty()) {
+        resubInstruments();
+    }
+
+    if (onConnect) {
+        onConnect(this);
+    }
+
+    // Start ping timer
+    startPingTimer();
+
+    // Start reading messages
+    doRead();
+}
+
+inline void ticker::doRead() {
+    if (stopRequested || !ws) {
+        return;
+    }
+
+    ws->async_read(readBuffer,
+        [this](beast::error_code ec, std::size_t bytes_transferred) {
+            if (ec) {
+                connected = false;
+
+                if (ec == websocket::error::closed) {
+                    // Normal closure
+                    if (onClose) {
+                        onClose(this, static_cast<int>(websocket::close_code::normal),
+                                "Connection closed");
+                    }
+                } else {
+                    // Error
+                    if (onError) {
+                        onError(this, ec.value(), ec.message());
+                    }
+                    if (onClose) {
+                        onClose(this, ec.value(), ec.message());
+                    }
+                }
+
+                if (!stopRequested && enableReconnect && !isReconnecting) {
+                    reconnect();
+                }
+                return;
+            }
+
+            // Process the message
+            if (ws->got_binary()) {
+                // Binary message (ticks or heartbeat)
+                auto data = readBuffer.data();
+                auto* charData = static_cast<char*>(data.data());
+                std::size_t size = data.size();
+
+                if (size == 1) {
+                    // Heartbeat
+                    lastBeatTime = std::chrono::system_clock::now();
+                } else if (onTicks) {
+                    // Tick data
+                    onTicks(this, parseBinaryMessage(charData, size));
+                }
+            } else {
+                // Text message (JSON)
+                string message = beast::buffers_to_string(readBuffer.data());
+                processTextMessage(message);
+            }
+
+            // Clear the buffer
+            readBuffer.consume(readBuffer.size());
+
+            // Continue reading
+            doRead();
+        });
+}
+
+inline void ticker::startPingTimer() {
+    if (stopRequested) {
+        return;
+    }
+
+    pingTimer = std::make_unique<net::steady_timer>(ioc);
+    sendPing();
+}
+
+inline void ticker::sendPing() {
+    if (stopRequested || !connected || !ws) {
+        return;
+    }
+
+    pingTimer->expires_after(std::chrono::milliseconds(pingInterval));
+    pingTimer->async_wait([this](const boost::system::error_code& ec) {
+        if (ec || stopRequested || !connected) {
+            return;
+        }
+
+        // Send ping
+        ws->async_ping({}, [this](beast::error_code ec) {
+            if (ec) {
+                // Ping failed
+                return;
+            }
+        });
+
+        // Schedule next ping
+        sendPing();
+    });
+}
 
 inline void ticker::reconnect() {
-    if (isConnected()) { return; };
+    if (isConnected()) { return; }
     isReconnecting = true;
     reconnectTries++;
 
     if (reconnectTries <= maxReconnectTries) {
-        std::this_thread::sleep_for(std::chrono::seconds(reconnectDelay));
-        reconnectDelay = (reconnectDelay * 2 > maxReconnectDelay) ?
-                             maxReconnectDelay :
-                             reconnectDelay * 2;
+        // Use async timer for delay instead of blocking sleep
+        auto reconnectTimer = std::make_shared<net::steady_timer>(ioc);
+        reconnectTimer->expires_after(std::chrono::seconds(reconnectDelay));
+        reconnectTimer->async_wait([this, reconnectTimer](const boost::system::error_code& ec) {
+            if (ec || stopRequested) {
+                isReconnecting = false;
+                return;
+            }
 
-        if (onTryReconnect) { onTryReconnect(this, reconnectTries); };
-        connectInternal();
+            reconnectDelay = (reconnectDelay * 2 > maxReconnectDelay) ?
+                                 maxReconnectDelay :
+                                 reconnectDelay * 2;
 
-        if (isConnected()) { return; };
+            if (onTryReconnect) { onTryReconnect(this, reconnectTries); }
+            connectInternal();
+        });
     } else {
-        if (onReconnectFail) { onReconnectFail(this); };
+        if (onReconnectFail) { onReconnectFail(this); }
         isReconnecting = false;
-    };
-};
+    }
+}
 
 inline void ticker::processTextMessage(const string& message) {
     rj::Document res;
     utils::json::parse(res, message);
-    if (!res.IsObject()) { throw libException("Expected a JSON object"); };
+    if (!res.IsObject()) { throw libException("Expected a JSON object"); }
 
     auto type = utils::json::get<string>(res, "type");
     if (type.empty()) {
@@ -206,11 +478,11 @@ inline void ticker::processTextMessage(const string& message) {
     if (type == "order" && onOrderUpdate) {
         onOrderUpdate(this, kc::postback(utils::json::extractObject(res)));
     }
-    if (type == "message" && onMessage) { onMessage(this, message); };
+    if (type == "message" && onMessage) { onMessage(this, message); }
     if (type == "error" && onError) {
         onError(this, 0, utils::json::extractString(res));
-    };
-};
+    }
+}
 
 template <typename T>
 T ticker::unpack(const std::vector<char>& bytes, size_t start, size_t end) {
@@ -227,7 +499,7 @@ T ticker::unpack(const std::vector<char>& bytes, size_t start, size_t end) {
 
     std::memcpy(&value, requiredBytes.data(), sizeof(T));
     return value;
-};
+}
 
 inline std::vector<std::vector<char>> ticker::splitPackets(
     const std::vector<char>& bytes) {
@@ -242,9 +514,9 @@ inline std::vector<std::vector<char>> ticker::splitPackets(
         packetLengthStartIdx = packetLengthEndIdx + packetLength + 1;
         packets.emplace_back(bytes.begin() + packetLengthEndIdx + 1,
             bytes.begin() + packetLengthStartIdx);
-    };
+    }
     return packets;
-};
+}
 
 inline std::vector<kc::tick> ticker::parseBinaryMessage(
     char* bytes, size_t size) {
@@ -261,7 +533,7 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     std::vector<std::vector<char>> packets =
         splitPackets(std::vector<char>(bytes, bytes + size));
-    if (packets.empty()) { return {}; };
+    if (packets.empty()) { return {}; }
 
     std::vector<kc::tick> ticks;
     for (const auto& packet : packets) {
@@ -345,89 +617,28 @@ inline std::vector<kc::tick> ticker::parseBinaryMessage(
                     (i >= 5) ? Tick.marketDepth.sell.emplace_back(depth) :
                                Tick.marketDepth.buy.emplace_back(depth);
                     depthStartIdx = depthStartIdx + 12;
-                };
-            };
-        };
+                }
+            }
+        }
         // NOLINTEND(cppcoreguidelines-avoid-magic-numbers)
         ticks.emplace_back(Tick);
-    };
+    }
     return ticks;
-};
+}
 
 inline void ticker::resubInstruments() {
     std::vector<int> ltpInstruments;
     std::vector<int> quoteInstruments;
     std::vector<int> fullInstruments;
     for (const auto& i : subbedInstruments) {
-        if (i.second == MODES::LTP) { ltpInstruments.push_back(i.first); };
-        if (i.second == MODES::QUOTE) { quoteInstruments.push_back(i.first); };
-        if (i.second == MODES::FULL) { fullInstruments.push_back(i.first); };
-    };
+        if (i.second == MODES::LTP) { ltpInstruments.push_back(i.first); }
+        if (i.second == MODES::QUOTE) { quoteInstruments.push_back(i.first); }
+        if (i.second == MODES::FULL) { fullInstruments.push_back(i.first); }
+    }
 
-    if (!ltpInstruments.empty()) { setMode(MODE_LTP, ltpInstruments); };
-    if (!quoteInstruments.empty()) { setMode(MODE_QUOTE, quoteInstruments); };
-    if (!fullInstruments.empty()) { setMode(MODE_FULL, fullInstruments); };
-};
-
-inline void ticker::assignCallbacks() {
-    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onConnection(
-        [&](uWS::WebSocket<uWS::CLIENT>* Ws, uWS::HttpRequest /*req*/) {
-            ws = Ws;
-            //! not setting this time would prompt reconnecting immediately even
-            //! when conected since pongTime would be far back
-            lastPongTime = std::chrono::system_clock::now();
-
-            reconnectTries = 0;
-            reconnectDelay = initReconnectDelay;
-            isReconnecting = false;
-            if (!subbedInstruments.empty()) { resubInstruments(); };
-            if (onConnect) { onConnect(this); };
-        });
-
-    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onMessage([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, char* message,
-                         size_t length, uWS::OpCode opCode) {
-        if (opCode == uWS::OpCode::BINARY && onTicks) {
-            if (length == 1) {
-                // is a heartbeat
-                lastBeatTime = std::chrono::system_clock::now();
-            } else {
-                onTicks(this, parseBinaryMessage(message, length));
-            };
-        } else if (opCode == uWS::OpCode::TEXT) {
-            processTextMessage(string(message, length));
-        };
-    });
-
-    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onPong([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, char* /*message*/,
-                      size_t /*length*/) {
-        lastPongTime = std::chrono::system_clock::now();
-    });
-
-    group->onError([&](void*) {
-        if (onConnectError) { onConnectError(this); }
-        // close the non-responsive connection
-        if (isConnected()) { ws->close(utils::ws::ERROR_CODE::NO_REASON); };
-        if (enableReconnect) { reconnect(); };
-    });
-
-    // NOLINTNEXTLINE(readability-implicit-bool-conversion)
-    group->onDisconnection([&](uWS::WebSocket<uWS::CLIENT>* /*ws*/, int code,
-                               char* reason, size_t length) {
-        ws = nullptr;
-
-        if (code != utils::ws::ERROR_CODE::NORMAL_CLOSURE) {
-            if (onError) { onError(this, code, string(reason, length)); };
-        };
-        if (onClose) { onClose(this, code, string(reason, length)); };
-        if (code != utils::ws::ERROR_CODE::NORMAL_CLOSURE) {
-            if (enableReconnect && !isReconnecting) { reconnect(); };
-        };
-    });
-
-    group->startAutoPing(static_cast<int>(pingInterval), pingMessage);
-};
+    if (!ltpInstruments.empty()) { setMode(MODE_LTP, ltpInstruments); }
+    if (!quoteInstruments.empty()) { setMode(MODE_QUOTE, quoteInstruments); }
+    if (!fullInstruments.empty()) { setMode(MODE_FULL, fullInstruments); }
+}
 
 } // namespace kiteconnect

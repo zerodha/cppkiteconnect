@@ -4,7 +4,6 @@
 - [Dependencies](https://github.com/zerodha/cppkiteconnect#dependencies)
 - [Getting dependencies](https://github.com/zerodha/cppkiteconnect#getting-dependencies)
   - [Linux](https://github.com/zerodha/cppkiteconnect#linux)
-  - [Others & uWS v0.14](https://github.com/zerodha/cppkiteconnect#others--uws-v014)
 - [Building & installation](https://github.com/zerodha/cppkiteconnect#building--installation)
 - [Examples](https://github.com/zerodha/cppkiteconnect#examples)
   - [REST API](https://github.com/zerodha/cppkiteconnect#rest-api)
@@ -20,10 +19,12 @@ CPPKiteConnect is a header-only library that wraps around Zerodha's KiteConnect 
 
 ## Dependencies
 
-CPPKiteConnect requires C++17 and following dependancies:
+CPPKiteConnect requires C++23 and following dependencies:
 
 - [OpenSSL (devel)](https://github.com/openssl/openssl "OpenSSL")
-- [uWebSockets v0.14 (devel)](https://github.com/uNetworking/uWebSockets/tree/v0.14) and [its dependancies](https://github.com/hoytech/uWebSockets/blob/master/docs/Misc.-details.md#dependencies).
+- [Boost](https://www.boost.org/) (1.74+ recommended) - Beast and Asio components for WebSocket functionality
+- [fmt](https://github.com/fmtlib/fmt) (10.0+ recommended) - String formatting library
+- [zlib (devel)](https://zlib.net/)
 - [googletest](https://github.com/google/googletest) and [googlemock](https://github.com/google/googletest) are required for running tests.
 - Doxygen is required for generating documentation.
 
@@ -31,16 +32,12 @@ CPPKiteConnect requires C++17 and following dependancies:
 
 ### Linux
 
-- On Fedora 32:
-`sudo dnf install openssl-devel zlib-devel` + (uWS v0.14) + (`gtest-devel gmock-devel` for running tests)
+- On Fedora:
+`sudo dnf install openssl-devel zlib-devel boost-devel fmt-devel` + (`gtest-devel gmock-devel` for running tests)
 - On Ubuntu:
-`sudo apt install libssl-dev zlib1g-dev` + (uWS v0.14) + (googletest, googlemock for running tests)
+`sudo apt install libssl-dev zlib1g-dev libboost-all-dev libfmt-dev` + (googletest, googlemock for running tests)
 
-### Others & uWS v0.14
-
-Use package managers provided by your OS. Unless your package manager provides `v0.14` of `uWS`, you'll have to build and install it manually.
-
-You can also download source of the required dependencies by running `cmake .` in `deps` directory. This will place files in the same directory.
+You can also download source of some dependencies by running `cmake .` in `deps` directory. This will place files in the same directory.
 
 ## Building & Installation
 
@@ -60,8 +57,6 @@ mkdir build && cd build
 cmake .. -DBUILD_TESTS=On <other-options>
 make
 ```
-
-If `cmake` cannot find your `uWS` library, try providing it manually to `cmake` like `cmake .. -DUWS_LIB=/path/to/uWS.so`. Note that this will build the library but some tests might not be run.
 
 #### Build options
 

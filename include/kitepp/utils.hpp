@@ -35,9 +35,8 @@
 #include "exceptions.hpp"
 
 #include "cpp-httplib/httplib.h"
-#define FMT_HEADER_ONLY 1
-#include "fmt/include/fmt/args.h"
-#include "fmt/include/fmt/format.h"
+#include <fmt/args.h>
+#include <fmt/format.h>
 #include "rapidcsv/src/rapidcsv.h"
 #include "rapidjson/include/rapidjson/document.h"
 #include "rapidjson/include/rapidjson/encodings.h"
@@ -74,7 +73,7 @@
 // NOLINTNEXTLINE(google-global-names-in-headers, misc-unused-using-decls)
 using fmt::literals::operator""_a;
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
-#define FMT fmt::format
+#define FMT(fmtstr, ...) fmt::format(fmt::runtime(fmtstr), __VA_ARGS__)
 
 // NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
 #define GENERATE_FLUENT_METHOD(returnType, fieldType, fieldName, methodName)   \
