@@ -215,4 +215,64 @@ struct trade {
     string exchange;
 };
 
+// Input validation for order parameters
+inline void validatePlaceOrderParams(const placeOrderParams& params) {
+    if (params.quantity <= 0) {
+        throw kiteconnect::libException("quantity must be positive");
+    }
+    if (params.variety.empty()) {
+        throw kiteconnect::libException("variety cannot be empty");
+    }
+    if (params.exchange.empty()) {
+        throw kiteconnect::libException("exchange cannot be empty");
+    }
+    if (params.symbol.empty()) {
+        throw kiteconnect::libException("symbol cannot be empty");
+    }
+    if (params.transactionType.empty()) {
+        throw kiteconnect::libException("transactionType cannot be empty");
+    }
+    if (params.product.empty()) {
+        throw kiteconnect::libException("product cannot be empty");
+    }
+    if (params.orderType.empty()) {
+        throw kiteconnect::libException("orderType cannot be empty");
+    }
+    if (params.disclosedQuantity.has_value() && params.disclosedQuantity.value() <= 0) {
+        throw kiteconnect::libException("disclosedQuantity must be positive");
+    }
+    if (params.price.has_value() && params.price.value() <= 0) {
+        throw kiteconnect::libException("price must be positive");
+    }
+    if (params.triggerPrice.has_value() && params.triggerPrice.value() <= 0) {
+        throw kiteconnect::libException("triggerPrice must be positive");
+    }
+}
+
+inline void validateModifyOrderParams(const modifyOrderParams& params) {
+    if (params.variety.empty()) {
+        throw kiteconnect::libException("variety cannot be empty");
+    }
+    if (params.orderId.empty()) {
+        throw kiteconnect::libException("orderId cannot be empty");
+    }
+    if (params.quantity.has_value() && params.quantity.value() <= 0) {
+        throw kiteconnect::libException("quantity must be positive");
+    }
+    if (params.price.has_value() && params.price.value() <= 0) {
+        throw kiteconnect::libException("price must be positive");
+    }
+    if (params.triggerPrice.has_value() && params.triggerPrice.value() <= 0) {
+        throw kiteconnect::libException("triggerPrice must be positive");
+    }
+}
+
+namespace internal {
+namespace utils {
+    // Forward declarations for validation functions
+    using kiteconnect::validatePlaceOrderParams;
+    using kiteconnect::validateModifyOrderParams;
+} // namespace utils
+} // namespace internal
+
 } // namespace kiteconnect

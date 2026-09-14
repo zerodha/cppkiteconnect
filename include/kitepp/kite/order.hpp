@@ -33,6 +33,9 @@
 
 namespace kiteconnect {
 inline string kite::placeOrder(const placeOrderParams& params) {
+    // validate input parameters
+    internal::utils::validatePlaceOrderParams(params);
+
     // required parameters
     utils::http::Params bodyParams = {
         { "exchange", params.exchange },
@@ -62,6 +65,9 @@ inline string kite::placeOrder(const placeOrderParams& params) {
 };
 
 inline string kite::modifyOrder(const modifyOrderParams& params) {
+    // validate input parameters
+    internal::utils::validateModifyOrderParams(params);
+
     utils::http::Params bodyParams = {};
     // optional parameters
     utils::addParam(bodyParams, params.parentOrderId, "parent_order_id");

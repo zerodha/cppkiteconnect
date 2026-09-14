@@ -46,7 +46,7 @@ endif()
 
 # build examples
 if(BUILD_EXAMPLES)
-        function(build_exmaple example_name)
+        function(build_example example_name)
                 add_executable(${example_name} "${CMAKE_SOURCE_DIR}/examples/${example_name}.cpp")
 
                 if(LINUX_AND_UV_NOT_FOUND)
@@ -56,12 +56,12 @@ if(BUILD_EXAMPLES)
                         target_include_directories(${example_name} PUBLIC ${UWS_INCLUDE} ${UV_INCLUDE})
                         target_link_libraries(${example_name} PUBLIC Threads::Threads OpenSSL::SSL OpenSSL::Crypto ZLIB::ZLIB ${UWS_LIB} ${UV_LIB})
                 endif()
-        endfunction(build_exmaple)
+        endfunction(build_example)
 
-        build_exmaple(example1)
-        build_exmaple(example2)
-        build_exmaple(example3)
-        build_exmaple(example4)
+        build_example(example1)
+        build_example(example2)
+        build_example(example3)
+        build_example(example4)
 endif()
 
 # build tests

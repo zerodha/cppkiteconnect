@@ -213,7 +213,7 @@ class libException : public std::exception {
     ///
     /// \return const char* short description
     ///
-    const char* what() { return message.c_str(); };
+    [[nodiscard]] const char* what() const noexcept override { return message.c_str(); };
 
   private:
     string message;

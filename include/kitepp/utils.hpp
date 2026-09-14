@@ -565,7 +565,7 @@ const unsigned int NO_REASON = 1006;
 } // namespace ws::ERROR_CODE
 
 template <class Param>
-void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
+void addParam(http::Params& bodyParams, const Param& param, const string& fieldName) {
     static_assert(
         isOptional<std::decay_t<Param>>::value, "Param must be std::optional");
     if (param.has_value()) {
@@ -575,7 +575,7 @@ void addParam(http::Params& bodyParams, Param& param, const string& fieldName) {
         } else {
             fieldValue = param.value();
         }
-        if (param.has_value()) { bodyParams.emplace(fieldName, fieldValue); }
+        bodyParams.emplace(fieldName, std::move(fieldValue));
     }
 };
 
